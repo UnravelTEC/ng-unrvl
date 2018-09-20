@@ -1,0 +1,12 @@
+{
+  "supportFile": "cypress/support/index.ts",
+  "integrationFolder": "cypress/e2e",
+  "videosFolder": "reports/cypress/videos",
+  "screenshotsFolder": "reports/cypress/screenshots",
+  "defaultCommandTimeout": 10000,
+  "viewportHeight": 1000,
+  "viewportWidth": 1200,
+  "ignoreTestFiles": [
+    "*.spec-ignore.ts"
+  ]
+}
