@@ -1,0 +1,12 @@
+nav {
+    display: block;
+    width: 100vw;
+    background: grey;
+    
+}
+nav > * {
+    display: inline-block;
+    background: green;
+    padding:0.1em;
+    margin: 0 0.1em;
+}
