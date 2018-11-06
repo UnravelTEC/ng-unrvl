@@ -9,7 +9,7 @@ import { UtFetchdataService } from '../../ut-fetchdata.service';
 export class IaqComponent implements OnInit {
   currentData = {
     timestamp: 0,
-    value: '00'
+    value: 47
   };
   CO2_value = 0;
 
@@ -21,11 +21,16 @@ export class IaqComponent implements OnInit {
 
   getData() {
     this.utFetchdataService.getHTTPData().subscribe(
-      (data: Config) =>
+      (data: singleValue) =>
         (this.currentData = {
           timestamp: data['data']['result'][0]['value'][0] * 1000,
-          value: parseFloat(data['data']['result'][0]['value'][1], 10)
+          value: parseFloat(data['data']['result'][0]['value'][1])
         })
     );
   }
+}
+
+export interface singleValue {
+  timestamp: number;
+  value: string;
 }
