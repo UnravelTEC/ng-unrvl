@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { SettingsPanelComponent } from './settings-panel/settings-panel.component'
+import { SettingsPanelComponent } from './settings-panel/settings-panel.component';
 
 const routes: Routes = [
   {
@@ -14,4 +14,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class UtSettingsRoutingModule { }
+export class UtSettingsRoutingModule {}
