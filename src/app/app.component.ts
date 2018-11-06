@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   }
 
   public constructor(private http: HttpClient, private titleService: Title) {
-    this.setTitle('Good morning Vietnam!');
+    this.setTitle('UnravelTEC');
   }
 
   ngOnInit() {

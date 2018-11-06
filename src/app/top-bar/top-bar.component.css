@@ -5,13 +5,14 @@ nav {
     flex-wrap: wrap;
     align-items: center;
     width: 100vw;
-    background: black;
+    background: rgb(49,86,105);
 }
 nav > * {
     display: inline-block;
-    background: gray;
+    background: rgb(49,86,105);
     padding:0.5em 0.3em;
     margin: 0.1em;
+    color: rgb(255, 255, 255)
 }
 nav > .spacer {
     flex-grow: 1;
