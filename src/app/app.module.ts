@@ -17,6 +17,10 @@ const appRoutes: Routes = [
     loadChildren: "./ut-dashboard/ut-dashboard.module#UtDashboardModule"
   },
   {
+    path: "Apps/IAQ",
+    loadChildren: "./ut-apps/iaq/iaq.module#IaqModule"
+  },
+  {
     path: "",
     redirectTo: "Dashboard",
     pathMatch: "full"
