@@ -21,7 +21,7 @@ export class IaqComponent implements OnInit {
 
   getData() {
     this.utFetchdataService.getHTTPData().subscribe(
-      (data: singleValue) =>
+      (data: SingleValue) =>
         (this.currentData = {
           timestamp: data['data']['result'][0]['value'][0] * 1000,
           value: parseFloat(data['data']['result'][0]['value'][1])
@@ -30,7 +30,7 @@ export class IaqComponent implements OnInit {
   }
 }
 
-export interface singleValue {
+export interface SingleValue {
   timestamp: number;
   value: string;
 }
