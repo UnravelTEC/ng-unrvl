@@ -12,10 +12,16 @@ nav > * {
     background: rgb(49,86,105);
     padding:0.5em 0.3em;
     margin: 0.1em;
-    color: rgb(255, 255, 255)
+    color: rgb(255, 255, 255);
+    text-decoration: none;
 }
 nav > .spacer {
     flex-grow: 1;
+}
+
+nav em {
+    font-style: normal;
+    color: rgb(180, 180, 180)
 }
 
 nav a:hover {
