@@ -2,6 +2,12 @@
   iaq works!
 </p>
 
-<p>
-  CO2: 477 ppm
-</p>
+<ul>
+  <li>
+    CO2: {{ currentData.value | number:'0.0-1'}} ppm
+  </li>
+  <li>
+    Timestamp: {{ currentData.timestamp | date:'y-MM-dd HH:mm:ss' }}
+  </li>
+  <!-- {{ currentData |json }} -->
+</ul>
