@@ -13,14 +13,12 @@ export class AppComponent implements OnInit {
   prod = environment.production;
   restMsg = '';
 
-  public constructor(private titleService: Title) {
-    setTitle('Good morning Vietnam!');
-  }
-
-  constructor(private http: HttpClient) {}
-
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
+  }
+
+  public constructor(private http: HttpClient, private titleService: Title) {
+    setTitle('Good morning Vietnam!');
   }
 
   ngOnInit() {
