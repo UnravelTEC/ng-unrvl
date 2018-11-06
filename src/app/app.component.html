@@ -1,24 +1,14 @@
 <!--The content below is only a placeholder and can be replaced.-->
 
-<nav>
-    <a routerLink="/Dashboard" routerLinkActive="active">Dashboard</a>  
-    <em class=search>Search</em>
-    <em class=wifi>Wifi</em>
-    <em class=hostname>Hostname</em>:
-    <em class=appname>/</em>
-    <span class="spacer">&nbsp;</span>
-    <a routerLink="/Store" routerLinkActive="active">Store</a>
-    <em class="date">24.10.2018</em>
-    <em class="batt">Bat: 100%</em>
-    <a routerLink="/Settings" routerLinkActive="active">Settings</a>
-    
-  </nav>
-  <div class="content">
+
+<app-top-bar></app-top-bar>
+
+<div class="content">
   <router-outlet></router-outlet>
 </div>
 
 this is {{ title }}.
-  <!--
+<!--
 <h2>Here are some links to help you start: </h2>
 <h3>PROD: {{ prod }}</h3>
 <h4>Rest Message: {{ restMsg }}</h4>

@@ -7,6 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 import { SettingsComponent } from './settings/settings.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { TopBarComponent } from './top-bar/top-bar.component';
 
 const appRoutes: Routes = [
   { path: 'Settings', component: SettingsComponent },
@@ -27,7 +28,8 @@ const appRoutes: Routes = [
   declarations: [
     AppComponent,
     SettingsComponent,
-    DashboardComponent
+    DashboardComponent,
+    TopBarComponent
   ],
   imports: [
     BrowserModule,
