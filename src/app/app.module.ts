@@ -11,7 +11,7 @@ import { TopBarComponent } from "./top-bar/top-bar.component";
 import { SettingsModule } from "./settings/settings.module";
 
 const appRoutes: Routes = [
-  { path: "Settings",  },
+  { path: "Settings", component: SettingsComponent },
   { path: "Dashboard", component: DashboardComponent },
   /*  {
     path: 'heroes',
@@ -39,8 +39,7 @@ const appRoutes: Routes = [
     RouterModule.forRoot(
       appRoutes,
       { enableTracing: true } // <-- debugging purposes only
-    ),
-    SettingsModule
+    )
   ],
   providers: [],
   bootstrap: [AppComponent]
