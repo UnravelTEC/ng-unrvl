@@ -1,13 +1,13 @@
-<h1>
+<div class="app-header">
   Indoor Air Quality
-</h1>
+</div>
 
 <div class="container">
   <h2>CO₂</h2>
   <div class=value>
-      {{ currentData.value | number:'0.0-1'}} ppm
+    {{ currentData.value | number:'0.0-1'}} ppm
   </div>
   <div class="timestamp">
-      Timestamp: {{ currentData.timestamp | date:'y-MM-dd HH:mm:ss' }}
+    Timestamp: {{ currentData.timestamp | date:'y-MM-dd HH:mm:ss' }}
   </div>
 </div>
