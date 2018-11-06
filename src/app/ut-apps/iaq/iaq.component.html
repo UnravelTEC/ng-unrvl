@@ -1,13 +1,13 @@
-<p>
-  iaq works!
-</p>
+<h1>
+  Indoor Air Quality
+</h1>
 
-<ul>
-  <li>
-    CO2: {{ currentData.value | number:'0.0-1'}} ppm
-  </li>
-  <li>
-    Timestamp: {{ currentData.timestamp | date:'y-MM-dd HH:mm:ss' }}
-  </li>
-  <!-- {{ currentData |json }} -->
-</ul>
+<div class="container">
+  <h2>CO₂</h2>
+  <div class=value>
+      {{ currentData.value | number:'0.0-1'}} ppm
+  </div>
+  <div class="timestamp">
+      Timestamp: {{ currentData.timestamp | date:'y-MM-dd HH:mm:ss' }}
+  </div>
+</div>
