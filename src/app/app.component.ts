@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'TFrontend';
+  title = 'SDARS - Sensor Data Access and Retrieval System';
   prod = environment.production;
   restMsg = '';
 

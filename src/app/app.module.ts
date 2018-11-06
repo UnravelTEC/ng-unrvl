@@ -5,32 +5,31 @@ import { AppComponent } from "./app.component";
 import { HttpClientModule } from "@angular/common/http";
 
 import { RouterModule, Routes } from "@angular/router";
-import { SettingsComponent } from "./settings/settings.component";
-import { DashboardComponent } from "./dashboard/dashboard.component";
 import { TopBarComponent } from "./top-bar/top-bar.component";
-import { SettingsModule } from "./settings/settings.module";
 
 const appRoutes: Routes = [
-  { path: "Settings", component: SettingsComponent },
-  { path: "Dashboard", component: DashboardComponent },
-  /*  {
-    path: 'heroes',
-    component: HeroListComponent,
-    data: { title: 'Heroes List' }
-  },*/
+  {
+    path: "Settings",
+    loadChildren: "./ut-settings/ut-settings.module#UtSettingsModule"
+  },
+  {
+    path: "Dashboard",
+    loadChildren: "./ut-dashboard/ut-dashboard.module#UtDashboardModule"
+  },
   {
     path: "",
     redirectTo: "Dashboard",
     pathMatch: "full"
   },
-  { path: "**", component: DashboardComponent }
+  {
+    path: "**",
+    loadChildren: "./ut-dashboard/ut-dashboard.module#UtDashboardModule"
+  }
 ];
 
 @NgModule({
   declarations: [
     AppComponent,
-    SettingsComponent,
-    DashboardComponent,
     TopBarComponent
   ],
   imports: [
