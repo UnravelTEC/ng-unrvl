@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-ut-dashboard-tile',
@@ -6,14 +6,24 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./ut-dashboard-tile.component.css']
 })
 export class UtDashboardTileComponent implements OnInit {
+  @Input()
+  title: string;
+  @Input()
+  icon: string;
+  @Input()
+  path: string;
 
-  title = "new App";
-  icon = "/assets/example.jpg";
-  path = "/Apps/IAQ";
-
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
+    if (!this.title) {
+      this.title = 'new App';
+    }
+    if (!this.icon) {
+      this.icon = '/assets/example.jpg';
+    }
+    if (!this.path) {
+      this.path = '/Apps/IAQ';
+    }
   }
-
 }

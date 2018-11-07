@@ -17,4 +17,12 @@ h3 {
   text-emphasis: none;
   text-decoration: none;
   font-size: 1em;
+  margin: 0.3em 0;
+}
+
+div.app-preview {
+  border:1px solid black;
+  height:2cm;
+  width: 2cm;
+  margin:0 auto;
 }
