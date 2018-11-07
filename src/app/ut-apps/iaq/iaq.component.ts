@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UtFetchdataService } from '../../ut-fetchdata.service';
+import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 
 @Component({
   selector: 'app-iaq',
