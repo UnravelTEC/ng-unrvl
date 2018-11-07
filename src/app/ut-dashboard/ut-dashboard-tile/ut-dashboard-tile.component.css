@@ -1,0 +1,20 @@
+a {
+  text-align: center;
+  display: inline-block;
+  width: 5cm;
+  height: 3cm;
+  background:  #5991b2;
+  border: 1px #2a5770 solid;
+  border-radius: 0.2em;
+  color:black;
+  padding: .6em;
+  margin: .6em;
+  text-decoration: none
+}
+
+h3 {
+  font-weight: normal;
+  text-emphasis: none;
+  text-decoration: none;
+  font-size: 1em;
+}
