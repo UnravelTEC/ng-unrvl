@@ -19,14 +19,28 @@ export class IaqComponent implements OnInit {
     this.getData();
   }
 
+  url = 'http://belinda.cgv.tugraz.at:9090/api/v1/query?query=co2{location="FuzzyLab",sensor="scd30"}';
+
   getData() {
-    this.utFetchdataService.getHTTPData().subscribe(
+    this.utFetchdataService.getHTTPData(this.url).subscribe(
       (data: SingleValue) =>
         (this.currentData = {
           timestamp: data['data']['result'][0]['value'][0] * 1000,
           value: parseFloat(data['data']['result'][0]['value'][1])
         })
-    );
+      //this.saveDataAndCallNext
+      );
+  }
+
+  saveDataAndCallNext(data: SingleValue) {
+    //console.log(data);
+    this.currentData = {
+      timestamp: data['data']['result'][0]['value'][0] * 1000,
+      value: parseFloat(data['data']['result'][0]['value'][1])
+    };
+    /*console.log(this.currentData.value)
+    console.log(this.currentData.timestamp)
+    setTimeout(this.getData, 1000);*/
   }
 }
 

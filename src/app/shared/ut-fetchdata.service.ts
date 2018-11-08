@@ -11,7 +11,8 @@ export class UtFetchdataService {
     'http://belinda.cgv.tugraz.at:9090/api/v1/query?query=co2{location="FuzzyLab",sensor="scd30"}';
   Config = {};
 
-  getHTTPData() {
-    return this.http.get(this.httpURL);
+  getHTTPData(url : string) {
+    var thisurl = (url) ? url : this.httpURL;
+    return this.http.get(thisurl);
   }
 }
