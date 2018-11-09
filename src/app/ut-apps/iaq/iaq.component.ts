@@ -3,17 +3,12 @@ import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 
 import { interval, Subscription } from 'rxjs';
 
-//import { EventEmitter} from '@angular/core';
-
 @Component({
   selector: 'app-iaq',
   templateUrl: './iaq.component.html',
   styleUrls: ['./iaq.component.css']
 })
 export class IaqComponent implements OnInit {
-  /*@Input() item: any;
-  @Output() itemChange = new EventEmitter();*/
-
   currentData = {
     timestamp: 0,
     value: 47
