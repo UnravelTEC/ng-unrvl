@@ -59,7 +59,6 @@ export class IaqComponent implements OnInit {
   }
 }
 
-
 export interface SingleValue {
   timestamp: number;
   value: string;
