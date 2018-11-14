@@ -21,6 +21,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/iaq/iaq.module#IaqModule'
   },
   {
+    path: 'Apps/CO2',
+    loadChildren: './ut-apps/co2-graph/co2-graph.module#Co2GraphModule'
+  },
+  {
     path: '',
     redirectTo: 'Dashboard',
     pathMatch: 'full'
