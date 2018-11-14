@@ -12,6 +12,9 @@ export class AppComponent implements OnInit {
   title = 'SDARS - Sensor Data Access and Retrieval System';
   prod = environment.production;
   restMsg = '';
+  data = [];
+
+  options = {};
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
@@ -30,5 +33,19 @@ export class AppComponent implements OnInit {
         this.restMsg = error.message;
       }
     );
+    this.data = [
+      [new Date('2008/05/07'), 75],
+      [new Date('2008/05/08'), 70],
+      [new Date('2008/05/09'), 80]
+    ];
+    this.options = {
+      width: 'auto',
+      labels: ['Date', 'Temperature'],
+      xlabel: 'X label text',
+      ylabel: 'Y label text',
+      title: 'Working title :)',
+      animatedZooms: true,
+      pointSize: 4
+  }
   }
 }

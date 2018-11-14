@@ -10,21 +10,24 @@ import { NgDygraphsModule } from 'ng-dygraphs';
 export class Co2GraphComponent implements OnInit {
   constructor() {}
 
-  data = [
-    [new Date('2008/05/07'), 75],
-    [new Date('2008/05/08'), 70],
-    [new Date('2008/05/09'), 80]
-  ];
+  data = [];
 
-  options = {
-    width: 'auto',
-    labels: ['Date', 'Temperature'],
-    xlabel: 'X label text',
-    ylabel: 'Y label text',
-    title: 'Working title :)',
-    animatedZooms: true,
-    pointSize: 4
-  };
+  options = {};
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.data = [
+      [new Date('2008/05/07'), 75],
+      [new Date('2008/05/08'), 70],
+      [new Date('2008/05/09'), 80]
+    ];
+    this.options = {
+      width: 'auto',
+      labels: ['Date', 'Temperature'],
+      xlabel: 'X label text',
+      ylabel: 'Y label text',
+      title: 'Working title :)',
+      animatedZooms: true,
+      pointSize: 4
+    }
+  }
 }
