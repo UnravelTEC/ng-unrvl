@@ -20,3 +20,21 @@ Note on Interfaces
   this.utFetchdataService.getHTTPData().subscribe( (data: singleValue) => ...
 
 wenn das singleValue net definiert ist, kompilierts mit ng serve beim 1.Mal nicht, beim 2. schon - was das Bugfixen unglaublich "einfach" macht...
+
+
+
+how to add an app:
+ng g m ut-apps/co2-graph --routing
+ng g c ut-apps/co2-graph
+  edit -routing.module.ts, add
+    import { Co2GraphComponent } from './co2-graph.component';
+
+
+DyGraphs:
+
+laut https://www.npmjs.com/package/ng-dygraphs
+
+npm install ng-dygraphs --save
+
+~/uni/unraveltec/Frontend/Web # 
+

@@ -7,6 +7,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 import { TopBarComponent } from './top-bar/top-bar.component';
 
+import { NgDygraphsModule } from 'ng-dygraphs';
+
+
 const appRoutes: Routes = [
   {
     path: 'Settings',
@@ -40,6 +43,7 @@ const appRoutes: Routes = [
   imports: [
     BrowserModule,
     HttpClientModule,
+    NgDygraphsModule,
     RouterModule.forRoot(
       appRoutes,
       { enableTracing: true } // <-- debugging purposes only
