@@ -22,10 +22,11 @@ export class Co2GraphComponent implements OnInit {
     ];
     this.options = {
       width: 'auto',
-      labels: ['Date', 'Temperature'],
+      labels: ['Date', 'SCD30'],
       xlabel: 'X label text',
-      ylabel: 'Y label text',
-      title: 'Working title :)',
+      ylabel: 'CO₂ (ppm)',
+      title: '',
+      //height: 'auto',
       animatedZooms: true,
       pointSize: 4
     }
