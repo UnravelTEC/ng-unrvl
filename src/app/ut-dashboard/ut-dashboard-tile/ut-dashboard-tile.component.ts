@@ -20,7 +20,7 @@ export class UtDashboardTileComponent implements OnInit {
       this.title = 'new App';
     }
     if (!this.icon) {
-      this.icon = '/assets/example.jpg';
+      this.icon = '/assets/example.png';
     }
     if (!this.path) {
       this.path = '/Apps/IAQ';
