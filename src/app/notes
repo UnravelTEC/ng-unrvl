@@ -39,3 +39,13 @@ npm install ng-dygraphs --save
 ~/uni/unraveltec/Frontend/Web # 
 
 note:the dygraphs module must be injected in the submodule where it is used.
+
+# deployment 
+
+cd /Frontend/Web; npm run build.prod
+
+cd dist/Web
+rsync -rax * root@henri0.lan:~/Frontend/
+git checkout --orphan
+git rm --cached -r .
+rm -rf *
