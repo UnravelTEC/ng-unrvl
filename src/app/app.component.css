@@ -4,8 +4,9 @@
   padding: 0;
 }
 
+/*  from https://codepen.io/Javarome/pen/WvVRMW */
 #appbody {
-  background: red;
+  /* background: red; */
   position: absolute;
   top: 0;
   left: 0;
@@ -17,7 +18,7 @@
 
 .content {
   padding: 1em;
-  background: green;
+  /* background: green; */
   flex: 1;
   overflow-y: auto;
 }
