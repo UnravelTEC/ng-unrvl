@@ -4,9 +4,15 @@
 }
 
 .mydygraph {
-
+  width: 800px;
+  height: 400px;
+  /* background: yellow; */
+  text-align: center;
+  border: 1px solid red;
+  border-radius: 10px;
 }
 
 .graphapp {
-  /* background: blue;*/
+  /* background: blue; */
+  padding: 5px;
 }

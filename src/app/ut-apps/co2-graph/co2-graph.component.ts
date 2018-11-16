@@ -21,14 +21,14 @@ export class Co2GraphComponent implements OnInit {
       [new Date('2008/05/09'), 80]
     ];
     this.options = {
-      width: 'auto',
+      width: '750',
+      height: '350',
       labels: ['Date', 'SCD30'],
       xlabel: 'X label text',
       ylabel: 'CO₂ (ppm)',
       title: '',
-      //height: 'auto',
       animatedZooms: true,
       pointSize: 4
-    }
+    };
   }
 }
