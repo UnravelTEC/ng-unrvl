@@ -1,14 +1,15 @@
-<!--The content below is only a placeholder and can be replaced.-->
+<!-- The content below is only a placeholder and can be replaced. -->
 
-<app-top-bar></app-top-bar>
+<div id="appbody">
+  <app-top-bar></app-top-bar>
 
-<div class="content">
-  <router-outlet></router-outlet>
+  <div class="content"><router-outlet></router-outlet></div>
+
+  <div id="footer">this is {{ title }}.</div>
 </div>
 
-this is {{ title }}.
 <!--
-<h2>Here are some links to help you start: </h2>
-<h3>PROD: {{ prod }}</h3>
-<h4>Rest Message: {{ restMsg }}</h4>
+  <h2>Here are some links to help you start: </h2>
+  <h3>PROD: {{ prod }}</h3>
+  <h4>Rest Message: {{ restMsg }}</h4>
 -->
