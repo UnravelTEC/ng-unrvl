@@ -1,0 +1,22 @@
+https://angular.io/guide/lazy-loading-ngmodules
+
+ng generate module ut-dashboard --routing
+ng generate component ut-dashboard/dashboard
+
+ng generate module ut-settings --routing
+ng generate component ut-settings/settings-panel
+
+in ut-dashboard-routing.module.ts die Komponenten
+  import { DashboardComponent } from './dashboard/dashboard.component'
+in die Routen hinzufügen
+  {
+    path: '',
+    component: SettingsPanelComponent
+  }
+
+wenn man die komponente gleich benennt wie das modul und nach dem modul erzeugt, fügt ers gleich in die module.ts ein. in die routing.ts muss ma trotzdem eintragen!
+
+Note on Interfaces
+  this.utFetchdataService.getHTTPData().subscribe( (data: singleValue) => ...
+
+wenn das singleValue net definiert ist, kompilierts mit ng serve beim 1.Mal nicht, beim 2. schon - was das Bugfixen unglaublich "einfach" macht...
