@@ -1,7 +1,24 @@
-.content {
-  margin: 1em;
+* {
+  font-family: Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-* {
-  font-family: Helvetica, Arial, sans-serif
+/*  from https://codepen.io/Javarome/pen/WvVRMW */
+#appbody {
+  /* background: red; */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  display: flex;
+}
+
+.content {
+  padding: 1em;
+  /* background: green; */
+  flex: 1;
+  overflow-y: auto;
 }

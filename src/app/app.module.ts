@@ -7,6 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, Routes } from '@angular/router';
 import { TopBarComponent } from './top-bar/top-bar.component';
 
+
 const appRoutes: Routes = [
   {
     path: 'Settings',
@@ -19,6 +20,10 @@ const appRoutes: Routes = [
   {
     path: 'Apps/IAQ',
     loadChildren: './ut-apps/iaq/iaq.module#IaqModule'
+  },
+  {
+    path: 'Apps/CO2',
+    loadChildren: './ut-apps/co2-graph/co2-graph.module#Co2GraphModule'
   },
   {
     path: '',
