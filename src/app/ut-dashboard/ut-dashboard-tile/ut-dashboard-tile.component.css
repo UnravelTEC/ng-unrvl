@@ -7,7 +7,7 @@ a {
   border: 3px #2a5770 solid;
   border-radius: 0.4em;
   color: black;
-  padding: 0.6em;
+  padding: 1em 0.6em 0.6em 0.6em;
   margin: 0.6em;
   text-decoration: none;
 }
@@ -18,13 +18,11 @@ h3 {
   text-decoration: none;
   font-size: 1em;
   margin: 0.3em 0;
-  align: bottom;
 }
 
-
 div.app-preview {
-/*  border: 0px solid black;
+  /*  border: 0px solid black;
   height: 1cm;
-  width: 1cm;*/
-  margin: 0 0;
+  width: 1cm;
+  margin: 0 0;*/
 }
