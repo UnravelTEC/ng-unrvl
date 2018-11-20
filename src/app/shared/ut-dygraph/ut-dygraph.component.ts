@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 
+declare const Dygraph: any;
+
 @Component({
   selector: 'app-ut-dygraph',
   templateUrl: './ut-dygraph.component.html',
@@ -30,10 +32,13 @@ export class UtDygraphComponent implements OnInit {
 
   dyOptions = {};
   data = [];
+  historicalData = [];
   dataBeginTime: Date;
   dataEndTime: Date;
 
   private requests_underway = 0; // don't flood the server if it is not fast enough
+
+  _graph: any;
 
   constructor(private utFetchdataService: UtFetchdataService) {}
 
@@ -86,6 +91,10 @@ export class UtDygraphComponent implements OnInit {
       this.dyOptions['labels'][1] = 'undefined';
     }
 
+    this.historicalData = this.data;
+
+    this._graph = new Dygraph('graph', this.data, this.dyOptions);
+
     console.log(this.data);
   }
 
@@ -120,7 +129,14 @@ export class UtDygraphComponent implements OnInit {
     console.log('new ' + newData.length + ' elements');
 
     // trigger ngOnChanges
+    this.historicalData = this.data.concat(newData);
+    const dataLength = this.data.length;
+    console.log('current length: ' + dataLength + ' elements');
     this.data = this.data.concat(newData);
+    this.data = this.data.slice(-dataLength, this.data.length);
+    console.log('new length: ' + this.data.length + ' elements');
+    this._graph.updateOptions({ file: this.data });
+    console.log('historical length: ' + this.historicalData.length + ' elements');
   }
 
   fetchNewData() {
