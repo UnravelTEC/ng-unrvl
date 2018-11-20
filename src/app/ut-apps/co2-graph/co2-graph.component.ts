@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 
-import { NgDygraphsModule } from 'ng-dygraphs';
-
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 
 @Component({
