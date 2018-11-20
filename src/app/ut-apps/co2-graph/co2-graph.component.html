@@ -4,7 +4,14 @@
   <div class="mydygraph">
     <app-ut-dygraph
       queryString="co2{location=&quot;FuzzyLab&quot;,sensor=&quot;scd30&quot;}"
+      dataFrequency="3000"
       YLabel="CO₂ (ppm)"
+      graphHeight="400"
+      graphWidth="800"
     ></app-ut-dygraph>
+    <!--
+      Server="http://192.168.11.206"
+      queryString="bme280_pressure"
+    -->
   </div>
 </div>

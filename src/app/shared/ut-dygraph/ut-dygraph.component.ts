@@ -24,13 +24,13 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   timeRange = 300; // in seconds, default 5min.
   @Input()
-  dataFrequency = 3000; // query step on server
+  dataFrequency = 1000; // query step on server
   @Input()
   frontendRefreshRate = 1000; // set 0 for no update - but can be changed later - default 1000ms.
   @Input()
   Server = 'http://belinda.cgv.tugraz.at'; // optional, defaults to localhost:9090
   @Input()
-  RunningAvg = 2;
+  RunningAvg = 0;
 
   private queryEndpoint: string;
 
