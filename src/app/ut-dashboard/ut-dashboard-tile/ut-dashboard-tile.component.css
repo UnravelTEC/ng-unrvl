@@ -1,13 +1,19 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
 a {
   text-align: center;
   display: inline-block;
   width: 5cm;
   height: 3cm;
+  overflow:hidden;
   background: #5991b2;
   border: 3px #2a5770 solid;
   border-radius: 0.4em;
   color: black;
-  padding: 1em 0.6em 0.6em 0.6em;
+  padding:  0.6em 0.6em 0.6em 0.6em;
   margin: 0.6em;
   text-decoration: none;
 }
