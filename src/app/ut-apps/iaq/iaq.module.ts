@@ -5,10 +5,7 @@ import { IaqRoutingModule } from './iaq-routing.module';
 import { IaqComponent } from './iaq.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    IaqRoutingModule
-  ],
+  imports: [CommonModule, IaqRoutingModule],
   declarations: [IaqComponent]
 })
-export class IaqModule { }
+export class IaqModule {}

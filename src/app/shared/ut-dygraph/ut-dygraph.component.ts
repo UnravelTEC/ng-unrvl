@@ -12,17 +12,17 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   queryString: string;
   @Input()
-  graphHeight: string = '350'; // should be any css value
+  graphHeight = '350'; // should be any css value
   @Input()
-  graphWidth: string = '750'; // should be any css value
+  graphWidth = '750'; // should be any css value
   @Input()
-  YLabel: string = 'Value (unit)';
+  YLabel = 'Value (unit)';
   @Input()
-  timeRange: number = 300; // in seconds, default 5min.
+  timeRange = 300; // in seconds, default 5min.
   @Input()
-  updateRate: number = 1000; // set 0 for no update - but can be changed later - default 1000ms.
+  updateRate = 1000; // set 0 for no update - but can be changed later - default 1000ms.
   @Input()
-  Server: string = 'http://belinda.cgv.tugraz.at'; // optional, defaults to localhost:9090
+  Server = 'http://belinda.cgv.tugraz.at'; // optional, defaults to localhost:9090
 
   private queryEndpoint: string;
 
