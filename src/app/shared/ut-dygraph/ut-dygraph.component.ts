@@ -18,9 +18,11 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   YLabel = 'Value (unit)';
   @Input()
-  timeRange = 300; // in seconds, default 5min.
+  timeRange = 30; // in seconds, default 5min.
   @Input()
-  updateRate = 1000; // set 0 for no update - but can be changed later - default 1000ms.
+  dataFrequency = 1000; // query step on server
+  @Input()
+  frontendRefreshRate = 1000; // set 0 for no update - but can be changed later - default 1000ms.
   @Input()
   Server = 'http://belinda.cgv.tugraz.at'; // optional, defaults to localhost:9090
 
@@ -28,6 +30,10 @@ export class UtDygraphComponent implements OnInit {
 
   dyOptions = {};
   data = [];
+  dataBeginTime: Date;
+  dataEndTime: Date;
+
+  private requests_underway = 0; // don't flood the server if it is not fast enough
 
   constructor(private utFetchdataService: UtFetchdataService) {}
 
@@ -40,26 +46,30 @@ export class UtDygraphComponent implements OnInit {
       ylabel: this.YLabel,
       title: '',
       animatedZooms: true,
-      pointSize: 4
+      pointSize: 4,
+      noDataLabel: 'Loading...'
     };
+    this.data = [[undefined, null]];
     this.queryEndpoint = this.Server + ':9090/api/v1/';
 
-    const starttime = new Date();
-    const endtime = new Date(); // now
-    starttime.setSeconds(endtime.getSeconds() - this.timeRange);
+    const dataEndTime = new Date();
+    const dataBeginTime = new Date(
+      dataEndTime.valueOf() - this.timeRange * 1000
+    );
+    console.log(dataEndTime.valueOf() / 1000);
 
     this.utFetchdataService
       .getRange(
         this.queryString,
-        starttime,
-        endtime,
-        this.updateRate,
+        dataBeginTime,
+        dataEndTime,
+        this.dataFrequency,
         this.queryEndpoint
       )
-      .subscribe((data: Object) => this.handleReceivedData(data));
+      .subscribe((data: Object) => this.handleInitialData(data));
   }
 
-  handleReceivedData(data: Object) {
+  handleInitialData(data: Object) {
     console.log('received Data:');
     console.log(data);
 
@@ -77,5 +87,58 @@ export class UtDygraphComponent implements OnInit {
     }
 
     console.log(this.data);
+  }
+
+  handleUpdatedData(data: Object) {
+    this.requests_underway--;
+    const values = data['data']['result'][0]['values'];
+
+    // check if there is already newer data from an earlier request
+    let iteratedDate: Date;
+    let iteratingOnOldData = true;
+    let lastDate: number; // mseconds since 1970
+    let currentDate: number; // mseconds since 1970
+    values.forEach(element => {
+      currentDate = element[0] * 1000;
+
+      if (iteratingOnOldData) {
+        lastDate = this.data[this.data.length - 1][0].valueOf();
+        if (lastDate >= currentDate) {
+          console.log('iterating on old number');
+          return;
+        } else {
+          iteratingOnOldData = false;
+        }
+      }
+
+      iteratedDate = new Date(currentDate);
+      this.data.push([iteratedDate, Number(element[1])]);
+    });
+    //console.log(this.data);
+    console.log("got " + values.length + " elements")
+    this.dyOptions['xlabel'] = 'Time++';
+  }
+
+  fetchNewData() {
+    // console.log(this.requests_underway);
+    if (this.requests_underway > 0) {
+      console.log('not sending data request, one on the way already');
+      return;
+    }
+    if (this.requests_underway > 2) {
+      console.error('5 requests on the way, none returned, check server conn.');
+      return;
+    }
+    this.requests_underway++;
+
+    this.utFetchdataService
+      .getRange(
+        this.queryString,
+        this.data[this.data.length - 1][0], // [0] is a date object
+        new Date(),
+        this.dataFrequency,
+        this.queryEndpoint
+      )
+      .subscribe((data: Object) => this.handleUpdatedData(data));
   }
 }

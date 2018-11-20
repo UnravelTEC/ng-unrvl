@@ -43,9 +43,17 @@ laut https://www.npmjs.com/package/ng-dygraphs
 
 npm install ng-dygraphs --save
 
+From: https://github.com/mpx200/ng-dygraphs
+
 ~/uni/unraveltec/Frontend/Web # 
 
 note:the dygraphs module must be injected in the submodule where it is used.
+
+
+note on ng-dygraphs:
+  it reloads with 500ms timeout - this is bad!
+  and it draws _completely new_ each time!
+
 
 # deployment 
 
