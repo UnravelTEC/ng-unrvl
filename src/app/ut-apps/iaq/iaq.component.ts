@@ -15,7 +15,13 @@ export class IaqComponent implements OnInit {
   };
   CO2_value = 0;
 
-  constructor(private utFetchdataService: UtFetchdataService) { }
+  url =
+    'http://belinda.cgv.tugraz.at:9090/api/v1/query?query=co2{location="FuzzyLab",sensor="scd30"}';
+  private requests_underway = 0; // don't flood the server if it is not fast enough
+
+  intervalSubscription: Subscription;
+
+  constructor(private utFetchdataService: UtFetchdataService) {}
 
   ngOnInit() {
     this.getData();
@@ -25,14 +31,8 @@ export class IaqComponent implements OnInit {
     });
   }
 
-  url =
-    'http://belinda.cgv.tugraz.at:9090/api/v1/query?query=co2{location="FuzzyLab",sensor="scd30"}';
-  private requests_underway = 0; //don't flood the server if it is not fast enough
-
-  intervalSubscription: Subscription;
-
   getData() {
-    //console.log(this.requests_underway);
+    // console.log(this.requests_underway);
     if (this.requests_underway > 0) {
       console.log('not sending data request, one on the way already');
       return;
@@ -44,7 +44,7 @@ export class IaqComponent implements OnInit {
     this.requests_underway++;
     this.utFetchdataService
       .getHTTPData(this.url)
-      .subscribe((data: SingleValue) => this.loadData(data))
+      .subscribe((data: SingleValue) => this.loadData(data));
   }
 
   loadData(data: SingleValue) {
@@ -55,8 +55,6 @@ export class IaqComponent implements OnInit {
     };
   }
 }
-
-
 
 export interface SingleValue {
   timestamp: number;

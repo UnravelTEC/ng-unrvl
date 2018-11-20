@@ -25,12 +25,12 @@ export class Co2GraphComponent implements OnInit {
     pointSize: 4
   };
 
-  constructor(private utFetchdataService: UtFetchdataService) { }
+  constructor(private utFetchdataService: UtFetchdataService) {}
   ngOnInit() {
     console.log('calling http');
 
-    let starttime = new Date();
-    let endtime = new Date(); //now
+    const starttime = new Date();
+    const endtime = new Date(); // now
     starttime.setSeconds(endtime.getSeconds() - 600);
 
     this.utFetchdataService
@@ -41,19 +41,18 @@ export class Co2GraphComponent implements OnInit {
   handleReceivedData(data: Object) {
     console.log('received Data:');
     console.log(data);
-    let metric = data['data']['result'][0]['metric'];
-    let values = data['data']['result'][0]['values'];
+
+    const metric = data['data']['result'][0]['metric'];
+    const values = data['data']['result'][0]['values'];
+
     this.data = [];
     values.forEach(element => {
-      this.data.push(
-        [
-          new Date(element[0] * 1000),
-          Number(element[1])
-        ])
+      this.data.push([new Date(element[0] * 1000), Number(element[1])]);
     });
-    this.options.labels[1] = metric['location'] + " " + metric['sensor'];
+
+    this.options.labels[1] = metric['location'] + ' ' + metric['sensor'];
     if (!this.options.labels[1]) {
-      this.options.labels[1] = "undefined";
+      this.options.labels[1] = 'undefined';
     }
 
     console.log(this.data);
