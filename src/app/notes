@@ -20,6 +20,7 @@ Note on Interfaces
   this.utFetchdataService.getHTTPData().subscribe( (data: singleValue) => ...
 
 wenn das singleValue net definiert ist, kompilierts mit ng serve beim 1.Mal nicht, beim 2. schon - was das Bugfixen unglaublich "einfach" macht...
+  2nd Note: einfach als typ "Object" angeben, dann kann man sich das Interface sparen.
 
 
 

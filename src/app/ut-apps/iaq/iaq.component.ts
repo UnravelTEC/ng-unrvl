@@ -44,19 +44,14 @@ export class IaqComponent implements OnInit {
     this.requests_underway++;
     this.utFetchdataService
       .getHTTPData(this.url)
-      .subscribe((data: SingleValue) => this.loadData(data));
+      .subscribe((data: Object) => this.loadData(data));
   }
 
-  loadData(data: SingleValue) {
+  loadData(data: Object) {
     this.requests_underway--;
     this.currentData = {
       timestamp: data['data']['result'][0]['value'][0] * 1000,
       value: parseFloat(data['data']['result'][0]['value'][1])
     };
   }
-}
-
-export interface SingleValue {
-  timestamp: number;
-  value: string;
 }
