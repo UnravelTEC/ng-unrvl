@@ -10,38 +10,28 @@ import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
   styleUrls: ['./co2-graph.component.css']
 })
 export class Co2GraphComponent implements OnInit {
-  constructor(private utFetchdataService: UtFetchdataService) { }
-
-  queryString = 'co2{location="FuzzyLab",sensor="scd30"}'
+  queryString = 'co2{location="FuzzyLab",sensor="scd30"}';
 
   data = [];
 
-  options = {};
+  options = {
+    width: '750',
+    height: '350',
+    labels: ['Date', 'SCD30'],
+    xlabel: 'Time',
+    ylabel: 'CO₂ (ppm)',
+    title: '',
+    animatedZooms: true,
+    pointSize: 4
+  };
 
+  constructor(private utFetchdataService: UtFetchdataService) { }
   ngOnInit() {
     console.log('calling http');
 
-    this.data = [
-      [new Date('2008/05/07'), 75],
-      [new Date('2008/05/08'), 70],
-      [new Date('2008/05/09'), 80]
-    ];
-    console.log(this.data);
-    this.options = {
-      width: '750',
-      height: '350',
-      labels: ['Date', 'SCD30'],
-      xlabel: 'X label text',
-      ylabel: 'CO₂ (ppm)',
-      title: '',
-      animatedZooms: true,
-      pointSize: 4
-    };
-
     let starttime = new Date();
-    let endtime = new Date();
+    let endtime = new Date(); //now
     starttime.setSeconds(endtime.getSeconds() - 600);
-
 
     this.utFetchdataService
       .getRange(this.queryString, starttime, endtime, 3000)
@@ -52,9 +42,8 @@ export class Co2GraphComponent implements OnInit {
     console.log('received Data:');
     console.log(data);
     let metric = data['data']['result'][0]['metric'];
-    let values = data['data']['result'][0]['values']
+    let values = data['data']['result'][0]['values'];
     this.data = [];
-    console.log(values);
     values.forEach(element => {
       this.data.push(
         [
@@ -62,6 +51,11 @@ export class Co2GraphComponent implements OnInit {
           Number(element[1])
         ])
     });
+    this.options.labels[1] = metric['location'] + " " + metric['sensor'];
+    if (!this.options.labels[1]) {
+      this.options.labels[1] = "undefined";
+    }
+
     console.log(this.data);
   }
 }
