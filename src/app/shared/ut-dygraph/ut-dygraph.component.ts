@@ -98,6 +98,7 @@ export class UtDygraphComponent implements OnInit {
     let iteratingOnOldData = true;
     let lastDate: number; // mseconds since 1970
     let currentDate: number; // mseconds since 1970
+    let newData = [];
     values.forEach(element => {
       currentDate = element[0] * 1000;
 
@@ -112,11 +113,14 @@ export class UtDygraphComponent implements OnInit {
       }
 
       iteratedDate = new Date(currentDate);
-      this.data.push([iteratedDate, Number(element[1])]);
+      newData.push([iteratedDate, Number(element[1])]);
     });
-    //console.log(this.data);
-    console.log("got " + values.length + " elements")
-    this.dyOptions['xlabel'] = 'Time++';
+
+    console.log('got ' + values.length + ' elements');
+    console.log('new ' + newData.length + ' elements');
+
+    // trigger ngOnChanges
+    this.data = this.data.concat(newData);
   }
 
   fetchNewData() {
