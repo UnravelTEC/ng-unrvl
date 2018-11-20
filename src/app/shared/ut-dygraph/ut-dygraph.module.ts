@@ -2,12 +2,9 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UtDygraphComponent } from './ut-dygraph.component';
 
-import { NgDygraphsModule } from 'ng-dygraphs';
-
 @NgModule({
   imports: [
-    CommonModule,
-    NgDygraphsModule
+    CommonModule
   ],
   declarations: [UtDygraphComponent],
   exports: [UtDygraphComponent]
