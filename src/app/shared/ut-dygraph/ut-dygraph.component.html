@@ -3,9 +3,9 @@
   <div id="graph"></div>
   <!-- <button (click)="fetchNewData()">Update!</button> -->
   <ul>
-    <li>From {{ data[0][0] }}</li>
-    <li>To {{ data[data.length - 1][0] }}</li>
+    <li>From {{ data[0][0] | date:'yyyy-MM-dd HH:mm:ss (z)'}}</li>
+    <li>To {{ data[data.length - 1][0] | date:'yyyy-MM-dd HH:mm:ss (z)'}}</li>
     <li># Datapoints: {{ data.length }}</li>
-    <li>Last Value: {{ data[data.length - 1][1] }}</li>
+    <li>Last Value: {{ data[data.length - 1][1] | number:'1.0-1' }}</li>
   </ul>
 </div>

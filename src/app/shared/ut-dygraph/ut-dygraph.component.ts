@@ -58,7 +58,6 @@ export class UtDygraphComponent implements OnInit {
       title: '',
       animatedZooms: true,
       pointSize: 4,
-      noDataLabel: 'Loading...'
     };
     this.data = [[undefined, null]];
     this.queryEndpoint = this.Server + ':9090/api/v1/';
@@ -118,7 +117,7 @@ export class UtDygraphComponent implements OnInit {
     let iteratingOnOldData = true;
     let lastDate: number; // mseconds since 1970
     let currentDate: number; // mseconds since 1970
-    let newData = [];
+    const newData = [];
     values.forEach(element => {
       currentDate = element[0] * 1000;
 
