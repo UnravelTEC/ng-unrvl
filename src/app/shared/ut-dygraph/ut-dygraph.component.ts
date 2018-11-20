@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 
+import { interval, Subscription } from 'rxjs';
+
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 
 declare const Dygraph: any;
@@ -20,13 +22,15 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   YLabel = 'Value (unit)';
   @Input()
-  timeRange = 30; // in seconds, default 5min.
+  timeRange = 300; // in seconds, default 5min.
   @Input()
-  dataFrequency = 1000; // query step on server
+  dataFrequency = 3000; // query step on server
   @Input()
   frontendRefreshRate = 1000; // set 0 for no update - but can be changed later - default 1000ms.
   @Input()
   Server = 'http://belinda.cgv.tugraz.at'; // optional, defaults to localhost:9090
+  @Input()
+  RunningAvg = 2;
 
   private queryEndpoint: string;
 
@@ -39,6 +43,8 @@ export class UtDygraphComponent implements OnInit {
   private requests_underway = 0; // don't flood the server if it is not fast enough
 
   _graph: any;
+
+  intervalSubscription: Subscription;
 
   constructor(private utFetchdataService: UtFetchdataService) {}
 
@@ -72,6 +78,10 @@ export class UtDygraphComponent implements OnInit {
         this.queryEndpoint
       )
       .subscribe((data: Object) => this.handleInitialData(data));
+
+      this.intervalSubscription = interval(this.frontendRefreshRate).subscribe(counter => {
+        this.fetchNewData();
+      });
   }
 
   handleInitialData(data: Object) {
@@ -94,6 +104,7 @@ export class UtDygraphComponent implements OnInit {
     this.historicalData = this.data;
 
     this._graph = new Dygraph('graph', this.data, this.dyOptions);
+    this._graph.adjustRoll(this.RunningAvg);
 
     console.log(this.data);
   }
@@ -129,7 +140,7 @@ export class UtDygraphComponent implements OnInit {
     console.log('new ' + newData.length + ' elements');
 
     // trigger ngOnChanges
-    this.historicalData = this.data.concat(newData);
+    this.historicalData = this.historicalData.concat(newData);
     const dataLength = this.data.length;
     console.log('current length: ' + dataLength + ' elements');
     this.data = this.data.concat(newData);
