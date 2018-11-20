@@ -2,6 +2,8 @@
   <h2>This is the CO2-Graph app</h2>
 
   <div class="mydygraph">
-    <ng-dygraphs [data]="data" [options]="options"> </ng-dygraphs>
+    <app-ut-dygraph
+      queryString="co2{location=&quot;FuzzyLab&quot;,sensor=&quot;scd30&quot;}"
+    ></app-ut-dygraph>
   </div>
 </div>

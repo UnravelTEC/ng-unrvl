@@ -31,7 +31,13 @@ ng g c ut-apps/co2-graph
     import { Co2GraphComponent } from './co2-graph.component';
 
 
-DyGraphs:
+# Use of feature modules
+
+* import into module.ts
+* mention in @imports
+# in module.ts, export the module's component
+
+# DyGraphs:
 
 laut https://www.npmjs.com/package/ng-dygraphs
 
