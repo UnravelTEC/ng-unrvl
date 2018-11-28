@@ -3,7 +3,7 @@
   <div id="graph"></div>
   <!-- <button (click)="fetchNewData()">Update!</button> -->
   <ul class="debug" *ngIf="Debug == 'true'">
-    <li>From {{ data[0][0] | date:'yyyy-MM-dd HH:mm:ss (z)'}}</li>
+    <li>From {{ data[0][0] | date:'yyyy-MM-dd HH:mm:ss (z)'}}, every {{ frontendRefreshRate }}ms</li>
     <li>To {{ data[data.length - 1][0] | date:'yyyy-MM-dd HH:mm:ss (z)'}}</li>
     <li># Datapoints: {{ data.length }}</li>
     <li>Last Value: {{ data[data.length - 1][1] | number:'1.0-1' }}</li>
