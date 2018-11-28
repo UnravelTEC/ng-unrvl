@@ -1,0 +1,22 @@
+* {
+    margin: 0;
+    padding: 0;
+  }
+
+  h2 {
+    margin: 1em;
+  }
+
+  .mydygraph {
+    width: 790px;
+    height: 400px;
+    /* background: yellow; */
+    text-align: center;
+    /* border: 1px solid red; */
+    border-radius: 10px;
+  }
+
+  .graphapp {
+    /* background: blue; */
+    padding: 5px;
+  }

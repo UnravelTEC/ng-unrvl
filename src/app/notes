@@ -27,9 +27,11 @@ wenn das singleValue net definiert ist, kompilierts mit ng serve beim 1.Mal nich
 how to add an app:
 ng g m ut-apps/co2-graph --routing
 ng g c ut-apps/co2-graph
-  edit -routing.module.ts, add
+#  edit -routing.module.ts, add
     import { Co2GraphComponent } from './co2-graph.component';
-
+    add it to Routes = []
+# in dashboard/comp.html add the tile
+# in /app.module.ts, add the route
 
 # Use of feature modules
 
