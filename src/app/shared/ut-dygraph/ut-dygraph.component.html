@@ -2,7 +2,7 @@
 <div class="mydygraph">
   <div id="graph"></div>
   <!-- <button (click)="fetchNewData()">Update!</button> -->
-  <ul>
+  <ul class="debug" *ngIf="Debug == 'true'">
     <li>From {{ data[0][0] | date:'yyyy-MM-dd HH:mm:ss (z)'}}</li>
     <li>To {{ data[data.length - 1][0] | date:'yyyy-MM-dd HH:mm:ss (z)'}}</li>
     <li># Datapoints: {{ data.length }}</li>

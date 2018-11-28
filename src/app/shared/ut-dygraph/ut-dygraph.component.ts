@@ -31,6 +31,8 @@ export class UtDygraphComponent implements OnInit {
   Server = 'http://belinda.cgv.tugraz.at'; // optional, defaults to localhost:9090
   @Input()
   RunningAvg = 0;
+  @Input()
+  Debug: string = 'false';
 
   private queryEndpoint: string;
 
@@ -57,7 +59,7 @@ export class UtDygraphComponent implements OnInit {
       ylabel: this.YLabel,
       title: '',
       animatedZooms: true,
-      pointSize: 4,
+      pointSize: 4
     };
     this.data = [[undefined, null]];
     this.queryEndpoint = this.Server + ':9090/api/v1/';
@@ -78,9 +80,11 @@ export class UtDygraphComponent implements OnInit {
       )
       .subscribe((data: Object) => this.handleInitialData(data));
 
-      this.intervalSubscription = interval(this.frontendRefreshRate).subscribe(counter => {
+    this.intervalSubscription = interval(this.frontendRefreshRate).subscribe(
+      counter => {
         this.fetchNewData();
-      });
+      }
+    );
   }
 
   handleInitialData(data: Object) {
@@ -146,7 +150,9 @@ export class UtDygraphComponent implements OnInit {
     this.data = this.data.slice(-dataLength, this.data.length);
     console.log('new length: ' + this.data.length + ' elements');
     this._graph.updateOptions({ file: this.data });
-    console.log('historical length: ' + this.historicalData.length + ' elements');
+    console.log(
+      'historical length: ' + this.historicalData.length + ' elements'
+    );
   }
 
   fetchNewData() {
