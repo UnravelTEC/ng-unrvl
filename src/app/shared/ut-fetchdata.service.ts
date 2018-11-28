@@ -26,18 +26,18 @@ export class UtFetchdataService {
     end: Date,
     step
   ) {
-    return (
-      queryEndPoint +
-      'query_range?query=' +
-      queryString +
-      '&start=' +
-      start.toISOString() +
-      '&end=' +
-      end.toISOString() +
-      '&step=' +
-      step +
-      'ms'
-    );
+    const url = queryEndPoint +
+    'query_range?query=' +
+    queryString +
+    '&start=' +
+    start.toISOString() +
+    '&end=' +
+    end.toISOString() +
+    '&step=' +
+    step +
+    'ms';
+    console.log(url);
+    return url;
   }
 
   getRange(

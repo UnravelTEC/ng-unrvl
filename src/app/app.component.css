@@ -17,7 +17,6 @@
 }
 
 .content {
-  padding: 1em;
   /* background: green; */
   flex: 1;
   overflow-y: auto;
