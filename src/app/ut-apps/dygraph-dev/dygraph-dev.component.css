@@ -1,3 +1,5 @@
+@import url('https://unpkg.com/bootstrap@3.3.7/dist/css/bootstrap.min.css');
+
 * {
     margin: 0;
     padding: 0;
@@ -19,4 +21,11 @@
   .graphapp {
     /* background: blue; */
     padding: 5px;
+  }
+
+  form {
+      width:790px;
+  }
+  label {
+      display: inline-block;
   }

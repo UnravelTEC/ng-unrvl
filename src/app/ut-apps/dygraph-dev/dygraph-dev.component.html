@@ -5,12 +5,56 @@
     <app-ut-dygraph
       queryString="scd30_co2"
       dataFrequency="1000"
-      YLabel="CO₂ (ppm)"
       graphHeight="300"
       graphWidth="765"
       Server="http://henri0.lan"
-      timeRange="300"
+      timeRange="{{timeRange}}"
       Debug="false"
     ></app-ut-dygraph>
   </div>
+
+  <form #graphForm="ngForm">
+    <div class="form-group">
+      <label for="QueryString">Query String</label> ({{ QueryString }})
+      <input
+        type="text"
+        class="form-control"
+        id="QueryString"
+        [(ngModel)]="QueryString"
+        name="QueryString"
+      />
+      </div>
+    <div class="form-group">
+      <label for="dataFrequency">Data Frequency (ms)</label> ({{ dataFrequency }})
+      <input
+        type="text"
+        class="form-control"
+        id="dataFrequency"
+        [(ngModel)]="dataFrequency"
+        name="dataFrequency"
+      />
+    </div>
+    <div class="form-group">
+      <label for="Server">Server</label> ({{ Server }})
+      <input
+        type="text"
+        class="form-control"
+        id="Server"
+        [(ngModel)]="Server"
+        name="Server"
+      />
+    </div>
+    <div class="form-group">
+      <label for="timeRange">Time Range (seconds)</label> ({{ timeRange }})
+      <input
+        type="text"
+        class="form-control"
+        id="timeRange"
+        [(ngModel)]="timeRange"
+        name="timeRange"
+      />
+    </div>
+
+    <button type="submit" class="btn btn-success">Submit</button>
+  </form>
 </div>
