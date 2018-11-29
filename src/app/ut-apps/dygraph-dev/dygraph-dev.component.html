@@ -4,11 +4,13 @@
   <div class="mydygraph">
     <app-ut-dygraph
       [queryString]='QueryString'
-      [dataFrequency]='dataFrequency'
+      [DataBaseQueryStepMS]='DataBaseQueryStepMS'
       graphHeight="300"
       graphWidth="765"
       [Server]='Server'
-      [timeRange]='timeRange'
+      [timeRangeSeconds]='timeRange'
+      FetchFromServerIntervalMS="100"
+      [RunningAvgSeconds]='RunningAvgSeconds'
       Debug="true"
     ></app-ut-dygraph>
   </div>
@@ -25,13 +27,13 @@
       />
       </div>
     <div class="form-group">
-      <label for="dataFrequency">Data Frequency (ms)</label> ({{ dataFrequency }})
+      <label for="DataBaseQueryStepMS">DataBase Query Step Frequency (ms)</label> ({{ DataBaseQueryStepMS }})
       <input
         type="text"
         class="form-control"
-        id="dataFrequency"
-        [(ngModel)]="dataFrequency"
-        name="dataFrequency"
+        id="DataBaseQueryStepMS"
+        [(ngModel)]="DataBaseQueryStepMS"
+        name="DataBaseQueryStepMS"
       />
     </div>
     <div class="form-group">
@@ -54,6 +56,16 @@
         name="timeRange"
       />
     </div>
+    <div class="form-group">
+        <label for="RunningAvgSeconds">Running Average in Frontend (seconds)</label> ({{ RunningAvgSeconds }})
+        <input
+          type="text"
+          class="form-control"
+          id="RunningAvgSeconds"
+          [(ngModel)]="RunningAvgSeconds"
+          name="RunningAvgSeconds"
+        />
+      </div>
 
     <button type="submit" class="btn btn-success">Submit</button>
   </form>

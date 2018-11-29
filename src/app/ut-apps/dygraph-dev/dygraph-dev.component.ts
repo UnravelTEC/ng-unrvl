@@ -7,9 +7,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DygraphDevComponent implements OnInit {
   Server: string = 'http://henri0.lan';
-  QueryString: string = 'scd30_co2';
-  dataFrequency: number = 1000;
-  timeRange: number = 300; // 5 min
+  QueryString: string = 'veml6075_uva';
+  DataBaseQueryStepMS: number = 100;
+  timeRange: number = 60; // 1 min
+  RunningAvgSeconds = 0;
 
   constructor() {}
 

@@ -4,8 +4,8 @@
   <!-- <button (click)="fetchNewData()">Update!</button> -->
   <ul class="debug" *ngIf="Debug == 'true'">
     <li>From {{ data[0][0] | date:'yyyy-MM-dd HH:mm:ss (z)'}}</li>
-    <li>To {{ data[data.length - 1][0] | date:'yyyy-MM-dd HH:mm:ss (z)'}}, every {{ frontendRefreshRate }}ms, on server every {{ dataFrequency }}ms</li>
-    <li># Datapoints: {{ data.length }}</li> dataFrequency
+    <li>To {{ data[data.length - 1][0] | date:'yyyy-MM-dd HH:mm:ss (z)'}}, every {{ FetchFromServerIntervalMS }}ms, on server every {{ DataBaseQueryStepMS }}ms</li>
+    <li># Datapoints: {{ data.length }}, running avg of {{ RunningAvgSeconds }}s, Timerange {{ timeRangeSeconds }}s.</li>
     <li>Last Value: {{ data[data.length - 1][1] | number:'1.0-1' }}</li>
   </ul>
 </div>

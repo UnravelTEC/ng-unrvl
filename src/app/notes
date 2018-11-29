@@ -66,3 +66,13 @@ rsync -rax * root@henri0.lan:~/Frontend/
 git checkout --orphan
 git rm --cached -r .
 rm -rf *
+
+# Two-Way Databinding forms
+https://angular.io/guide/forms
+
+need
+<form #myForm="ngForm">
+<input [(ngModel)]="QueryString"
+        name="QueryString"
+              />
+where QueryString is a member of the components class
