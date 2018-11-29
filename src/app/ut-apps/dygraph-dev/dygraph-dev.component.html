@@ -3,47 +3,47 @@
 
   <div class="mydygraph">
     <app-ut-dygraph
-      [queryString]='QueryString'
-      [DataBaseQueryStepMS]='DataBaseQueryStepMS'
+      [queryString]='queryString'
+      [dataBaseQueryStepMS]='dataBaseQueryStepMS'
       graphHeight="300"
       graphWidth="765"
-      [Server]='Server'
+      [serverHostName]='serverHostName'
       [timeRangeSeconds]='timeRange'
-      FetchFromServerIntervalMS="100"
-      [RunningAvgSeconds]='RunningAvgSeconds'
-      Debug="true"
+      fetchFromServerIntervalMS="100"
+      [runningAvgSeconds]='runningAvgSeconds'
+      debug="true"
     ></app-ut-dygraph>
   </div>
 
   <form #graphForm="ngForm">
     <div class="form-group">
-      <label for="QueryString">Query String</label> ({{ QueryString }})
+      <label for="queryString">Query String</label> ({{ queryString }})
       <input
         type="text"
         class="form-control"
-        id="QueryString"
-        [(ngModel)]="QueryString"
-        name="QueryString"
+        id="queryString"
+        [(ngModel)]="queryString"
+        name="queryString"
       />
       </div>
     <div class="form-group">
-      <label for="DataBaseQueryStepMS">DataBase Query Step Frequency (ms)</label> ({{ DataBaseQueryStepMS }})
+      <label for="dataBaseQueryStepMS">DataBase Query Step Frequency (ms)</label> ({{ dataBaseQueryStepMS }})
       <input
         type="text"
         class="form-control"
-        id="DataBaseQueryStepMS"
-        [(ngModel)]="DataBaseQueryStepMS"
-        name="DataBaseQueryStepMS"
+        id="dataBaseQueryStepMS"
+        [(ngModel)]="dataBaseQueryStepMS"
+        name="dataBaseQueryStepMS"
       />
     </div>
     <div class="form-group">
-      <label for="Server">Server</label> ({{ Server }})
+      <label for="serverHostName">Server</label> ({{ serverHostName }})
       <input
         type="text"
         class="form-control"
-        id="Server"
-        [(ngModel)]="Server"
-        name="Server"
+        id="serverHostName"
+        [(ngModel)]="serverHostName"
+        name="serverHostName"
       />
     </div>
     <div class="form-group">
@@ -57,13 +57,13 @@
       />
     </div>
     <div class="form-group">
-        <label for="RunningAvgSeconds">Running Average in Frontend (seconds)</label> ({{ RunningAvgSeconds }})
+        <label for="runningAvgSeconds">Running Average in Frontend (seconds)</label> ({{ runningAvgSeconds }})
         <input
           type="text"
           class="form-control"
-          id="RunningAvgSeconds"
-          [(ngModel)]="RunningAvgSeconds"
-          name="RunningAvgSeconds"
+          id="runningAvgSeconds"
+          [(ngModel)]="runningAvgSeconds"
+          name="runningAvgSeconds"
         />
       </div>
 

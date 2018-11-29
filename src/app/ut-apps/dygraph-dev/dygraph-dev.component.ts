@@ -6,11 +6,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./dygraph-dev.component.css']
 })
 export class DygraphDevComponent implements OnInit {
-  Server: string = 'http://henri0.lan';
-  QueryString: string = 'veml6075_uva';
-  DataBaseQueryStepMS: number = 100;
+  serverHostName: string = 'http://koffer.lan';
+  queryString: string = 'veml6075_uva';
+  dataBaseQueryStepMS: number = 100;
   timeRange: number = 60; // 1 min
-  RunningAvgSeconds = 0;
+  runningAvgSeconds = 0;
 
   constructor() {}
 

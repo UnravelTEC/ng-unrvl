@@ -3,12 +3,11 @@
 
   <div class="mydygraph">
     <app-ut-dygraph
-      queryString="scd30_co2"
-      dataFrequency="1000"
+      queryString="c20_co2"
+      fetchFromServerIntervalMS="2000"
       YLabel="CO₂ (ppm)"
       graphHeight="300"
       graphWidth="765"
-      Server="http://henri0.lan"
       timeRange="300"
       Debug="true"
     ></app-ut-dygraph>
