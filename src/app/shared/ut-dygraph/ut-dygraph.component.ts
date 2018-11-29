@@ -14,7 +14,9 @@ declare const Dygraph: any;
 export class UtDygraphComponent implements OnInit {
   // define on start what doesn't change
   @Input()
-  queryString: string;
+  //queryString: string;
+  queryString: string =
+    'co2{location="FuzzyLab",sensor="scd30"}';
   @Input()
   graphHeight = '350'; // should be any css value
   @Input()
@@ -28,8 +30,8 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   fetchFromServerIntervalMS = 1000; // set 0 for no update - but can be changed later - default 1000ms.
   @Input()
-  serverHostName = 'koffer.lan'; // optional, defaults to localhost
-  //serverHostName = 'http://belinda.cgv.tugraz.at'; // optional, defaults to localhost
+  //serverHostName = 'koffer.lan'; // optional, defaults to localhost
+  serverHostName = 'http://belinda.cgv.tugraz.at'; // optional, defaults to localhost
   @Input()
   serverPort = '9090'; // optional, defaults to 9090
   @Input()
@@ -114,7 +116,7 @@ export class UtDygraphComponent implements OnInit {
       !receivedData['data']['result'][0]['values']
     ) {
       console.log('Error: no valid data received.');
-      console.log()
+      console.log();
       this.intervalSubscription.unsubscribe();
       this.noData = true;
       this.waiting = false;
