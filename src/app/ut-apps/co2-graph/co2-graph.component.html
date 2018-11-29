@@ -3,7 +3,8 @@
 
   <div class="mydygraph">
     <app-ut-dygraph
-      queryString="c20_co2"
+      serverHostName = 'http://belinda.cgv.tugraz.at'
+      queryString="co2{location=&quot;FuzzyLab&quot;,sensor=&quot;scd30&quot;}"
       fetchFromServerIntervalMS="2000"
       YLabel="CO₂ (ppm)"
       graphHeight="300"
@@ -14,6 +15,7 @@
     <!--
       Server="http://192.168.11.206"
       queryString="bme280_pressure" c20_co2
+      queryString="c20_co2"
       queryString="co2{location=&quot;FuzzyLab&quot;,sensor=&quot;scd30&quot;}"
     -->
   </div>
