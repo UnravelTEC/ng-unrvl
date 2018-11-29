@@ -11,6 +11,7 @@ export class DygraphDevComponent implements OnInit {
   dataBaseQueryStepMS: number = 100;
   timeRange: number = 60; // 1 min
   runningAvgSeconds = 0;
+  fetchFromServerIntervalMS = 100;
 
   constructor() {}
 
