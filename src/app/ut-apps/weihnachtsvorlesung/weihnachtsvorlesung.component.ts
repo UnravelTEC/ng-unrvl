@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { LocalStorageService } from '../../core/local-storage.service';
 
 @Component({
   selector: 'app-weihnachtsvorlesung',
@@ -6,16 +7,24 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./weihnachtsvorlesung.component.css']
 })
 export class WeihnachtsvorlesungComponent implements OnInit {
-  serverHostName: string = 'http://henri0.lan';
-  queryString: string = 'veml6075_uva';
+  serverHostName: string = 'http://koffer.lan';
+  queryString: string = 'mic_audiolevel';
   dataBaseQueryStepMS: number = 100;
   timeRange: number = 60; // 1 min
   runningAvgSeconds = 0;
   fetchFromServerIntervalMS = 100;
+  dataSeriesNames = ['miclvl'];
 
-  constructor() { }
+  annotations = [];
+
+  constructor(private localStorage: LocalStorageService) {}
 
   ngOnInit() {
+    this.annotations.push({
+      series: 'audio$-name',
+      x: new Date(),
+      shortText: 'Start',
+      text: 'Hier begann Alles…'
+    });
   }
-
 }
