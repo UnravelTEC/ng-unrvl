@@ -6,7 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { RouterModule, Routes } from '@angular/router';
 import { TopBarComponent } from './top-bar/top-bar.component';
-
+import { CoreModule } from './core/core.module';
 
 const appRoutes: Routes = [
   {
@@ -45,6 +45,7 @@ const appRoutes: Routes = [
   imports: [
     BrowserModule,
     HttpClientModule,
+    CoreModule,
     RouterModule.forRoot(
       appRoutes,
       { enableTracing: false } // <-- debugging purposes only
