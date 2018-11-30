@@ -29,7 +29,12 @@ ng g m ut-apps/co2-graph --routing
 ng g c ut-apps/co2-graph
 #  edit -routing.module.ts, add
     import { Co2GraphComponent } from './co2-graph.component';
-    add it to Routes = []
+    add it to Routes = [ 
+      {
+        path: '',
+        component: IaqComponent
+      }
+]
 # in dashboard/comp.html add the tile
 # in /app.module.ts, add the route
 

@@ -30,6 +30,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/dygraph-dev/dygraph-dev.module#DygraphDevModule'
   },
   {
+    path: 'Apps/Weihnachtsvorlesung',
+    loadChildren: './ut-apps/weihnachtsvorlesung/weihnachtsvorlesung.module#WeihnachtsvorlesungModule'
+  },
+  {
     path: '',
     redirectTo: 'Dashboard',
     pathMatch: 'full'
