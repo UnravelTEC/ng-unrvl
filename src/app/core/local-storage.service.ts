@@ -4,8 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class LocalStorageService {
-
-  constructor() { }
+  constructor() {}
 
   // from https://stackoverflow.com/questions/40589730/local-storage-in-angular-2
   set(key: string, data: any): void {
@@ -21,7 +20,7 @@ export class LocalStorageService {
       return JSON.parse(localStorage.getItem(key));
     } catch (e) {
       console.error('Error getting data from localStorage', e);
-      return null;
+      return undefined;
     }
   }
 }
