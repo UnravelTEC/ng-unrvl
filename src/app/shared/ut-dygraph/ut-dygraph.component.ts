@@ -15,8 +15,9 @@ export class UtDygraphComponent implements OnInit {
   // define on start what doesn't change
   @Input()
   //queryString: string;
-  queryString: string =
-    'co2{location="FuzzyLab",sensor="scd30"}';
+  queryString: string = 'co2{location="FuzzyLab",sensor="scd30"}';
+  @Input()
+  dataSeriesNames: string[];
   @Input()
   graphHeight = '350'; // should be any css value
   @Input()
@@ -70,7 +71,7 @@ export class UtDygraphComponent implements OnInit {
     this.dyGraphOptions = {
       width: this.graphWidth,
       height: this.graphHeight,
-      labels: ['Date', 'SensorX'],
+      labels: ['Date'],
       xlabel: 'Time',
       ylabel: this.YLabel,
       title: '',
@@ -133,10 +134,21 @@ export class UtDygraphComponent implements OnInit {
       ]);
     });
 
-    this.dyGraphOptions['labels'][1] =
-      metric['location'] + ' ' + metric['sensor'];
-    if (!this.dyGraphOptions['labels'][1]) {
-      this.dyGraphOptions['labels'][1] = 'undefined';
+    if (this.dataSeriesNames && this.dataSeriesNames.length) {
+      this.dyGraphOptions['labels'] = this.dyGraphOptions['labels'].concat(
+        this.dataSeriesNames
+      );
+    } else {
+      if (metric['location']) {
+        this.dyGraphOptions['labels'][1] = metric['location'];
+      }
+
+      if (metric['sensor']) {
+        this.dyGraphOptions['labels'][1] += ' ' + metric['sensor'];
+      }
+      if (!this.dyGraphOptions['labels'][1]) {
+        this.dyGraphOptions['labels'][1] = 'undefined';
+      }
     }
 
     this.historicalData = this.displayedData;
@@ -149,6 +161,7 @@ export class UtDygraphComponent implements OnInit {
     );
     this.Dygraph.adjustRoll(this.runningAvgSeconds);
 
+    console.log(this.dyGraphOptions);
     console.log(this.displayedData);
   }
 
