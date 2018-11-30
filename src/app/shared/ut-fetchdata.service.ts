@@ -36,7 +36,7 @@ export class UtFetchdataService {
     '&step=' +
     step +
     'ms';
-    console.log(url);
+    // console.log(url);
     return url;
   }
 
@@ -47,8 +47,8 @@ export class UtFetchdataService {
     step = this.queryDefaultStep,
     queryEndPoint = this.queryEndPoint
   ) {
-    console.log(start);
-    console.log(end);
+    // console.log(start);
+    // console.log(end);
     return this.http.get(
       this.buildRangeQuery(queryEndPoint, queryString, start, end, step)
     );
