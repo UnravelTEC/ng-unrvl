@@ -1,3 +1,17 @@
-<p>
-  weihnachtsvorlesung works!
-</p>
+<div class="graphapp">
+  <h4>Weihnachtsvorlesung Lautstärke</h4>
+
+  <div class="mydygraph">
+    <app-ut-dygraph
+      [queryString]="queryString"
+      [dataBaseQueryStepMS]="dataBaseQueryStepMS"
+      graphHeight="300"
+      graphWidth="765"
+      [serverHostName]="serverHostName"
+      [timeRangeSeconds]="timeRange"
+      [fetchFromServerIntervalMS]="fetchFromServerIntervalMS"
+      [runningAvgSeconds]="runningAvgSeconds"
+      debug="true"
+    ></app-ut-dygraph>
+  </div>
+</div>
