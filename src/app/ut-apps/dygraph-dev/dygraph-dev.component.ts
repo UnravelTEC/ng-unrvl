@@ -37,7 +37,7 @@ export class DygraphDevComponent implements OnInit {
 
   save() {
     this.variablesToSave.forEach(elementName => {
-      this.localStorage.set(elementName, this[elementName];
+      this.localStorage.set(elementName, this[elementName]);
     });
   }
 }
