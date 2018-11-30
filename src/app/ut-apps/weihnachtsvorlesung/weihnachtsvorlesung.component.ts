@@ -9,10 +9,10 @@ import { LocalStorageService } from '../../core/local-storage.service';
 export class WeihnachtsvorlesungComponent implements OnInit {
   serverHostName: string = 'http://koffer.lan';
   queryString: string = 'mic_audiolevel';
-  dataBaseQueryStepMS: number = 100;
+  dataBaseQueryStepMS: number = 1000;
   timeRange: number = 60; // 1 min
   runningAvgSeconds = 0;
-  fetchFromServerIntervalMS = 100;
+  fetchFromServerIntervalMS = 1000;
   dataSeriesNames = ['miclvl'];
 
   annotations = [];
@@ -21,8 +21,8 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   ngOnInit() {
     this.annotations.push({
-      series: 'audio$-name',
-      x: new Date(),
+      series: 'miclvl',
+      x: (new Date).getTime(),
       shortText: 'Start',
       text: 'Hier begann Alles…'
     });

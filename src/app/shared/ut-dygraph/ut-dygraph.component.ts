@@ -41,6 +41,8 @@ export class UtDygraphComponent implements OnInit {
   runningAvgSeconds = 0;
   @Input()
   debug: string = 'false';
+  @Input()
+  annotations [];
 
   dyGraphOptions = {};
   displayedData = [];
@@ -161,6 +163,10 @@ export class UtDygraphComponent implements OnInit {
     );
     this.Dygraph.adjustRoll(this.runningAvgSeconds);
 
+    if(this.annotations) {
+      this.Dygraph.setAnnotations(this.annotations)
+    }
+
     console.log(this.dyGraphOptions);
     console.log(this.displayedData);
   }
@@ -183,7 +189,7 @@ export class UtDygraphComponent implements OnInit {
           this.displayedData.length - 1
         ][0].valueOf();
         if (lastDate >= currentDate) {
-          console.log('iterating on old number');
+          //console.log('iterating on old number');
           return;
         } else {
           iteratingOnOldData = false;
@@ -194,24 +200,26 @@ export class UtDygraphComponent implements OnInit {
       newData.push([iteratedDate, Number(element[1])]);
     });
 
-    console.log('got ' + values.length + ' elements');
-    console.log('new ' + newData.length + ' elements');
+    // console.log('got ' + values.length + ' elements');
+    // console.log('new ' + newData.length + ' elements');
 
     // trigger ngOnChanges
     this.historicalData = this.historicalData.concat(newData);
     const dataLength = this.displayedData.length;
-    console.log('current length: ' + dataLength + ' elements');
+    // console.log('current length: ' + dataLength + ' elements');
     this.displayedData = this.displayedData.concat(newData);
     this.displayedData = this.displayedData.slice(
       -dataLength,
       this.displayedData.length
     );
-    console.log('new length: ' + this.displayedData.length + ' elements');
+    // console.log('new length: ' + this.displayedData.length + ' elements');
     this.Dygraph.updateOptions({ file: this.displayedData });
     this.Dygraph.adjustRoll(this.runningAvgSeconds);
-    console.log(
-      'historical length: ' + this.historicalData.length + ' elements'
-    );
+    // console.log(      'historical length: ' + this.historicalData.length + ' elements'    );
+    console.log(this.annotations)
+    if(this.annotations) {
+      this.Dygraph.setAnnotations(this.annotations)
+    }
   }
 
   fetchNewData() {
