@@ -53,6 +53,7 @@ export class UtDygraphComponent implements OnInit {
   private RequestsUnderway = 0; // don't flood the server if it is not fast enough
   private noData = false;
   private waiting = true;
+  private htmlID: string ;
 
   Dygraph: any;
 
@@ -65,6 +66,9 @@ export class UtDygraphComponent implements OnInit {
     port: string = this.serverPort,
     path: string = this.serverPath
   ) {
+    if(server.endsWith('/')) {
+      console.error('servername has to be without slash(/) at the end!')
+    }
     const protAndHost = server.startsWith('http') ? server : 'http://' + server;
     return protAndHost + ':' + port + (path.startsWith('/') ? '' : '/') + path;
   }
@@ -81,6 +85,7 @@ export class UtDygraphComponent implements OnInit {
       pointSize: 4
     };
     this.displayedData = [[undefined, null]];
+    this.htmlID = 'graph_' + (Math.random() + 1).toString();
 
     const dataEndTime = new Date();
     const dataBeginTime = new Date(
@@ -157,7 +162,7 @@ export class UtDygraphComponent implements OnInit {
 
     this.waiting = false;
     this.Dygraph = new Dygraph(
-      'graph',
+      this.htmlID,
       this.displayedData,
       this.dyGraphOptions
     );
