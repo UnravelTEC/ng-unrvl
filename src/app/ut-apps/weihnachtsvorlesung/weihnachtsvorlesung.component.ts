@@ -10,6 +10,8 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   // serverHostName: string = 'http://koffer.lan';
   // serverHostName: string = 'http://belinda.cgv.tugraz.at'
   serverHostName: string = 'https://scpexploratory02.tugraz.at';
+  serverPort = "443";
+  serverPath = "prometheus/api/v1/";
   // queryString: string = 'mic_audiolevel';
   // queryString: string = 'co2{location="FuzzyLab",sensor="scd30"}'
   queryString: string = 'sensor_radiation_Sv';
