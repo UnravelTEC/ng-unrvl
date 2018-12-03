@@ -25,9 +25,9 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   YLabel = 'Value (unit)';
   @Input()
-  fromTime = 'now';
+  endTime = 'now';
   @Input()
-  toTime = '15m'; // prefix m for min, s for seconds, h for hours, d for days
+  startTime = '15m'; // prefix m for min, s for seconds, h for hours, d for days
   @Input()
   dataBaseQueryStepMS = 1000; // query step on server
   @Input()
@@ -44,7 +44,9 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   debug: string = 'false';
   @Input()
-  annotations [];
+  annotations: Array<Object>;
+  @Input()
+  extraDyGraphConfig: Object;
 
   dyGraphOptions = {};
   displayedData = [];
@@ -55,20 +57,20 @@ export class UtDygraphComponent implements OnInit {
   private RequestsUnderway = 0; // don't flood the server if it is not fast enough
   private noData = false;
   private waiting = true;
-  private htmlID: string ;
+  private htmlID: string;
 
   Dygraph: any;
 
   intervalSubscription: Subscription;
 
-  constructor(private utFetchdataService: UtFetchdataService) {}
+  constructor(private utFetchdataService: UtFetchdataService) { }
 
   constructQueryEndpoint(
     server: string = this.serverHostName,
     port: string = this.serverPort,
     path: string = this.serverPath
   ) {
-    if(server.endsWith('/')) {
+    if (server.endsWith('/')) {
       console.error('servername has to be without slash(/) at the end!')
     }
     const protAndHost = server.startsWith('http') ? server : 'http://' + server;
@@ -86,29 +88,38 @@ export class UtDygraphComponent implements OnInit {
       animatedZooms: true,
       pointSize: 4
     };
+    for (let key in this.extraDyGraphConfig) {
+      this.dyGraphOptions[key] = this.extraDyGraphConfig[key];
+    }
+
     this.displayedData = [[undefined, null]];
     this.htmlID = 'graph_' + (Math.random() + 1).toString();
 
-    console.log(this.fromTime)
-    const dataEndTime = (this.fromTime == 'now') ? new Date() : new Date(this.fromTime);
+    console.log(this.endTime)
+    const dataEndTime = (this.endTime == 'now') ? new Date() : new Date(this.endTime);
     let seconds;
-    if(this.toTime.endsWith('s') && parseInt(this.toTime.slice(0,-1)) > 0 ) {
-      seconds = parseInt(this.toTime.slice(0,-1));
+    if (this.startTime.endsWith('s') && parseInt(this.startTime.slice(0, -1)) > 0) {
+      seconds = parseInt(this.startTime.slice(0, -1));
     }
-    if(this.toTime.endsWith('m') && parseInt(this.toTime.slice(0,-1)) > 0 ) {
-      seconds = parseInt(this.toTime.slice(0,-1)) * 60;
+    if (this.startTime.endsWith('m') && parseInt(this.startTime.slice(0, -1)) > 0) {
+      seconds = parseInt(this.startTime.slice(0, -1)) * 60;
     }
-    if(this.toTime.endsWith('h') && parseInt(this.toTime.slice(0,-1)) > 0 ) {
-      seconds = parseInt(this.toTime.slice(0,-1)) * 60 * 60;
+    if (this.startTime.endsWith('h') && parseInt(this.startTime.slice(0, -1)) > 0) {
+      seconds = parseInt(this.startTime.slice(0, -1)) * 60 * 60;
     }
-    if(this.toTime.endsWith('d') && parseInt(this.toTime.slice(0,-1)) > 0 ) {
-      seconds = parseInt(this.toTime.slice(0,-1)) * 60 * 60 * 24;
+    if (this.startTime.endsWith('d') && parseInt(this.startTime.slice(0, -1)) > 0) {
+      seconds = parseInt(this.startTime.slice(0, -1)) * 60 * 60 * 24;
     }
 
     console.log(seconds)
-    const dataBeginTime = new Date(
-      dataEndTime.valueOf() - seconds * 1000
-    );
+    let dataBeginTime;
+    if (seconds) {
+      dataBeginTime = new Date(
+        dataEndTime.valueOf() - seconds * 1000
+      )
+    } else {
+      dataBeginTime = new Date(this.startTime)
+    }
 
     console.log(dataEndTime.valueOf() / 1000);
 
@@ -187,7 +198,7 @@ export class UtDygraphComponent implements OnInit {
     );
     this.Dygraph.adjustRoll(this.runningAvgSeconds);
 
-    if(this.annotations) {
+    if (this.annotations) {
       this.Dygraph.setAnnotations(this.annotations)
     }
 
@@ -241,7 +252,7 @@ export class UtDygraphComponent implements OnInit {
     this.Dygraph.adjustRoll(this.runningAvgSeconds);
     // console.log(      'historical length: ' + this.historicalData.length + ' elements'    );
     // console.log(this.annotations)
-    if(this.annotations) {
+    if (this.annotations) {
       this.Dygraph.setAnnotations(this.annotations)
     }
   }

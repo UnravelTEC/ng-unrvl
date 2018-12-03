@@ -11,7 +11,7 @@
       [serverHostName]="serverHostName"
       serverPath="prometheus/api/v1/"
       serverPort="443"
-      toTime="15m"
+      startTime="15m"
       fetchFromServerIntervalMS="1000"
       [runningAvgSeconds]="runningAvgSeconds"
       debug="false"
@@ -28,11 +28,13 @@
       [serverHostName]="serverHostName"
       serverPath="prometheus/api/v1/"
       serverPort="443"
-      toTime="3h"
-      fetchFromServerIntervalMS="10000"
+      [endTime]="end2"
+      [startTime]="start2"
+      fetchFromServerIntervalMS="1000"
       [runningAvgSeconds]="runningAvgSeconds"
       debug="false"
       [annotations]="annotations"
+      [extraDyGraphConfig]="extraDyGraphConfig2"
     ></app-ut-dygraph>
   </div>
 </div>

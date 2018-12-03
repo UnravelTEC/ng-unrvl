@@ -19,6 +19,15 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   fetchFromServerIntervalMS = 1000;
   dataSeriesNames = ['miclvl'];
 
+  //end2 = '2018-12-03 15:00';
+  end2 = 'now';
+  start2 = '2018-12-03 12:00';
+  extraDyGraphConfig2 = {
+    dateWindow: [
+      new Date('2018-12-03 13:00'), // earliest
+      new Date('2018-12-03 16:00') // latest
+    ]
+  };
   annotations = [];
 
   constructor(private localStorage: LocalStorageService) {}
