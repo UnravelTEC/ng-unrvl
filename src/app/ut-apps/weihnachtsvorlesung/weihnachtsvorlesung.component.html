@@ -9,11 +9,32 @@
       graphHeight="300"
       graphWidth="765"
       [serverHostName]="serverHostName"
-      [timeRangeSeconds]="timeRange"
-      [fetchFromServerIntervalMS]="fetchFromServerIntervalMS"
+      serverPath="prometheus/api/v1/"
+      serverPort="443"
+      startTime="15m"
+      fetchFromServerIntervalMS="1000"
       [runningAvgSeconds]="runningAvgSeconds"
-      debug="true"
+      debug="false"
       [annotations]="annotations"
+    ></app-ut-dygraph>
+  </div>
+  <div class="mydygraph">
+    <app-ut-dygraph
+      [queryString]="queryString"
+      [dataBaseQueryStepMS]="dataBaseQueryStepMS"
+      [dataSeriesNames]="dataSeriesNames"
+      graphHeight="300"
+      graphWidth="765"
+      [serverHostName]="serverHostName"
+      serverPath="prometheus/api/v1/"
+      serverPort="443"
+      [endTime]="end2"
+      [startTime]="start2"
+      fetchFromServerIntervalMS="1000"
+      [runningAvgSeconds]="runningAvgSeconds"
+      debug="false"
+      [annotations]="annotations"
+      [extraDyGraphConfig]="extraDyGraphConfig2"
     ></app-ut-dygraph>
   </div>
 </div>

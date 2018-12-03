@@ -1,6 +1,6 @@
 <!-- presenting: ut-dygraph: -->
 <div class="mydygraph">
-  <div id="graph"></div>
+  <div id="{{ htmlID }}"></div>
   <div *ngIf="noData == true">No data to display.</div>
   <div *ngIf="waiting == true">Waiting for data...</div>
   <!-- <button (click)="fetchNewData()">Update!</button> -->
@@ -17,7 +17,7 @@
     </li>
     <li>
       # Datapoints: {{ displayedData.length }}, running avg of
-      {{ runningAvgSeconds }}s, Timerange {{ timeRangeSeconds }}s.
+      {{ runningAvgSeconds }}s, From {{ startTime }} to {{ endTime }}.
     </li>
     <li>
       Last Value:

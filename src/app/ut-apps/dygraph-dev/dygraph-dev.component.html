@@ -8,7 +8,10 @@
       graphHeight="300"
       graphWidth="765"
       [serverHostName]="serverHostName"
-      [timeRangeSeconds]="timeRange"
+      [serverPath]="serverPath"
+      [serverPort]="serverPort"
+      [fromTime]="fromTime"
+      [toTime]="toTime"
       [fetchFromServerIntervalMS]="fetchFromServerIntervalMS"
       [runningAvgSeconds]="runningAvgSeconds"
       debug="true"
@@ -33,6 +36,16 @@
         id="serverHostName"
         [(ngModel)]="serverHostName"
         name="serverHostName"
+      />
+    </div>
+    <div class="form-group">
+      <label for="serverPath">Server Path</label> ( "{{ serverPath }}" )
+      <input
+        type="text"
+        class="form-control"
+        id="serverPath"
+        [(ngModel)]="serverPath"
+        name="serverPath"
       />
     </div>
     <div class="form-group">
@@ -65,13 +78,24 @@
     </div>
 
     <div class="form-group">
-      <label for="timeRange">Time Range (seconds)</label> ({{ timeRange }})
+      <label for="fromTime">From Time</label> ({{ fromTime }})
       <input
         type="text"
         class="form-control"
-        id="timeRange"
-        [(ngModel)]="timeRange"
-        name="timeRange"
+        id="fromTime"
+        [(ngModel)]="fromTime"
+        name="fromTime"
+        style="width:4em;"
+      />
+    </div>
+    <div class="form-group">
+      <label for="toTime">To Time</label> ({{ toTime }})
+      <input
+        type="text"
+        class="form-control"
+        id="toTime"
+        [(ngModel)]="toTime"
+        name="toTime"
         style="width:4em;"
       />
     </div>
@@ -91,5 +115,6 @@
     </div>
 
     <button type="submit" class="btn btn-success" (click)="save()">Save</button>
+    <button type="submit" class="btn btn-success" (click)="reset()">Reset</button>
   </form>
 </div>
