@@ -22,9 +22,15 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   ngOnInit() {
     this.annotations.push({
       series: 'miclvl',
-      x: (new Date).getTime(),
+      x: new Date().getTime(),
       shortText: 'Start',
-      text: 'Hier begann Alles…'
+      text: 'Hier begann Alles…',
+      //cssClass: 'utAnnotation',
+      width: '30',
+      height: '30',
+      tickColor: 'blue',
+      tickWidth: '3',
+      tickHeight: '20'
     });
   }
 }

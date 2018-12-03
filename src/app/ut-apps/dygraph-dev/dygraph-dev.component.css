@@ -29,3 +29,8 @@
   label {
       display: inline-block;
   }
+
+  .utAnnotation {
+    width: 100%;
+    background: blue;
+}
