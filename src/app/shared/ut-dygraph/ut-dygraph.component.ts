@@ -25,7 +25,9 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   YLabel = 'Value (unit)';
   @Input()
-  timeRangeSeconds = 300; // in seconds, default 5min.
+  fromTime = 'now';
+  @Input()
+  toTime = '15m'; // prefix m for min, s for seconds, h for hours, d for days
   @Input()
   dataBaseQueryStepMS = 1000; // query step on server
   @Input()
@@ -87,10 +89,27 @@ export class UtDygraphComponent implements OnInit {
     this.displayedData = [[undefined, null]];
     this.htmlID = 'graph_' + (Math.random() + 1).toString();
 
-    const dataEndTime = new Date();
+    console.log(this.fromTime)
+    const dataEndTime = (this.fromTime == 'now') ? new Date() : new Date(this.fromTime);
+    let seconds;
+    if(this.toTime.endsWith('s') && parseInt(this.toTime.slice(0,-1)) > 0 ) {
+      seconds = parseInt(this.toTime.slice(0,-1));
+    }
+    if(this.toTime.endsWith('m') && parseInt(this.toTime.slice(0,-1)) > 0 ) {
+      seconds = parseInt(this.toTime.slice(0,-1)) * 60;
+    }
+    if(this.toTime.endsWith('h') && parseInt(this.toTime.slice(0,-1)) > 0 ) {
+      seconds = parseInt(this.toTime.slice(0,-1)) * 60 * 60;
+    }
+    if(this.toTime.endsWith('d') && parseInt(this.toTime.slice(0,-1)) > 0 ) {
+      seconds = parseInt(this.toTime.slice(0,-1)) * 60 * 60 * 24;
+    }
+
+    console.log(seconds)
     const dataBeginTime = new Date(
-      dataEndTime.valueOf() - this.timeRangeSeconds * 1000
+      dataEndTime.valueOf() - seconds * 1000
     );
+
     console.log(dataEndTime.valueOf() / 1000);
 
     this.utFetchdataService
@@ -221,7 +240,7 @@ export class UtDygraphComponent implements OnInit {
     this.Dygraph.updateOptions({ file: this.displayedData });
     this.Dygraph.adjustRoll(this.runningAvgSeconds);
     // console.log(      'historical length: ' + this.historicalData.length + ' elements'    );
-    console.log(this.annotations)
+    // console.log(this.annotations)
     if(this.annotations) {
       this.Dygraph.setAnnotations(this.annotations)
     }
