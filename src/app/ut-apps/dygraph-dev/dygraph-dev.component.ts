@@ -7,11 +7,11 @@ import { LocalStorageService } from '../../core/local-storage.service';
   styleUrls: ['./dygraph-dev.component.css']
 })
 export class DygraphDevComponent implements OnInit {
-  serverHostName: string = 'https://scpexploratory02.tugraz.at';
-  queryString: string = 'sensor_radiation_Sv';
-  dataBaseQueryStepMS: number = 1000;
-  startTime: string = '60s';
-  endTime: string = 'now';
+  serverHostName = 'https://scpexploratory02.tugraz.at';
+  queryString = 'sensor_radiation_Sv';
+  dataBaseQueryStepMS = 1000;
+  startTime = '60s';
+  endTime = 'now';
   serverPort = '443';
   serverPath = 'prometheus/api/v1/';
   runningAvgSeconds = 0;

@@ -13,8 +13,8 @@ declare const Dygraph: any;
 export class UtDygraphComponent implements OnInit {
   // define on start what doesn't change
   @Input()
-  //queryString: string;
-  queryString: string = 'co2{location="FuzzyLab",sensor="scd30"}';
+  // queryString: string;
+  queryString = 'co2{location="FuzzyLab",sensor="scd30"}';
   @Input()
   dataSeriesNames: string[];
   @Input()
@@ -32,7 +32,7 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   fetchFromServerIntervalMS = 1000; // set 0 for no update - but can be changed later - default 1000ms.
   @Input()
-  //serverHostName = 'koffer.lan'; // optional, defaults to localhost
+  // serverHostName = 'koffer.lan'; // optional, defaults to localhost
   serverHostName = 'http://belinda.cgv.tugraz.at'; // optional, defaults to localhost
   @Input()
   serverPort = '9090'; // optional, defaults to 9090
@@ -41,7 +41,7 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   runningAvgSeconds = 0;
   @Input()
-  debug: string = 'false';
+  debug = 'false';
   @Input()
   annotations: Array<Object>;
   @Input()
@@ -88,8 +88,10 @@ export class UtDygraphComponent implements OnInit {
       animatedZooms: true,
       pointSize: 4
     };
-    for (let key in this.extraDyGraphConfig) {
-      this.dyGraphOptions[key] = this.extraDyGraphConfig[key];
+    for (const key in this.extraDyGraphConfig) {
+      if (this.extraDyGraphConfig.hasOwnProperty(key)) {
+        this.dyGraphOptions[key] = this.extraDyGraphConfig[key];
+      }
     }
 
     this.displayedData = [[undefined, null]];
@@ -97,31 +99,31 @@ export class UtDygraphComponent implements OnInit {
 
     console.log(this.endTime);
     const dataEndTime =
-      this.endTime == 'now' ? new Date() : new Date(this.endTime);
+      this.endTime === 'now' ? new Date() : new Date(this.endTime);
     let seconds;
     if (
       this.startTime.endsWith('s') &&
-      parseInt(this.startTime.slice(0, -1)) > 0
+      parseInt(this.startTime.slice(0, -1), 10) > 0
     ) {
-      seconds = parseInt(this.startTime.slice(0, -1));
+      seconds = parseInt(this.startTime.slice(0, -1), 10);
     }
     if (
       this.startTime.endsWith('m') &&
-      parseInt(this.startTime.slice(0, -1)) > 0
+      parseInt(this.startTime.slice(0, -1), 10) > 0
     ) {
-      seconds = parseInt(this.startTime.slice(0, -1)) * 60;
+      seconds = parseInt(this.startTime.slice(0, -1), 10) * 60;
     }
     if (
       this.startTime.endsWith('h') &&
-      parseInt(this.startTime.slice(0, -1)) > 0
+      parseInt(this.startTime.slice(0, -1), 10) > 0
     ) {
-      seconds = parseInt(this.startTime.slice(0, -1)) * 60 * 60;
+      seconds = parseInt(this.startTime.slice(0, -1), 10) * 60 * 60;
     }
     if (
       this.startTime.endsWith('d') &&
-      parseInt(this.startTime.slice(0, -1)) > 0
+      parseInt(this.startTime.slice(0, -1), 10) > 0
     ) {
-      seconds = parseInt(this.startTime.slice(0, -1)) * 60 * 60 * 24;
+      seconds = parseInt(this.startTime.slice(0, -1), 10) * 60 * 60 * 24;
     }
 
     console.log(seconds);
@@ -258,7 +260,7 @@ export class UtDygraphComponent implements OnInit {
           this.displayedData.length - 1
         ][0].valueOf();
         if (lastDate >= currentDate) {
-          //console.log('iterating on old number');
+          // console.log('iterating on old number');
           return;
         } else {
           iteratingOnOldData = false;
@@ -325,9 +327,12 @@ export class UtDygraphComponent implements OnInit {
 
   adjustAnnotationsXtoMS() {
     this.annotations.forEach(annotation => {
-      if (annotation['adjusted'] != true) {
-        console.log('old annotation: ' + annotation['x'])
-        let [lower, upper] = this.binarySearchNearDate(this.displayedData, annotation['x'])
+      if (annotation['adjusted'] !== true) {
+        console.log('old annotation: ' + annotation['x']);
+        const [lower, upper] = this.binarySearchNearDate(
+          this.displayedData,
+          annotation['x']
+        );
         annotation['x'] = this.displayedData[lower][0].valueOf();
         console.log('lower: ' + annotation['x']);
         console.log('upper: ' + this.displayedData[upper][0].valueOf());
@@ -338,22 +343,27 @@ export class UtDygraphComponent implements OnInit {
 
   // array must be consecutive!
   // returns the two indizes in which between the searched Date is
-  binarySearchNearDate(inputArray: Array<[Date, any]>, target: Date, ObjectPath?: String) {
-    let lowerIndex = 0, upperIndex = inputArray.length - 1;
+  binarySearchNearDate(
+    inputArray: Array<[Date, any]>,
+    target: Date,
+    ObjectPath?: String
+  ) {
+    let lowerIndex = 0,
+      upperIndex = inputArray.length - 1;
 
     function compareDate(date1: Date, date2: Date) {
-      if (date1.valueOf() == date2.valueOf()) {
+      if (date1.valueOf() === date2.valueOf()) {
         return 0;
       }
-      return (date1.valueOf() > date2.valueOf()) ? 1 : -1;
+      return date1.valueOf() > date2.valueOf() ? 1 : -1;
     }
 
     while (lowerIndex + 1 < upperIndex) {
-      let halfIndex = (lowerIndex + upperIndex) >> 1;
-      let halfElem = inputArray[halfIndex][0];
+      const halfIndex = (lowerIndex + upperIndex) >> 1; // tslint:disable-line
+      const halfElem = inputArray[halfIndex][0];
 
-      let comparisonResult = compareDate(target, halfElem);
-      if (comparisonResult == 0) {
+      const comparisonResult = compareDate(target, halfElem);
+      if (comparisonResult === 0) {
         lowerIndex = halfIndex;
         upperIndex = halfIndex;
         break;

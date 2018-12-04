@@ -26,7 +26,7 @@ export class LocalStorageService {
 
   delete(key: string) {
     try {
-      localStorage.removeItem(key)
+      localStorage.removeItem(key);
     } catch (e) {
       console.error('Error removing data from localStorage', e);
     }
