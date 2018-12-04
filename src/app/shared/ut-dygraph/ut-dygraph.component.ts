@@ -3,6 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
 
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
+import { error } from 'util';
 
 declare const Dygraph: any;
 
@@ -57,13 +58,14 @@ export class UtDygraphComponent implements OnInit {
   private RequestsUnderway = 0; // don't flood the server if it is not fast enough
   private noData = false;
   private waiting = true;
+  private error: string = undefined;
   private htmlID: string;
 
   Dygraph: any;
 
   intervalSubscription: Subscription;
 
-  constructor(private utFetchdataService: UtFetchdataService) { }
+  constructor(private utFetchdataService: UtFetchdataService) {}
 
   constructQueryEndpoint(
     server: string = this.serverHostName,
@@ -71,7 +73,7 @@ export class UtDygraphComponent implements OnInit {
     path: string = this.serverPath
   ) {
     if (server.endsWith('/')) {
-      console.error('servername has to be without slash(/) at the end!')
+      console.error('servername has to be without slash(/) at the end!');
     }
     const protAndHost = server.startsWith('http') ? server : 'http://' + server;
     return protAndHost + ':' + port + (path.startsWith('/') ? '' : '/') + path;
@@ -95,30 +97,41 @@ export class UtDygraphComponent implements OnInit {
     this.displayedData = [[undefined, null]];
     this.htmlID = 'graph_' + (Math.random() + 1).toString();
 
-    console.log(this.endTime)
-    const dataEndTime = (this.endTime == 'now') ? new Date() : new Date(this.endTime);
+    console.log(this.endTime);
+    const dataEndTime =
+      this.endTime == 'now' ? new Date() : new Date(this.endTime);
     let seconds;
-    if (this.startTime.endsWith('s') && parseInt(this.startTime.slice(0, -1)) > 0) {
+    if (
+      this.startTime.endsWith('s') &&
+      parseInt(this.startTime.slice(0, -1)) > 0
+    ) {
       seconds = parseInt(this.startTime.slice(0, -1));
     }
-    if (this.startTime.endsWith('m') && parseInt(this.startTime.slice(0, -1)) > 0) {
+    if (
+      this.startTime.endsWith('m') &&
+      parseInt(this.startTime.slice(0, -1)) > 0
+    ) {
       seconds = parseInt(this.startTime.slice(0, -1)) * 60;
     }
-    if (this.startTime.endsWith('h') && parseInt(this.startTime.slice(0, -1)) > 0) {
+    if (
+      this.startTime.endsWith('h') &&
+      parseInt(this.startTime.slice(0, -1)) > 0
+    ) {
       seconds = parseInt(this.startTime.slice(0, -1)) * 60 * 60;
     }
-    if (this.startTime.endsWith('d') && parseInt(this.startTime.slice(0, -1)) > 0) {
+    if (
+      this.startTime.endsWith('d') &&
+      parseInt(this.startTime.slice(0, -1)) > 0
+    ) {
       seconds = parseInt(this.startTime.slice(0, -1)) * 60 * 60 * 24;
     }
 
-    console.log(seconds)
+    console.log(seconds);
     let dataBeginTime;
     if (seconds) {
-      dataBeginTime = new Date(
-        dataEndTime.valueOf() - seconds * 1000
-      )
+      dataBeginTime = new Date(dataEndTime.valueOf() - seconds * 1000);
     } else {
-      dataBeginTime = new Date(this.startTime)
+      dataBeginTime = new Date(this.startTime);
     }
 
     console.log(dataEndTime.valueOf() / 1000);
@@ -131,8 +144,9 @@ export class UtDygraphComponent implements OnInit {
         this.dataBaseQueryStepMS,
         this.constructQueryEndpoint()
       )
-      .subscribe((displayedData: Object) =>
-        this.handleInitialData(displayedData)
+      .subscribe(
+        (displayedData: Object) => this.handleInitialData(displayedData),
+        error => this.handlePrometheusErrors(error)
       );
 
     this.intervalSubscription = interval(
@@ -140,6 +154,27 @@ export class UtDygraphComponent implements OnInit {
     ).subscribe(counter => {
       this.fetchNewData();
     });
+  }
+
+  handlePrometheusErrors(error) {
+    console.log(error);
+    this.waiting = false;
+    if (error['headers']) {
+      console.log('headers:');
+      console.log(JSON.stringify(error['headers']));
+    }
+    if (error['error'] && error['error']['error']) {
+      console.log(error['error']['errorType'] + ': ' + error['error']['error']);
+      if (
+        error['error']['error'].search(/Try decreasing the query resolution/) >
+        -1
+      ) {
+        this.error = 'too many points';
+        this.intervalSubscription.unsubscribe();
+        return;
+      }
+    }
+    this.error = 'unknown error';
   }
 
   handleInitialData(receivedData: Object) {
@@ -199,7 +234,7 @@ export class UtDygraphComponent implements OnInit {
     this.Dygraph.adjustRoll(this.runningAvgSeconds);
 
     if (this.annotations) {
-      this.Dygraph.setAnnotations(this.annotations)
+      this.Dygraph.setAnnotations(this.annotations);
     }
 
     console.log(this.dyGraphOptions);
@@ -253,7 +288,7 @@ export class UtDygraphComponent implements OnInit {
     // console.log(      'historical length: ' + this.historicalData.length + ' elements'    );
     // console.log(this.annotations)
     if (this.annotations) {
-      this.Dygraph.setAnnotations(this.annotations)
+      this.Dygraph.setAnnotations(this.annotations);
     }
   }
 
