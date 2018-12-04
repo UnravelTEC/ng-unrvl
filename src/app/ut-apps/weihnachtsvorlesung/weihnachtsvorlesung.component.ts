@@ -23,19 +23,26 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   //end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-03 12:00';
+  start2 = '2018-12-04 06:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-03 13:00'), // earliest
-      new Date('2018-12-03 16:00') // latest
+      new Date('2018-12-04 06:00'), // earliest
+      new Date('2018-12-04 12:00') // latest
     ]
   };
-  annotations = [];
+  annotations1 = [];
+  annotations2 = [];
 
   constructor(private localStorage: LocalStorageService) {}
 
   ngOnInit() {
-    this.annotations.push({
+    this.annotations1.push({
+      series: 'miclvl',
+      x: new Date().getTime(),
+      shortText: 'Start',
+      text: 'Hier begann Alles…'
+    });
+    this.annotations2.push({
       series: 'miclvl',
       x: new Date().getTime(),
       shortText: 'Start',

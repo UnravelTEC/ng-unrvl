@@ -1,9 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
-
+import { Component, Input, OnInit } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
 
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
-import { error } from 'util';
 
 declare const Dygraph: any;
 
@@ -65,7 +63,7 @@ export class UtDygraphComponent implements OnInit {
 
   intervalSubscription: Subscription;
 
-  constructor(private utFetchdataService: UtFetchdataService) {}
+  constructor(private utFetchdataService: UtFetchdataService) { }
 
   constructQueryEndpoint(
     server: string = this.serverHostName,
@@ -234,6 +232,7 @@ export class UtDygraphComponent implements OnInit {
     this.Dygraph.adjustRoll(this.runningAvgSeconds);
 
     if (this.annotations) {
+      this.adjustAnnotationsXtoMS();
       this.Dygraph.setAnnotations(this.annotations);
     }
 
@@ -288,6 +287,7 @@ export class UtDygraphComponent implements OnInit {
     // console.log(      'historical length: ' + this.historicalData.length + ' elements'    );
     // console.log(this.annotations)
     if (this.annotations) {
+      this.adjustAnnotationsXtoMS();
       this.Dygraph.setAnnotations(this.annotations);
     }
   }
@@ -321,5 +321,50 @@ export class UtDygraphComponent implements OnInit {
       .subscribe((displayedData: Object) =>
         this.handleUpdatedData(displayedData)
       );
+  }
+
+  adjustAnnotationsXtoMS() {
+    this.annotations.forEach(annotation => {
+      if (annotation['adjusted'] != true) {
+        console.log('old annotation: ' + annotation['x'])
+        let [lower, upper] = this.binarySearchNearDate(this.displayedData, annotation['x'])
+        annotation['x'] = this.displayedData[lower][0].valueOf();
+        console.log('lower: ' + annotation['x']);
+        console.log('upper: ' + this.displayedData[upper][0].valueOf());
+        annotation['adjusted'] = true;
+      }
+    });
+  }
+
+  // array must be consecutive!
+  // returns the two indizes in which between the searched Date is
+  binarySearchNearDate(inputArray: Array<[Date, any]>, target: Date, ObjectPath?: String) {
+    let lowerIndex = 0, upperIndex = inputArray.length - 1;
+
+    function compareDate(date1: Date, date2: Date) {
+      if (date1.valueOf() == date2.valueOf()) {
+        return 0;
+      }
+      return (date1.valueOf() > date2.valueOf()) ? 1 : -1;
+    }
+
+    while (lowerIndex + 1 < upperIndex) {
+      let halfIndex = (lowerIndex + upperIndex) >> 1;
+      let halfElem = inputArray[halfIndex][0];
+
+      let comparisonResult = compareDate(target, halfElem);
+      if (comparisonResult == 0) {
+        lowerIndex = halfIndex;
+        upperIndex = halfIndex;
+        break;
+      }
+      if (comparisonResult > 0) {
+        lowerIndex = halfIndex;
+      } else {
+        upperIndex = halfIndex;
+      }
+    }
+
+    return [lowerIndex, upperIndex];
   }
 }
