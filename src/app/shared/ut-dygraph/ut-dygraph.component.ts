@@ -50,6 +50,7 @@ export class UtDygraphComponent implements OnInit {
   historicalData = [];
   dataBeginTime: Date;
   dataEndTime: Date;
+  average: number;
 
   private RequestsUnderway = 0; // don't flood the server if it is not fast enough
   public noData = false;
@@ -222,6 +223,7 @@ export class UtDygraphComponent implements OnInit {
     }
 
     this.historicalData = this.displayedData;
+    this.calculateAverage()
 
     this.waiting = false;
     this.Dygraph = new Dygraph(
@@ -236,8 +238,20 @@ export class UtDygraphComponent implements OnInit {
       this.Dygraph.setAnnotations(this.annotations);
     }
 
+
     console.log(this.dyGraphOptions);
     console.log(this.displayedData);
+  }
+
+  calculateAverage() {
+    if(!this.displayedData.length) {
+      return;
+    }
+    let sum = 0;
+    for(let i=0; i < this.displayedData.length; i++) {
+      sum += this.displayedData[i][1];
+    }
+    this.average = sum / this.displayedData.length;
   }
 
   handleUpdatedData(displayedData: Object) {
@@ -290,6 +304,7 @@ export class UtDygraphComponent implements OnInit {
       this.adjustAnnotationsXtoMS();
       this.Dygraph.setAnnotations(this.annotations);
     }
+    this.calculateAverage()
   }
 
   fetchNewData() {
