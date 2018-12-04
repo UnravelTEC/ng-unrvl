@@ -54,10 +54,10 @@ export class UtDygraphComponent implements OnInit {
   dataEndTime: Date;
 
   private RequestsUnderway = 0; // don't flood the server if it is not fast enough
-  private noData = false;
-  private waiting = true;
-  private error: string = undefined;
-  private htmlID: string;
+  public noData = false;
+  public waiting = true;
+  public error: string = undefined;
+  public htmlID: string;
 
   Dygraph: any;
 

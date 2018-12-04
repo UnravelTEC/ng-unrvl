@@ -10,8 +10,8 @@
       [serverHostName]="serverHostName"
       [serverPath]="serverPath"
       [serverPort]="serverPort"
-      [fromTime]="fromTime"
-      [toTime]="toTime"
+      [endTime]="endTime"
+      [startTime]="startTime"
       [fetchFromServerIntervalMS]="fetchFromServerIntervalMS"
       [runningAvgSeconds]="runningAvgSeconds"
       debug="true"
@@ -78,24 +78,24 @@
     </div>
 
     <div class="form-group">
-      <label for="fromTime">From Time</label> ({{ fromTime }})
+      <label for="endTime">End Time (mostly now)</label> ({{ endTime }})
       <input
         type="text"
         class="form-control"
-        id="fromTime"
-        [(ngModel)]="fromTime"
-        name="fromTime"
+        id="endTime"
+        [(ngModel)]="endTime"
+        name="endTime"
         style="width:4em;"
       />
     </div>
     <div class="form-group">
-      <label for="toTime">To Time</label> ({{ toTime }})
+      <label for="startTime">Start Time</label> ({{ startTime }})
       <input
         type="text"
         class="form-control"
-        id="toTime"
-        [(ngModel)]="toTime"
-        name="toTime"
+        id="startTime"
+        [(ngModel)]="startTime"
+        name="startTime"
         style="width:4em;"
       />
     </div>

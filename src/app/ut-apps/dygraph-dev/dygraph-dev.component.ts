@@ -10,8 +10,8 @@ export class DygraphDevComponent implements OnInit {
   serverHostName: string = 'https://scpexploratory02.tugraz.at';
   queryString: string = 'sensor_radiation_Sv';
   dataBaseQueryStepMS: number = 1000;
-  toTime: string = '60s';
-  fromTime: string = 'now';
+  startTime: string = '60s';
+  endTime: string = 'now';
   serverPort = '443';
   serverPath = 'prometheus/api/v1/';
   runningAvgSeconds = 0;
@@ -21,8 +21,8 @@ export class DygraphDevComponent implements OnInit {
     'serverHostName',
     'queryString',
     'dataBaseQueryStepMS',
-    'fromTime',
-    'toTime',
+    'startTime',
+    'endTime',
     'runningAvgSeconds',
     'fetchFromServerIntervalMS'
   ];
