@@ -23,5 +23,8 @@
       Last Value:
       {{ displayedData[displayedData.length - 1][1] | number: '1.0-1' }}
     </li>
+    <li>
+      Annotations: {{ annotations[0]['series'] }} "{{annotations[0]['shortText']}}" @ {{ annotations[0]['x'] | date: 'yyyy-MM-dd HH:mm:ss (z)'}}
+      </li>
   </ul>
 </div>
