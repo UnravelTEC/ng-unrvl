@@ -1,9 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
+import Dygraph from 'dygraphs';
 import { interval, Subscription } from 'rxjs';
-
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
-
-declare const Dygraph: any;
 
 @Component({
   selector: 'app-ut-dygraph',
@@ -63,7 +61,7 @@ export class UtDygraphComponent implements OnInit {
 
   intervalSubscription: Subscription;
 
-  constructor(private utFetchdataService: UtFetchdataService) { }
+  constructor(private utFetchdataService: UtFetchdataService) {}
 
   constructQueryEndpoint(
     server: string = this.serverHostName,
