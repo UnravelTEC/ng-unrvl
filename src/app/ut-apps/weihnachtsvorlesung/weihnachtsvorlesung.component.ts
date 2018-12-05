@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalStorageService } from '../../core/local-storage.service';
+import { AnnotationsEditorComponent } from './annotations-editor/annotations-editor.component';
 
 @Component({
   selector: 'app-weihnachtsvorlesung',
@@ -26,8 +27,8 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   start2 = '2018-12-04 06:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-04 06:00'), // earliest
-      new Date('2018-12-04 12:00') // latest
+      new Date('2018-12-04 12:00'), // earliest
+      new Date('2018-12-04 18:00') // latest
     ]
   };
   annotations1 = [];
@@ -48,5 +49,13 @@ export class WeihnachtsvorlesungComponent implements OnInit {
       shortText: 'Start',
       text: 'Hier begann Alles…'
     });
+  }
+
+  annotationObject = {
+    start: Date,
+    end: Date,
+    name: "Versuchsname",
+    nummer: 1,
+    dBvalue: 100 // is the accumulated value from start to end, autocalculated
   }
 }

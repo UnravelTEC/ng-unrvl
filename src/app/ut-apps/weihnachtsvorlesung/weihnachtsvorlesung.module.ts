@@ -5,6 +5,7 @@ import { WeihnachtsvorlesungRoutingModule } from './weihnachtsvorlesung-routing.
 import { WeihnachtsvorlesungComponent } from './weihnachtsvorlesung.component';
 
 import { UtDygraphModule } from '../../shared/ut-dygraph/ut-dygraph.module';
+import { AnnotationsEditorComponent } from './annotations-editor/annotations-editor.component';
 
 
 @NgModule({
@@ -13,6 +14,6 @@ import { UtDygraphModule } from '../../shared/ut-dygraph/ut-dygraph.module';
     WeihnachtsvorlesungRoutingModule,
     UtDygraphModule
   ],
-  declarations: [WeihnachtsvorlesungComponent]
+  declarations: [WeihnachtsvorlesungComponent, AnnotationsEditorComponent]
 })
 export class WeihnachtsvorlesungModule { }
