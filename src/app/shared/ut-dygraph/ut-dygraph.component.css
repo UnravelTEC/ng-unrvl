@@ -8,5 +8,22 @@ ul {
 }
 
 .mydygraph {
-    /* background: rgb(190, 190, 255); */
+    /* background: rgba(122, 122, 255, 0.418); */
+    border: 0px solid black;
+}
+
+.mydygraph .info {
+    margin: 1em;
+    border: 1px solid blue;
+    padding: 1em;
+}
+
+.mydygraph .nodata {
+    border-color:orange;
+}
+.mydygraph .waiting {
+    border-color: yellow;
+}
+.mydygraph .error {
+    border-color: red;
 }

@@ -7,18 +7,22 @@ import { LocalStorageService } from '../../core/local-storage.service';
   styleUrls: ['./dygraph-dev.component.css']
 })
 export class DygraphDevComponent implements OnInit {
-  serverHostName: string = 'http://henri0.lan';
-  queryString: string = 'veml6075_uva';
-  dataBaseQueryStepMS: number = 100;
-  timeRange: number = 60; // 1 min
+  serverHostName = 'henri0.lan';
+  queryString = 'veml6075_uva';
+  dataBaseQueryStepMS = 1000;
+  startTime = '60s';
+  endTime = 'now';
+  serverPort = '9090';
+  serverPath = 'prometheus/api/v1/';
   runningAvgSeconds = 0;
-  fetchFromServerIntervalMS = 100;
+  fetchFromServerIntervalMS = 1000;
 
   private variablesToSave = [
     'serverHostName',
     'queryString',
     'dataBaseQueryStepMS',
-    'timeRange',
+    'startTime',
+    'endTime',
     'runningAvgSeconds',
     'fetchFromServerIntervalMS'
   ];
@@ -26,7 +30,7 @@ export class DygraphDevComponent implements OnInit {
   constructor(private localStorage: LocalStorageService) {}
 
   ngOnInit() {
-    var valueInLocalStorage;
+    let valueInLocalStorage;
     this.variablesToSave.forEach(elementName => {
       valueInLocalStorage = this.localStorage.get(elementName);
       if (valueInLocalStorage) {
@@ -39,5 +43,12 @@ export class DygraphDevComponent implements OnInit {
     this.variablesToSave.forEach(elementName => {
       this.localStorage.set(elementName, this[elementName]);
     });
+    alert('save ok');
+  }
+  reset() {
+    this.variablesToSave.forEach(elementName => {
+      this.localStorage.delete(elementName);
+    });
+    alert('reset ok');
   }
 }

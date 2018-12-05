@@ -1,10 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
-
+import { Component, Input, OnInit } from '@angular/core';
+import Dygraph from 'dygraphs';
 import { interval, Subscription } from 'rxjs';
-
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
-
-declare const Dygraph: any;
 
 @Component({
   selector: 'app-ut-dygraph',
@@ -14,8 +11,8 @@ declare const Dygraph: any;
 export class UtDygraphComponent implements OnInit {
   // define on start what doesn't change
   @Input()
-  //queryString: string;
-  queryString: string = 'co2{location="FuzzyLab",sensor="scd30"}';
+  // queryString: string;
+  queryString = 'co2{location="FuzzyLab",sensor="scd30"}';
   @Input()
   dataSeriesNames: string[];
   @Input()
@@ -25,13 +22,15 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   YLabel = 'Value (unit)';
   @Input()
-  timeRangeSeconds = 300; // in seconds, default 5min.
+  endTime = 'now';
+  @Input()
+  startTime = '15m'; // prefix m for min, s for seconds, h for hours, d for days
   @Input()
   dataBaseQueryStepMS = 1000; // query step on server
   @Input()
   fetchFromServerIntervalMS = 1000; // set 0 for no update - but can be changed later - default 1000ms.
   @Input()
-  //serverHostName = 'koffer.lan'; // optional, defaults to localhost
+  // serverHostName = 'koffer.lan'; // optional, defaults to localhost
   serverHostName = 'http://belinda.cgv.tugraz.at'; // optional, defaults to localhost
   @Input()
   serverPort = '9090'; // optional, defaults to 9090
@@ -40,9 +39,11 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   runningAvgSeconds = 0;
   @Input()
-  debug: string = 'false';
+  debug = 'false';
   @Input()
-  annotations [];
+  annotations: Array<Object>;
+  @Input()
+  extraDyGraphConfig: Object;
 
   dyGraphOptions = {};
   displayedData = [];
@@ -51,8 +52,10 @@ export class UtDygraphComponent implements OnInit {
   dataEndTime: Date;
 
   private RequestsUnderway = 0; // don't flood the server if it is not fast enough
-  private noData = false;
-  private waiting = true;
+  public noData = false;
+  public waiting = true;
+  public error: string = undefined;
+  public htmlID: string;
 
   Dygraph: any;
 
@@ -65,6 +68,9 @@ export class UtDygraphComponent implements OnInit {
     port: string = this.serverPort,
     path: string = this.serverPath
   ) {
+    if (server.endsWith('/')) {
+      console.error('servername has to be without slash(/) at the end!');
+    }
     const protAndHost = server.startsWith('http') ? server : 'http://' + server;
     return protAndHost + ':' + port + (path.startsWith('/') ? '' : '/') + path;
   }
@@ -80,13 +86,53 @@ export class UtDygraphComponent implements OnInit {
       animatedZooms: true,
       pointSize: 4
     };
-    this.displayedData = [[undefined, null]];
+    for (const key in this.extraDyGraphConfig) {
+      if (this.extraDyGraphConfig.hasOwnProperty(key)) {
+        this.dyGraphOptions[key] = this.extraDyGraphConfig[key];
+      }
+    }
 
-    const dataEndTime = new Date();
-    const dataBeginTime = new Date(
-      dataEndTime.valueOf() - this.timeRangeSeconds * 1000
-    );
-    console.log(dataEndTime.valueOf() / 1000);
+    this.displayedData = [[undefined, null]];
+    this.htmlID = 'graph_' + (Math.random() + 1).toString();
+
+    console.log(this.endTime);
+    const dataEndTime =
+      this.endTime === 'now' ? new Date() : new Date(this.endTime);
+    let seconds;
+    if (
+      this.startTime.endsWith('s') &&
+      parseInt(this.startTime.slice(0, -1), 10) > 0
+    ) {
+      seconds = parseInt(this.startTime.slice(0, -1), 10);
+    }
+    if (
+      this.startTime.endsWith('m') &&
+      parseInt(this.startTime.slice(0, -1), 10) > 0
+    ) {
+      seconds = parseInt(this.startTime.slice(0, -1), 10) * 60;
+    }
+    if (
+      this.startTime.endsWith('h') &&
+      parseInt(this.startTime.slice(0, -1), 10) > 0
+    ) {
+      seconds = parseInt(this.startTime.slice(0, -1), 10) * 60 * 60;
+    }
+    if (
+      this.startTime.endsWith('d') &&
+      parseInt(this.startTime.slice(0, -1), 10) > 0
+    ) {
+      seconds = parseInt(this.startTime.slice(0, -1), 10) * 60 * 60 * 24;
+    }
+
+    console.log("length of interval displayed (s): " + seconds.toString());
+    let dataBeginTime;
+    if (seconds) {
+      dataBeginTime = new Date(dataEndTime.valueOf() - seconds * 1000);
+    } else {
+      dataBeginTime = new Date(this.startTime);
+    }
+
+    console.log("dataEndTime " + (dataEndTime.valueOf() / 1000).toString());
 
     this.utFetchdataService
       .getRange(
@@ -96,8 +142,9 @@ export class UtDygraphComponent implements OnInit {
         this.dataBaseQueryStepMS,
         this.constructQueryEndpoint()
       )
-      .subscribe((displayedData: Object) =>
-        this.handleInitialData(displayedData)
+      .subscribe(
+        (displayedData: Object) => this.handleInitialData(displayedData),
+        error => this.handlePrometheusErrors(error)
       );
 
     this.intervalSubscription = interval(
@@ -105,6 +152,27 @@ export class UtDygraphComponent implements OnInit {
     ).subscribe(counter => {
       this.fetchNewData();
     });
+  }
+
+  handlePrometheusErrors(error) {
+    console.log(error);
+    this.waiting = false;
+    if (error['headers']) {
+      console.log('headers:');
+      console.log(JSON.stringify(error['headers']));
+    }
+    if (error['error'] && error['error']['error']) {
+      console.log(error['error']['errorType'] + ': ' + error['error']['error']);
+      if (
+        error['error']['error'].search(/Try decreasing the query resolution/) >
+        -1
+      ) {
+        this.error = 'too many points';
+        this.intervalSubscription.unsubscribe();
+        return;
+      }
+    }
+    this.error = 'unknown error';
   }
 
   handleInitialData(receivedData: Object) {
@@ -157,14 +225,15 @@ export class UtDygraphComponent implements OnInit {
 
     this.waiting = false;
     this.Dygraph = new Dygraph(
-      'graph',
+      this.htmlID,
       this.displayedData,
       this.dyGraphOptions
     );
     this.Dygraph.adjustRoll(this.runningAvgSeconds);
 
-    if(this.annotations) {
-      this.Dygraph.setAnnotations(this.annotations)
+    if (this.annotations) {
+      this.adjustAnnotationsXtoMS();
+      this.Dygraph.setAnnotations(this.annotations);
     }
 
     console.log(this.dyGraphOptions);
@@ -173,6 +242,15 @@ export class UtDygraphComponent implements OnInit {
 
   handleUpdatedData(displayedData: Object) {
     this.RequestsUnderway--;
+    if(!displayedData ||
+      !displayedData['data'] ||
+      !displayedData['data']['result'] ||
+      !displayedData['data']['result'][0] ||
+      !displayedData['data']['result'][0]['values']) {
+        console.error('handleUpdatedData: input object wrong');
+        console.log(displayedData);
+        return;
+      }
     const values = displayedData['data']['result'][0]['values'];
 
     // check if there is already newer data from an earlier request
@@ -189,7 +267,7 @@ export class UtDygraphComponent implements OnInit {
           this.displayedData.length - 1
         ][0].valueOf();
         if (lastDate >= currentDate) {
-          //console.log('iterating on old number');
+          // console.log('iterating on old number');
           return;
         } else {
           iteratingOnOldData = false;
@@ -216,9 +294,10 @@ export class UtDygraphComponent implements OnInit {
     this.Dygraph.updateOptions({ file: this.displayedData });
     this.Dygraph.adjustRoll(this.runningAvgSeconds);
     // console.log(      'historical length: ' + this.historicalData.length + ' elements'    );
-    console.log(this.annotations)
-    if(this.annotations) {
-      this.Dygraph.setAnnotations(this.annotations)
+    // console.log(this.annotations)
+    if (this.annotations) {
+      this.adjustAnnotationsXtoMS();
+      this.Dygraph.setAnnotations(this.annotations);
     }
   }
 
@@ -236,6 +315,7 @@ export class UtDygraphComponent implements OnInit {
 
     const startDate = this.displayedData[this.displayedData.length - 1][0];
     if (!startDate) {
+      this.intervalSubscription.unsubscribe();
       console.error('error in fetchNewData: no previous data found');
       this.RequestsUnderway--;
       return;
@@ -251,5 +331,58 @@ export class UtDygraphComponent implements OnInit {
       .subscribe((displayedData: Object) =>
         this.handleUpdatedData(displayedData)
       );
+  }
+
+  adjustAnnotationsXtoMS() {
+    this.annotations.forEach(annotation => {
+      if (annotation['adjusted'] !== true) {
+        console.log('old annotation: ' + annotation['x']);
+        const [lower, upper] = this.binarySearchNearDate(
+          this.displayedData,
+          annotation['x']
+        );
+        annotation['x'] = this.displayedData[lower][0].valueOf();
+        console.log('lower: ' + annotation['x']);
+        console.log('upper: ' + this.displayedData[upper][0].valueOf());
+        annotation['adjusted'] = true;
+      }
+    });
+  }
+
+  // array must be consecutive!
+  // returns the two indizes in which between the searched Date is
+  binarySearchNearDate(
+    inputArray: Array<[Date, any]>,
+    target: Date,
+    ObjectPath?: String
+  ) {
+    let lowerIndex = 0,
+      upperIndex = inputArray.length - 1;
+
+    function compareDate(date1: Date, date2: Date) {
+      if (date1.valueOf() === date2.valueOf()) {
+        return 0;
+      }
+      return date1.valueOf() > date2.valueOf() ? 1 : -1;
+    }
+
+    while (lowerIndex + 1 < upperIndex) {
+      const halfIndex = (lowerIndex + upperIndex) >> 1; // tslint:disable-line
+      const halfElem = inputArray[halfIndex][0];
+
+      const comparisonResult = compareDate(target, halfElem);
+      if (comparisonResult === 0) {
+        lowerIndex = halfIndex;
+        upperIndex = halfIndex;
+        break;
+      }
+      if (comparisonResult > 0) {
+        lowerIndex = halfIndex;
+      } else {
+        upperIndex = halfIndex;
+      }
+    }
+
+    return [lowerIndex, upperIndex];
   }
 }

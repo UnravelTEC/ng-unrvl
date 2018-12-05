@@ -8,11 +8,15 @@
       graphHeight="300"
       graphWidth="765"
       [serverHostName]="serverHostName"
-      [timeRangeSeconds]="timeRange"
+      [serverPort]="serverPort"
+      [endTime]="endTime"
+      [startTime]="startTime"
       [fetchFromServerIntervalMS]="fetchFromServerIntervalMS"
       [runningAvgSeconds]="runningAvgSeconds"
       debug="true"
     ></app-ut-dygraph>
+    <!-- [serverPath]="serverPath" -->
+
   </div>
   <form #graphForm="ngForm">
     <div class="form-group">
@@ -33,6 +37,16 @@
         id="serverHostName"
         [(ngModel)]="serverHostName"
         name="serverHostName"
+      />
+    </div>
+    <div class="form-group">
+      <label for="serverPath">Server Path</label> ( "{{ serverPath }}" )
+      <input
+        type="text"
+        class="form-control"
+        id="serverPath"
+        [(ngModel)]="serverPath"
+        name="serverPath"
       />
     </div>
     <div class="form-group">
@@ -65,13 +79,24 @@
     </div>
 
     <div class="form-group">
-      <label for="timeRange">Time Range (seconds)</label> ({{ timeRange }})
+      <label for="endTime">End Time (mostly now)</label> ({{ endTime }})
       <input
         type="text"
         class="form-control"
-        id="timeRange"
-        [(ngModel)]="timeRange"
-        name="timeRange"
+        id="endTime"
+        [(ngModel)]="endTime"
+        name="endTime"
+        style="width:4em;"
+      />
+    </div>
+    <div class="form-group">
+      <label for="startTime">Start Time</label> ({{ startTime }})
+      <input
+        type="text"
+        class="form-control"
+        id="startTime"
+        [(ngModel)]="startTime"
+        name="startTime"
         style="width:4em;"
       />
     </div>
@@ -91,5 +116,6 @@
     </div>
 
     <button type="submit" class="btn btn-success" (click)="save()">Save</button>
+    <button type="submit" class="btn btn-success" (click)="reset()">Reset</button>
   </form>
 </div>

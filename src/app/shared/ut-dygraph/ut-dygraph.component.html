@@ -1,8 +1,9 @@
 <!-- presenting: ut-dygraph: -->
-<div class="mydygraph">
-  <div id="graph"></div>
-  <div *ngIf="noData == true">No data to display.</div>
-  <div *ngIf="waiting == true">Waiting for data...</div>
+<div class="mydygraph" [style.width.px]="graphWidth" [style.height.px]="graphHeight">
+  <div id="{{ htmlID }}"></div>
+  <div *ngIf="noData == true" class="info nodata">No data to display.</div>
+  <div *ngIf="waiting == true" class="info waiting">Waiting for data...</div>
+  <div *ngIf="error != undefined" class="info error">{{ error }}</div>
   <!-- <button (click)="fetchNewData()">Update!</button> -->
   <ul class="debug" *ngIf="debug == 'true'">
     <li>From {{ displayedData[0][0] | date: 'yyyy-MM-dd HH:mm:ss (z)' }}</li>
@@ -17,13 +18,13 @@
     </li>
     <li>
       # Datapoints: {{ displayedData.length }}, running avg of
-      {{ runningAvgSeconds }}s, Timerange {{ timeRangeSeconds }}s.
+      {{ runningAvgSeconds }}s, From {{ startTime }} to {{ endTime }}.
     </li>
-    <li>
+    <li *ngIf="displayedData && displayedData.length > 0">
       Last Value:
       {{ displayedData[displayedData.length - 1][1] | number: '1.0-1' }}
     </li>
-    <li>
+    <li *ngIf="annotations && annotations.length > 0">
       Annotations: {{ annotations[0]['series'] }} "{{annotations[0]['shortText']}}" @ {{ annotations[0]['x'] | date: 'yyyy-MM-dd HH:mm:ss (z)'}}
       </li>
   </ul>

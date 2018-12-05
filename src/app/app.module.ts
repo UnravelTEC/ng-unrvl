@@ -1,12 +1,13 @@
-import { BrowserModule, Title } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
+import { BrowserModule, Title } from '@angular/platform-browser';
+import { RouterModule, Routes } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
-
-import { RouterModule, Routes } from '@angular/router';
-import { TopBarComponent } from './top-bar/top-bar.component';
 import { CoreModule } from './core/core.module';
+import { TopBarComponent } from './top-bar/top-bar.component';
+import { environment } from '../environments/environment';
+
 
 const appRoutes: Routes = [
   {
@@ -52,7 +53,7 @@ const appRoutes: Routes = [
     CoreModule,
     RouterModule.forRoot(
       appRoutes,
-      { enableTracing: false } // <-- debugging purposes only
+      { enableTracing: !environment.production }
     )
   ],
   providers: [Title],
