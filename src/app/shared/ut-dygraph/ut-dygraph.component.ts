@@ -127,12 +127,12 @@ export class UtDygraphComponent implements OnInit {
     let dataBeginTime;
     if (seconds) {
       dataBeginTime = new Date(dataEndTime.valueOf() - seconds * 1000);
-      console.log("length of interval displayed (s): " + seconds.toString());
+      console.log('length of interval displayed (s): ' + seconds.toString());
     } else {
       dataBeginTime = new Date(this.startTime);
     }
 
-    console.log("dataEndTime " + (dataEndTime.valueOf() / 1000).toString());
+    console.log('dataEndTime ' + (dataEndTime.valueOf() / 1000).toString());
 
     this.utFetchdataService
       .getRange(
@@ -147,11 +147,13 @@ export class UtDygraphComponent implements OnInit {
         error => this.handlePrometheusErrors(error)
       );
 
-    this.intervalSubscription = interval(
-      this.fetchFromServerIntervalMS
-    ).subscribe(counter => {
-      this.fetchNewData();
-    });
+    if (this.fetchFromServerIntervalMS > 0) {
+      this.intervalSubscription = interval(
+        this.fetchFromServerIntervalMS
+      ).subscribe(counter => {
+        this.fetchNewData();
+      });
+    }
   }
 
   handlePrometheusErrors(error) {
@@ -242,15 +244,17 @@ export class UtDygraphComponent implements OnInit {
 
   handleUpdatedData(displayedData: Object) {
     this.RequestsUnderway--;
-    if(!displayedData ||
+    if (
+      !displayedData ||
       !displayedData['data'] ||
       !displayedData['data']['result'] ||
       !displayedData['data']['result'][0] ||
-      !displayedData['data']['result'][0]['values']) {
-        console.error('handleUpdatedData: input object wrong');
-        console.log(displayedData);
-        return;
-      }
+      !displayedData['data']['result'][0]['values']
+    ) {
+      console.error('handleUpdatedData: input object wrong');
+      console.log(displayedData);
+      return;
+    }
     const values = displayedData['data']['result'][0]['values'];
 
     // check if there is already newer data from an earlier request
