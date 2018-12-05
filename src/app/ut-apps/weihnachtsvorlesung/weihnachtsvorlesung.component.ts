@@ -23,11 +23,11 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-04 06:00';
+  start2 = '2018-12-05 13:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-04 06:00'), // earliest
-      new Date('2018-12-04 12:00') // latest
+      new Date('2018-12-05 13:00'), // earliest
+      new Date('2018-12-05 17:00') // latest
     ]
   };
   annotations1 = [];
