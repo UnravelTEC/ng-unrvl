@@ -23,12 +23,13 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-05 13:00';
+  start2 = '2018-12-05 15:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-05 13:00'), // earliest
-      new Date('2018-12-05 17:00') // latest
+      new Date('2018-12-05 14:00'), // earliest
+      new Date('2018-12-05 20:00') // latest
     ]
+    // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
   };
   annotations1 = [];
   annotations2 = [];
@@ -36,26 +37,64 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   constructor(private localStorage: LocalStorageService) {}
 
   ngOnInit() {
+
+    // push // Annotations for short term graph
     this.annotations1.push({
       series: 'miclvl',
       x: new Date().getTime(),
-<<<<<<< HEAD
-=======
-      shortText: 'Start',
-      text: 'Hier begann Alles…'
+      shortText: 'E6',
+      text: 'Experiment 6'
     });
+    this.annotations1.push({
+      series: 'miclvl',
+      x: new Date().getTime()- (.2*60*60*1000),       // calculate annotation time 0.2mins from now
+      shortText: 'E5',
+      text: 'Experiment 5'
+    });
+
+    // Annotations for long term graph
     this.annotations2.push({
       series: 'miclvl',
       x: new Date().getTime(),
->>>>>>> develop
-      shortText: 'Start',
-      text: 'Hier begann Alles…',
+
       //cssClass: 'utAnnotation',
       width: '30',
       height: '30',
       tickColor: 'blue',
       tickWidth: '3',
-      tickHeight: '20'
+      tickHeight: '20',
+      shortText: 'E6',
+      text: 'Experiment 6'
+    });
+    this.annotations2.push({
+      series: 'miclvl',
+      x: new Date().getTime()- (1.4*60*60*1000),
+      shortText: 'E1',
+      text: 'Experiment 1'
+    });
+    this.annotations2.push({
+      series: 'miclvl',
+      x: new Date().getTime()- (1.2*60*60*1000),
+      shortText: 'E2',
+      text: 'Experiment 2'
+    });
+    this.annotations2.push({
+      series: 'miclvl',
+      x: new Date().getTime()- (1*60*60*1000),
+      shortText: 'E3',
+      text: 'Experiment 3'
+    });
+    this.annotations2.push({
+      series: 'miclvl',
+      x: new Date().getTime()- (.7*60*60*1000),
+      shortText: 'E4',
+      text: 'Experiment 4'
+    });
+    this.annotations2.push({
+      series: 'miclvl',
+      x: new Date().getTime()- (.2*60*60*1000),
+      shortText: 'E5',
+      text: 'Experiment 5'
     });
   }
 }
