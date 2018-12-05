@@ -29,6 +29,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
       new Date('2018-12-05 12:00'), // earliest
       new Date('2018-12-05 17:00') // latest
     ]
+    // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
   };
   annotations1 = [];
   annotations2 = [];
@@ -41,12 +42,12 @@ export class WeihnachtsvorlesungComponent implements OnInit {
     this.annotations1.push({
       series: 'miclvl',
       x: new Date().getTime(),
-      shortText: 'Start',
-      text: 'Hier begann Alles…'
+      shortText: 'E6',
+      text: 'Experiment 6'
     });
     this.annotations1.push({
       series: 'miclvl',
-      x: new Date().getTime()- (.2*60*60*1000),
+      x: new Date().getTime()- (.2*60*60*1000),       // calculate annotation time 0.2mins from now
       shortText: 'E5',
       text: 'Experiment 5'
     });
@@ -55,8 +56,8 @@ export class WeihnachtsvorlesungComponent implements OnInit {
     this.annotations2.push({
       series: 'miclvl',
       x: new Date().getTime(),
-      shortText: 'Start',
-      text: 'Hier begann Alles…'
+      shortText: 'E6',
+      text: 'Experiment 6'
     });    
     this.annotations2.push({
       series: 'miclvl',
