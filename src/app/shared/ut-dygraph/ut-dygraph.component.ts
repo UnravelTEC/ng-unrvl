@@ -124,7 +124,7 @@ export class UtDygraphComponent implements OnInit {
       seconds = parseInt(this.startTime.slice(0, -1), 10) * 60 * 60 * 24;
     }
 
-    console.log(seconds);
+    console.log("length of interval displayed (s): " + seconds.toString());
     let dataBeginTime;
     if (seconds) {
       dataBeginTime = new Date(dataEndTime.valueOf() - seconds * 1000);
@@ -132,7 +132,7 @@ export class UtDygraphComponent implements OnInit {
       dataBeginTime = new Date(this.startTime);
     }
 
-    console.log(dataEndTime.valueOf() / 1000);
+    console.log("dataEndTime " + (dataEndTime.valueOf() / 1000).toString());
 
     this.utFetchdataService
       .getRange(
@@ -242,6 +242,15 @@ export class UtDygraphComponent implements OnInit {
 
   handleUpdatedData(displayedData: Object) {
     this.RequestsUnderway--;
+    if(!displayedData ||
+      !displayedData['data'] ||
+      !displayedData['data']['result'] ||
+      !displayedData['data']['result'][0] ||
+      !displayedData['data']['result'][0]['values']) {
+        console.error('handleUpdatedData: input object wrong');
+        console.log(displayedData);
+        return;
+      }
     const values = displayedData['data']['result'][0]['values'];
 
     // check if there is already newer data from an earlier request
@@ -306,6 +315,7 @@ export class UtDygraphComponent implements OnInit {
 
     const startDate = this.displayedData[this.displayedData.length - 1][0];
     if (!startDate) {
+      this.intervalSubscription.unsubscribe();
       console.error('error in fetchNewData: no previous data found');
       this.RequestsUnderway--;
       return;
