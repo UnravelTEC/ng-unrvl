@@ -1,4 +1,8 @@
 .utAnnotation {
-    width: 100%;
-    background: blue;
+color: #373535 !important; /* !important needed to override inline set value by Dygraph */
+    width: 40px  !important;
+      height: 40px  !important;
+    background: rgb(148, 231, 255);
+    transform: translateX(7px);
+    border: 0;
 }

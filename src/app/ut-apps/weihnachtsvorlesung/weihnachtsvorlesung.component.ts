@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { LocalStorageService } from '../../core/local-storage.service';
 
 @Component({
   selector: 'app-weihnachtsvorlesung',
   templateUrl: './weihnachtsvorlesung.component.html',
-  styleUrls: ['./weihnachtsvorlesung.component.css']
+  styleUrls: ['./weihnachtsvorlesung.component.css'],
+  encapsulation: ViewEncapsulation.None // from https://coryrylan.com/blog/css-encapsulation-with-angular-components
 })
 export class WeihnachtsvorlesungComponent implements OnInit {
   // serverHostName: string = 'http://koffer.lan';
@@ -56,13 +57,11 @@ export class WeihnachtsvorlesungComponent implements OnInit {
     this.annotations2.push({
       series: 'miclvl',
       x: new Date().getTime(),
+      cssClass: 'utAnnotation',
 
-      //cssClass: 'utAnnotation',
-      width: '30',
-      height: '30',
-      tickColor: 'blue',
-      tickWidth: '3',
-      tickHeight: '20',
+      tickColor: 'rgb(148, 231, 255)',
+      tickWidth: '2',
+      tickHeight: '70',
       shortText: 'E6',
       text: 'Experiment 6'
     });
