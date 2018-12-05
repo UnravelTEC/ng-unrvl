@@ -19,11 +19,11 @@
       # Datapoints: {{ displayedData.length }}, running avg of
       {{ runningAvgSeconds }}s, From {{ startTime }} to {{ endTime }}.
     </li>
-    <li>
+    <li *ngIf="displayedData && displayedData.length > 0">
       Last Value:
       {{ displayedData[displayedData.length - 1][1] | number: '1.0-1' }}
     </li>
-    <li>
+    <li *ngIf="annotations && annotations.length > 0">
       Annotations: {{ annotations[0]['series'] }} "{{annotations[0]['shortText']}}" @ {{ annotations[0]['x'] | date: 'yyyy-MM-dd HH:mm:ss (z)'}}
       </li>
   </ul>
