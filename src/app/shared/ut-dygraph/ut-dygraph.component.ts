@@ -124,10 +124,10 @@ export class UtDygraphComponent implements OnInit {
       seconds = parseInt(this.startTime.slice(0, -1), 10) * 60 * 60 * 24;
     }
 
-    console.log("length of interval displayed (s): " + seconds.toString());
     let dataBeginTime;
     if (seconds) {
       dataBeginTime = new Date(dataEndTime.valueOf() - seconds * 1000);
+      console.log("length of interval displayed (s): " + seconds.toString());
     } else {
       dataBeginTime = new Date(this.startTime);
     }
