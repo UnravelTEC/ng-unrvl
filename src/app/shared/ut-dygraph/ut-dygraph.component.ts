@@ -44,6 +44,8 @@ export class UtDygraphComponent implements OnInit {
   annotations: Array<Object>;
   @Input()
   extraDyGraphConfig: Object;
+  @Input()
+  multiplicateFactors = [ 1 ];
 
   dyGraphOptions = {};
   displayedData = [];
@@ -202,7 +204,7 @@ export class UtDygraphComponent implements OnInit {
     values.forEach(element => {
       this.displayedData.push([
         new Date(element[0] * 1000),
-        Number(element[1])
+        Number(element[1]) * this.multiplicateFactors[0]
       ]);
     });
 
@@ -279,7 +281,7 @@ export class UtDygraphComponent implements OnInit {
       }
 
       iteratedDate = new Date(currentDate);
-      newData.push([iteratedDate, Number(element[1])]);
+      newData.push([iteratedDate, Number(element[1]) * this.multiplicateFactors[0]]);
     });
 
     // console.log('got ' + values.length + ' elements');
