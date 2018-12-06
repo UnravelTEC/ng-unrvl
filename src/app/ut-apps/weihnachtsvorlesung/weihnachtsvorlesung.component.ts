@@ -10,25 +10,27 @@ import { LocalStorageService } from '../../core/local-storage.service';
 export class WeihnachtsvorlesungComponent implements OnInit {
   // serverHostName: string = 'http://koffer.lan';
   // serverHostName: string = 'http://belinda.cgv.tugraz.at'
-  serverHostName = 'https://scpexploratory02.tugraz.at';
-  serverPort = '443';
-  serverPath = 'prometheus/api/v1/';
+  serverHostName = 'raspigas.lan';
+  serverPort = '9090';
+  serverPath = 'api/v1/';
   // queryString: string = 'mic_audiolevel';
   // queryString: string = 'co2{location="FuzzyLab",sensor="scd30"}'
-  queryString = 'sensor_radiation_Sv';
+  queryString = 'adc1_c1';
   dataBaseQueryStepMS = 1000;
   timeRange = 60; // 1 min
   runningAvgSeconds = 0;
   fetchFromServerIntervalMS = 1000;
   dataSeriesNames = ['miclvl'];
 
+  multiplicateFactors = [ 100 ];
+
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
   start2 = '2018-12-05 15:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-05 14:00'), // earliest
-      new Date('2018-12-05 20:00') // latest
+      new Date('2018-12-06 11:00'), // earliest
+      new Date('2018-12-06 16:00') // latest
     ]
     // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
   };
