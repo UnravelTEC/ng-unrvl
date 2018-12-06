@@ -44,7 +44,11 @@ export class WeihnachtsvorlesungComponent implements OnInit {
       series: 'miclvl',
       x: new Date().getTime(),
       shortText: 'E6',
-      text: 'Experiment 6'
+      text: 'Experiment 6',
+      cssClass: 'utAnnotation',
+      tickColor: 'rgb(148, 231, 255)',
+      tickWidth: '2',
+      tickHeight: '70'
     });
     this.annotations1.push({
       series: 'miclvl',
@@ -58,7 +62,6 @@ export class WeihnachtsvorlesungComponent implements OnInit {
       series: 'miclvl',
       x: new Date().getTime(),
       cssClass: 'utAnnotation',
-
       tickColor: 'rgb(148, 231, 255)',
       tickWidth: '2',
       tickHeight: '70',
