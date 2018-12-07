@@ -61,9 +61,7 @@ note on ng-dygraphs:
   it reloads with 500ms timeout - this is bad!
   and it draws _completely new_ each time!
 
-note on annotations:
-  css class styling hat net funktioniert (wahrscheinlich pfuscht angular irgendwo dazwischen)
-  width/height als string angeben ("2")
+dygraph css - you have to disable ng component encapsulation
 
 
 # deployment 
