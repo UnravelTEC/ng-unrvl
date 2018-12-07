@@ -15,14 +15,11 @@ export class AnnotationsEditorComponent implements OnInit {
 
   @Input()
   annotationList: Array<Object>;
-  @Input()
-  changeTrigger = true;
 
   expanded = true;
 
   @Output()
   triggerChange = new EventEmitter<number>();
-
 
   constructor() {}
 
@@ -30,7 +27,6 @@ export class AnnotationsEditorComponent implements OnInit {
 
   setCurrent(newCurrent) {
     this.currentAnnotation = newCurrent;
-    this.changeTrigger = ! this.changeTrigger;
     this.triggerChange.emit(1);
   }
 

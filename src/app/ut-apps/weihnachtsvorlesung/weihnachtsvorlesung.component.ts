@@ -45,6 +45,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   }
   changeTriggered(invar: number) {
     console.log(invar);
+    this.changeTrigger = ! this.changeTrigger;
   }
   ngOnInit() {
 
