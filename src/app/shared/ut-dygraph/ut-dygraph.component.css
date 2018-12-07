@@ -1,29 +1,28 @@
-ul {
+.mydygraph-component ul {
     text-align: left;
 }
-#graph {
-    width: 300px;
-    height: 200px;
-    /* background: green; */
-}
 
-.mydygraph {
+.mydygraph-component {
     /* background: rgba(122, 122, 255, 0.418); */
     border: 0px solid black;
 }
 
-.mydygraph .info {
+.mydygraph-component .graph {
+    background: rgba(122, 122, 255, 0.418);
+}
+
+.mydygraph-component .info {
     margin: 1em;
     border: 1px solid blue;
     padding: 1em;
 }
 
-.mydygraph .nodata {
+.mydygraph-component .nodata {
     border-color:orange;
 }
-.mydygraph .waiting {
+.mydygraph-component .waiting {
     border-color: yellow;
 }
-.mydygraph .error {
+.mydygraph-component .error {
     border-color: red;
 }

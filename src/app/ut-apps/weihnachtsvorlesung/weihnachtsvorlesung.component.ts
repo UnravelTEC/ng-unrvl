@@ -23,6 +23,8 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   fetchFromServerIntervalMS = 1000;
   dataSeriesNames = ['miclvl'];
   changeTrigger = true;
+  style1 = { position: "absolute", top: "3vh", bottom: "51vh", left: "5vw", right: "20vw"}
+  style2 = { position: "absolute", top: "51vh", bottom: "3vh", left: "5vw", right: "20vw"}
 
   multiplicateFactors = [ 100 ];
 

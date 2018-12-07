@@ -6,26 +6,26 @@
       [queryString]="queryString"
       dataBaseQueryStepMS="100"
       [dataSeriesNames]="dataSeriesNames"
-      graphHeight="300"
-      graphWidth="765"
+      [style]="style1"
       [serverHostName]="serverHostName"
       [serverPath]="serverPath"
       [serverPort]="serverPort"
-      startTime="15m"
+      startTime="3m"
       fetchFromServerIntervalMS="100"
       debug="false"
       [annotations]="annotations1"
       [multiplicateFactors]="multiplicateFactors"
       YLabel="dBa"
+      runningAvgSeconds="1"
     ></app-ut-dygraph>
   </div>
+  <br />
   <div class="mydygraph">
     <app-ut-dygraph
       queryString="avg_over_time(adc1_c1[10s])"
       dataBaseQueryStepMS="10000"
       [dataSeriesNames]="dataSeriesNames"
-      graphHeight="300"
-      graphWidth="765"
+      [style]="style2"
       [serverHostName]="serverHostName"
       [serverPath]="serverPath"
       [serverPort]="serverPort"
@@ -40,11 +40,17 @@
     ></app-ut-dygraph>
   </div>
   <div class="annotations">
-    <app-annotations-editor [annotationList]="annotations2" (triggerChange)="changeTriggered($event)">
+    <app-annotations-editor
+      [annotationList]="annotations2"
+      (triggerChange)="changeTriggered($event)"
+    >
     </app-annotations-editor>
   </div>
   <div class="toplist">
-    <app-annotation-top-list [annotationList]="annotations2" [changeTrigger]="changeTrigger">
+    <app-annotation-top-list
+      [annotationList]="annotations2"
+      [changeTrigger]="changeTrigger"
+    >
     </app-annotation-top-list>
   </div>
 </div>

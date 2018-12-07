@@ -1,12 +1,15 @@
-import { Component, Input, OnInit } from '@angular/core';
-import Dygraph from 'dygraphs';
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+
 import { interval, Subscription } from 'rxjs';
+import Dygraph from 'dygraphs';
+
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 
 @Component({
   selector: 'app-ut-dygraph',
   templateUrl: './ut-dygraph.component.html',
-  styleUrls: ['./ut-dygraph.component.css']
+  styleUrls: ['./ut-dygraph.component.css'],
+  encapsulation: ViewEncapsulation.None // from https://coryrylan.com/blog/css-encapsulation-with-angular-components
 })
 export class UtDygraphComponent implements OnInit {
   // define on start what doesn't change
@@ -15,10 +18,15 @@ export class UtDygraphComponent implements OnInit {
   queryString = 'co2{location="FuzzyLab",sensor="scd30"}';
   @Input()
   dataSeriesNames: string[];
+
+  // set eigher height+width or a position object
   @Input()
-  graphHeight = '350'; // should be any css value
+  graphHeight: string; // = '350'; // should be any css value
   @Input()
-  graphWidth = '750'; // should be any css value
+  graphWidth: string; // = '750'; // should be any css value
+  @Input()
+  style = {};
+
   @Input()
   YLabel = 'Value (unit)';
   @Input()
@@ -45,7 +53,7 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   extraDyGraphConfig: Object;
   @Input()
-  multiplicateFactors = [ 1 ];
+  multiplicateFactors = [1];
 
   dyGraphOptions = {};
   displayedData = [];
@@ -79,8 +87,8 @@ export class UtDygraphComponent implements OnInit {
 
   ngOnInit() {
     this.dyGraphOptions = {
-      width: this.graphWidth,
-      height: this.graphHeight,
+      // width: this.graphWidth,
+      // height: this.graphHeight,
       labels: ['Date'],
       xlabel: 'Time',
       ylabel: this.YLabel,
@@ -148,7 +156,6 @@ export class UtDygraphComponent implements OnInit {
         (displayedData: Object) => this.handleInitialData(displayedData),
         error => this.handlePrometheusErrors(error)
       );
-
   }
 
   handlePrometheusErrors(error) {
@@ -281,7 +288,10 @@ export class UtDygraphComponent implements OnInit {
       }
 
       iteratedDate = new Date(currentDate);
-      newData.push([iteratedDate, Number(element[1]) * this.multiplicateFactors[0]]);
+      newData.push([
+        iteratedDate,
+        Number(element[1]) * this.multiplicateFactors[0]
+      ]);
     });
 
     // console.log('got ' + values.length + ' elements');
@@ -320,7 +330,8 @@ export class UtDygraphComponent implements OnInit {
     this.RequestsUnderway++;
 
     const startDate = this.displayedData[this.displayedData.length - 1][0];
-    if (!startDate) { // unsure if needed, because now interval is only triggered when initial data here.
+    if (!startDate) {
+      // unsure if needed, because now interval is only triggered when initial data here.
       console.log(startDate);
       console.error('error in fetchNewData: no previous data found');
       this.RequestsUnderway--;

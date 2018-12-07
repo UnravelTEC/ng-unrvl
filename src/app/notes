@@ -62,7 +62,7 @@ note on ng-dygraphs:
   and it draws _completely new_ each time!
 
 dygraph css - you have to disable ng component encapsulation
-
+  beim absolute positionieren alle 4 seiten-abstände angeben!
 
 # deployment 
 
