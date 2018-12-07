@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import { WeihnachtsvorlesungRoutingModule } from './weihnachtsvorlesung-routing.module';
 import { WeihnachtsvorlesungComponent } from './weihnachtsvorlesung.component';
@@ -12,7 +13,8 @@ import { AnnotationsEditorComponent } from './annotations-editor/annotations-edi
   imports: [
     CommonModule,
     WeihnachtsvorlesungRoutingModule,
-    UtDygraphModule
+    UtDygraphModule,
+    FormsModule
   ],
   declarations: [WeihnachtsvorlesungComponent, AnnotationsEditorComponent]
 })

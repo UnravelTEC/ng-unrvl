@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-annotations-editor',
@@ -6,10 +6,27 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./annotations-editor.component.css']
 })
 export class AnnotationsEditorComponent implements OnInit {
+  currentAnnotation = {
+    series: 'test',
+    x: 2,
+    shortText: '#1',
+    text: 'String'
+  };
 
-  constructor() { }
+  @Input()
+  annotationList: Array<Object>;
 
-  ngOnInit() {
+  expanded = true;
+
+  constructor() {}
+
+  ngOnInit() {}
+
+  setCurrent(newCurrent) {
+    this.currentAnnotation = newCurrent;
   }
 
+  adjustTime(secondsToAdjust: number) {
+    this.currentAnnotation.x += secondsToAdjust * 1000; // x is in ms
+  }
 }
