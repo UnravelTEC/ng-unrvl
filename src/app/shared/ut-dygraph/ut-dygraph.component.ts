@@ -149,13 +149,6 @@ export class UtDygraphComponent implements OnInit {
         error => this.handlePrometheusErrors(error)
       );
 
-    if (this.fetchFromServerIntervalMS > 0) {
-      this.intervalSubscription = interval(
-        this.fetchFromServerIntervalMS
-      ).subscribe(counter => {
-        this.fetchNewData();
-      });
-    }
   }
 
   handlePrometheusErrors(error) {
@@ -191,8 +184,7 @@ export class UtDygraphComponent implements OnInit {
       !receivedData['data']['result'][0]['values']
     ) {
       console.log('Error: no valid data received.');
-      console.log();
-      this.intervalSubscription.unsubscribe();
+      console.log(receivedData);
       this.noData = true;
       this.waiting = false;
       return;
@@ -242,6 +234,14 @@ export class UtDygraphComponent implements OnInit {
 
     console.log(this.dyGraphOptions);
     console.log(this.displayedData);
+
+    if (this.fetchFromServerIntervalMS > 0) {
+      this.intervalSubscription = interval(
+        this.fetchFromServerIntervalMS
+      ).subscribe(counter => {
+        this.fetchNewData();
+      });
+    }
   }
 
   handleUpdatedData(displayedData: Object) {
@@ -320,8 +320,8 @@ export class UtDygraphComponent implements OnInit {
     this.RequestsUnderway++;
 
     const startDate = this.displayedData[this.displayedData.length - 1][0];
-    if (!startDate) {
-      this.intervalSubscription.unsubscribe();
+    if (!startDate) { // unsure if needed, because now interval is only triggered when initial data here.
+      console.log(startDate);
       console.error('error in fetchNewData: no previous data found');
       this.RequestsUnderway--;
       return;

@@ -4,7 +4,7 @@
   <div class="mydygraph">
     <app-ut-dygraph
       [queryString]="queryString"
-      dataBaseQueryStepMS="1000"
+      dataBaseQueryStepMS="100"
       [dataSeriesNames]="dataSeriesNames"
       graphHeight="300"
       graphWidth="765"
@@ -12,7 +12,7 @@
       [serverPath]="serverPath"
       [serverPort]="serverPort"
       startTime="15m"
-      fetchFromServerIntervalMS="1000"
+      fetchFromServerIntervalMS="100"
       debug="false"
       [annotations]="annotations1"
       [multiplicateFactors]="multiplicateFactors"
@@ -21,7 +21,7 @@
   </div>
   <div class="mydygraph">
     <app-ut-dygraph
-      [queryString]="queryString"
+      queryString="avg_over_time(adc1_c1[10s])"
       dataBaseQueryStepMS="10000"
       [dataSeriesNames]="dataSeriesNames"
       graphHeight="300"
