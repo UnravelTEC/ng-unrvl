@@ -29,4 +29,7 @@ export class AnnotationsEditorComponent implements OnInit {
   adjustTime(secondsToAdjust: number) {
     this.currentAnnotation.x += secondsToAdjust * 1000; // x is in ms
   }
+  toggleDisplay() {
+    this.expanded = ! this.expanded;
+  }
 }
