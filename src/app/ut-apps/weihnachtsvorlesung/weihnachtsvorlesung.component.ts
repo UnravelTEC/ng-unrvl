@@ -22,6 +22,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   runningAvgSeconds = 0;
   fetchFromServerIntervalMS = 1000;
   dataSeriesNames = ['miclvl'];
+  changeTrigger = true;
 
   multiplicateFactors = [ 100 ];
 
@@ -51,7 +52,8 @@ export class WeihnachtsvorlesungComponent implements OnInit {
       cssClass: 'utAnnotation',
       tickColor: 'rgb(148, 231, 255)',
       tickWidth: '2',
-      tickHeight: '70'
+      tickHeight: '70',
+      dBValue: 81
     });
     this.annotations1.push({
       series: 'miclvl',
@@ -69,37 +71,43 @@ export class WeihnachtsvorlesungComponent implements OnInit {
       tickWidth: '2',
       tickHeight: '70',
       shortText: 'E6',
-      text: 'Experiment 6'
+      text: 'Experiment 6',
+      dBValue: 61
     });
     this.annotations2.push({
       series: 'miclvl',
       x: new Date().getTime()- (1.4*60*60*1000),
       shortText: 'E1',
-      text: 'Experiment 1'
+      text: 'Experiment 1',
+      dBValue: 51
     });
     this.annotations2.push({
       series: 'miclvl',
       x: new Date().getTime()- (1.2*60*60*1000),
       shortText: 'E2',
-      text: 'Experiment 2'
+      text: 'Experiment 2',
+      dBValue: 52
     });
     this.annotations2.push({
       series: 'miclvl',
       x: new Date().getTime()- (1*60*60*1000),
       shortText: 'E3',
-      text: 'Experiment 3'
+      text: 'Experiment 3',
+      dBValue: 53
     });
     this.annotations2.push({
       series: 'miclvl',
       x: new Date().getTime()- (.7*60*60*1000),
       shortText: 'E4',
-      text: 'Experiment 4'
+      text: 'Experiment 4',
+      dBValue: 54
     });
     this.annotations2.push({
       series: 'miclvl',
       x: new Date().getTime()- (.2*60*60*1000),
       shortText: 'E5',
-      text: 'Experiment 5'
+      text: 'Experiment 5',
+      dBValue: 55
     });
   }
 

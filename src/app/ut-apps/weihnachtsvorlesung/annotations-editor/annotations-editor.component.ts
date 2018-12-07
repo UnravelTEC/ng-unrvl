@@ -15,8 +15,12 @@ export class AnnotationsEditorComponent implements OnInit {
 
   @Input()
   annotationList: Array<Object>;
+  @Input()
+  changeTrigger = true;
 
   expanded = true;
+
+
 
   constructor() {}
 
@@ -24,6 +28,7 @@ export class AnnotationsEditorComponent implements OnInit {
 
   setCurrent(newCurrent) {
     this.currentAnnotation = newCurrent;
+    this.changeTrigger = ! this.changeTrigger;
   }
 
   adjustTime(secondsToAdjust: number) {

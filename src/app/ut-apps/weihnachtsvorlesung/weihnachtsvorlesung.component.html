@@ -40,7 +40,11 @@
     ></app-ut-dygraph>
   </div>
   <div class="annotations">
-    <app-annotations-editor [annotationList]="annotations1">
+    <app-annotations-editor [annotationList]="annotations2" [changeTrigger]="changeTrigger">
     </app-annotations-editor>
+  </div>
+  <div class="toplist">
+    <app-annotation-top-list [annotationList]="annotations2" [changeTrigger]="changeTrigger">
+    </app-annotation-top-list>
   </div>
 </div>
