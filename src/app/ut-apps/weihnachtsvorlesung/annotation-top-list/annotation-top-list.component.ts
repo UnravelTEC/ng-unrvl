@@ -16,13 +16,15 @@ export class AnnotationTopListComponent implements OnInit {
   constructor() {}
 
   ngOnChanges(changes: SimpleChanges) {
-    this.topList = [];
+    let tmpArray = [];
     for (let i = 0; i < this.annotationList.length; i++) {
       if (this.annotationList[i]['dBValue']) {
-        this.topList.push(this.annotationList[i]);
+        tmpArray.push(this.annotationList[i]);
       }
     }
-    this.topList.sort((a, b) => b['dBValue'] - a['dBValue']);
+    tmpArray.sort((a, b) => b['dBValue'] - a['dBValue']);
+
+    this.topList = tmpArray.slice(0, 4);
   }
 
   ngOnInit() {}

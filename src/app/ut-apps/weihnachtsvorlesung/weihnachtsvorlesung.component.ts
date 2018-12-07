@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, SimpleChanges } from '@angular/core';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { AnnotationsEditorComponent } from './annotations-editor/annotations-editor.component';
 
@@ -40,7 +40,12 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   annotations2 = [];
 
   constructor(private localStorage: LocalStorageService) {}
-
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('app: ngOnC triggered')
+  }
+  changeTriggered(invar: number) {
+    console.log(invar);
+  }
   ngOnInit() {
 
     // push // Annotations for short term graph

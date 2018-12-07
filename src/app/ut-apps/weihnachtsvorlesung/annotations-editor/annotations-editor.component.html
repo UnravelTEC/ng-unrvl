@@ -1,4 +1,4 @@
-<button (click)="toggleDisplay()">Toggle an </button>
+<button (click)="toggleDisplay()">Toggle an</button>
 <div name="toggle" *ngIf="expanded == true">
   <form id="annolist">
     <label
@@ -62,14 +62,16 @@
       <label>Duration: </label> <input type="text" />
     </div>
     <div class="form-group">
-        <label for="currentAnnotation.dBValue">dBValue:</label>
-        <input
-          type="text"
-          id="currentAnnotation.dBValue"
-          [(ngModel)]="currentAnnotation.dBValue"
-          name="currentAnnotation.dBValue"
-        />
-      </div>
-
+      <label for="currentAnnotation.dBValue">dBValue:</label>
+      <input
+        type="text"
+        id="currentAnnotation.dBValue"
+        [(ngModel)]="currentAnnotation.dBValue"
+        name="currentAnnotation.dBValue"
+      />
+    </div>
+    <div class="form-group">
+      <button (click)="delete()">Delete</button>
+    </div>
   </form>
 </div>
