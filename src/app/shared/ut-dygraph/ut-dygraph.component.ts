@@ -59,7 +59,7 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   debug = 'false';
   @Input()
-  annotations: Array<Object>;
+  annotations: Array<any>; // would need definition of Dygraphs Annotation
   @Input()
   extraDyGraphConfig: Object;
   @Input()
@@ -72,7 +72,7 @@ export class UtDygraphComponent implements OnInit {
     animatedZooms: true,
     pointSize: 4,
     hideOverlayOnMouseOut: true,
-    legend: 'always'
+    legend: <any>'always'
   };
   displayedData = [];
   historicalData = [];
@@ -87,7 +87,7 @@ export class UtDygraphComponent implements OnInit {
   private requestsUnderway = 0; // don't flood the server if it is not fast enough
   private queryEndPoint: string;
 
-  Dygraph: any;
+  Dygraph: Dygraph;
 
   intervalSubscription: Subscription;
 
@@ -424,6 +424,11 @@ export class UtDygraphComponent implements OnInit {
           this.displayedData,
           annotation['x']
         );
+        if(!lower || !upper) {
+          console.log('no valid x value for ' + annotation['shortText']);
+          annotation['adjusted'] = true; // FIXME tmp to not load the cpu too high
+          return;
+        }
         annotation['x'] = this.displayedData[lower][0].valueOf();
         console.log('lower: ' + annotation['x']);
         console.log('upper: ' + this.displayedData[upper][0].valueOf());
@@ -443,6 +448,7 @@ export class UtDygraphComponent implements OnInit {
       upperIndex = inputArray.length - 1;
 
     function compareDate(date1: Date, date2: Date) {
+      if (!date1 || !date2) return undefined;
       if (date1.valueOf() === date2.valueOf()) {
         return 0;
       }
@@ -454,6 +460,7 @@ export class UtDygraphComponent implements OnInit {
       const halfElem = inputArray[halfIndex][0];
 
       const comparisonResult = compareDate(target, halfElem);
+      if (comparisonResult === undefined) return [undefined, undefined];
       if (comparisonResult === 0) {
         lowerIndex = halfIndex;
         upperIndex = halfIndex;
