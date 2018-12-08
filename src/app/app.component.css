@@ -20,6 +20,7 @@
   /* background: green; */
   flex: 1;
   overflow-y: auto;
+  position: relative; /* to act as new limits for apps with pos: absolute */
 }
 
 .utAnnotation {
