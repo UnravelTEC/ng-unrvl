@@ -1,10 +1,18 @@
-<p>
-  settings-panel works!
-</p>
 
-<ul>
-  <li>Setting 1</li>
-  <li>Setting 2</li>
-</ul>
+<h1>Global Settings</h1>
+<section *ngFor="let settingsSection of (globalSettings | keyvalue)">
+  <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
+  <section *ngFor="let entry of (settingsSection.value.settings | keyvalue)">
+    <label for="{{ settingsSection.key }}-{{ entry.key }}"
+      >{{ entry.value.fieldName }}:
+    </label>
+    <input
+      type="text"
+      class="form-control"
+      id="{{ settingsSection.key }}-{{ entry.key }}"
+      [(ngModel)]="entry.value.fieldValue"
+    />
+    <span *ngIf="debug == true"> ( {{ entry.value.fieldValue }} ) </span>
+  </section>
+</section>
 
-<p>On/Off</p>
