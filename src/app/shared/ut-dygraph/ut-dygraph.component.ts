@@ -120,7 +120,8 @@ export class UtDygraphComponent implements OnInit {
     if (server.endsWith('/')) {
       console.error('servername has to be without slash(/) at the end!');
     }
-    const protAndHost = server.startsWith('http') ? server : 'http://' + server;
+    const protocol = (port == "443") ? 'https://' : 'http://';
+    const protAndHost = server.startsWith('http') ? server : protocol + server;
     return protAndHost + ':' + port + (path.startsWith('/') ? '' : '/') + path;
   }
 
