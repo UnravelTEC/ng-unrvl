@@ -1,0 +1,19 @@
+.utAnnotation {
+  color: #373535 !important; /* !important needed to override inline set value by Dygraph */
+  width: 40px !important;
+  height: 40px !important;
+  background: rgb(148, 231, 255);
+  transform: translateX(7px);
+  border: 0;
+}
+
+.graphapp .toplist {
+    position: absolute;
+    top:3em;
+    left: 800px;
+    border: 1px solid green;
+}
+
+.mydygraph {
+
+}

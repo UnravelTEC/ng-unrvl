@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { NgModule, Optional, SkipSelf } from '@angular/core';
+import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 
+import { HelperFunctionsService } from './helper-functions.service';
 import { LocalStorageService } from './local-storage.service';
 
 
@@ -17,5 +18,12 @@ export class CoreModule {
         'CoreModule is already loaded. Import it in the AppModule only'
       );
     }
+  }
+
+  static forRoot(): ModuleWithProviders {
+    return {
+      ngModule: CoreModule,
+      providers: [LocalStorageService, HelperFunctionsService]
+    };
   }
 }

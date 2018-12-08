@@ -1,0 +1,15 @@
+#singleAnno label {
+  width: 8em;
+  display: inline-block;
+  text-align: right;
+  padding-right: 0.5em;
+}
+
+
+#annolist {
+    float: left;
+    display: inline-block;
+}
+#annolist label {
+    vertical-align: top;
+}

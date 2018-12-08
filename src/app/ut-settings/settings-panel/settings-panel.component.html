@@ -1,10 +1,50 @@
-<p>
-  settings-panel works!
-</p>
+<h1>Global Settings</h1>
+<section *ngFor="let settingsSection of (globalSettingsUnsaved | keyvalue)">
+  <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
+  <section *ngFor="let entry of (settingsSection.value.settings | keyvalue)">
+    <label for="{{ settingsSection.key }}-{{ entry.key }}"
+      >{{ entry.value.fieldName }}:
+    </label>
+    <input
+      type="text"
+      class="form-control"
+      id="{{ settingsSection.key }}-{{ entry.key }}"
+      [(ngModel)]="entry.value.fieldValue"
+    />
+    <div class="valuedebug" *ngIf="debug == true">
+      <!-- '{{ entry.value.fieldValue }}', -->
+      <span *ngIf="entry.key == 'serverHostName'"
+        ><a href="http://{{entry.value.fieldValue}}">{{
+          entry.value.fieldValue
+        }}</a></span
+      >
+      Default: '{{
+        defaultSettings[settingsSection.key].settings[entry.key].fieldValue
+      }}', Global: '<span
+        *ngIf="
+          globalSettings &&
+          globalSettings[settingsSection.key] &&
+          globalSettings[settingsSection.key]['settings'] &&
+          globalSettings[settingsSection.key]['settings'][entry.key] &&
+          globalSettings[settingsSection.key]['settings'][entry.key][
+            'fieldValue'
+          ]
+        "
+        >{{
+          globalSettings[settingsSection.key].settings[entry.key].fieldValue
+        }}</span
+      >'
+      </div>
+  </section>
+</section>
 
-<ul>
-  <li>Setting 1</li>
-  <li>Setting 2</li>
-</ul>
-
-<p>On/Off</p>
+<section id="submit">
+  <div>
+    <!-- div needed for text-align center -->
+    <button type="submit" class="btn btn-success" (click)="save()">Save</button>
+    <button type="submit" class="btn btn-success" (click)="load()">Load</button>
+    <button type="submit" class="btn btn-success" (click)="reset()">
+      Reset
+    </button>
+  </div>
+</section>

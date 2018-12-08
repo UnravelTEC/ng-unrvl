@@ -1,6 +1,16 @@
 <!-- presenting: ut-dygraph: -->
-<div class="mydygraph" [style.width.px]="graphWidth" [style.height.px]="graphHeight">
-  <div id="{{ htmlID }}"></div>
+<div class="mydygraph-component">
+  <div
+    class="graph"
+    id="{{ htmlID }}"
+    [style.width.px]="graphWidth"
+    [style.height.px]="graphHeight"
+    [style.position]="style.position"
+    [style.top]="style.top"
+    [style.bottom]="style.bottom"
+    [style.left]="style.left"
+    [style.right]="style.right"
+  ></div>
   <div *ngIf="noData == true" class="info nodata">No data to display.</div>
   <div *ngIf="waiting == true" class="info waiting">Waiting for data...</div>
   <div *ngIf="error != undefined" class="info error">{{ error }}</div>
@@ -26,7 +36,9 @@
       {{ displayedData[displayedData.length - 1][1] | number: '1.0-1' }}
     </li>
     <li *ngIf="annotations && annotations.length > 0">
-      Annotations: {{ annotations[0]['series'] }} "{{annotations[0]['shortText']}}" @ {{ annotations[0]['x'] | date: 'yyyy-MM-dd HH:mm:ss (z)'}}
-      </li>
+      Annotations: {{ annotations[0]['series'] }} "{{
+        annotations[0]['shortText']
+      }}" @ {{ annotations[0]['x'] | date: 'yyyy-MM-dd HH:mm:ss (z)' }}
+    </li>
   </ul>
 </div>

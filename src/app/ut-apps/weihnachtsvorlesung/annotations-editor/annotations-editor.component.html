@@ -1,0 +1,77 @@
+<button (click)="toggleDisplay()">Toggle an</button>
+<div name="toggle" *ngIf="expanded == true">
+  <form id="annolist">
+    <label
+      >Annotations
+      <select name="annotations" size="10">
+        <option
+          *ngFor="let annotation of annotationList"
+          (click)="setCurrent(annotation)"
+          >{{ annotation['shortText'] }}: {{ annotation['text'] }}</option
+        >
+      </select>
+    </label>
+  </form>
+
+  <form id="singleAnno">
+    <div class="form-group">
+      <label for="currentAnnotation.series">series:</label>
+      <input
+        type="text"
+        id="currentAnnotation.series"
+        [(ngModel)]="currentAnnotation.series"
+        name="currentAnnotation.series"
+      />
+    </div>
+    <div class="form-group">
+      <label for="text">Name:</label>
+      <input
+        type="text"
+        id="currentAnnotation.text"
+        [(ngModel)]="currentAnnotation.text"
+        name="currentAnnotation.text"
+      />
+    </div>
+    <div class="form-group">
+      <label for="currentAnnotation.shortText">ID:</label>
+      <input
+        type="text"
+        id="currentAnnotation.shortText"
+        [(ngModel)]="currentAnnotation.shortText"
+        name="currentAnnotation.shortText"
+      />
+    </div>
+    <div class="form-group">
+      <label for="x">Start:</label>
+      <input
+        type="text"
+        id="x"
+        [(ngModel)]="currentAnnotation.x"
+        name="currentAnnotation.x"
+      />
+      <button (click)="adjustTime(1)">+1s</button>
+      <button (click)="adjustTime(-1)">-1s</button>
+      <button (click)="adjustTime(10)">+10s</button>
+      <button (click)="adjustTime(-10)">-10s</button>
+      <button (click)="adjustTime(60)">+1m</button>
+      <button (click)="adjustTime(-60)">-1m</button>
+      <button (click)="adjustTime(600)">+10m</button>
+      <button (click)="adjustTime(-600)">-10m</button>
+    </div>
+    <div class="form-group">
+      <label>Duration: </label> <input type="text" />
+    </div>
+    <div class="form-group">
+      <label for="currentAnnotation.dBValue">dBValue:</label>
+      <input
+        type="text"
+        id="currentAnnotation.dBValue"
+        [(ngModel)]="currentAnnotation.dBValue"
+        name="currentAnnotation.dBValue"
+      />
+    </div>
+    <div class="form-group">
+      <button (click)="delete()">Delete</button>
+    </div>
+  </form>
+</div>

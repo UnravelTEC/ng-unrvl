@@ -7,7 +7,7 @@ import { LocalStorageService } from '../../core/local-storage.service';
   styleUrls: ['./dygraph-dev.component.css']
 })
 export class DygraphDevComponent implements OnInit {
-  serverHostName = 'henri0.lan';
+  serverHostName = '';
   queryString = 'veml6075_uva';
   dataBaseQueryStepMS = 1000;
   startTime = '60s';
