@@ -63,7 +63,15 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   multiplicateFactors = [1];
 
-  dyGraphOptions = {};
+  dyGraphOptions = { // http://dygraphs.com/options.html
+    labels: ['Date'], // one element needed for further code.
+    xlabel: 'Time',
+    title: '',
+    animatedZooms: true,
+    pointSize: 4,
+    hideOverlayOnMouseOut: true,
+    legend: 'always'
+  };
   displayedData = [];
   historicalData = [];
   dataBeginTime: Date;
@@ -115,16 +123,8 @@ export class UtDygraphComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.dyGraphOptions = {
-      // width: this.graphWidth,
-      // height: this.graphHeight,
-      labels: ['Date'],
-      xlabel: 'Time',
-      ylabel: this.YLabel,
-      title: '',
-      animatedZooms: true,
-      pointSize: 4
-    };
+    this.dyGraphOptions['ylabel'] = this.YLabel;
+
     for (const key in this.extraDyGraphConfig) {
       if (this.extraDyGraphConfig.hasOwnProperty(key)) {
         this.dyGraphOptions[key] = this.extraDyGraphConfig[key];
@@ -137,31 +137,7 @@ export class UtDygraphComponent implements OnInit {
     console.log(this.endTime);
     const dataEndTime =
       this.endTime === 'now' ? new Date() : new Date(this.endTime);
-    let seconds;
-    if (
-      this.startTime.endsWith('s') &&
-      parseInt(this.startTime.slice(0, -1), 10) > 0
-    ) {
-      seconds = parseInt(this.startTime.slice(0, -1), 10);
-    }
-    if (
-      this.startTime.endsWith('m') &&
-      parseInt(this.startTime.slice(0, -1), 10) > 0
-    ) {
-      seconds = parseInt(this.startTime.slice(0, -1), 10) * 60;
-    }
-    if (
-      this.startTime.endsWith('h') &&
-      parseInt(this.startTime.slice(0, -1), 10) > 0
-    ) {
-      seconds = parseInt(this.startTime.slice(0, -1), 10) * 60 * 60;
-    }
-    if (
-      this.startTime.endsWith('d') &&
-      parseInt(this.startTime.slice(0, -1), 10) > 0
-    ) {
-      seconds = parseInt(this.startTime.slice(0, -1), 10) * 60 * 60 * 24;
-    }
+    let seconds = this.parseToSeconds(this.startTime)
 
     let dataBeginTime;
     if (seconds) {
@@ -187,6 +163,35 @@ export class UtDygraphComponent implements OnInit {
         (displayedData: Object) => this.handleInitialData(displayedData),
         error => this.handlePrometheusErrors(error)
       );
+  }
+
+  parseToSeconds(inputString: string): number {
+    let seconds = 0;
+    if (
+      inputString.endsWith('s') &&
+      parseInt(inputString.slice(0, -1), 10) > 0
+    ) {
+      seconds = parseInt(inputString.slice(0, -1), 10);
+    }
+    if (
+      inputString.endsWith('m') &&
+      parseInt(inputString.slice(0, -1), 10) > 0
+    ) {
+      seconds = parseInt(inputString.slice(0, -1), 10) * 60;
+    }
+    if (
+      inputString.endsWith('h') &&
+      parseInt(inputString.slice(0, -1), 10) > 0
+    ) {
+      seconds = parseInt(inputString.slice(0, -1), 10) * 60 * 60;
+    }
+    if (
+      inputString.endsWith('d') &&
+      parseInt(inputString.slice(0, -1), 10) > 0
+    ) {
+      seconds = parseInt(inputString.slice(0, -1), 10) * 60 * 60 * 24;
+    }
+    return seconds;
   }
 
   handlePrometheusErrors(error) {
