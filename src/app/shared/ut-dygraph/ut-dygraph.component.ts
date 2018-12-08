@@ -48,12 +48,11 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   fetchFromServerIntervalMS = 1000; // set 0 for no update - but can be changed later - default 1000ms.
   @Input()
-  // serverHostName = 'koffer.lan'; // optional, defaults to localhost
-  serverHostName: string; // optional, defaults to localhost
+  serverHostName: string; // optional, get it from globalSettings instead
   @Input()
-  serverPort = '9090'; // optional, defaults to 9090
+  serverPort: string; // optional, get it from globalSettings instead
   @Input()
-  serverPath = '/api/v1/'; // optional, defaults to /api/v1/
+  serverPath: string; // optional, get it from globalSettings instead
   @Input()
   runningAvgSeconds = 0;
   @Input()
@@ -102,25 +101,39 @@ export class UtDygraphComponent implements OnInit {
     port: string = this.serverPort,
     path: string = this.serverPath
   ) {
-    if (!server) {
-      const globalSettings = this.localStorage.get('globalSettings');
+    let globalSettings;
+    if (!server || !port || !path) {
+      globalSettings = this.localStorage.get('globalSettings');
       console.log(globalSettings);
-      const globalServer = this.h.getDeep(globalSettings, [
+    }
+    if (!server) {
+      server = this.h.getDeep(globalSettings, [
         'server',
         'settings',
         'serverHostName',
         'fieldValue'
       ]);
-
-      if (globalServer) {
-        console.log('global Server: ' + globalServer);
-        server = globalServer;
-      }
     }
     if (server.endsWith('/')) {
       console.error('servername has to be without slash(/) at the end!');
     }
-    const protocol = (port == "443") ? 'https://' : 'http://';
+    if (!port) {
+      port = this.h.getDeep(globalSettings, [
+        'server',
+        'settings',
+        'serverPort',
+        'fieldValue'
+      ]);
+    }
+    if (!path) {
+      path = this.h.getDeep(globalSettings, [
+        'server',
+        'settings',
+        'serverPath',
+        'fieldValue'
+      ]);
+    }
+    const protocol = port == '443' ? 'https://' : 'http://';
     const protAndHost = server.startsWith('http') ? server : protocol + server;
     return protAndHost + ':' + port + (path.startsWith('/') ? '' : '/') + path;
   }
@@ -425,7 +438,7 @@ export class UtDygraphComponent implements OnInit {
           this.displayedData,
           annotation['x']
         );
-        if(!lower || !upper) {
+        if (!lower || !upper) {
           console.log('no valid x value for ' + annotation['shortText']);
           annotation['adjusted'] = true; // FIXME tmp to not load the cpu too high
           return;
