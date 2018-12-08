@@ -4,14 +4,14 @@
   <div class="mydygraph">
     <app-ut-dygraph
       [queryString]="queryString"
-      dataBaseQueryStepMS="100"
-      [dataSeriesNames]="dataSeriesNames"
+      dataBaseQueryStepMS="500"
+      [dataSeriesLabels]="dataSeriesNames"
       [style]="style1"
       [serverHostName]="serverHostName"
       [serverPath]="serverPath"
       [serverPort]="serverPort"
       startTime="3m"
-      fetchFromServerIntervalMS="100"
+      fetchFromServerIntervalMS="500"
       debug="false"
       [annotations]="annotations1"
       [multiplicateFactors]="multiplicateFactors"
@@ -22,9 +22,9 @@
   <br />
   <div class="mydygraph">
     <app-ut-dygraph
-      queryString="avg_over_time(adc1_c1[10s])"
+      [queryString]="'avg_over_time(' + queryString + '[10s])'"
       dataBaseQueryStepMS="10000"
-      [dataSeriesNames]="dataSeriesNames"
+      [dataSeriesLabels]="dataSeriesNames"
       [style]="style2"
       [serverHostName]="serverHostName"
       [serverPath]="serverPath"
@@ -41,14 +41,15 @@
   </div>
   <div class="annotations">
     <app-annotations-editor
-      [annotationList]="annotations2"
+      [annotationList]="annotations1"
+      [annotationList2]="annotations2"
       (triggerChange)="changeTriggered($event)"
     >
     </app-annotations-editor>
   </div>
   <div class="toplist">
     <app-annotation-top-list
-      [annotationList]="annotations2"
+      [annotationList]="annotations1"
       [changeTrigger]="changeTrigger"
     >
     </app-annotation-top-list>

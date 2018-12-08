@@ -1,10 +1,22 @@
-TopList:
-<div>
+<div id="toplist">
+  <h2>Aktuelles Experiment</h2>
+  <div>
+    <div class="nr">Platz {{ current.nr +1 }}</div>
+    <div class="entry">
+        <span class="shortText"> {{ current.shortText }}: </span>
+        <span class="text"> {{ current.text }} </span>
+        <span class="dBValue"> {{ current.maxDB }} dBa </span>
+      </div>
+  </div>
+  <h2>Aktuelle Reihung</h2>
   <ol>
-    <li
-        *ngFor="let entry of topList">
-        {{entry.shortText}}: {{entry.dBValue}} dBa
-      </li>
-
+    <li *ngFor="let entry of topList">
+      <div class="nr">Platz n</div>
+      <div class="entry">
+        <span class="shortText"> {{ entry.shortText }}: </span>
+        <span class="text"> {{ entry.text }} </span>
+        <span class="dBValue"> {{ entry.maxDB }} dBa </span>
+      </div>
+    </li>
   </ol>
 </div>

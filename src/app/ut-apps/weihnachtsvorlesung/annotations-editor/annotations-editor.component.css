@@ -1,3 +1,8 @@
+#singleAnno {
+    display: block;
+    margin-left: 31em;
+}
+
 #singleAnno label {
   width: 8em;
   display: inline-block;
@@ -9,7 +14,9 @@
 #annolist {
     float: left;
     display: inline-block;
+    width:30em;
 }
 #annolist label {
     vertical-align: top;
 }
+

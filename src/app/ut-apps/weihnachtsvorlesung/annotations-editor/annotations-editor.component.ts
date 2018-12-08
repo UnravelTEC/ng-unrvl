@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output,EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-annotations-editor',
@@ -15,6 +15,8 @@ export class AnnotationsEditorComponent implements OnInit {
 
   @Input()
   annotationList: Array<Object>;
+  @Input()
+  annotationList2: Array<Object>;
 
   expanded = true;
 
@@ -32,6 +34,13 @@ export class AnnotationsEditorComponent implements OnInit {
 
   adjustTime(secondsToAdjust: number) {
     this.currentAnnotation.x += secondsToAdjust * 1000; // x is in ms
+    const index = this.currentAnnotation['shortText'];
+    this.annotationList2.forEach(element => {
+      if(element['shortText'] == index) {
+        element['x'] += secondsToAdjust * 1000;
+      }
+    });
+
   }
   toggleDisplay() {
     this.expanded = ! this.expanded;
@@ -40,6 +49,7 @@ export class AnnotationsEditorComponent implements OnInit {
     for (let i = 0; i < this.annotationList.length; i++) {
       if(this.annotationList[i]['x'] == this.currentAnnotation['x']) {
         this.annotationList.splice(i,1);
+        this.annotationList2.splice(i,1);
       }
     }
 

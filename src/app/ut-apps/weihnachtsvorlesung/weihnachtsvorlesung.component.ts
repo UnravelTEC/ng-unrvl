@@ -1,6 +1,12 @@
-import { Component, OnInit, ViewEncapsulation, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewEncapsulation,
+  SimpleChanges
+} from '@angular/core';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { AnnotationsEditorComponent } from './annotations-editor/annotations-editor.component';
+import { experimentList } from './experiment-list';
 
 @Component({
   selector: 'app-weihnachtsvorlesung',
@@ -11,30 +17,42 @@ import { AnnotationsEditorComponent } from './annotations-editor/annotations-edi
 export class WeihnachtsvorlesungComponent implements OnInit {
   // serverHostName: string = 'http://koffer.lan';
   // serverHostName: string = 'http://belinda.cgv.tugraz.at'
-  serverHostName = 'raspigas.lan';
+  serverHostName = undefined; // 'raspigas.lan';
   serverPort = '9090';
   serverPath = 'api/v1/';
   // queryString: string = 'mic_audiolevel';
   // queryString: string = 'co2{location="FuzzyLab",sensor="scd30"}'
-  queryString = 'adc1_c1';
+  queryString = 'bme280_pressure'; // 'adc1_c1';
   dataBaseQueryStepMS = 1000;
   timeRange = 60; // 1 min
   runningAvgSeconds = 0;
   fetchFromServerIntervalMS = 1000;
   dataSeriesNames = ['miclvl'];
   changeTrigger = true;
-  style1 = { position: "absolute", top: "3vh", bottom: "51vh", left: "5vw", right: "20vw"}
-  style2 = { position: "absolute", top: "51vh", bottom: "3vh", left: "5vw", right: "20vw"}
+  style1 = {
+    position: 'absolute',
+    top: '3rem',
+    bottom: '31vh',
+    left: '22em',
+    right: '5vw'
+  };
+  style2 = {
+    position: 'absolute',
+    top: '70vh',
+    bottom: '3vh',
+    left: '5vw',
+    right: '5vw'
+  };
 
-  multiplicateFactors = [ 100 ];
+  multiplicateFactors = [100];
 
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-07 08:00';
+  start2 = '2018-12-08 08:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-07 08:00'), // earliest
-      new Date('2018-12-07 16:00') // latest
+      new Date('2018-12-08 16:00'), // earliest
+      new Date('2018-12-08 22:00') // latest
     ]
     // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
   };
@@ -43,87 +61,53 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   constructor(private localStorage: LocalStorageService) {}
   ngOnChanges(changes: SimpleChanges) {
-    console.log('app: ngOnC triggered')
+    console.log('app: ngOnC triggered');
   }
   changeTriggered(invar: number) {
     console.log(invar);
-    this.changeTrigger = ! this.changeTrigger;
+    this.changeTrigger = !this.changeTrigger;
   }
   ngOnInit() {
+    experimentList.forEach(item => {
+      let newitem = {
+        shortText: item.shortText,
+        text: item.text,
+        series: 'miclvl',
+        cssClass: 'utAnnotation',
+        tickColor: 'rgb(148, 231, 255)',
+        tickWidth: '2',
+        tickHeight: '70',
+        x: null, // :Date, start date
+        clapStart: null, // :Date
+        clapEnd: null, // :Date
+        maxDB: 1 // :Number
+      };
+      this.annotations1.push(newitem);
+      this.annotations2.push(JSON.parse(JSON.stringify(newitem)));
+    });
 
+    // manual for test
     // push // Annotations for short term graph
-    this.annotations1.push({
-      series: 'miclvl',
-      x: new Date().getTime(),
-      shortText: 'E6',
-      text: 'Experiment 6',
-      cssClass: 'utAnnotation',
-      tickColor: 'rgb(148, 231, 255)',
-      tickWidth: '2',
-      tickHeight: '70',
-      dBValue: 81
-    });
-    this.annotations1.push({
-      series: 'miclvl',
-      x: new Date().getTime()- (.2*60*60*1000),       // calculate annotation time 0.2mins from now
-      shortText: 'E5',
-      text: 'Experiment 5'
-    });
+    this.annotations1[0]['x'] = new Date().getTime();
+    this.annotations1[0]['maxDB'] = 91;
+    this.annotations1[1]['x'] = new Date().getTime() - 0.2 * 60 * 60 * 1000;
+    this.annotations1[1]['maxDB'] = 89;
 
     // Annotations for long term graph
-    this.annotations2.push({
-      series: 'miclvl',
-      x: new Date().getTime(),
-      cssClass: 'utAnnotation',
-      tickColor: 'rgb(148, 231, 255)',
-      tickWidth: '2',
-      tickHeight: '70',
-      shortText: 'E6',
-      text: 'Experiment 6',
-      dBValue: 61
-    });
-    this.annotations2.push({
-      series: 'miclvl',
-      x: new Date().getTime()- (1.4*60*60*1000),
-      shortText: 'E1',
-      text: 'Experiment 1',
-      dBValue: 51
-    });
-    this.annotations2.push({
-      series: 'miclvl',
-      x: new Date().getTime()- (1.2*60*60*1000),
-      shortText: 'E2',
-      text: 'Experiment 2',
-      dBValue: 52
-    });
-    this.annotations2.push({
-      series: 'miclvl',
-      x: new Date().getTime()- (1*60*60*1000),
-      shortText: 'E3',
-      text: 'Experiment 3',
-      dBValue: 53
-    });
-    this.annotations2.push({
-      series: 'miclvl',
-      x: new Date().getTime()- (.7*60*60*1000),
-      shortText: 'E4',
-      text: 'Experiment 4',
-      dBValue: 54
-    });
-    this.annotations2.push({
-      series: 'miclvl',
-      x: new Date().getTime()- (.2*60*60*1000),
-      shortText: 'E5',
-      text: 'Experiment 5',
-      dBValue: 55
-    });
+    this.annotations2[0]['x'] = new Date().getTime(),
+    this.annotations2[0]['maxDB'] = 91;
+    this.annotations2[1]['x'] = new Date().getTime() - 1.4 * 60 * 60 * 1000,
+    this.annotations2[1]['maxDB'] = 89;
+    this.annotations2[2]['x'] = new Date().getTime() - 1.2 * 60 * 60 * 1000,
+    this.annotations2[2]['maxDB'] = 77;
+    this.annotations2[3]['x'] = new Date().getTime() - 1 * 60 * 60 * 1000,
+    this.annotations2[3]['maxDB'] = 66;
+    this.annotations2[4]['x'] = new Date().getTime() - 0.7 * 60 * 60 * 1000,
+    this.annotations2[4]['maxDB'] = 55;
+    this.annotations2[5]['x'] = new Date().getTime() - 0.2 * 60 * 60 * 1000,
+    this.annotations2[5]['maxDB'] = 44;
+
   }
 
-  annotationObject = {
-    start: Date,
-    end: Date,
-    name: "Versuchsname",
-    nummer: 1,
-    dBvalue: 100 // is the accumulated value from start to end, autocalculated
-  }
+
 }
