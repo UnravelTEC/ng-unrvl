@@ -63,7 +63,8 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   multiplicateFactors = [1];
 
-  dyGraphOptions = { // http://dygraphs.com/options.html
+  dyGraphOptions = {
+    // http://dygraphs.com/options.html
     labels: ['Date'], // one element needed for further code.
     xlabel: 'Time',
     title: '',
@@ -124,6 +125,7 @@ export class UtDygraphComponent implements OnInit {
 
   ngOnInit() {
     this.dyGraphOptions['ylabel'] = this.YLabel;
+    this.dyGraphOptions.labels[1] = this.queryString;
 
     for (const key in this.extraDyGraphConfig) {
       if (this.extraDyGraphConfig.hasOwnProperty(key)) {
@@ -137,7 +139,8 @@ export class UtDygraphComponent implements OnInit {
     console.log(this.endTime);
     const dataEndTime =
       this.endTime === 'now' ? new Date() : new Date(this.endTime);
-    let seconds = this.parseToSeconds(this.startTime)
+
+    let seconds = this.parseToSeconds(this.startTime);
 
     let dataBeginTime;
     if (seconds) {
