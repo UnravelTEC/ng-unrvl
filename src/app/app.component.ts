@@ -17,18 +17,18 @@ export class AppComponent implements OnInit {
     this.titleService.setTitle(newTitle);
   }
 
-  public constructor(private http: HttpClient, private titleService: Title) {
-    this.setTitle('UnravelTEC');
-  }
+  public constructor(private http: HttpClient, private titleService: Title) {}
 
   ngOnInit() {
-    this.http.get('/rest/test').subscribe(
-      value => {
-        this.restMsg = value['msg'];
-      },
-      error => {
-        this.restMsg = error.message;
-      }
-    );
+    this.setTitle('UnravelTEC');
+
+    // this.http.get('/rest/test').subscribe(
+    //   value => {
+    //     this.restMsg = value['msg'];
+    //   },
+    //   error => {
+    //     this.restMsg = error.message;
+    //   }
+    // );
   }
 }
