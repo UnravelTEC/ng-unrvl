@@ -27,7 +27,13 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   graphWidth: string; // = '750'; // should be any css value
   @Input()
-  style = {};
+  style = {
+    position: undefined,
+    top: undefined,
+    bottom: undefined,
+    left: undefined,
+    right: undefined
+  };
 
   @Input()
   YLabel = 'Value (unit)';
@@ -265,7 +271,7 @@ export class UtDygraphComponent implements OnInit {
     }
 
     this.historicalData = this.displayedData;
-    this.calculateAverage()
+    this.calculateAverage();
 
     this.waiting = false;
     this.Dygraph = new Dygraph(
@@ -280,7 +286,6 @@ export class UtDygraphComponent implements OnInit {
       this.Dygraph.setAnnotations(this.annotations);
     }
 
-
     console.log(this.dyGraphOptions);
     console.log(this.displayedData);
 
@@ -294,11 +299,11 @@ export class UtDygraphComponent implements OnInit {
   }
 
   calculateAverage() {
-    if(!this.displayedData.length) {
+    if (!this.displayedData.length) {
       return;
     }
     let sum = 0;
-    for(let i=0; i < this.displayedData.length; i++) {
+    for (let i = 0; i < this.displayedData.length; i++) {
       sum += this.displayedData[i][1];
     }
     this.average = sum / this.displayedData.length;
@@ -368,7 +373,7 @@ export class UtDygraphComponent implements OnInit {
       this.adjustAnnotationsXtoMS();
       this.Dygraph.setAnnotations(this.annotations);
     }
-    this.calculateAverage()
+    this.calculateAverage();
   }
 
   fetchNewData() {
