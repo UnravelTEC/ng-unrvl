@@ -7,12 +7,12 @@ import { LocalStorageService } from '../../core/local-storage.service';
   styleUrls: ['./dygraph-dev.component.css']
 })
 export class DygraphDevComponent implements OnInit {
-  serverHostName = 'https://scpexploratory02.tugraz.at';
-  queryString = 'sensor_radiation_Sv';
+  serverHostName = 'henri0.lan';
+  queryString = 'veml6075_uva';
   dataBaseQueryStepMS = 1000;
   startTime = '60s';
   endTime = 'now';
-  serverPort = '443';
+  serverPort = '9090';
   serverPath = 'prometheus/api/v1/';
   runningAvgSeconds = 0;
   fetchFromServerIntervalMS = 1000;
@@ -43,10 +43,12 @@ export class DygraphDevComponent implements OnInit {
     this.variablesToSave.forEach(elementName => {
       this.localStorage.set(elementName, this[elementName]);
     });
+    alert('save ok');
   }
   reset() {
     this.variablesToSave.forEach(elementName => {
       this.localStorage.delete(elementName);
     });
+    alert('reset ok');
   }
 }
