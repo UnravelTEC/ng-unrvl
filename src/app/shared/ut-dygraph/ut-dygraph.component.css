@@ -26,3 +26,8 @@
 .mydygraph-component .error {
     border-color: red;
 }
+
+.dygraph-legend {
+    background: rgba(123, 123, 252, 0.993);
+    width: 300px;
+}

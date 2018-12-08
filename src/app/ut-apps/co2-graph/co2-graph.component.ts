@@ -11,9 +11,10 @@ export class Co2GraphComponent implements OnInit {
 
   graphstyle = {
     position: 'absolute',
-    top: '10vh',
+    top: '3rem',
     bottom: '5vh',
     left: '5vw',
     right: '5vw'
   };
+  dataSeriesLabels = ['CO2'];
 }

@@ -38,6 +38,10 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   YLabel = 'Value (unit)';
   @Input()
+  XLabel = 'Time';
+  @Input()
+  dataSeriesLabels: Array<string>;
+  @Input()
   endTime = 'now';
   @Input()
   startTime = '15m'; // prefix m for min, s for seconds, h for hours, d for days
@@ -66,7 +70,6 @@ export class UtDygraphComponent implements OnInit {
   dyGraphOptions = {
     // http://dygraphs.com/options.html
     labels: ['Date'], // one element needed for further code.
-    xlabel: 'Time',
     title: '',
     animatedZooms: true,
     pointSize: 4,
@@ -125,7 +128,11 @@ export class UtDygraphComponent implements OnInit {
 
   ngOnInit() {
     this.dyGraphOptions['ylabel'] = this.YLabel;
-    this.dyGraphOptions.labels[1] = this.queryString;
+    this.dyGraphOptions['xlabel'] = this.XLabel;
+    this.dyGraphOptions.labels.push(...this.dataSeriesLabels);
+    if(!this.dyGraphOptions.labels[1]) {
+      this.dyGraphOptions.labels[1] = this.queryString;
+    }
 
     for (const key in this.extraDyGraphConfig) {
       if (this.extraDyGraphConfig.hasOwnProperty(key)) {
