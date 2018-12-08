@@ -18,8 +18,6 @@ export class UtDygraphComponent implements OnInit {
   @Input()
   // queryString: string;
   queryString = 'co2{location="FuzzyLab",sensor="scd30"}';
-  @Input()
-  dataSeriesNames: string[];
 
   // set eigher height+width or a position object
   @Input()
@@ -130,7 +128,7 @@ export class UtDygraphComponent implements OnInit {
     this.dyGraphOptions['ylabel'] = this.YLabel;
     this.dyGraphOptions['xlabel'] = this.XLabel;
     this.dyGraphOptions.labels.push(...this.dataSeriesLabels);
-    if(!this.dyGraphOptions.labels[1]) {
+    if (!this.dyGraphOptions.labels[1]) {
       this.dyGraphOptions.labels[1] = this.queryString;
     }
 
@@ -268,21 +266,15 @@ export class UtDygraphComponent implements OnInit {
       ]);
     });
 
-    if (this.dataSeriesNames && this.dataSeriesNames.length) {
-      this.dyGraphOptions['labels'] = this.dyGraphOptions['labels'].concat(
-        this.dataSeriesNames
-      );
-    } else {
-      if (metric['location']) {
-        this.dyGraphOptions['labels'][1] = metric['location'];
-      }
+    if (metric['location']) {
+      this.dyGraphOptions['labels'][1] = metric['location'];
+    }
 
-      if (metric['sensor']) {
-        this.dyGraphOptions['labels'][1] += ' ' + metric['sensor'];
-      }
-      if (!this.dyGraphOptions['labels'][1]) {
-        this.dyGraphOptions['labels'][1] = 'undefined';
-      }
+    if (metric['sensor']) {
+      this.dyGraphOptions['labels'][1] += ' ' + metric['sensor'];
+    }
+    if (!this.dyGraphOptions['labels'][1]) {
+      this.dyGraphOptions['labels'][1] = 'undefined';
     }
 
     this.historicalData = this.displayedData;
