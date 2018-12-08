@@ -17,12 +17,12 @@ import { experimentList } from './experiment-list';
 export class WeihnachtsvorlesungComponent implements OnInit {
   // serverHostName: string = 'http://koffer.lan';
   // serverHostName: string = 'http://belinda.cgv.tugraz.at'
-  serverHostName = undefined; // 'raspigas.lan';
-  serverPort = '9090';
-  serverPath = 'api/v1/';
+  serverHostName = 'scpexploratory02.tugraz.at'; // 'raspigas.lan';
+  serverPort = '443';
+  serverPath = 'prometheus/api/v1/';
   // queryString: string = 'mic_audiolevel';
   // queryString: string = 'co2{location="FuzzyLab",sensor="scd30"}'
-  queryString = 'bme280_pressure'; // 'adc1_c1';
+  queryString =  'adc1_c1'; // 'bme280_pressure'; //
   dataBaseQueryStepMS = 1000;
   timeRange = 60; // 1 min
   runningAvgSeconds = 0;
