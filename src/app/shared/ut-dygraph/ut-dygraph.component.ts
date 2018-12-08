@@ -165,18 +165,33 @@ export class UtDygraphComponent implements OnInit {
       console.log('headers:');
       console.log(JSON.stringify(error['headers']));
     }
-    if (error['error'] && error['error']['error']) {
-      console.log(error['error']['errorType'] + ': ' + error['error']['error']);
-      if (
-        error['error']['error'].search(/Try decreasing the query resolution/) >
-        -1
-      ) {
-        this.error = 'too many points';
-        this.intervalSubscription.unsubscribe();
-        return;
-      }
+    if (error['message']) {
+      console.log(error['message']);
+      this.error = error['message'];
     }
-    this.error = 'unknown error';
+    if (error['error']) {
+      if (error['error']['target']) {
+        console.log(error['error']['target']);
+        if(error['error']['target']['__zone_symbol__xhrURL'])
+        {
+          this.error += "\n" + error['error']['target']['__zone_symbol__xhrURL'];
+        }
+      }
+      if (error['error']['error']) {
+        console.log(
+          error['error']['errorType'] + ': ' + error['error']['error']
+        );
+        if (
+          error['error']['error'].search(
+            /Try decreasing the query resolution/
+          ) > -1
+        ) {
+          this.error += 'too many points';
+          this.intervalSubscription.unsubscribe();
+          return;
+        }
+      }
+    } else this.error = 'unknown error';
   }
 
   handleInitialData(receivedData: Object) {
