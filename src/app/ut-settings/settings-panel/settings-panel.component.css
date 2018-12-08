@@ -2,21 +2,40 @@ section {
     border: 1px solid black;
     border-radius: 2px;
     padding: 10px;
-    margin: auto 0.5em auto 0.5em;
-    width: 50em;
+    margin: 0.5em auto 0.5em auto;
+    width: 60em;
 
 }
 
+h1 {
+    text-align: center;
+}
 h2 {margin: 0}
 
 section section {
     border: 1px solid beige;
     padding: 0.1em 0.1em 0.1em 0.5em;
     margin: 0.2em 0;
-    width: 49em;
+    width: 59em;
 }
 
 label {
     display: inline-block;
     min-width: 20em;
+}
+input {
+    width: 20em;
+}
+
+section#submit {
+    text-align: center;
+}
+button {
+    margin: 0.3em;
+}
+
+.valuedebug {
+    display:inline-block;
+    width: 18em;
+    margin-left: 0.3em;
 }

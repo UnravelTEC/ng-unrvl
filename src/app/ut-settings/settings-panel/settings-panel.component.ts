@@ -8,7 +8,8 @@ import { LocalStorageService } from '../../core/local-storage.service';
 })
 export class SettingsPanelComponent implements OnInit {
   defaultSettings = {
-    server: { // settingsSection
+    server: {
+      // settingsSection
       settingAttributes: {
         title: 'Server Settings'
       },
@@ -21,6 +22,7 @@ export class SettingsPanelComponent implements OnInit {
   };
 
   globalSettings = {};
+  globalSettingsUnsaved = {}; // the 'live' in editor ones the user can change before saving
 
   debug = true;
 
@@ -28,12 +30,31 @@ export class SettingsPanelComponent implements OnInit {
 
   ngOnInit() {
     // before, read out all localstorage items
+    this.load();
 
     for (let item in this.defaultSettings) {
-      if (!this.globalSettings[item]) {
+      if (!this.globalSettingsUnsaved[item]) {
         let deepcopy = JSON.stringify(this.defaultSettings[item]);
-        this.globalSettings[item] = JSON.parse(deepcopy);
+        this.globalSettingsUnsaved[item] = JSON.parse(deepcopy);
       }
     }
+  }
+
+  load() {
+    const loadedSettings = this.localStorage.get('globalSettings'); //returns deep copy
+    if(loadedSettings) {
+      this.globalSettings = loadedSettings;
+      this.globalSettingsUnsaved = this.localStorage.get('globalSettings');
+    }
+  }
+
+  save() {
+    this.localStorage.set('globalSettings', this.globalSettingsUnsaved);
+    this.globalSettings = JSON.parse(JSON.stringify(this.globalSettingsUnsaved));
+    // alert('save ok');
+  }
+  reset() {
+    this.globalSettingsUnsaved = JSON.parse(JSON.stringify(this.defaultSettings));
+    // alert('reset ok');
   }
 }
