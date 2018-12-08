@@ -1,20 +1,19 @@
 <div class="graphapp">
   <h4>This is the CO2-Graph app</h4>
 
-  <div class="mydygraph">
+  <div id="co2dygraph">
     <app-ut-dygraph
-      serverHostName = 'http://belinda.cgv.tugraz.at'
-      queryString="co2{location=&quot;FuzzyLab&quot;,sensor=&quot;scd30&quot;}"
+      queryString="scd30_co2"
       fetchFromServerIntervalMS="2000"
       YLabel="CO₂ (ppm)"
-      graphHeight="300"
-      graphWidth="765"
       Debug="true"
+      [style]="graphstyle"
     ></app-ut-dygraph>
     <!--
       Server="http://192.168.11.206"
       queryString="bme280_pressure" c20_co2
       queryString="c20_co2"
+      queryString="scd30_co2"
       queryString="co2{location=&quot;FuzzyLab&quot;,sensor=&quot;scd30&quot;}"
     -->
   </div>

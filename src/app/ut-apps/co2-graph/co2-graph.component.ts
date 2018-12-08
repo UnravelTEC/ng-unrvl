@@ -8,4 +8,12 @@ import { Component, OnInit } from '@angular/core';
 export class Co2GraphComponent implements OnInit {
   constructor() {}
   ngOnInit() {}
+
+  graphstyle = {
+    position: 'absolute',
+    top: '10vh',
+    bottom: '5vh',
+    left: '5vw',
+    right: '5vw'
+  };
 }
