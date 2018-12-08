@@ -4,6 +4,8 @@ import { interval, Subscription } from 'rxjs';
 import Dygraph from 'dygraphs';
 
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
+import { LocalStorageService } from '../../core/local-storage.service';
+import { HelperFunctionsService } from '../../core/helper-functions.service';
 
 @Component({
   selector: 'app-ut-dygraph',
@@ -39,7 +41,7 @@ export class UtDygraphComponent implements OnInit {
   fetchFromServerIntervalMS = 1000; // set 0 for no update - but can be changed later - default 1000ms.
   @Input()
   // serverHostName = 'koffer.lan'; // optional, defaults to localhost
-  serverHostName = 'http://belinda.cgv.tugraz.at'; // optional, defaults to localhost
+  serverHostName: string; // optional, defaults to localhost
   @Input()
   serverPort = '9090'; // optional, defaults to 9090
   @Input()
@@ -61,23 +63,43 @@ export class UtDygraphComponent implements OnInit {
   dataBeginTime: Date;
   dataEndTime: Date;
 
-  private RequestsUnderway = 0; // don't flood the server if it is not fast enough
   public noData = false;
   public waiting = true;
   public error: string = undefined;
   public htmlID: string;
+  private requestsUnderway = 0; // don't flood the server if it is not fast enough
+  private queryEndPoint: string;
 
   Dygraph: any;
 
   intervalSubscription: Subscription;
 
-  constructor(private utFetchdataService: UtFetchdataService) {}
+  constructor(
+    private utFetchdataService: UtFetchdataService,
+    private localStorage: LocalStorageService,
+    private h: HelperFunctionsService
+  ) {}
 
   constructQueryEndpoint(
     server: string = this.serverHostName,
     port: string = this.serverPort,
     path: string = this.serverPath
   ) {
+    if (!server) {
+      const globalSettings = this.localStorage.get('globalSettings');
+      console.log(globalSettings);
+      const globalServer = this.h.getDeep(globalSettings, [
+        'server',
+        'settings',
+        'serverHostName',
+        'fieldValue'
+      ]);
+
+      if (globalServer) {
+        console.log('global Server: ' + globalServer);
+        server = globalServer;
+      }
+    }
     if (server.endsWith('/')) {
       console.error('servername has to be without slash(/) at the end!');
     }
@@ -144,13 +166,15 @@ export class UtDygraphComponent implements OnInit {
 
     console.log('dataEndTime ' + (dataEndTime.valueOf() / 1000).toString());
 
+    this.queryEndPoint = this.constructQueryEndpoint();
+
     this.utFetchdataService
       .getRange(
         this.queryString,
         dataBeginTime,
         dataEndTime,
         this.dataBaseQueryStepMS,
-        this.constructQueryEndpoint()
+        this.queryEndPoint
       )
       .subscribe(
         (displayedData: Object) => this.handleInitialData(displayedData),
@@ -172,9 +196,9 @@ export class UtDygraphComponent implements OnInit {
     if (error['error']) {
       if (error['error']['target']) {
         console.log(error['error']['target']);
-        if(error['error']['target']['__zone_symbol__xhrURL'])
-        {
-          this.error += "\n" + error['error']['target']['__zone_symbol__xhrURL'];
+        if (error['error']['target']['__zone_symbol__xhrURL']) {
+          this.error +=
+            '\n' + error['error']['target']['__zone_symbol__xhrURL'];
         }
       }
       if (error['error']['error']) {
@@ -267,7 +291,7 @@ export class UtDygraphComponent implements OnInit {
   }
 
   handleUpdatedData(displayedData: Object) {
-    this.RequestsUnderway--;
+    this.requestsUnderway--;
     if (
       !displayedData ||
       !displayedData['data'] ||
@@ -333,23 +357,23 @@ export class UtDygraphComponent implements OnInit {
   }
 
   fetchNewData() {
-    // console.log(this.RequestsUnderway);
-    if (this.RequestsUnderway > 0) {
+    // console.log(this.requestsUnderway);
+    if (this.requestsUnderway > 0) {
       console.log('not sending displayedData request, one on the way already');
       return;
     }
-    if (this.RequestsUnderway > 2) {
+    if (this.requestsUnderway > 2) {
       console.error('5 requests on the way, none returned, check server conn.');
       return;
     }
-    this.RequestsUnderway++;
+    this.requestsUnderway++;
 
     const startDate = this.displayedData[this.displayedData.length - 1][0];
     if (!startDate) {
       // unsure if needed, because now interval is only triggered when initial data here.
       console.log(startDate);
       console.error('error in fetchNewData: no previous data found');
-      this.RequestsUnderway--;
+      this.requestsUnderway--;
       return;
     }
     this.utFetchdataService
@@ -358,7 +382,7 @@ export class UtDygraphComponent implements OnInit {
         startDate,
         new Date(),
         this.dataBaseQueryStepMS,
-        this.constructQueryEndpoint()
+        this.queryEndPoint
       )
       .subscribe((displayedData: Object) =>
         this.handleUpdatedData(displayedData)

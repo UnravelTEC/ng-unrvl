@@ -50,10 +50,10 @@ const appRoutes: Routes = [
   imports: [
     BrowserModule,
     HttpClientModule,
-    CoreModule,
+    CoreModule.forRoot(),
     RouterModule.forRoot(
       appRoutes,
-      { enableTracing: !environment.production }
+      { enableTracing: false } // !environment.production
     )
   ],
   providers: [Title],
