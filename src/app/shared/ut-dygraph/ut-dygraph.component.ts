@@ -432,22 +432,26 @@ export class UtDygraphComponent implements OnInit {
 
   adjustAnnotationsXtoMS() {
     this.annotations.forEach(annotation => {
-      if (annotation['adjusted'] !== true) {
-        console.log('old annotation: ' + annotation['x']);
-        const [lower, upper] = this.binarySearchNearDate(
-          this.displayedData,
-          annotation['x']
-        );
-        if (!lower || !upper) {
-          console.log('no valid x value for ' + annotation['shortText']);
-          annotation['adjusted'] = true; // FIXME tmp to not load the cpu too high
-          return;
-        }
-        annotation['x'] = this.displayedData[lower][0].valueOf();
-        console.log('lower: ' + annotation['x']);
-        console.log('upper: ' + this.displayedData[upper][0].valueOf());
-        annotation['adjusted'] = true;
+      if (null === annotation['x'] || true === annotation['adjusted']) {
+        return;
       }
+
+      console.log('old annotation: ' + annotation['x']);
+      const [lower, upper] = this.binarySearchNearDate(
+        this.displayedData,
+        annotation['x']
+      );
+      if (!lower || !upper) {
+        console.log(
+          'no valid x value for ' + annotation['shortText'] + annotation['text']
+        );
+        // annotation['adjusted'] = true; // FIXME tmp to not load the cpu too high
+        return;
+      }
+      annotation['x'] = this.displayedData[lower][0].valueOf();
+      console.log('lower: ' + annotation['x']);
+      console.log('upper: ' + this.displayedData[upper][0].valueOf());
+      annotation['adjusted'] = true;
     });
   }
 
