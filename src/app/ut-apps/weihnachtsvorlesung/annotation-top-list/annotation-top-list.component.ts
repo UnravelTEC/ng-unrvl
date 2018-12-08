@@ -11,12 +11,12 @@ export class AnnotationTopListComponent implements OnInit {
   @Input()
   changeTrigger = true;
   @Input()
-  currentExperiment: Object;
+  currentExperiment: string;
 
   topList: Array<Experiment>; // sorted list to display
-  current : Experiment = {
-    nr: "0",
-    shortText: ".",
+  current: Experiment = {
+    nr: '0',
+    shortText: '.',
     text: '...',
     maxDB: 0
   };
@@ -24,27 +24,38 @@ export class AnnotationTopListComponent implements OnInit {
   constructor() {}
 
   ngOnChanges(changes: SimpleChanges) {
-    let tmpArray: Array<Experiment>;
-    tmpArray = [];
+    let tmpArray: Array<Experiment> = [];
+    let currentExperimentNumber = 0;
     for (let i = 0; i < this.annotationList.length; i++) {
-      if (this.annotationList[i]['maxDB']) {
-        tmpArray.push(this.annotationList[i]);
+      let tmpExperiment = this.annotationList[i];
+      if (tmpExperiment['maxDB']) {
+        tmpArray.push(tmpExperiment);
+      }
+      if (tmpExperiment['shortText'] == this.currentExperiment) {
+        currentExperimentNumber = i;
       }
     }
     tmpArray.sort((a, b) => b['maxDB'] - a['maxDB']);
 
+    let rankNumber = 0;
+    for (let i = 0; i < tmpArray.length; i++) {
+      if (tmpArray[i]['shortText'] == this.currentExperiment) {
+        rankNumber = i;
+      }
+    }
+
+    this.current = this.annotationList[currentExperimentNumber];
+    this.current['nr'] = String(rankNumber);
+
     this.topList = tmpArray.slice(0, 4);
-    let top = "0";
-    this.current = this.topList[top];
-    this.current['nr'] = top;
   }
 
   ngOnInit() {}
 }
 
 interface Experiment {
-  nr: String,
-    shortText: String,
-    text: String,
-    maxDB: number
+  nr: String;
+  shortText: String;
+  text: String;
+  maxDB: number;
 }

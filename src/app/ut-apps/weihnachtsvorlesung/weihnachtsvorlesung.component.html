@@ -15,8 +15,10 @@
       debug="false"
       [annotations]="annotations1"
       [multiplicateFactors]="multiplicateFactors"
+      [calculateRunningAvgFrom]="calculateRunningAvgFrom"
+      (returnRunningAvg)="returnRunningAvg($event)"
       YLabel="dBa"
-      runningAvgSeconds="1"
+      runningAvgSeconds="0"
     ></app-ut-dygraph>
   </div>
   <br />
@@ -41,9 +43,13 @@
   </div>
   <div class="annotations">
     <app-annotations-editor
-      [annotationList]="annotations1"
-      [annotationList2]="annotations2"
+      [annotationList]="annotations2"
+      [annotationList2]="annotations1"
       (triggerChange)="changeTriggered($event)"
+
+      [getRunningAverage]="runningAvgToEditor"
+      (requestRunningAverage)="requestRunningAverage($event)"
+      (setNewCurrentExperiment)="setNewCurrentExperiment($event)"
     >
     </app-annotations-editor>
   </div>
@@ -51,6 +57,7 @@
     <app-annotation-top-list
       [annotationList]="annotations1"
       [changeTrigger]="changeTrigger"
+      [currentExperiment]="currentExperiment"
     >
     </app-annotation-top-list>
   </div>

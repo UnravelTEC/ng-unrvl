@@ -14,9 +14,10 @@
   <div *ngIf="noData == true" class="info nodata">No data to display.</div>
   <div *ngIf="waiting == true" class="info waiting">Waiting for data...</div>
   <div *ngIf="error != undefined" class="info error">{{ error }}</div>
-  <div class="info stats" *ngIf="debug == 'true'">Average: {{ average }} </div>
+
   <!-- <button (click)="fetchNewData()">Update!</button> -->
   <ul class="debug" *ngIf="debug == 'true'">
+    <li>Average: {{ average }}</li>
     <li>From {{ displayedData[0][0] | date: 'yyyy-MM-dd HH:mm:ss (z)' }}</li>
     <li>
       To

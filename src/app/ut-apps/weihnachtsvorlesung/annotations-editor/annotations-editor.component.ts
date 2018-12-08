@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, SimpleChanges, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-annotations-editor',
@@ -22,6 +22,13 @@ export class AnnotationsEditorComponent implements OnInit {
 
   @Output()
   triggerChange = new EventEmitter<number>();
+  @Output()
+  setNewCurrentExperiment = new EventEmitter<string>(); // id: shortText
+
+  @Output()
+  requestRunningAverage = new EventEmitter<Date>()
+  @Input()
+  getRunningAverage: number;
 
   edit = {
     x: false,
@@ -32,6 +39,10 @@ export class AnnotationsEditorComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {}
+
+  ngOnChanges(changes: SimpleChanges) {
+
+  }
 
   setCurrent(newCurrent) {
     this.currentAnnotation = newCurrent;
@@ -53,6 +64,12 @@ export class AnnotationsEditorComponent implements OnInit {
   }
   set(which: string) {
     this.currentAnnotation[which] = new Date().valueOf();
+    if(which === 'clapStart') {
+      this.requestRunningAverage.emit(new Date(this.currentAnnotation[which] - 1000))
+    }
+    if(which === 'x') {
+      this.setNewCurrentExperiment.emit(this.currentAnnotation.shortText)
+    }
   }
   show(which:string) {
     this.edit[which] = !this.edit[which];

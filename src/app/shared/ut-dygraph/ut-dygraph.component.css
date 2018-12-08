@@ -7,8 +7,9 @@
     border: 0px solid black;
 }
 
-.mydygraph-component .graph {
-    /* background: rgba(122, 122, 255, 0.418); */
+.mydygraph-component .debug {
+    background: rgb(198, 198, 255);
+    z-index: 200;
 }
 
 .mydygraph-component .info {

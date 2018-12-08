@@ -1,11 +1,18 @@
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewEncapsulation
+} from '@angular/core';
 
-import { interval, Subscription } from 'rxjs';
 import Dygraph from 'dygraphs';
+import { interval, Subscription } from 'rxjs';
 
-import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
-import { LocalStorageService } from '../../core/local-storage.service';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
+import { LocalStorageService } from '../../core/local-storage.service';
+import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 
 @Component({
   selector: 'app-ut-dygraph',
@@ -63,6 +70,11 @@ export class UtDygraphComponent implements OnInit {
   extraDyGraphConfig: Object;
   @Input()
   multiplicateFactors = [1];
+
+  @Input()
+  calculateRunningAvgFrom: Date;
+  @Output()
+  returnRunningAvg = new EventEmitter<number>();
 
   dyGraphOptions = {
     // http://dygraphs.com/options.html
@@ -292,7 +304,7 @@ export class UtDygraphComponent implements OnInit {
     }
 
     this.historicalData = this.displayedData;
-    this.calculateAverage();
+    this.average = this.calculateAverage();
 
     this.waiting = false;
     this.Dygraph = new Dygraph(
@@ -319,31 +331,35 @@ export class UtDygraphComponent implements OnInit {
     }
   }
 
-  calculateAverage() {
-    if (!this.displayedData.length) {
+  calculateAverage(from?: Date, targetArray = this.displayedData) {
+    if (!targetArray.length) {
       return;
     }
-    let sum = 0;
-    for (let i = 0; i < this.displayedData.length; i++) {
-      sum += this.displayedData[i][1];
+    let sum = 0,
+      upper = 0,
+      lower;
+    if (from) {
+      [lower, upper] = this.binarySearchNearDate(targetArray, from);
     }
-    this.average = sum / this.displayedData.length;
+    for (let i = upper; i < targetArray.length; i++) {
+      sum += targetArray[i][1];
+    }
+    return sum / targetArray.length;
   }
 
   handleUpdatedData(displayedData: Object) {
     this.requestsUnderway--;
-    if (
-      !displayedData ||
-      !displayedData['data'] ||
-      !displayedData['data']['result'] ||
-      !displayedData['data']['result'][0] ||
-      !displayedData['data']['result'][0]['values']
-    ) {
+    const values = this.h.getDeep(displayedData, [
+      'data',
+      'result',
+      0,
+      'values'
+    ]);
+    if (!values) {
       console.error('handleUpdatedData: input object wrong');
       console.log(displayedData);
       return;
     }
-    const values = displayedData['data']['result'][0]['values'];
 
     // check if there is already newer data from an earlier request
     let iteratedDate: Date;
@@ -394,7 +410,11 @@ export class UtDygraphComponent implements OnInit {
       this.adjustAnnotationsXtoMS();
       this.Dygraph.setAnnotations(this.annotations);
     }
-    this.calculateAverage();
+    if (this.debug) this.average = this.calculateAverage();
+    if (this.calculateRunningAvgFrom)
+      this.returnRunningAvg.emit(
+        this.calculateAverage(this.calculateRunningAvgFrom, this.historicalData)
+      );
   }
 
   fetchNewData() {

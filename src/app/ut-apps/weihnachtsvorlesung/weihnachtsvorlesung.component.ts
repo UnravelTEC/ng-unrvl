@@ -17,18 +17,22 @@ import { experimentList } from './experiment-list';
 export class WeihnachtsvorlesungComponent implements OnInit {
   // serverHostName: string = 'http://koffer.lan';
   // serverHostName: string = 'http://belinda.cgv.tugraz.at'
-  serverHostName = 'scpexploratory02.tugraz.at'; // 'raspigas.lan';
-  serverPort = '443';
-  serverPath = 'prometheus/api/v1/';
+  serverHostName = ''; // 'scpexploratory02.tugraz.at'; // 'raspigas.lan';
+  serverPort = ''; // '443';
+  serverPath = ''; //'prometheus/api/v1/';
   // queryString: string = 'mic_audiolevel';
   // queryString: string = 'co2{location="FuzzyLab",sensor="scd30"}'
-  queryString =  'adc1_c1'; // 'bme280_pressure'; //
+  queryString = 'bme280_pressure'; //'adc1_c1';
   dataBaseQueryStepMS = 1000;
   timeRange = 60; // 1 min
   runningAvgSeconds = 0;
   fetchFromServerIntervalMS = 1000;
   dataSeriesNames = ['miclvl'];
   changeTrigger = true;
+
+  calculateRunningAvgFrom: Date = undefined;
+  runningAvgToEditor: number;
+
   style1 = {
     position: 'absolute',
     top: '3rem',
@@ -46,13 +50,15 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   multiplicateFactors = [100];
 
+  currentExperiment: string; // id: shortText
+
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
   start2 = '2018-12-08 08:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-08 16:00'), // earliest
-      new Date('2018-12-08 22:00') // latest
+      new Date('2018-12-08 20:00'), // earliest
+      new Date('2018-12-09 02:00') // latest
     ]
     // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
   };
@@ -63,10 +69,22 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges) {
     console.log('app: ngOnC triggered');
   }
+
+  setNewCurrentExperiment(newExperiment: string) {
+    this.currentExperiment = newExperiment;
+  }
+
   changeTriggered(invar: number) {
     console.log(invar);
     this.changeTrigger = !this.changeTrigger;
   }
+  returnRunningAvg(average: number) {
+    this.runningAvgToEditor = average;
+  }
+  requestRunningAverage(from: Date) {
+    this.calculateRunningAvgFrom = from;
+  }
+
   ngOnInit() {
     experimentList.forEach(item => {
       let newitem = {
@@ -90,24 +108,21 @@ export class WeihnachtsvorlesungComponent implements OnInit {
     // push // Annotations for short term graph
     this.annotations1[0]['x'] = new Date().getTime();
     this.annotations1[0]['maxDB'] = 91;
-    this.annotations1[1]['x'] = new Date().getTime() - 0.2 * 60 * 60 * 1000;
+    this.annotations1[1]['x'] = new Date().getTime() - 1.4 * 60 * 1000;
     this.annotations1[1]['maxDB'] = 89;
 
     // Annotations for long term graph
-    this.annotations2[0]['x'] = new Date().getTime(),
+    this.annotations2[0]['x'] = new Date().getTime();
     this.annotations2[0]['maxDB'] = 91;
-    this.annotations2[1]['x'] = new Date().getTime() - 1.4 * 60 * 60 * 1000,
+    this.annotations2[1]['x'] = new Date().getTime() - 1.4 * 60 * 60 * 1000;
     this.annotations2[1]['maxDB'] = 89;
-    this.annotations2[2]['x'] = new Date().getTime() - 1.2 * 60 * 60 * 1000,
+    this.annotations2[2]['x'] = new Date().getTime() - 1.2 * 60 * 60 * 1000;
     this.annotations2[2]['maxDB'] = 77;
-    this.annotations2[3]['x'] = new Date().getTime() - 1 * 60 * 60 * 1000,
+    this.annotations2[3]['x'] = new Date().getTime() - 1 * 60 * 60 * 1000;
     this.annotations2[3]['maxDB'] = 66;
-    this.annotations2[4]['x'] = new Date().getTime() - 0.7 * 60 * 60 * 1000,
+    this.annotations2[4]['x'] = new Date().getTime() - 0.7 * 60 * 60 * 1000;
     this.annotations2[4]['maxDB'] = 55;
-    this.annotations2[5]['x'] = new Date().getTime() - 0.2 * 60 * 60 * 1000,
+    this.annotations2[5]['x'] = new Date().getTime() - 0.2 * 60 * 60 * 1000;
     this.annotations2[5]['maxDB'] = 44;
-
   }
-
-
 }
