@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
+import { LocalStorageService } from '../../../core/local-storage.service';
 
 @Component({
   selector: 'app-annotation-top-list',
@@ -24,9 +25,25 @@ export class AnnotationTopListComponent implements OnInit {
     maxDB: 0
   };
 
-  constructor() {}
+  constructor(private localStorage: LocalStorageService) {}
 
   ngOnChanges(changes: SimpleChanges) {
+    console.log('a-l.c: change triggered');
+    this.refresh();
+  }
+
+  ngOnInit() {
+    this.refresh();
+    console.log(this.annotationList);
+  }
+
+  refresh() {
+    this.annotationList = this.localStorage.get('annotations.' + 'miclvl');
+    if (!this.annotationList) {
+      console.log('not loading from localStorage, empty.');
+      return;
+    }
+
     let tmpArray: Array<Experiment> = [];
     let currentExperimentNumber = undefined;
     for (let i = 0; i < this.annotationList.length; i++) {
@@ -38,9 +55,7 @@ export class AnnotationTopListComponent implements OnInit {
         currentExperimentNumber = i;
       }
     }
-    if (undefined === currentExperimentNumber) {
-      return;
-    }
+
     tmpArray.sort((a, b) => b['maxDB'] - a['maxDB']);
 
     let rankNumber = 0;
@@ -49,20 +64,15 @@ export class AnnotationTopListComponent implements OnInit {
         rankNumber = i;
       }
     }
+    this.topList = tmpArray.slice(0, 4);
+
+    if (undefined === currentExperimentNumber) {
+      return;
+    }
 
     this.current = this.annotationList[currentExperimentNumber];
     this.current['nr'] = String(rankNumber);
-
-    this.topList = tmpArray.slice(0, 4);
-
-    if (this.current['clapStart'] && !this.current['clapStop']) {
-      if (this.current.maxDB < this.getRunningAverage) {
-        this.current.maxDB = this.getRunningAverage;
-      }
-    }
   }
-
-  ngOnInit() {}
 }
 
 interface Experiment {

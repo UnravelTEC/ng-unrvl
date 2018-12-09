@@ -100,7 +100,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
         tickHeight: '70',
         x: null, // :Date, start date
         clapStart: null, // :Date
-        clapEnd: null, // :Date
+        clapStop: null, // :Date
         maxDB: 0 // :Number
       };
       this.annotations1.push(newitem);

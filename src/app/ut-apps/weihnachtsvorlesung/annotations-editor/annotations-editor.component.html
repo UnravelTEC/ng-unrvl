@@ -7,6 +7,7 @@
         <option
           *ngFor="let annotation of annotationList"
           (click)="setCurrent(annotation)"
+          [selected]="annotation['shortText'] == currentAnnotation.shortText"
           >{{ annotation['shortText'] }}: {{ annotation['text'] }}</option
         >
       </select>
@@ -53,7 +54,9 @@
       -->
       {{ currentAnnotation.x | date: 'H:mm:ss' }}
       <button (click)="set()" [disabled]="currentAnnotation.x">Set</button>
-      <button (click)="show('x')" [disabled]="!currentAnnotation.x">Edit</button>
+      <button (click)="show('x')" [disabled]="!currentAnnotation.x">
+        Edit
+      </button>
       <span *ngIf="edit.x">
         <button (click)="adjustTime('x', 1)">+1s</button>
         <button (click)="adjustTime('x', -1)">-1s</button>
@@ -68,8 +71,18 @@
     <div class="form-group">
       <label for="clapStart">Klatsch-Start:</label>
       {{ currentAnnotation.clapStart | date: 'H:mm:ss' }}
-      <button (click)="start()" [disabled]="!currentAnnotation.x || currentAnnotation.clapStart">Set</button>
-      <button (click)="show('clapStart')" [disabled]="!currentAnnotation.clapStart">Edit</button>
+      <button
+        (click)="start()"
+        [disabled]="!currentAnnotation.x || currentAnnotation.clapStart"
+      >
+        Set
+      </button>
+      <button
+        (click)="show('clapStart')"
+        [disabled]="!currentAnnotation.clapStart"
+      >
+        Edit
+      </button>
       <span *ngIf="edit.clapStart">
         <button (click)="adjustTime('clapStart', 1)">+1s</button>
         <button (click)="adjustTime('clapStart', -1)">-1s</button>
@@ -82,23 +95,42 @@
       </span>
     </div>
     <div class="form-group">
-        <label for="clapStop">Klatsch-Stopp:</label>
-        {{ currentAnnotation.clapStop | date: 'H:mm:ss' }}
-        <button (click)="stop()" [disabled]="!currentAnnotation.clapStart || !currentAnnotation.x || currentAnnotation.clapStop">Set</button>
-        <button (click)="show('clapStop')" [disabled]="!currentAnnotation.clapStop">Edit</button>
-        <span *ngIf="edit.clapStop">
-          <button (click)="adjustTime('clapStop', 1)">+1s</button>
-          <button (click)="adjustTime('clapStop', -1)">-1s</button>
-          <button (click)="adjustTime('clapStop', 10)">+10s</button>
-          <button (click)="adjustTime('clapStop', -10)">-10s</button>
-          <button (click)="adjustTime('clapStop', 60)">+1m</button>
-          <button (click)="adjustTime('clapStop', -60)">-1m</button>
-          <button (click)="adjustTime('clapStop', 600)">+10m</button>
-          <button (click)="adjustTime('clapStop', -600)">-10m</button>
-        </span>
-      </div>
+      <label for="clapStop">Klatsch-Stopp:</label>
+      {{ currentAnnotation.clapStop | date: 'H:mm:ss' }}
+      <button
+        (click)="stop()"
+        [disabled]="
+          !currentAnnotation.clapStart ||
+          !currentAnnotation.x ||
+          currentAnnotation.clapStop
+        "
+      >
+        Set
+      </button>
+      <button
+        (click)="show('clapStop')"
+        [disabled]="!currentAnnotation.clapStop"
+      >
+        Edit
+      </button>
+      <span *ngIf="edit.clapStop">
+        <button (click)="adjustTime('clapStop', 1)">+1s</button>
+        <button (click)="adjustTime('clapStop', -1)">-1s</button>
+        <button (click)="adjustTime('clapStop', 10)">+10s</button>
+        <button (click)="adjustTime('clapStop', -10)">-10s</button>
+        <button (click)="adjustTime('clapStop', 60)">+1m</button>
+        <button (click)="adjustTime('clapStop', -60)">-1m</button>
+        <button (click)="adjustTime('clapStop', 600)">+10m</button>
+        <button (click)="adjustTime('clapStop', -600)">-10m</button>
+      </span>
+    </div>
     <div class="form-group">
-      <label>Clap duration: </label> <span>{{ (currentAnnotation.clapStop - currentAnnotation.clapStart)/1000 || 0 | number: "1.0-1"}}</span>s
+      <label>Clap duration: </label>
+      <span>{{ currentAnnotation.clapStop ?
+        (currentAnnotation.clapStop - currentAnnotation.clapStart) / 1000 : (currentAnnotation.clapStart ? ( nowTic - currentAnnotation.clapStart) / 1000 : 0 )
+          | number: '1.1-1'
+      }}</span
+      >s
     </div>
     <div class="form-group">
       <label for="currentAnnotation.maxDB">Max. dB:</label>
@@ -109,6 +141,9 @@
         name="currentAnnotation.maxDB"
       />
     </div>
-    <div class="form-group"><button (click)="delete()">Delete</button></div>
+    <div class="form-group">
+      <button (click)="delete()">Delete</button>
+      <button (click)="deleteLocalStorage()">Delete Local Storage</button>
+    </div>
   </form>
 </div>

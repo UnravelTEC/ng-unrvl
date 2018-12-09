@@ -312,11 +312,22 @@ export class UtDygraphComponent implements OnInit {
       this.displayedData,
       this.dyGraphOptions
     );
-    this.Dygraph.adjustRoll(this.runningAvgSeconds);
+    if (this.runningAvgSeconds) {
+      this.Dygraph.adjustRoll(this.runningAvgSeconds);
+    }
+    let usedAnnotations = [];
+    if(this.annotations) {
+      usedAnnotations = this.annotations;
+    } else {
+      usedAnnotations = this.localStorage.get('annotations.' +  this.dyGraphOptions['labels'][1]);
+    }
 
-    if (this.annotations) {
-      this.adjustAnnotationsXtoMS();
-      this.Dygraph.setAnnotations(this.annotations);
+    if (usedAnnotations) {
+      const from = this.displayedData[0][0];
+      const to = new Date();
+      let inViewAnnos = this.filterinViewAnnos(usedAnnotations, from, to);
+      this.adjustAnnotationsXtoMS(inViewAnnos);
+      this.Dygraph.setAnnotations(inViewAnnos);
     }
 
     console.log(this.dyGraphOptions);
@@ -409,14 +420,26 @@ export class UtDygraphComponent implements OnInit {
     );
     // console.log('new length: ' + this.displayedData.length + ' elements');
     this.Dygraph.updateOptions({ file: this.displayedData });
-    this.Dygraph.adjustRoll(this.runningAvgSeconds);
+    if (this.runningAvgSeconds) {
+      this.Dygraph.adjustRoll(this.runningAvgSeconds);
+    }
     // console.log(      'historical length: ' + this.historicalData.length + ' elements'    );
     // console.log(this.annotations)
-    if (this.annotations) {
-      this.adjustAnnotationsXtoMS();
-      this.Dygraph.setAnnotations(this.annotations);
+    let usedAnnotations = [];
+    if(this.annotations) {
+      usedAnnotations = this.annotations;
+    } else {
+      usedAnnotations = this.localStorage.get('annotations.' +  this.dyGraphOptions['labels'][1]);
     }
-    if (this.debug == "true") {
+
+    if (usedAnnotations) {
+      const from = this.displayedData[0][0];
+      const to = new Date();
+      let inViewAnnos = this.filterinViewAnnos(usedAnnotations, from, to);
+      this.adjustAnnotationsXtoMS(inViewAnnos);
+      this.Dygraph.setAnnotations(inViewAnnos);
+    }
+    if (this.debug == 'true') {
       this.average = this.calculateAverage();
     }
     if (this.calculateRunningAvgFrom) {
@@ -461,13 +484,13 @@ export class UtDygraphComponent implements OnInit {
       );
   }
 
-  adjustAnnotationsXtoMS() {
-    this.annotations.forEach(annotation => {
+  adjustAnnotationsXtoMS(annotations) {
+    annotations.forEach(annotation => {
       if (null === annotation['x'] || true === annotation['adjusted']) {
         return;
       }
 
-      console.log('old annotation: ' + annotation['x']);
+      // console.log('old annotation: ' + annotation['x']);
       const [lower, upper] = this.binarySearchNearDate(
         this.displayedData,
         annotation['x']
@@ -480,10 +503,25 @@ export class UtDygraphComponent implements OnInit {
         return;
       }
       annotation['x'] = this.displayedData[lower][0].valueOf();
-      console.log('lower: ' + annotation['x']);
-      console.log('upper: ' + this.displayedData[upper][0].valueOf());
-      annotation['adjusted'] = true;
+      // console.log('lower: ' + annotation['x']);
+      // console.log('upper: ' + this.displayedData[upper][0].valueOf());
+      // annotation['adjusted'] = true;
     });
+    return annotations;
+  }
+
+  filterinViewAnnos(annotations: Array<Object>, from: Date, to: Date) {
+    let returnedAnnos = [];
+    annotations.forEach(annotation => {
+      const annoDateMS = annotation['x'];
+      if (!annoDateMS) {
+        return;
+      }
+      if (annoDateMS >= from.valueOf() && annoDateMS <= to.valueOf()) {
+        returnedAnnos.push(annotation);
+      }
+    });
+    return returnedAnnos;
   }
 
   // array must be consecutive!

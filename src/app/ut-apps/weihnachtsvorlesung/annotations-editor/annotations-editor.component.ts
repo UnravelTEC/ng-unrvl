@@ -1,4 +1,14 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
+import { interval, Subscription } from 'rxjs';
+
+import { LocalStorageService } from '../../../core/local-storage.service';
 
 @Component({
   selector: 'app-annotations-editor',
@@ -28,11 +38,13 @@ export class AnnotationsEditorComponent implements OnInit {
 
   @Output()
   requestRunningAverage = new EventEmitter<Date>();
+  @Input()
+  getRunningAverage: number;
 
   edit = {
     x: false,
     clapStart: false,
-    clapEnd: false
+    clapStop: false
   };
 
   private currentlyDisplayedExperiment = <any>{
@@ -40,14 +52,40 @@ export class AnnotationsEditorComponent implements OnInit {
     shortText: undefined,
     text: undefined,
     clapStart: undefined,
-    clapEnd: undefined
+    clapStop: undefined
   };
 
-  constructor() {}
+  private intervalSubscription: Subscription;
+  public nowTic: Date;
 
-  ngOnInit() {}
+  constructor(private localStorage: LocalStorageService) {}
+
+  ngOnInit() {
+    this.loadFromLocalStorage();
+
+    this.intervalSubscription = interval(
+      100
+    ).subscribe(counter => {
+      this.nowTic = new Date();
+    });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (
+      this.currentlyDisplayedExperiment['clapStart'] &&
+      !this.currentlyDisplayedExperiment['clapStop']
+    ) {
+      if (this.currentlyDisplayedExperiment.maxDB < this.getRunningAverage) {
+        this.currentlyDisplayedExperiment.maxDB = this.getRunningAverage;
+        this.saveToLocalStorage();
+      }
+    }
+  }
 
   setCurrent(newCurrent) {
+    // const oldCurrentId = this.currentAnnotation.shortText;
+    this.loadFromLocalStorage();
+
     this.currentAnnotation = newCurrent;
     this.triggerChange.emit(1);
   }
@@ -61,6 +99,7 @@ export class AnnotationsEditorComponent implements OnInit {
         element[key] += secondsToAdjust * 1000;
       }
     });
+    this.saveToLocalStorage();
   }
 
   toggleDisplay() {
@@ -106,6 +145,7 @@ export class AnnotationsEditorComponent implements OnInit {
 
     // emit to top-list component
     this.setNewCurrentExperiment.emit(this.currentAnnotation.shortText);
+    this.saveToLocalStorage();
   }
   start() {
     // if something running, stop
@@ -122,6 +162,7 @@ export class AnnotationsEditorComponent implements OnInit {
     this.requestRunningAverage.emit(
       new Date(this.currentAnnotation['clapStart'] - 1000)
     );
+    this.saveToLocalStorage();
   }
   stop(Experiment?: Object) {
     if (!Experiment) {
@@ -133,6 +174,7 @@ export class AnnotationsEditorComponent implements OnInit {
       this.setDateInField(Experiment['shortText'], 'clapStop');
     }
     this.requestRunningAverage.emit(null);
+    this.saveToLocalStorage();
   }
 
   show(which: string) {
@@ -145,5 +187,66 @@ export class AnnotationsEditorComponent implements OnInit {
         this.annotationList2.splice(i, 1);
       }
     }
+  }
+
+  saveToLocalStorage() {
+    this.localStorage.set('annotations.' + 'miclvl', this.annotationList);
+  }
+
+  // element-for-element copy, to preserve data binding
+  loadFromLocalStorage() {
+    let localAnnotations = this.localStorage.get('annotations.' + 'miclvl');
+    if(!localAnnotations) {
+      console.log('not loading from localStorage, empty.');
+      return;
+    }
+
+    // first, delete every annotation not in LocalStorage
+    let toDelete = [];
+    for (let i = 0; i < this.annotationList.length; i++) {
+      let elem = this.annotationList[i];
+      let found = false;
+      localAnnotations.forEach(annotation => {
+        if (elem['shortText'] == annotation['shortText']) {
+          found = true;
+        }
+      });
+      if (!found) {
+        console.log([
+          'loadFromLocalStorage: deleting ',
+          this.annotationList[i]
+        ]);
+        delete this.annotationList[i];
+      }
+    }
+    // TODO reindex
+
+    localAnnotations.forEach(annotation => {
+      for (let i = 0; i < this.annotationList.length; i++) {
+        let elem = this.annotationList[i];
+        if (elem['shortText'] == annotation['shortText']) {
+          for (const key in annotation) {
+            if (annotation.hasOwnProperty(key)) {
+              elem[key] = annotation[key];
+            }
+          }
+          // delete if elemkey not in annotation
+          for (const key in elem) {
+            if (elem.hasOwnProperty(key)) {
+              if(! annotation.hasOwnProperty(key)) {
+                delete elem[key];
+              }
+            }
+          }
+        }
+      }
+    });
+    this.triggerChange.emit(1);
+  }
+
+  deleteLocalStorage() {
+    console.log('DELETING');
+    console.log(this.localStorage.get('annotations.' + 'miclvl'));
+    this.localStorage.delete('annotations.' + 'miclvl');
   }
 }
