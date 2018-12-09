@@ -332,19 +332,25 @@ export class UtDygraphComponent implements OnInit {
   }
 
   calculateAverage(from?: Date, targetArray = this.displayedData) {
-    if (!targetArray.length) {
+    const datalen = targetArray.length;
+    if (!datalen) {
       return;
     }
+    // console.log('ut-dy.c: calculateAverage');
+    // console.log(from);
     let sum = 0,
       upper = 0,
       lower;
     if (from) {
       [lower, upper] = this.binarySearchNearDate(targetArray, from);
+      // console.log([lower, upper]);
     }
-    for (let i = upper; i < targetArray.length; i++) {
+    for (let i = upper; i < datalen; i++) {
       sum += targetArray[i][1];
     }
-    return sum / targetArray.length;
+    const avg = sum / (datalen - upper);
+    // console.log([avg, datalen - upper]);
+    return avg;
   }
 
   handleUpdatedData(displayedData: Object) {
@@ -410,11 +416,16 @@ export class UtDygraphComponent implements OnInit {
       this.adjustAnnotationsXtoMS();
       this.Dygraph.setAnnotations(this.annotations);
     }
-    if (this.debug) this.average = this.calculateAverage();
-    if (this.calculateRunningAvgFrom)
-      this.returnRunningAvg.emit(
-        this.calculateAverage(this.calculateRunningAvgFrom, this.historicalData)
+    if (this.debug == "true") {
+      this.average = this.calculateAverage();
+    }
+    if (this.calculateRunningAvgFrom) {
+      const avg = this.calculateAverage(
+        this.calculateRunningAvgFrom,
+        this.historicalData
       );
+      this.returnRunningAvg.emit(avg);
+    }
   }
 
   fetchNewData() {
