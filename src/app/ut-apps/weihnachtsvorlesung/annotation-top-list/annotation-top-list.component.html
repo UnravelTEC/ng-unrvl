@@ -14,7 +14,7 @@
       <!-- <div class="nr">Platz n</div> -->
       <div class="entry" *ngIf="entry.maxDB > 0">
         <span class="shortText"> #{{ entry.shortText }}: </span>
-        <span class="text"> {{ entry.text }} </span>
+        <span class="text"> {{ entry.text }} </span><br />
         <span class="dBValue"> {{ entry.maxDB | number : "1.2-2"}} dBa </span>
       </div>
     </li>

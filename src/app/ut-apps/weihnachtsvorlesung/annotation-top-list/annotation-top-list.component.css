@@ -2,3 +2,10 @@
   border: 1px solid green;
   padding: 1em;
 }
+
+li {
+  border: rgb(106, 108, 255) 2px solid;
+  padding: 0.35em;
+  margin: 0.3em;
+  background: rgb(224, 224, 224);
+}
