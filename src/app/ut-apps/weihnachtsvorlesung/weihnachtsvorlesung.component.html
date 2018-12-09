@@ -47,7 +47,6 @@
       [annotationList2]="annotations1"
       (triggerChange)="changeTriggered($event)"
 
-      [getRunningAverage]="runningAvgToEditor"
       (requestRunningAverage)="requestRunningAverage($event)"
       (setNewCurrentExperiment)="setNewCurrentExperiment($event)"
     >
@@ -58,6 +57,7 @@
       [annotationList]="annotations1"
       [changeTrigger]="changeTrigger"
       [currentExperiment]="currentExperiment"
+      [getRunningAverage]="runningAvgToDisplay"
     >
     </app-annotation-top-list>
   </div>

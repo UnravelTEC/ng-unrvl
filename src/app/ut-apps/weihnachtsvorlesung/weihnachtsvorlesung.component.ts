@@ -22,7 +22,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   serverPath = ''; //'prometheus/api/v1/';
   // queryString: string = 'mic_audiolevel';
   // queryString: string = 'co2{location="FuzzyLab",sensor="scd30"}'
-  queryString = 'bme280_pressure'; //'adc1_c1';
+  queryString = 'bme280_humidity'; //'adc1_c1';
   dataBaseQueryStepMS = 1000;
   timeRange = 60; // 1 min
   runningAvgSeconds = 0;
@@ -31,7 +31,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   changeTrigger = true;
 
   calculateRunningAvgFrom: Date = undefined;
-  runningAvgToEditor: number;
+  runningAvgToDisplay: number;
 
   style1 = {
     position: 'absolute',
@@ -79,9 +79,12 @@ export class WeihnachtsvorlesungComponent implements OnInit {
     this.changeTrigger = !this.changeTrigger;
   }
   returnRunningAvg(average: number) {
-    this.runningAvgToEditor = average;
+    this.runningAvgToDisplay = average;
+    // console.log(['w.c: got avg: ', average])
   }
   requestRunningAverage(from: Date) {
+    console.log('w.c: requestRunningAverage');
+    console.log(from);
     this.calculateRunningAvgFrom = from;
   }
 
@@ -98,7 +101,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
         x: null, // :Date, start date
         clapStart: null, // :Date
         clapEnd: null, // :Date
-        maxDB: 1 // :Number
+        maxDB: 0 // :Number
       };
       this.annotations1.push(newitem);
       this.annotations2.push(JSON.parse(JSON.stringify(newitem)));

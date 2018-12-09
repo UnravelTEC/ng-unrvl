@@ -13,6 +13,9 @@ export class AnnotationTopListComponent implements OnInit {
   @Input()
   currentExperiment: string;
 
+  @Input()
+  getRunningAverage: number;
+
   topList: Array<Experiment>; // sorted list to display
   current: Experiment = {
     nr: '0',
@@ -48,6 +51,10 @@ export class AnnotationTopListComponent implements OnInit {
     this.current['nr'] = String(rankNumber);
 
     this.topList = tmpArray.slice(0, 4);
+
+    if(this.current.maxDB < this.getRunningAverage) {
+      this.current.maxDB = this.getRunningAverage;
+    }
   }
 
   ngOnInit() {}

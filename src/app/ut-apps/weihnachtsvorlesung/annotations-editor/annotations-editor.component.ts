@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, SimpleChanges, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  SimpleChanges,
+  OnInit,
+  Output
+} from '@angular/core';
 
 @Component({
   selector: 'app-annotations-editor',
@@ -26,9 +33,7 @@ export class AnnotationsEditorComponent implements OnInit {
   setNewCurrentExperiment = new EventEmitter<string>(); // id: shortText
 
   @Output()
-  requestRunningAverage = new EventEmitter<Date>()
-  @Input()
-  getRunningAverage: number;
+  requestRunningAverage = new EventEmitter<Date>();
 
   edit = {
     x: false,
@@ -40,9 +45,7 @@ export class AnnotationsEditorComponent implements OnInit {
 
   ngOnInit() {}
 
-  ngOnChanges(changes: SimpleChanges) {
-
-  }
+  ngOnChanges(changes: SimpleChanges) {}
 
   setCurrent(newCurrent) {
     this.currentAnnotation = newCurrent;
@@ -63,15 +66,32 @@ export class AnnotationsEditorComponent implements OnInit {
     this.expanded = !this.expanded;
   }
   set(which: string) {
-    this.currentAnnotation[which] = new Date().valueOf();
-    if(which === 'clapStart') {
-      this.requestRunningAverage.emit(new Date(this.currentAnnotation[which] - 1000))
+    if (!this.currentAnnotation[which]) {
+      const id = this.currentAnnotation.shortText;
+      for (let i = 0; i < this.annotationList.length; i++) {
+        let elem = this.annotationList[i];
+        if (elem['shortText'] == id) {
+          elem[which] = new Date().valueOf();
+          this.annotationList2[i][which] = elem[which];
+          break;
+        }
+      }
+    } else {
+      alert('date already set');
     }
-    if(which === 'x') {
-      this.setNewCurrentExperiment.emit(this.currentAnnotation.shortText)
+    if (which === 'clapStart') {
+      this.requestRunningAverage.emit(
+        new Date(this.currentAnnotation[which] - 1000)
+      );
+    }
+    if (which === 'clapStop') {
+      this.requestRunningAverage.emit(null);
+    }
+    if (which === 'x') {
+      this.setNewCurrentExperiment.emit(this.currentAnnotation.shortText);
     }
   }
-  show(which:string) {
+  show(which: string) {
     this.edit[which] = !this.edit[which];
   }
   delete() {

@@ -3,19 +3,19 @@
   <div>
     <div class="nr">Platz {{ current.nr }}</div>
     <div class="entry">
-        <span class="shortText"> {{ current.shortText }}: </span>
+        <span class="shortText"> Exp. {{ current.shortText }}: </span>
         <span class="text"> {{ current.text }} </span>
-        <span class="dBValue"> {{ current.maxDB }} dBa </span>
+        <span class="dBValue"> {{ current.maxDB | number : "1.2-2"}} dBa </span>
       </div>
   </div>
   <h2>Aktuelle Reihung</h2>
   <ol>
     <li *ngFor="let entry of topList">
-      <div class="nr">Platz n</div>
-      <div class="entry">
-        <span class="shortText"> {{ entry.shortText }}: </span>
+      <!-- <div class="nr">Platz n</div> -->
+      <div class="entry" *ngIf="entry.maxDB > 0">
+        <span class="shortText"> #{{ entry.shortText }}: </span>
         <span class="text"> {{ entry.text }} </span>
-        <span class="dBValue"> {{ entry.maxDB }} dBa </span>
+        <span class="dBValue"> {{ entry.maxDB | number : "1.2-2"}} dBa </span>
       </div>
     </li>
   </ol>
