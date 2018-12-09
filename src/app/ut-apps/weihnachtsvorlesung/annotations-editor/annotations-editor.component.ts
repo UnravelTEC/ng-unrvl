@@ -130,7 +130,7 @@ export class AnnotationsEditorComponent implements OnInit {
     if (!Experiment['clapStop']) {
       const stopdate = new Date().valueOf();
 
-      this.setDateInField(this.currentAnnotation.shortText, 'clapStop');
+      this.setDateInField(Experiment['shortText'], 'clapStop');
     }
     this.requestRunningAverage.emit(null);
   }
