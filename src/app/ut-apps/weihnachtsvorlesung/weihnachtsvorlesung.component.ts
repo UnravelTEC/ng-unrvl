@@ -109,23 +109,23 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
     // manual for test
     // push // Annotations for short term graph
-    this.annotations1[0]['x'] = new Date().getTime();
-    this.annotations1[0]['maxDB'] = 91;
-    this.annotations1[1]['x'] = new Date().getTime() - 1.4 * 60 * 1000;
-    this.annotations1[1]['maxDB'] = 89;
+    // this.annotations1[0]['x'] = new Date().getTime();
+    // this.annotations1[0]['maxDB'] = 91;
+    // this.annotations1[1]['x'] = new Date().getTime() - 1.4 * 60 * 1000;
+    // this.annotations1[1]['maxDB'] = 89;
 
     // Annotations for long term graph
-    this.annotations2[0]['x'] = new Date().getTime();
-    this.annotations2[0]['maxDB'] = 91;
-    this.annotations2[1]['x'] = new Date().getTime() - 1.4 * 60 * 60 * 1000;
-    this.annotations2[1]['maxDB'] = 89;
-    this.annotations2[2]['x'] = new Date().getTime() - 1.2 * 60 * 60 * 1000;
-    this.annotations2[2]['maxDB'] = 77;
-    this.annotations2[3]['x'] = new Date().getTime() - 1 * 60 * 60 * 1000;
-    this.annotations2[3]['maxDB'] = 66;
-    this.annotations2[4]['x'] = new Date().getTime() - 0.7 * 60 * 60 * 1000;
-    this.annotations2[4]['maxDB'] = 55;
-    this.annotations2[5]['x'] = new Date().getTime() - 0.2 * 60 * 60 * 1000;
-    this.annotations2[5]['maxDB'] = 44;
+    // this.annotations2[0]['x'] = new Date().getTime();
+    // this.annotations2[0]['maxDB'] = 91;
+    // this.annotations2[1]['x'] = new Date().getTime() - 1.4 * 60 * 60 * 1000;
+    // this.annotations2[1]['maxDB'] = 89;
+    // this.annotations2[2]['x'] = new Date().getTime() - 1.2 * 60 * 60 * 1000;
+    // this.annotations2[2]['maxDB'] = 77;
+    // this.annotations2[3]['x'] = new Date().getTime() - 1 * 60 * 60 * 1000;
+    // this.annotations2[3]['maxDB'] = 66;
+    // this.annotations2[4]['x'] = new Date().getTime() - 0.7 * 60 * 60 * 1000;
+    // this.annotations2[4]['maxDB'] = 55;
+    // this.annotations2[5]['x'] = new Date().getTime() - 0.2 * 60 * 60 * 1000;
+    // this.annotations2[5]['maxDB'] = 44;
   }
 }

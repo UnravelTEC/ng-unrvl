@@ -1,11 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  SimpleChanges,
-  OnInit,
-  Output
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-annotations-editor',
@@ -17,7 +10,8 @@ export class AnnotationsEditorComponent implements OnInit {
     series: 'test',
     x: 2,
     shortText: '#1',
-    text: 'String'
+    text: 'String',
+    maxDB: undefined
   };
 
   @Input()
@@ -41,11 +35,17 @@ export class AnnotationsEditorComponent implements OnInit {
     clapEnd: false
   };
 
+  private currentlyDisplayedExperiment = <any>{
+    x: undefined,
+    shortText: undefined,
+    text: undefined,
+    clapStart: undefined,
+    clapEnd: undefined
+  };
+
   constructor() {}
 
   ngOnInit() {}
-
-  ngOnChanges(changes: SimpleChanges) {}
 
   setCurrent(newCurrent) {
     this.currentAnnotation = newCurrent;
@@ -62,35 +62,79 @@ export class AnnotationsEditorComponent implements OnInit {
       }
     });
   }
+
   toggleDisplay() {
     this.expanded = !this.expanded;
   }
-  set(which: string) {
-    if (!this.currentAnnotation[which]) {
-      const id = this.currentAnnotation.shortText;
-      for (let i = 0; i < this.annotationList.length; i++) {
-        let elem = this.annotationList[i];
-        if (elem['shortText'] == id) {
-          elem[which] = new Date().valueOf();
-          this.annotationList2[i][which] = elem[which];
-          break;
-        }
+
+  setDateInField(elementId: string, field: string) {
+    // id = shortText
+    for (let i = 0; i < this.annotationList.length; i++) {
+      let elem = this.annotationList[i];
+      if (elem['shortText'] == elementId) {
+        elem[field] = new Date().valueOf();
+        this.annotationList2[i][field] = elem[field];
+        break;
       }
-    } else {
-      alert('date already set');
-    }
-    if (which === 'clapStart') {
-      this.requestRunningAverage.emit(
-        new Date(this.currentAnnotation[which] - 1000)
-      );
-    }
-    if (which === 'clapStop') {
-      this.requestRunningAverage.emit(null);
-    }
-    if (which === 'x') {
-      this.setNewCurrentExperiment.emit(this.currentAnnotation.shortText);
     }
   }
+  set() {
+    // if something running, stop
+    if (
+      this.currentlyDisplayedExperiment['clapStart'] &&
+      !this.currentlyDisplayedExperiment['clapStop']
+    ) {
+      this.stop(this.currentlyDisplayedExperiment);
+    }
+
+    // if an old exp. has not started yet - we need to set start/stop dates so we can edit it later
+    if (!this.currentlyDisplayedExperiment['clapStart']) {
+      this.setDateInField(
+        this.currentlyDisplayedExperiment.shortText,
+        'clapStart'
+      );
+      this.setDateInField(
+        this.currentlyDisplayedExperiment.shortText,
+        'clapStop'
+      );
+    }
+
+    // set date in both lists
+    this.setDateInField(this.currentAnnotation.shortText, 'x');
+
+    this.currentlyDisplayedExperiment = this.currentAnnotation;
+
+    // emit to top-list component
+    this.setNewCurrentExperiment.emit(this.currentAnnotation.shortText);
+  }
+  start() {
+    // if something running, stop
+    if (
+      this.currentlyDisplayedExperiment['clapStart'] &&
+      !this.currentlyDisplayedExperiment['clapStop']
+    ) {
+      this.stop(this.currentlyDisplayedExperiment);
+    }
+
+    // set start date on all lists
+    this.setDateInField(this.currentAnnotation.shortText, 'clapStart');
+
+    this.requestRunningAverage.emit(
+      new Date(this.currentAnnotation['clapStart'] - 1000)
+    );
+  }
+  stop(Experiment?: Object) {
+    if (!Experiment) {
+      Experiment = this.currentAnnotation;
+    }
+    if (!Experiment['clapStop']) {
+      const stopdate = new Date().valueOf();
+
+      this.setDateInField(this.currentAnnotation.shortText, 'clapStop');
+    }
+    this.requestRunningAverage.emit(null);
+  }
+
   show(which: string) {
     this.edit[which] = !this.edit[which];
   }

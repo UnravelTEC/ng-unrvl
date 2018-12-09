@@ -28,7 +28,7 @@ export class AnnotationTopListComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges) {
     let tmpArray: Array<Experiment> = [];
-    let currentExperimentNumber = 0;
+    let currentExperimentNumber = undefined;
     for (let i = 0; i < this.annotationList.length; i++) {
       let tmpExperiment = this.annotationList[i];
       if (tmpExperiment['maxDB']) {
@@ -37,6 +37,9 @@ export class AnnotationTopListComponent implements OnInit {
       if (tmpExperiment['shortText'] == this.currentExperiment) {
         currentExperimentNumber = i;
       }
+    }
+    if (undefined === currentExperimentNumber) {
+      return;
     }
     tmpArray.sort((a, b) => b['maxDB'] - a['maxDB']);
 
@@ -52,8 +55,10 @@ export class AnnotationTopListComponent implements OnInit {
 
     this.topList = tmpArray.slice(0, 4);
 
-    if(this.current.maxDB < this.getRunningAverage) {
-      this.current.maxDB = this.getRunningAverage;
+    if (this.current['clapStart'] && !this.current['clapStop']) {
+      if (this.current.maxDB < this.getRunningAverage) {
+        this.current.maxDB = this.getRunningAverage;
+      }
     }
   }
 
