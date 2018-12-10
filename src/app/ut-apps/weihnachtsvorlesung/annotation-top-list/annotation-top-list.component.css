@@ -14,6 +14,51 @@ h2:first-child {
   margin-top:0;
 }
 
+table {
+	border-spacing: 0;
+}
+
+td.nr, th.shortText {
+	color: white;
+	background: #666;
+	font-weight: bold;
+	padding: 0.3em;
+	padding-left: 0.6em;
+}
+
+td.shortText {
+	margin-left: 1em;
+}
+
+/*
+th.shortText {
+	margin-left: 1em;
+	padding-left: 0.3em;
+}
+*/
+.shortText {
+	font-weight: bold;
+}
+.current_experiment {
+	margin: 0 0 0 0;
+	padding-left: 0em;
+	padding-right: 0.3em;
+	padding-top: 0em;
+	padding-bottom: 0em;
+	background: whitesmoke;
+	border: 2px #666 solid;
+	border-right: none;
+	border-bottom: none;
+	border-left: none;
+}
+
+.current_experiment th:first-child, td:first-child {
+	padding-right: 0;
+}
+
+.current_experiment th:nth-child(2), td:nth-child(2){
+	padding-left: 0.3em;
+}
 
 li {
   border: rgb(106, 108, 255) 2px none;
@@ -31,7 +76,7 @@ ol {
 }
 ol > li {
 	position:relative; /* Create a positioning context */
-	margin:0 0 6px 2em; /* Give each list item a left margin to make room for the numbers */
+	margin:0 0 6px 2.5em; /* Give each list item a left margin to make room for the numbers */
 	padding:4px 8px; /* Add some spacing around the content */
 	list-style:none; /* Disable the normal item numbering */
 	border-top:2px solid #666;
@@ -74,10 +119,6 @@ ol {
   margin-left: -.5em;
 }
 
-span.short-text {
-  margin-left: 1em;
-}
-
 tr *:first-child {
   width: 4em;
   text-align: left;
@@ -101,7 +142,7 @@ table tr:first-child {
 }
 
 table tr td {
-  vertical-align:top;
+  vertical-align: top;
 }
 
 table td:first-child {
@@ -111,6 +152,8 @@ table td:first-child {
 
 th {
   text-align: left;
+  vertical-align: top;
+
 }
 
 div li .dBValue {

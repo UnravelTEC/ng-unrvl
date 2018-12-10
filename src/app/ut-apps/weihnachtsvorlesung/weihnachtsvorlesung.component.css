@@ -2,6 +2,7 @@
   font-family: Source Sans Pro, Helvetica, Arial, sans-serif;
 }
 
+
 .utAnnotation {
   font-family: Source Sans Pro, Helvetica, Arial, sans-serif !important;
   color: white !important; /* #373535 !important needed to override inline set value by Dygraph */
