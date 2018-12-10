@@ -95,10 +95,6 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   ngOnInit() {
     let lower = 0;
     experimentList.forEach(item => {
-      lower = lower +1;
-      if (lower == 4) {
-        lower = 0;
-      }
       let newitem = {
         shortText: item.shortText,
         text: item.text,
@@ -113,6 +109,10 @@ export class WeihnachtsvorlesungComponent implements OnInit {
         attachAtBottom: true,
         maxDB: 0 // :Number
       };
+      lower = lower +1;
+      if (lower == 4) {
+        lower = 0;
+      }
       console.log('tickheigth, width')
       console.log([newitem.tickHeight, newitem.tickWidth]);
       this.annotations1.push(newitem);
