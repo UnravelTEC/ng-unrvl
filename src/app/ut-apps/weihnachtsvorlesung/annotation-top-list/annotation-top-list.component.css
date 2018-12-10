@@ -1,6 +1,7 @@
 #toplist {
   border: 1px solid darkgray;
   padding: 1em 1em 0em 1em;
+  height: 100%;
 }
 
 h2 {
@@ -86,8 +87,12 @@ table {
   width: 100%;
 }
 
-table tr:first-child {
+/*table tr:first-child {
   height: 5ch;
+}
+*/
+table tr:first-child {
+  height: 6vh;
 }
 
 table tr td {
@@ -109,6 +114,3 @@ div li .dBValue {
   color: black;
 }
 
-div .entry span {
-  align: right;
-}

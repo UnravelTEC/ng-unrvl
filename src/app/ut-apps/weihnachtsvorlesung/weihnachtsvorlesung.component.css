@@ -3,20 +3,20 @@
 }
 
 .utAnnotation {
-  color: #373535 !important; /* !important needed to override inline set value by Dygraph */
+  color: white !important; /* #373535 !important needed to override inline set value by Dygraph */
   width: 30px !important;
   height: 20px !important;
-  background: rgb(148, 231, 255);
+  background:black;
   transform: translateX(7px);
   border: 0;
-
+  line-height: 15px;
 }
 
 .UT-Logo {
   position: absolute;
-  left: 40px;
+  left: 60px;
   top: 2vh;
-  width: 16em;
+  width: 12em;
 }
 
 .weihnachtsvorlesung-header {
@@ -30,10 +30,13 @@
   vertical-align: middle;
 }
 .graphapp .toplist {
+    border: 1px solid black;
     position: absolute;
-    top: 8em; /* 3em */
+    top: 6em; /* 3em */
+    bottom: 7vh;
     left: 10px;
     width: 20em;
+    overflow: hidden;
 }
 
 .graphapp .annotations {
@@ -42,11 +45,11 @@
   position: absolute;
   left: 5px;
   top: 100vh;
-  transform: translateY(-5em);
+  transform: translateY(-3em);
 }
 
 .mydygraph.lowergraph .utAnnotation {
- width: 1.5em !important;
+  width: 1.5em !important;
   height: 1em !important;
 }
 

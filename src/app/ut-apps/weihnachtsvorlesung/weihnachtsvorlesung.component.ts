@@ -1,4 +1,11 @@
-import { Component, OnInit, Output, EventEmitter, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  SimpleChanges,
+  ViewEncapsulation
+} from '@angular/core';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 import { experimentList } from './experiment-list';
@@ -10,7 +17,6 @@ import { experimentList } from './experiment-list';
   encapsulation: ViewEncapsulation.None // from https://coryrylan.com/blog/css-encapsulation-with-angular-components
 })
 export class WeihnachtsvorlesungComponent implements OnInit {
-
   // serverHostName: string = 'http://koffer.lan';
   // serverHostName: string = 'http://belinda.cgv.tugraz.at'
   serverHostName = 'scpexploratory02.tugraz.at'; // 'raspigas.lan';
@@ -31,7 +37,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   style1 = {
     position: 'absolute',
-    top: '8rem', /*3rem*/
+    top: '6rem', /*3rem*/
     bottom: '31vh',
     left: '22em',
     right: '5vw'
@@ -49,23 +55,54 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   currentExperiment: string; // id: shortText
 
   extraDyGraphConfig1 = {
-    underlayCallback: function(canvas, area, g) {}
+    underlayCallback: this.underlayCallback
   };
+
+  underlayCallback(canvas, area, g) {
+    // console.log(['underlayCallback: ',canvas,area,g]);
+
+    // canvas.fillStyle = 'rgba(255, 255, 102, 1.0)';
+    canvas.fillStyle = 'rgba(236, 166, 86, 1.0)';
+
+    function highlight_period(x_start, x_end) {
+      const canvas_left_x = g.toDomXCoord(x_start);
+      const canvas_right_x = g.toDomXCoord(x_end);
+      const canvas_width = canvas_right_x - canvas_left_x;
+      canvas.fillRect(canvas_left_x, area.y, canvas_width, area.h);
+    }
+
+    const min_data_x = g.getValue(0, 0);
+    const max_data_x = g.getValue(g.numRows() - 1, 0);
+
+    let localAnnotations = g.annotations();
+    for (let i = 0; i < localAnnotations.length; i++) {
+      let annotation = localAnnotations[i];
+      if (annotation.clapStart && annotation.clapStop) {
+        const begin = annotation.clapStart;
+        const end = annotation.clapStop;
+        highlight_period(begin, end);
+      }
+    }
+  }
 
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-10 15:00';
+  start2 = '2018-12-10 16:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-10 15:00'), // earliest
-      new Date('2018-12-10 18:00') // latest
-    ]
+      new Date('2018-12-10 16:00'), // earliest
+      new Date('2018-12-10 19:00') // latest
+    ],
+    underlayCallback: this.underlayCallback
     // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
   };
   annotations1 = [];
   annotations2 = [];
 
-  constructor(private localStorage: LocalStorageService, private globalSettings: GlobalSettingsService ) {}
+  constructor(
+    private localStorage: LocalStorageService,
+    private globalSettings: GlobalSettingsService
+  ) {}
 
   ngOnChanges(changes: SimpleChanges) {
     // console.log('app: ngOnC triggered');
@@ -90,7 +127,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   }
 
   toggleFullScreen() {
-    this.globalSettings.emitChange({fullscreen: undefined});
+    this.globalSettings.emitChange({ fullscreen: undefined });
   }
 
   ngOnInit() {
@@ -103,7 +140,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
         text: item.text,
         series: 'miclvl',
         cssClass: 'utAnnotation',
-        tickColor: 'rgb(148, 231, 255)',
+        tickColor: 'black', // 'rgb(148, 231, 255)
         tickWidth: '2',
         tickHeight: String(lower * 15),
         x: null, // :Date, start date
@@ -112,11 +149,11 @@ export class WeihnachtsvorlesungComponent implements OnInit {
         attachAtBottom: true,
         maxDB: 0 // :Number
       };
-      lower = lower +1;
+      lower = lower + 1;
       if (lower == 4) {
         lower = 0;
       }
-      console.log('tickheigth, width')
+      console.log('tickheigth, width');
       console.log([newitem.tickHeight, newitem.tickWidth]);
       this.annotations1.push(newitem);
       let newAnno = JSON.parse(JSON.stringify(newitem));
