@@ -9,6 +9,7 @@ import {
 import { interval, Subscription } from 'rxjs';
 
 import { LocalStorageService } from '../../../core/local-storage.service';
+import{ UtFetchdataService } from '../../../shared/ut-fetchdata.service'
 
 @Component({
   selector: 'app-annotations-editor',
@@ -59,7 +60,7 @@ export class AnnotationsEditorComponent implements OnInit {
   private intervalSubscription: Subscription;
   public nowTic: Date;
 
-  constructor(private localStorage: LocalStorageService) {}
+  constructor(private localStorage: LocalStorageService, private utHTTP: UtFetchdataService) {}
 
   ngOnInit() {
     this.loadFromLocalStorage();
@@ -259,6 +260,20 @@ export class AnnotationsEditorComponent implements OnInit {
 
   save() {
     this.saveToLocalStorage();
+    const url = 'https://scpexploratory02.tugraz.at/test/collector.php';
+    this.utHTTP.postData(url, JSON.stringify(this.annotationList));
+
+  }
+
+  loadFromExt() {
+    const url = 'https://scpexploratory02.tugraz.at/test/tmp/test.txt';
+    this.utHTTP
+    .getHTTPData(url)
+    .subscribe((data: Object) => this.loadData(data));
+  }
+  loadData(data: Object) {
+    console.log(data);
+    this.localStorage.set('annotations.' + 'miclvl', data);
   }
 
   deleteLocalStorage() {

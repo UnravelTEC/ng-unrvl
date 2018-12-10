@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+
 
 @Injectable({
   providedIn: 'root'
@@ -26,16 +27,17 @@ export class UtFetchdataService {
     end: Date,
     step
   ) {
-    const url = queryEndPoint +
-    'query_range?query=' +
-    queryString +
-    '&start=' +
-    start.toISOString() +
-    '&end=' +
-    end.toISOString() +
-    '&step=' +
-    step +
-    'ms';
+    const url =
+      queryEndPoint +
+      'query_range?query=' +
+      queryString +
+      '&start=' +
+      start.toISOString() +
+      '&end=' +
+      end.toISOString() +
+      '&step=' +
+      step +
+      'ms';
     // console.log(url);
     return url;
   }
@@ -52,5 +54,17 @@ export class UtFetchdataService {
     return this.http.get(
       this.buildRangeQuery(queryEndPoint, queryString, start, end, step)
     );
+  }
+  postData(url: string, data: any) {
+    this.http.post(url, data).subscribe(
+      (res: any) => {
+        console.log(res);
+      },
+      (error: any) => {
+        console.log(error);
+      }
+    );
+
+    console.log(['postData', url, data]);
   }
 }
