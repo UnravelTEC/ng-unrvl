@@ -52,6 +52,10 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   currentExperiment: string; // id: shortText
 
+  extraDyGraphConfig1 = {
+    underlayCallback: function(canvas, area, g) {}
+  };
+
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
   start2 = '2018-12-10 08:00';
@@ -89,9 +93,12 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   }
 
   ngOnInit() {
-    let lower = true;
+    let lower = 0;
     experimentList.forEach(item => {
-      lower = !lower;
+      lower++;
+      if ((lower = 3)) {
+        lower = 0;
+      }
       let newitem = {
         shortText: item.shortText,
         text: item.text,
@@ -99,14 +106,18 @@ export class WeihnachtsvorlesungComponent implements OnInit {
         cssClass: 'utAnnotation',
         tickColor: 'rgb(148, 231, 255)',
         tickWidth: '2',
-        tickHeight: lower ? '30' : '70',
+        tickHeight: String(lower * 10),
         x: null, // :Date, start date
         clapStart: null, // :Date
         clapStop: null, // :Date
+        attachAtBottom: true,
         maxDB: 0 // :Number
       };
       this.annotations1.push(newitem);
-      this.annotations2.push(JSON.parse(JSON.stringify(newitem)));
+      let newAnno = JSON.parse(JSON.stringify(newitem));
+      newAnno.attachAtBottom = false;
+      newAnno.tickColor = 'rgb(255, 0, 0)';
+      this.annotations2.push(newAnno);
     });
 
     // manual for test

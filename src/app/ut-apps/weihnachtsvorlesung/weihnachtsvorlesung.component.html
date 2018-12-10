@@ -1,5 +1,5 @@
 <div class="graphapp">
-  <h4>Weihnachtsvorlesung Lautstärke</h4>
+  <h4>Überschrift Weihnachtsvorlesung Lautstärke</h4>
 
   <div class="mydygraph">
     <app-ut-dygraph
@@ -10,10 +10,10 @@
       [serverHostName]="serverHostName"
       [serverPath]="serverPath"
       [serverPort]="serverPort"
-      startTime="3m"
-      fetchFromServerIntervalMS="100"
+      startTime="10m"
+      fetchFromServerIntervalMS="500"
       debug="false"
-
+      [extraDyGraphConfig]="extraDyGraphConfig1"
       [multiplicateFactors]="multiplicateFactors"
       [calculateRunningAvgFrom]="calculateRunningAvgFrom"
       (returnRunningAvg)="returnRunningAvg($event)"
@@ -34,7 +34,7 @@
       [serverPort]="serverPort"
       [endTime]="end2"
       [startTime]="start2"
-      fetchFromServerIntervalMS="10000"
+      fetchFromServerIntervalMS="1000"
       debug="false"
       [extraDyGraphConfig]="extraDyGraphConfig2"
       [multiplicateFactors]="multiplicateFactors"
