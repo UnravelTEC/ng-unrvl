@@ -3,13 +3,18 @@
 }
 
 .utAnnotation {
+  font-family: Source Sans Pro, Helvetica, Arial, sans-serif !important;
   color: white !important; /* #373535 !important needed to override inline set value by Dygraph */
   width: 30px !important;
   height: 20px !important;
   background:black;
-  transform: translateX(7px);
+  transform: translateX(8px);
   border: 0;
-  line-height: 15px;
+}
+
+.utAnnotation::before {
+  content: 'E';
+  padding-right: 0.3ch;
 }
 
 .UT-Logo {
@@ -49,8 +54,9 @@
 }
 
 .mydygraph.lowergraph .utAnnotation {
-  width: 1.5em !important;
+  width: 4ch !important;
   height: 1em !important;
+  line-height: 1.1em;
 }
 
 h1 {
