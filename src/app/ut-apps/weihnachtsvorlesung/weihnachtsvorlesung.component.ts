@@ -87,10 +87,10 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-10 20:00';
+  start2 = '2018-12-10 21:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-10 20:00'), // earliest
+      new Date('2018-12-10 21:00'), // earliest
       new Date('2018-12-10 23:00') // latest
     ],
     underlayCallback: this.underlayCallback
