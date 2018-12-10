@@ -32,7 +32,7 @@
     <!-- [queryString]="'avg_over_time(' + queryString + '[1s])'" -->
     <app-ut-dygraph
 
-    [queryString]="'max_over_time(' + 'adc1_c1' + '[10s])'"
+    [queryString]="'max_over_time(' + 'adc1_c1:avg_1s' + '[10s])'"
     dataBaseQueryStepMS="1000"
       [dataSeriesLabels]="dataSeriesNames"
       [style]="style2"

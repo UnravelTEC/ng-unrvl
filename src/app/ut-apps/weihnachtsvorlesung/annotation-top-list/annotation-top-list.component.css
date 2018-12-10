@@ -22,6 +22,8 @@ li {
   background:whitesmoke;
 }
 
+/* ------- ol style from https://css-tricks.com/numbering-in-style/ ------- */
+
 ol {
 	counter-reset:li; /* Initiate a counter */
 	margin-left:0; /* Remove the default left margin */
@@ -60,6 +62,9 @@ ol > li:before {
 li ol,
 li ul {margin-top:6px;}
 ol ol li:last-child {margin-bottom:0;}
+
+/* ------- end ol style from https://css-tricks.com/numbering-in-style/ ------- */
+
 
 ol > li:first-child { background: gold; }
 ol > li:nth-child(2) { background: silver; }
