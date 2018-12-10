@@ -1,7 +1,7 @@
 <div id="toplist">
   <h2>Aktuelles Experiment</h2>
   <div *ngIf="current.shortText != '.'">
-    <div class="nr">Platz {{ 1 + current.nr }}</div>
+    <div class="nr">Platz {{ current.nr }}</div>
     <div class="entry">
         <span class="shortText"> Exp. {{ current.shortText }}: </span>
         <span class="text"> {{ current.text }} </span>

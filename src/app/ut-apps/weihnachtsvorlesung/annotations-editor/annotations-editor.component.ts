@@ -146,6 +146,7 @@ export class AnnotationsEditorComponent implements OnInit {
     // emit to top-list component
     this.setNewCurrentExperiment.emit(this.currentAnnotation.shortText);
     this.saveToLocalStorage();
+    this.localStorage.set("currentExperiment", this.currentAnnotation.shortText);
   }
   start() {
     // if something running, stop

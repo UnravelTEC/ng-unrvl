@@ -18,7 +18,7 @@
       [calculateRunningAvgFrom]="calculateRunningAvgFrom"
       (returnRunningAvg)="returnRunningAvg($event)"
       YLabel="dBa"
-      runningAvgSeconds="0"
+      runningAvgSeconds="1"
     ></app-ut-dygraph>
     <!-- [annotations]="annotations1" -->
   </div>
@@ -36,7 +36,7 @@
       [startTime]="start2"
       fetchFromServerIntervalMS="10000"
       debug="false"
-
+      runningAvgSeconds="1"
       [extraDyGraphConfig]="extraDyGraphConfig2"
       [multiplicateFactors]="multiplicateFactors"
       YLabel="dBa"

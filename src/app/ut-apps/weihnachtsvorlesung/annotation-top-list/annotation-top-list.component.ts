@@ -1,4 +1,7 @@
 import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
+
+import { interval, Subscription } from 'rxjs';
+
 import { LocalStorageService } from '../../../core/local-storage.service';
 
 @Component({
@@ -12,7 +15,7 @@ export class AnnotationTopListComponent implements OnInit {
   @Input()
   changeTrigger = true;
   @Input()
-  currentExperiment: string;
+  currentExperiment: string; // id: shortText
 
   @Input()
   getRunningAverage: number;
@@ -25,6 +28,8 @@ export class AnnotationTopListComponent implements OnInit {
     maxDB: 0
   };
 
+  private intervalSubscription: Subscription;
+
   constructor(private localStorage: LocalStorageService) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -35,6 +40,10 @@ export class AnnotationTopListComponent implements OnInit {
   ngOnInit() {
     this.refresh();
     console.log(this.annotationList);
+
+    this.intervalSubscription = interval(100).subscribe(counter => {
+      this.refresh();
+    });
   }
 
   refresh() {
@@ -43,6 +52,11 @@ export class AnnotationTopListComponent implements OnInit {
       console.log('not loading from localStorage, empty.');
       return;
     }
+
+    this.currentExperiment = this.localStorage.get('currentExperiment');
+    console.log(
+      'get currentExperiment from localstorage' + this.currentExperiment
+    );
 
     let tmpArray: Array<Experiment> = [];
     let currentExperimentNumber = undefined;
@@ -71,7 +85,7 @@ export class AnnotationTopListComponent implements OnInit {
     }
 
     this.current = this.annotationList[currentExperimentNumber];
-    this.current['nr'] = String(rankNumber);
+    this.current['nr'] = String(rankNumber+1);
   }
 }
 
