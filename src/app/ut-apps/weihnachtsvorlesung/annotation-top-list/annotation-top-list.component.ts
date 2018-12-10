@@ -25,7 +25,13 @@ export class AnnotationTopListComponent implements OnInit {
     nr: '0',
     shortText: '.',
     text: '...',
-    maxDB: 0
+    maxDB: 0,
+    x: undefined,
+    clapStop: undefined,
+    clapStart: undefined,
+    baseLine: undefined,
+    clapLength: undefined,
+    dBs: undefined
   };
 
   private intervalSubscription: Subscription;
@@ -88,6 +94,11 @@ export class AnnotationTopListComponent implements OnInit {
     this.current['nr'] =
       rankNumber !== undefined ? String(rankNumber + 1) : '-';
 
+      // FIXME clapLength hier updaten
+      // this.currentAnnotation['clapLength'] =
+      // (this.nowTic.valueOf() -
+      //   this.currentAnnotation['clapStart'].valueOf()) /
+      // 1000;
   }
 }
 
