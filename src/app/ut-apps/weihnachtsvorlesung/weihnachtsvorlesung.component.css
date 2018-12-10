@@ -24,10 +24,10 @@
   left: 22em;
   right: 5vw;
   top: 20px;
-  height: 10vh;
+  height: 60px;
   display: block;
   text-align: center;
-  vertical-align: middle;
+  margin: 0;
 }
 .graphapp .toplist {
     border: 1px solid black;
@@ -54,7 +54,9 @@
 }
 
 h1 {
-  margin:0.5em;
+  /*margin:0.5em;*/
+  margin: 0;
+  margin-top: 1vh;
   text-align: center;
 }
 
