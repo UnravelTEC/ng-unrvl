@@ -22,8 +22,3 @@
   overflow-y: auto;
   position: relative; /* to act as new limits for apps with pos: absolute */
 }
-
-.utAnnotation {
-
-  background: blue;
-}

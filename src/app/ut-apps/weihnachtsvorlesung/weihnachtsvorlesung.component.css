@@ -32,3 +32,12 @@
 h4 {
   margin:0.5em;
 }
+
+button.fullscreen {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: transparent;
+  border: 1px solid gray;
+  color: gray;
+}

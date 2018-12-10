@@ -1,11 +1,6 @@
-import {
-  Component,
-  OnInit,
-  ViewEncapsulation,
-  SimpleChanges
-} from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { LocalStorageService } from '../../core/local-storage.service';
-import { AnnotationsEditorComponent } from './annotations-editor/annotations-editor.component';
+import { GlobalSettingsService } from '../../core/global-settings.service';
 import { experimentList } from './experiment-list';
 
 @Component({
@@ -15,6 +10,7 @@ import { experimentList } from './experiment-list';
   encapsulation: ViewEncapsulation.None // from https://coryrylan.com/blog/css-encapsulation-with-angular-components
 })
 export class WeihnachtsvorlesungComponent implements OnInit {
+
   // serverHostName: string = 'http://koffer.lan';
   // serverHostName: string = 'http://belinda.cgv.tugraz.at'
   serverHostName = 'scpexploratory02.tugraz.at'; // 'raspigas.lan';
@@ -69,7 +65,8 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   annotations1 = [];
   annotations2 = [];
 
-  constructor(private localStorage: LocalStorageService) {}
+  constructor(private localStorage: LocalStorageService, private globalSettings: GlobalSettingsService ) {}
+
   ngOnChanges(changes: SimpleChanges) {
     // console.log('app: ngOnC triggered');
   }
@@ -92,7 +89,13 @@ export class WeihnachtsvorlesungComponent implements OnInit {
     this.calculateRunningAvgFrom = from;
   }
 
+  toggleFullScreen() {
+    this.globalSettings.emitChange({fullscreen: undefined});
+  }
+
   ngOnInit() {
+    this.toggleFullScreen();
+
     let lower = 0;
     experimentList.forEach(item => {
       let newitem = {
