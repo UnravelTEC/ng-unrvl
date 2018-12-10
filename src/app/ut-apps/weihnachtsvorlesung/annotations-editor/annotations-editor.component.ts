@@ -257,6 +257,10 @@ export class AnnotationsEditorComponent implements OnInit {
     this.triggerChange.emit(1);
   }
 
+  save() {
+    this.saveToLocalStorage();
+  }
+
   deleteLocalStorage() {
     console.log('DELETING');
     console.log(this.localStorage.get('annotations.' + 'miclvl'));
