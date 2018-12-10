@@ -12,7 +12,7 @@
       </tr>
       <tr class="entry">
         <td class="shortText">
-            Exp. {{ current.shortText }}:
+            E{{ current.shortText }}
         </td>
         <td class="text">
             {{ current.text }}
@@ -24,12 +24,28 @@
   <h2>Aktuelle Reihung</h2>
   <ol>
     <li *ngFor="let entry of topList">
-      <!-- <div class="nr">Platz n</div> -->
-      <div class="entry" *ngIf="entry.maxDB > 0">
+      <!--div class="entry" *ngIf="entry.maxDB > 0">
         <span class="shortText"> #{{ entry.shortText }}: </span>
         <span class="text"> {{ entry.text }} </span><br />
-        <span class="dBValue"> {{ entry.maxDB | number : "1.2-2"}} dBa </span>
-      </div>
+        <span class="dBValue">{{ entry.maxDB | number : "1.2-2"}} dBa</span>
+      </div-->
+      <table class="entry" *ngIf="entry.maxDB > 0">
+        <tr>
+          <td class="shortText">
+            E{{ entry.shortText }}
+          </td>
+          <td class="text">
+            {{ entry.text }} 
+          </td>
+        </tr>
+        <tr>
+          <td>
+          </td>
+          <td class="dBValue">
+            {{ entry.maxDB | number : "1.2-2"}} dBa
+          </td>
+        </tr>
+      </table>
     </li>
   </ol>
 </div>

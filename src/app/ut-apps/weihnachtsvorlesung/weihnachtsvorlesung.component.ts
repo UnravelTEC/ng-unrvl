@@ -58,10 +58,10 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-10 11:00';
+  start2 = '2018-12-10 13:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-10 11:00'), // earliest
+      new Date('2018-12-10 13:00'), // earliest
       new Date('2018-12-10 15:00') // latest
     ]
     // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
