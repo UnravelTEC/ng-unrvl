@@ -29,7 +29,7 @@ export class AnnotationsEditorComponent implements OnInit {
   @Input()
   annotationList2: Array<Object>;
 
-  expanded = false;
+  expanded = true;
 
   @Output()
   triggerChange = new EventEmitter<number>();

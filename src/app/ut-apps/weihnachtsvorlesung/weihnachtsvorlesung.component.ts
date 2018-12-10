@@ -58,11 +58,11 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-10 08:00';
+  start2 = '2018-12-10 11:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-10 09:00'), // earliest
-      new Date('2018-12-10 12:00') // latest
+      new Date('2018-12-10 11:00'), // earliest
+      new Date('2018-12-10 15:00') // latest
     ]
     // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
   };
@@ -95,8 +95,8 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   ngOnInit() {
     let lower = 0;
     experimentList.forEach(item => {
-      lower++;
-      if ((lower = 3)) {
+      lower = lower +1;
+      if (lower == 4) {
         lower = 0;
       }
       let newitem = {
@@ -106,13 +106,15 @@ export class WeihnachtsvorlesungComponent implements OnInit {
         cssClass: 'utAnnotation',
         tickColor: 'rgb(148, 231, 255)',
         tickWidth: '2',
-        tickHeight: String(lower * 10),
+        tickHeight: String(lower * 15),
         x: null, // :Date, start date
         clapStart: null, // :Date
         clapStop: null, // :Date
         attachAtBottom: true,
         maxDB: 0 // :Number
       };
+      console.log('tickheigth, width')
+      console.log([newitem.tickHeight, newitem.tickWidth]);
       this.annotations1.push(newitem);
       let newAnno = JSON.parse(JSON.stringify(newitem));
       newAnno.attachAtBottom = false;

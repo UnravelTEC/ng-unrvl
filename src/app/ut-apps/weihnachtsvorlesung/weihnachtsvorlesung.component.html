@@ -12,21 +12,21 @@
       [serverPort]="serverPort"
       startTime="10m"
       fetchFromServerIntervalMS="500"
-      debug="false"
+      debug="true"
       [extraDyGraphConfig]="extraDyGraphConfig1"
       [multiplicateFactors]="multiplicateFactors"
       [calculateRunningAvgFrom]="calculateRunningAvgFrom"
       (returnRunningAvg)="returnRunningAvg($event)"
       YLabel="dBa"
-      runningAvgSeconds="1"
+      runningAvgSeconds="10"
     ></app-ut-dygraph>
     <!-- [annotations]="annotations1" -->
   </div>
   <br />
   <div class="mydygraph lowergraph">
     <app-ut-dygraph
-      [queryString]="'avg_over_time(' + queryString + '[10s])'"
-      dataBaseQueryStepMS="10000"
+      [queryString]="'avg_over_time(' + queryString + '[1s])'"
+      dataBaseQueryStepMS="1000"
       [dataSeriesLabels]="dataSeriesNames"
       [style]="style2"
       [serverHostName]="serverHostName"
