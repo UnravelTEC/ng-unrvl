@@ -4,10 +4,10 @@
 }
 
 li {
-  border: rgb(106, 108, 255) 2px solid;
+  border: rgb(106, 108, 255) 2px none;
   padding: 0.35em;
   margin: 0.3em;
-  background: rgb(224, 224, 224);
+  background: rgb(255, 217, 0);
 }
 
 tr *:first-child {

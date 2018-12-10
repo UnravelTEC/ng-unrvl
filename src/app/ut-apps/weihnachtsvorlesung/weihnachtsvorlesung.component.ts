@@ -31,7 +31,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   style1 = {
     position: 'absolute',
-    top: '3rem',
+    top: '3rem', /*3rem*/
     bottom: '31vh',
     left: '22em',
     right: '5vw'

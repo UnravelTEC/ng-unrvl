@@ -1,7 +1,7 @@
 .utAnnotation {
   color: #373535 !important; /* !important needed to override inline set value by Dygraph */
-  width: 40px !important;
-  height: 40px !important;
+  width: 30px !important;
+  height: 20px !important;
   background: rgb(148, 231, 255);
   transform: translateX(7px);
   border: 0;
@@ -25,7 +25,7 @@
 }
 
 .mydygraph.lowergraph .utAnnotation {
-  width: 1em !important;
+ width: 1.5em !important;
   height: 1em !important;
 }
 
