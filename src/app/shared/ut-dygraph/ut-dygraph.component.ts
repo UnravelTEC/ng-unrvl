@@ -136,6 +136,9 @@ export class UtDygraphComponent implements OnInit {
         'serverPort',
         'fieldValue'
       ]);
+      if(!port) {
+        port = "9090";
+      }
     }
     if (!path) {
       path = this.h.getDeep(globalSettings, [
@@ -144,6 +147,10 @@ export class UtDygraphComponent implements OnInit {
         'serverPath',
         'fieldValue'
       ]);
+      if(!path) {
+        path='api/v1/';
+      }
+
     }
     const protocol = port == '443' ? 'https://' : 'http://';
     const protAndHost = server.startsWith('http') ? server : protocol + server;
