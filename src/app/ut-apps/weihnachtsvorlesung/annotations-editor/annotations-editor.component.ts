@@ -40,6 +40,7 @@ export class AnnotationsEditorComponent implements OnInit {
   requestRunningAverage = new EventEmitter<Date>();
   @Input()
   getRunningAverage: number;
+  experimentRunning = false;
 
   edit = {
     x: false,
@@ -63,10 +64,13 @@ export class AnnotationsEditorComponent implements OnInit {
   ngOnInit() {
     this.loadFromLocalStorage();
 
-    this.intervalSubscription = interval(
-      100
-    ).subscribe(counter => {
+    this.intervalSubscription = interval(100).subscribe(counter => {
       this.nowTic = new Date();
+      if(this.experimentRunning) {
+        this.requestRunningAverage.emit(
+          new Date(this.nowTic.valueOf() - 1000)
+        );
+      }
     });
   }
 
@@ -146,8 +150,12 @@ export class AnnotationsEditorComponent implements OnInit {
     // emit to top-list component
     this.setNewCurrentExperiment.emit(this.currentAnnotation.shortText);
     this.saveToLocalStorage();
-    this.localStorage.set("currentExperiment", this.currentAnnotation.shortText);
+    this.localStorage.set(
+      'currentExperiment',
+      this.currentAnnotation.shortText
+    );
   }
+
   start() {
     // if something running, stop
     if (
@@ -160,11 +168,13 @@ export class AnnotationsEditorComponent implements OnInit {
     // set start date on all lists
     this.setDateInField(this.currentAnnotation.shortText, 'clapStart');
 
+    this.experimentRunning = true;
     this.requestRunningAverage.emit(
       new Date(this.currentAnnotation['clapStart'] - 1000)
     );
     this.saveToLocalStorage();
   }
+
   stop(Experiment?: Object) {
     if (!Experiment) {
       Experiment = this.currentAnnotation;
@@ -174,6 +184,8 @@ export class AnnotationsEditorComponent implements OnInit {
 
       this.setDateInField(Experiment['shortText'], 'clapStop');
     }
+
+    this.experimentRunning = false;
     this.requestRunningAverage.emit(null);
     this.saveToLocalStorage();
   }
@@ -197,7 +209,7 @@ export class AnnotationsEditorComponent implements OnInit {
   // element-for-element copy, to preserve data binding
   loadFromLocalStorage() {
     let localAnnotations = this.localStorage.get('annotations.' + 'miclvl');
-    if(!localAnnotations) {
+    if (!localAnnotations) {
       console.log('not loading from localStorage, empty.');
       return;
     }
@@ -234,7 +246,7 @@ export class AnnotationsEditorComponent implements OnInit {
           // delete if elemkey not in annotation
           for (const key in elem) {
             if (elem.hasOwnProperty(key)) {
-              if(! annotation.hasOwnProperty(key)) {
+              if (!annotation.hasOwnProperty(key)) {
                 delete elem[key];
               }
             }

@@ -361,13 +361,14 @@ export class UtDygraphComponent implements OnInit {
       lower;
     if (from) {
       [lower, upper] = this.binarySearchNearDate(targetArray, from);
-      // console.log([lower, upper]);
+      console.log([lower, upper]);
+      console.log(['avg (', (targetArray[datalen-1][0] - targetArray[upper][0])/1000, ')s from ', targetArray[upper][0], ' to ', targetArray[datalen-1][0] ])
     }
     for (let i = upper; i < datalen; i++) {
       sum += targetArray[i][1];
     }
     const avg = sum / (datalen - upper);
-    // console.log([avg, datalen - upper]);
+//    console.log([avg, datalen - upper]);
     return avg;
   }
 
