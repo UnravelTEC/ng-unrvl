@@ -78,7 +78,7 @@ export class AnnotationTopListComponent implements OnInit {
         rankNumber = i;
       }
     }
-    this.topList = tmpArray.slice(0, 4);
+    this.topList = tmpArray.slice(0, 6);
 
     if (undefined === currentExperimentNumber) {
       return;

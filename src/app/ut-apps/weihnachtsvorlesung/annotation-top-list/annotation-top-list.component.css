@@ -86,6 +86,10 @@ table {
   width: 100%;
 }
 
+table tr:first-child {
+  height: 5ch;
+}
+
 table tr td {
   vertical-align:top;
 }

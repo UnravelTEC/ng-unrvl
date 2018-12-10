@@ -1,5 +1,10 @@
 <div class="graphapp">
-  <h2>Weihnachtsvorlesung Lautstärkemessung</h2>
+  
+  <img src="https://www.unraveltec.com/wp-content/uploads/2018/12/cropped-UnravelTEC_Logo-komplett_freigestellt.png" class="UT-Logo">
+
+  <div class="weihnachtsvorlesung-header">
+    <h1>Weihnachtsvorlesung Lautstärkemessung</h1>
+  </div>
 
   <div class="mydygraph">
     <app-ut-dygraph
@@ -24,9 +29,11 @@
   </div>
   <br />
   <div class="mydygraph lowergraph">
+    <!-- [queryString]="'avg_over_time(' + queryString + '[1s])'" -->
     <app-ut-dygraph
-      [queryString]="'avg_over_time(' + queryString + '[1s])'"
-      dataBaseQueryStepMS="1000"
+
+    [queryString]="'max_over_time(' + 'adc1_c1' + '[10s])'"
+    dataBaseQueryStepMS="1000"
       [dataSeriesLabels]="dataSeriesNames"
       [style]="style2"
       [serverHostName]="serverHostName"
@@ -63,6 +70,6 @@
       [getRunningAverage]="runningAvgToDisplay"
     >
     </app-annotation-top-list>
-    </div>
-    <button class="fullscreen" (click)="toggleFullScreen()">Fullscreen</button>
+  </div>
+  <button class="fullscreen" (click)="toggleFullScreen()">Fullscreen</button>
 </div>
