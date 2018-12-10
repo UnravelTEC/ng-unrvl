@@ -17,12 +17,12 @@ import { experimentList } from './experiment-list';
 export class WeihnachtsvorlesungComponent implements OnInit {
   // serverHostName: string = 'http://koffer.lan';
   // serverHostName: string = 'http://belinda.cgv.tugraz.at'
-  serverHostName = ''; // 'scpexploratory02.tugraz.at'; // 'raspigas.lan';
-  serverPort = ''; // '443';
-  serverPath = ''; //'prometheus/api/v1/';
+  serverHostName =  'scpexploratory02.tugraz.at'; // 'raspigas.lan';
+  serverPort =  '443';
+  serverPath = 'prometheus/api/v1/';
   // queryString: string = 'mic_audiolevel';
   // queryString: string = 'co2{location="FuzzyLab",sensor="scd30"}'
-  queryString = 'bme280_humidity'; //'adc1_c1';
+  queryString = 'adc1_c1'; //'adc1_c1';
   dataBaseQueryStepMS = 1000;
   timeRange = 60; // 1 min
   runningAvgSeconds = 0;
@@ -54,11 +54,11 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-08 08:00';
+  start2 = '2018-12-10 08:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-08 20:00'), // earliest
-      new Date('2018-12-09 02:00') // latest
+      new Date('2018-12-10 08:00'), // earliest
+      new Date('2018-12-10 16:00') // latest
     ]
     // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
   };
