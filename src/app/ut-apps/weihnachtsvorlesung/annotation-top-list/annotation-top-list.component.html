@@ -7,7 +7,7 @@
             Platz {{ current.nr }}
         </th>
         <th class="dBValue">
-            Max: {{ current.maxDB | number : "1.2-2"}} dBa
+            Max: {{ current.maxDB | number : "1.2-2"}} dBa, t= {{ current.clapLength }}
         </th>
       </tr>
       <tr class="entry">
@@ -35,7 +35,7 @@
             E{{ entry.shortText }}
           </td>
           <td class="text">
-            {{ entry.text }} 
+            {{ entry.text }}
           </td>
         </tr>
         <tr>

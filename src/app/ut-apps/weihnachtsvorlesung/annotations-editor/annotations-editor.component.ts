@@ -9,7 +9,7 @@ import {
 import { interval, Subscription } from 'rxjs';
 
 import { LocalStorageService } from '../../../core/local-storage.service';
-import{ UtFetchdataService } from '../../../shared/ut-fetchdata.service'
+import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 
 @Component({
   selector: 'app-annotations-editor',
@@ -43,6 +43,13 @@ export class AnnotationsEditorComponent implements OnInit {
   getRunningAverage: number;
   experimentRunning = false;
 
+  @Input()
+  serverHostName: string;
+  @Input()
+  serverPath: string;
+  @Input()
+  serverPort: string;
+
   edit = {
     x: false,
     clapStart: false,
@@ -54,25 +61,43 @@ export class AnnotationsEditorComponent implements OnInit {
     shortText: undefined,
     text: undefined,
     clapStart: undefined,
-    clapStop: undefined
+    clapStop: undefined,
+    clapLength: undefined
   };
 
-  private intervalSubscription: Subscription;
+  private intervalSubscription100ms: Subscription;
+  private intervalSubscription10s: Subscription;
+  private baseLine: number;
   public nowTic: Date;
 
-  constructor(private localStorage: LocalStorageService, private utHTTP: UtFetchdataService) {}
+  constructor(
+    private localStorage: LocalStorageService,
+    private utHTTP: UtFetchdataService
+  ) {}
 
   ngOnInit() {
     this.loadFromLocalStorage();
 
-    this.intervalSubscription = interval(100).subscribe(counter => {
+    this.intervalSubscription100ms = interval(100).subscribe(counter => {
       this.nowTic = new Date();
-      if(this.experimentRunning) {
-        this.requestRunningAverage.emit(
-          new Date(this.nowTic.valueOf() - 1000)
-        );
+      if (this.experimentRunning) {
+        this.requestRunningAverage.emit(new Date(this.nowTic.valueOf() - 1000));
+        this.currentAnnotation['clapLength'] =
+          (this.nowTic.valueOf() -
+            this.currentAnnotation['clapStart'].valueOf()) /
+          1000;
       }
     });
+    // this.intervalSubscription10s = interval(10000).subscribe(counter => {
+    //   const url = `https://$(serverHostName):$(serverPort)/$(serverPath)query?query=`
+    //   this.utHTTP
+    //     .getHTTPData(url)
+    //     .subscribe((data: Object) => this.loadData(data));
+    // });
+  }
+
+  setBaseline(data: Object) {
+    this.baseLine = parseFloat(data['data']['result'][0]['value'][1]);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -262,14 +287,13 @@ export class AnnotationsEditorComponent implements OnInit {
     this.saveToLocalStorage();
     const url = 'https://scpexploratory02.tugraz.at/test/collector.php';
     this.utHTTP.postData(url, JSON.stringify(this.annotationList));
-
   }
 
   loadFromExt() {
     const url = 'https://scpexploratory02.tugraz.at/test/tmp/test.txt';
     this.utHTTP
-    .getHTTPData(url)
-    .subscribe((data: Object) => this.loadData(data));
+      .getHTTPData(url)
+      .subscribe((data: Object) => this.loadData(data));
   }
   loadData(data: Object) {
     console.log(data);

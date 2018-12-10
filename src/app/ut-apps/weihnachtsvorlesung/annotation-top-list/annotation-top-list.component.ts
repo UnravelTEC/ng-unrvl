@@ -87,6 +87,7 @@ export class AnnotationTopListComponent implements OnInit {
     this.current = this.annotationList[currentExperimentNumber];
     this.current['nr'] =
       rankNumber !== undefined ? String(rankNumber + 1) : '-';
+
   }
 }
 
@@ -95,4 +96,10 @@ interface Experiment {
   shortText: String;
   text: String;
   maxDB: number;
+  x: Date;
+  clapStop: Date;
+  clapStart: Date;
+  baseLine: number;
+  clapLength: number;
+  dBs: number;
 }
