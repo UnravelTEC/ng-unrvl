@@ -54,9 +54,9 @@ export class AnnotationTopListComponent implements OnInit {
     }
 
     this.currentExperiment = this.localStorage.get('currentExperiment');
-    console.log(
-      'get currentExperiment from localstorage' + this.currentExperiment
-    );
+    // console.log(
+    //   'get currentExperiment from localstorage' + this.currentExperiment
+    // );
 
     let tmpArray: Array<Experiment> = [];
     let currentExperimentNumber = undefined;
@@ -72,7 +72,7 @@ export class AnnotationTopListComponent implements OnInit {
 
     tmpArray.sort((a, b) => b['maxDB'] - a['maxDB']);
 
-    let rankNumber = 0;
+    let rankNumber = undefined;
     for (let i = 0; i < tmpArray.length; i++) {
       if (tmpArray[i]['shortText'] == this.currentExperiment) {
         rankNumber = i;
@@ -85,7 +85,8 @@ export class AnnotationTopListComponent implements OnInit {
     }
 
     this.current = this.annotationList[currentExperimentNumber];
-    this.current['nr'] = String(rankNumber+1);
+    this.current['nr'] =
+      rankNumber !== undefined ? String(rankNumber + 1) : '-';
   }
 }
 

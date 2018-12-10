@@ -17,8 +17,8 @@ import { experimentList } from './experiment-list';
 export class WeihnachtsvorlesungComponent implements OnInit {
   // serverHostName: string = 'http://koffer.lan';
   // serverHostName: string = 'http://belinda.cgv.tugraz.at'
-  serverHostName =  'scpexploratory02.tugraz.at'; // 'raspigas.lan';
-  serverPort =  '443';
+  serverHostName = 'scpexploratory02.tugraz.at'; // 'raspigas.lan';
+  serverPort = '443';
   serverPath = 'prometheus/api/v1/';
   // queryString: string = 'mic_audiolevel';
   // queryString: string = 'co2{location="FuzzyLab",sensor="scd30"}'
@@ -57,8 +57,8 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   start2 = '2018-12-10 08:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-10 08:00'), // earliest
-      new Date('2018-12-10 16:00') // latest
+      new Date('2018-12-10 09:00'), // earliest
+      new Date('2018-12-10 12:00') // latest
     ]
     // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
   };
@@ -89,7 +89,9 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   }
 
   ngOnInit() {
+    let lower = true;
     experimentList.forEach(item => {
+      lower = !lower;
       let newitem = {
         shortText: item.shortText,
         text: item.text,
@@ -97,7 +99,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
         cssClass: 'utAnnotation',
         tickColor: 'rgb(148, 231, 255)',
         tickWidth: '2',
-        tickHeight: '70',
+        tickHeight: lower ? '30' : '70',
         x: null, // :Date, start date
         clapStart: null, // :Date
         clapStop: null, // :Date

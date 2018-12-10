@@ -19,10 +19,16 @@
 
   /* background:green; */
   position: absolute;
-  left: 5vw;
-  Top: 90vh;
+  left: 5px;
+  top: 100vh;
+  transform: translateY(-5em);
 }
 
-.mydygraph {
+.mydygraph.lowergraph .utAnnotation {
+  width: 1em !important;
+  height: 1em !important;
+}
 
+h4 {
+  margin:0.5em;
 }

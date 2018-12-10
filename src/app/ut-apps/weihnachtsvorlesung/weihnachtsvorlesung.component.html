@@ -4,14 +4,14 @@
   <div class="mydygraph">
     <app-ut-dygraph
       [queryString]="queryString"
-      dataBaseQueryStepMS="500"
+      dataBaseQueryStepMS="100"
       [dataSeriesLabels]="dataSeriesNames"
       [style]="style1"
       [serverHostName]="serverHostName"
       [serverPath]="serverPath"
       [serverPort]="serverPort"
       startTime="3m"
-      fetchFromServerIntervalMS="500"
+      fetchFromServerIntervalMS="100"
       debug="false"
 
       [multiplicateFactors]="multiplicateFactors"
@@ -23,7 +23,7 @@
     <!-- [annotations]="annotations1" -->
   </div>
   <br />
-  <div class="mydygraph">
+  <div class="mydygraph lowergraph">
     <app-ut-dygraph
       [queryString]="'avg_over_time(' + queryString + '[10s])'"
       dataBaseQueryStepMS="10000"
@@ -36,7 +36,6 @@
       [startTime]="start2"
       fetchFromServerIntervalMS="10000"
       debug="false"
-      runningAvgSeconds="1"
       [extraDyGraphConfig]="extraDyGraphConfig2"
       [multiplicateFactors]="multiplicateFactors"
       YLabel="dBa"

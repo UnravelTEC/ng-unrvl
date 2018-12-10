@@ -9,3 +9,12 @@ li {
   margin: 0.3em;
   background: rgb(224, 224, 224);
 }
+
+tr *:first-child {
+  width: 4em;
+  text-align: left;
+}
+
+th, td {
+  border: 1px solid yellow;
+}

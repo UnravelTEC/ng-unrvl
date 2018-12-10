@@ -1,12 +1,25 @@
 <div id="toplist">
   <h2>Aktuelles Experiment</h2>
   <div *ngIf="current.shortText != '.'">
-    <div class="nr">Platz {{ current.nr }}</div>
-    <div class="entry">
-        <span class="shortText"> Exp. {{ current.shortText }}: </span>
-        <span class="text"> {{ current.text }} </span>
-        <span class="dBValue"> {{ current.maxDB | number : "1.2-2"}} dBa </span>
-      </div>
+    <table>
+      <tr>
+        <th class="nr">
+            Platz {{ current.nr }}
+        </th>
+        <th class="dBValue">
+            Max: {{ current.maxDB | number : "1.2-2"}} dBa
+        </th>
+      </tr>
+      <tr class="entry">
+        <td class="shortText">
+            Exp. {{ current.shortText }}:
+        </td>
+        <td class="text">
+            {{ current.text }}
+        </td>
+      </tr>
+    </table>
+
   </div>
   <h2>Aktuelle Reihung</h2>
   <ol>

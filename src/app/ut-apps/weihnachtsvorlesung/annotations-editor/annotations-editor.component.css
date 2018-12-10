@@ -20,3 +20,9 @@
     vertical-align: top;
 }
 
+.toggle {
+    border: 1px solid gray;
+    color: grey;
+    padding: 0.2em;
+    background: white;
+}
