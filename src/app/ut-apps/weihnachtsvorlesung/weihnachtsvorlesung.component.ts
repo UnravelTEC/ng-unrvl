@@ -19,7 +19,7 @@ import { experimentList } from './experiment-list';
 export class WeihnachtsvorlesungComponent implements OnInit {
   // serverHostName: string = 'http://koffer.lan';
   // serverHostName: string = 'http://belinda.cgv.tugraz.at'
-  serverHostName = 'scpexploratory02.tugraz.at'; // 'raspigas.lan';
+  serverHostName = 'scpexploratory02.tugraz.at'; // 'raspigas.lan'; '192.168.11.171'
   serverPort = '443';
   serverPath = 'prometheus/api/v1/';
   // queryString: string = 'mic_audiolevel';
@@ -112,7 +112,8 @@ extraDyGraphConfig2 = {
       new Date('2018-12-11 14:00'), // earliest
       new Date('2018-12-11 16:00') // latest
     ],
-    underlayCallback: this.underlayCallback
+    underlayCallback: this.underlayCallback,
+    legend: <any>'onmouseover'
     // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
   };
 
