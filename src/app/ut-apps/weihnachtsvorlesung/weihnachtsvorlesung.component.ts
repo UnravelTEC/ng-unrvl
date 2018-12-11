@@ -85,17 +85,39 @@ export class WeihnachtsvorlesungComponent implements OnInit {
     }
   }
 
+
+// for testing purposes
+
+/*
+timeStamp: Date = new Date();
+
+end2 = 'now';
+start2 = this.timeStamp; 
+console.log ('Start2 = ', start2);
+extraDyGraphConfig2 = {
+  dateWindow: [
+    new Date Date(this.start2-(1*60*60*1000)), // earliest
+    new Date Date(this.start2+(2*60*60*1000))  // latest
+  ],
+  underlayCallback: this.underlayCallback
+};
+*/
+
+
+  // for final usage
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-10 22:00';
+  start2 = '2018-12-11 06:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-10 22:00'), // earliest
-      new Date('2018-12-11 02:00') // latest
+      new Date('2018-12-11 06:00'), // earliest
+      new Date('2018-12-11 12:00') // latest
     ],
     underlayCallback: this.underlayCallback
     // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
   };
+
+
   annotations1 = [];
   annotations2 = [];
 

@@ -32,8 +32,8 @@
     <!-- [queryString]="'avg_over_time(' + queryString + '[1s])'" -->
     <app-ut-dygraph
 
-    [queryString]="'max_over_time(' + 'adc1_c1:avg_1s' + '[10s])'"
-    dataBaseQueryStepMS="1000"
+    [queryString]="'max_over_time(' + 'adc1_c1:avg_1s' + '[20s])'"
+    dataBaseQueryStepMS="2000"
       [dataSeriesLabels]="dataSeriesNames"
       [style]="style2"
       [serverHostName]="serverHostName"
@@ -41,7 +41,7 @@
       [serverPort]="serverPort"
       [endTime]="end2"
       [startTime]="start2"
-      fetchFromServerIntervalMS="1000"
+      fetchFromServerIntervalMS="2000"
       debug="false"
       [extraDyGraphConfig]="extraDyGraphConfig2"
       [multiplicateFactors]="multiplicateFactors"
