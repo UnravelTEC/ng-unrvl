@@ -106,12 +106,13 @@ extraDyGraphConfig2 = {
   // for final usage
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-11 14:00';
+  start2 = '2018-12-11 17:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-11 14:00'), // earliest
-      new Date('2018-12-11 16:00') // latest
+      new Date('2018-12-11 17:00'), // earliest
+      new Date('2018-12-11 20:00') // latest
     ],
+    dateWindowEnd: "15m",
     underlayCallback: this.underlayCallback,
     legend: <any>'onmouseover'
     // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))

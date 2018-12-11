@@ -436,6 +436,15 @@ export class UtDygraphComponent implements OnInit {
       this.Dygraph.adjustRoll(this.runningAvgSeconds);
     }
     if (this.dyGraphOptions['dateWindow']) {
+      if (this.dyGraphOptions['dateWindowEnd']) {
+        const extension = this.parseToSeconds(this.dyGraphOptions['dateWindowEnd']) * 1000;
+        const now = new Date();
+        const extendedEnd = new Date(now.valueOf() + extension);
+        if(this.dyGraphOptions['dateWindow'][1].valueOf() < extendedEnd.valueOf()) {
+          this.dyGraphOptions['dateWindow'][1] = extendedEnd;
+        }
+
+      }
       this.Dygraph.updateOptions({
         'dateWindow': this.dyGraphOptions['dateWindow']
       });
