@@ -94,11 +94,11 @@ export class AnnotationTopListComponent implements OnInit {
     this.current['nr'] =
       rankNumber !== undefined ? String(rankNumber + 1) : '-';
 
-      // FIXME clapLength hier updaten
-      // this.currentAnnotation['clapLength'] =
-      // (this.nowTic.valueOf() -
-      //   this.currentAnnotation['clapStart'].valueOf()) /
-      // 1000;
+    // FIXME clapLength hier updaten
+    // this.currentAnnotation['clapLength'] =
+    // (this.nowTic.valueOf() -
+    //   this.currentAnnotation['clapStart'].valueOf()) /
+    // 1000;
   }
 }
 

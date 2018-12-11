@@ -8,9 +8,8 @@ describe('AnnotationTopListComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AnnotationTopListComponent ]
-    })
-    .compileComponents();
+      declarations: [AnnotationTopListComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

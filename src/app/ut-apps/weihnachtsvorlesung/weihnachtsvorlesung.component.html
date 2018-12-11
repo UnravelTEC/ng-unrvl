@@ -1,6 +1,8 @@
 <div class="graphapp">
-  
-  <img src="https://www.unraveltec.com/wp-content/uploads/2018/12/cropped-UnravelTEC_Logo-komplett_freigestellt.png" class="UT-Logo">
+  <img
+    src="https://www.unraveltec.com/wp-content/uploads/2018/12/cropped-UnravelTEC_Logo-komplett_freigestellt.png"
+    class="UT-Logo"
+  />
 
   <div class="weihnachtsvorlesung-header">
     <h1>Weihnachtsvorlesung Lautstärkemessung</h1>
@@ -31,9 +33,8 @@
   <div class="mydygraph lowergraph">
     <!-- [queryString]="'avg_over_time(' + queryString + '[1s])'" -->
     <app-ut-dygraph
-
-    [queryString]="'max_over_time(' + 'adc1_c1:avg_1s' + '[20s])'"
-    dataBaseQueryStepMS="2000"
+      [queryString]="'max_over_time(' + 'adc1_c1:avg_1s' + '[20s])'"
+      dataBaseQueryStepMS="2000"
       [dataSeriesLabels]="dataSeriesNames"
       [style]="style2"
       [serverHostName]="serverHostName"
@@ -55,16 +56,14 @@
       [annotationList2]="annotations2"
       (triggerChange)="changeTriggered($event)"
       [getRunningAverage]="runningAvgToDisplay"
-
       (requestRunningAverage)="requestRunningAverage($event)"
       (setNewCurrentExperiment)="setNewCurrentExperiment($event)"
     >
     </app-annotations-editor>
   </div>
   <div class="toplist">
-      <!-- [annotationList]="annotations1" -->
+    <!-- [annotationList]="annotations1" -->
     <app-annotation-top-list
-
       [changeTrigger]="changeTrigger"
       [currentExperiment]="currentExperiment"
       [getRunningAverage]="runningAvgToDisplay"

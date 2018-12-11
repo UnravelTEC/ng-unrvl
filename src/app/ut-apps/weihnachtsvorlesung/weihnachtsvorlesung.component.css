@@ -2,13 +2,12 @@
   font-family: Source Sans Pro, Helvetica, Arial, sans-serif;
 }
 
-
 .utAnnotation {
   font-family: Source Sans Pro, Helvetica, Arial, sans-serif !important;
   color: white !important; /* #373535 !important needed to override inline set value by Dygraph */
   width: 30px !important;
   height: 20px !important;
-  background:black;
+  background: black;
   transform: translateX(8px);
   border: 0;
 }
@@ -36,17 +35,16 @@
   margin: 0;
 }
 .graphapp .toplist {
-    border: 1px solid black;
-    position: absolute;
-    top: 6em; /* 3em */
-    bottom: 7vh;
-    left: 10px;
-    width: 20em;
-    overflow: hidden;
+  border: 1px solid black;
+  position: absolute;
+  top: 6em; /* 3em */
+  bottom: 7vh;
+  left: 10px;
+  width: 20em;
+  overflow: hidden;
 }
 
 .graphapp .annotations {
-
   /* background:green; */
   position: absolute;
   left: 5px;

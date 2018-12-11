@@ -3,7 +3,9 @@
 <div id="appbody">
   <app-top-bar [hide]="topBarHidden"></app-top-bar>
 
-  <div class="content"  (toogleFullScreen)="toggleFullScreen($event)"><router-outlet></router-outlet></div>
+  <div class="content" (toogleFullScreen)="toggleFullScreen($event)">
+    <router-outlet></router-outlet>
+  </div>
 
   <div id="footer" *ngIf="footerHidden == false">this is {{ title }}.</div>
 </div>

@@ -3,47 +3,36 @@
   <div *ngIf="current.shortText != '.'">
     <table class="current_experiment">
       <tr class="entry">
-        <th class="shortText">
-            E{{ current.shortText }}
-        </th>
-        <th class="text">
-            {{ current.text }}
-        </th>
-      </tr>     
+        <th class="shortText">E{{ current.shortText }}</th>
+        <th class="text">{{ current.text }}</th>
+      </tr>
       <tr>
-      <td class="nr">
-        Platz {{ current.nr }}
-      </td>
-      <td class="dBValue">
-        Max: {{ current.maxDB | number : "1.2-2"}} dBa, t= {{ current.clapLength | number: "1.2-2"}} s
-      </td>
+        <td class="nr">Platz {{ current.nr }}</td>
+        <td class="dBValue">
+          Max: {{ current.maxDB | number: '1.2-2' }} dBa, t=
+          {{ current.clapLength | number: '1.2-2' }} s
+        </td>
       </tr>
     </table>
-
   </div>
   <h2>Aktuelle Reihung</h2>
   <ol>
     <li *ngFor="let entry of topList">
-      <!--div class="entry" *ngIf="entry.maxDB > 0">
-        <span class="shortText"> #{{ entry.shortText }}: </span>
-        <span class="text"> {{ entry.text }} </span><br />
-        <span class="dBValue">{{ entry.maxDB | number : "1.2-2"}} dBa</span>
-      </div-->
+      <!--
+        div class="entry" *ngIf="entry.maxDB > 0">
+          <span class="shortText"> #{{ entry.shortText }}: </span>
+          <span class="text"> {{ entry.text }} </span><br />
+          <span class="dBValue">{{ entry.maxDB | number : "1.2-2"}} dBa</span>
+        </div
+      -->
       <table class="entry" *ngIf="entry.maxDB > 0">
         <tr>
-          <td class="shortText">
-            E{{ entry.shortText }}
-          </td>
-          <td class="text">
-            {{ entry.text }}
-          </td>
+          <td class="shortText">E{{ entry.shortText }}</td>
+          <td class="text">{{ entry.text }}</td>
         </tr>
         <tr>
-          <td>
-          </td>
-          <td class="dBValue">
-            {{ entry.maxDB | number : "1.2-2"}} dBa
-          </td>
+          <td></td>
+          <td class="dBValue">{{ entry.maxDB | number: '1.2-2' }} dBa</td>
         </tr>
       </table>
     </li>

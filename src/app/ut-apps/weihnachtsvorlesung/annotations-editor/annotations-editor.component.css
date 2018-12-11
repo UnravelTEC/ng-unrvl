@@ -1,6 +1,6 @@
 #singleAnno {
-    display: block;
-    margin-left: 31em;
+  display: block;
+  margin-left: 31em;
 }
 
 #singleAnno label {
@@ -10,19 +10,18 @@
   padding-right: 0.5em;
 }
 
-
 #annolist {
-    float: left;
-    display: inline-block;
-    width:30em;
+  float: left;
+  display: inline-block;
+  width: 30em;
 }
 #annolist label {
-    vertical-align: top;
+  vertical-align: top;
 }
 
 .toggle {
-    border: 1px solid gray;
-    color: grey;
-    padding: 0.2em;
-    background: white;
+  border: 1px solid gray;
+  color: grey;
+  padding: 0.2em;
+  background: white;
 }

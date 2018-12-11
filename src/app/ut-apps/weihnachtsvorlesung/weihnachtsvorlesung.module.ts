@@ -9,7 +9,6 @@ import { UtDygraphModule } from '../../shared/ut-dygraph/ut-dygraph.module';
 import { AnnotationsEditorComponent } from './annotations-editor/annotations-editor.component';
 import { AnnotationTopListComponent } from './annotation-top-list/annotation-top-list.component';
 
-
 @NgModule({
   imports: [
     CommonModule,
@@ -17,6 +16,10 @@ import { AnnotationTopListComponent } from './annotation-top-list/annotation-top
     UtDygraphModule,
     FormsModule
   ],
-  declarations: [WeihnachtsvorlesungComponent, AnnotationsEditorComponent, AnnotationTopListComponent]
+  declarations: [
+    WeihnachtsvorlesungComponent,
+    AnnotationsEditorComponent,
+    AnnotationTopListComponent
+  ]
 })
-export class WeihnachtsvorlesungModule { }
+export class WeihnachtsvorlesungModule {}

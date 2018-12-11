@@ -8,9 +8,8 @@ describe('AnnotationsEditorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AnnotationsEditorComponent ]
-    })
-    .compileComponents();
+      declarations: [AnnotationsEditorComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

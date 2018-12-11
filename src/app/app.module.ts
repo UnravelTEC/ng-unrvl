@@ -8,7 +8,6 @@ import { CoreModule } from './core/core.module';
 import { TopBarComponent } from './top-bar/top-bar.component';
 import { environment } from '../environments/environment';
 
-
 const appRoutes: Routes = [
   {
     path: 'Settings',
@@ -32,7 +31,8 @@ const appRoutes: Routes = [
   },
   {
     path: 'Apps/Weihnachtsvorlesung',
-    loadChildren: './ut-apps/weihnachtsvorlesung/weihnachtsvorlesung.module#WeihnachtsvorlesungModule'
+    loadChildren:
+      './ut-apps/weihnachtsvorlesung/weihnachtsvorlesung.module#WeihnachtsvorlesungModule'
   },
   {
     path: '',

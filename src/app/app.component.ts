@@ -29,7 +29,7 @@ export class AppComponent implements OnInit {
 
     this.globalSettings.changeEmitted$.subscribe(obj => {
       console.log(obj);
-      if (obj && obj.hasOwnProperty('fullscreen') ) {
+      if (obj && obj.hasOwnProperty('fullscreen')) {
         this.toggleFullScreen(obj['fullscreen']);
       }
     });
