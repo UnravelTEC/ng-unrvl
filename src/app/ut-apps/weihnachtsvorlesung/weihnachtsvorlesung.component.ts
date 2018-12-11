@@ -55,7 +55,8 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   currentExperiment: string; // id: shortText
 
   extraDyGraphConfig1 = {
-    underlayCallback: this.underlayCallback
+    underlayCallback: this.underlayCallback,
+    legend: <any>'onmouseover'
   };
 
   underlayCallback(canvas, area, g) {
@@ -91,7 +92,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 timeStamp: Date = new Date();
 
 end2 = 'now';
-start2 = this.timeStamp; 
+start2 = this.timeStamp;
 console.log ('Start2 = ', start2);
 extraDyGraphConfig2 = {
   dateWindow: [
@@ -105,11 +106,11 @@ extraDyGraphConfig2 = {
   // for final usage
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-11 06:00';
+  start2 = '2018-12-11 14:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-11 06:00'), // earliest
-      new Date('2018-12-11 12:00') // latest
+      new Date('2018-12-11 14:00'), // earliest
+      new Date('2018-12-11 16:00') // latest
     ],
     underlayCallback: this.underlayCallback
     // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
