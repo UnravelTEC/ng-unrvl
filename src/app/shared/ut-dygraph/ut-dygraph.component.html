@@ -11,9 +11,45 @@
     [style.left]="style.left"
     [style.right]="style.right"
   ></div>
-  <div *ngIf="noData == true" class="info nodata">No data to display.</div>
-  <div *ngIf="waiting == true" class="info waiting">Waiting for data...</div>
-  <div *ngIf="error != undefined" class="info error">{{ error }}</div>
+  <div
+    *ngIf="noData == true"
+    class="info nodata"
+    [style.width.px]="graphWidth"
+    [style.height.px]="graphHeight"
+    [style.position]="style.position"
+    [style.top]="style.top"
+    [style.bottom]="style.bottom"
+    [style.left]="style.left"
+    [style.right]="style.right"
+  >
+    No data to display.
+  </div>
+  <div
+    *ngIf="waiting == true"
+    class="info waiting"
+    [style.width.px]="graphWidth"
+    [style.height.px]="graphHeight"
+    [style.position]="style.position"
+    [style.top]="style.top"
+    [style.bottom]="style.bottom"
+    [style.left]="style.left"
+    [style.right]="style.right"
+  >
+    Waiting for data...
+  </div>
+  <div
+    *ngIf="error != undefined"
+    class="info error"
+    [style.width.px]="graphWidth"
+    [style.height.px]="graphHeight"
+    [style.position]="style.position"
+    [style.top]="style.top"
+    [style.bottom]="style.bottom"
+    [style.left]="style.left"
+    [style.right]="style.right"
+  >
+    {{ error }}
+  </div>
 
   <!-- <button (click)="fetchNewData()">Update!</button> -->
   <ul class="debug" *ngIf="debug == 'true'">
