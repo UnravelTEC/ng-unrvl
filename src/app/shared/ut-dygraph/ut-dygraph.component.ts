@@ -113,48 +113,7 @@ export class UtDygraphComponent implements OnInit {
     port: string = this.serverPort,
     path: string = this.serverPath
   ) {
-    let globalSettings;
-    if (!server || !port || !path) {
-      globalSettings = this.localStorage.get('globalSettings');
-      console.log(globalSettings);
-    }
-    if (!server) {
-      server = this.h.getDeep(globalSettings, [
-        'server',
-        'settings',
-        'serverHostName',
-        'fieldValue'
-      ]);
-    }
-    if (server.endsWith('/')) {
-      console.error('servername has to be without slash(/) at the end!');
-    }
-    if (!port) {
-      port = this.h.getDeep(globalSettings, [
-        'server',
-        'settings',
-        'serverPort',
-        'fieldValue'
-      ]);
-      if(!port) {
-        port = "9090";
-      }
-    }
-    if (!path) {
-      path = this.h.getDeep(globalSettings, [
-        'server',
-        'settings',
-        'serverPath',
-        'fieldValue'
-      ]);
-      if(!path) {
-        path='api/v1/';
-      }
-
-    }
-    const protocol = port == '443' ? 'https://' : 'http://';
-    const protAndHost = server.startsWith('http') ? server : protocol + server;
-    return protAndHost + ':' + port + (path.startsWith('/') ? '' : '/') + path;
+    return this.utFetchdataService.constructPrometheusEndPoint(server,port,path);
   }
 
   ngOnInit() {

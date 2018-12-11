@@ -3,7 +3,7 @@
   <div *ngIf="current.shortText != '.'">
     <table class="current_experiment">
       <tr class="entry">
-        <th class="shortText">E{{ current.shortText }}</th>
+        <th class="shortText">E{{ current.shortText }} {{ current.dBs | number: '1.2-6' }}</th>
         <th class="text">{{ current.text }}</th>
       </tr>
       <tr>
@@ -31,7 +31,7 @@
           <td class="text">{{ entry.text }}</td>
         </tr>
         <tr>
-          <td></td>
+          <td>{{ entry.dBs | number: '1.2-6' }}</td>
           <td class="dBValue">{{ entry.maxDB | number: '1.2-2' }} dBa</td>
         </tr>
       </table>
