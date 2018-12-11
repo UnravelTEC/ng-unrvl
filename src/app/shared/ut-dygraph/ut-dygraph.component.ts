@@ -165,11 +165,7 @@ export class UtDygraphComponent implements OnInit {
       this.dyGraphOptions.labels[1] = this.queryString;
     }
 
-    for (const key in this.extraDyGraphConfig) {
-      if (this.extraDyGraphConfig.hasOwnProperty(key)) {
-        this.dyGraphOptions[key] = this.extraDyGraphConfig[key];
-      }
-    }
+    this.updateDyGraphOptions();
 
     this.displayedData = [[undefined, null]];
     this.htmlID = 'graph_' + (Math.random() + 1).toString();
@@ -204,6 +200,14 @@ export class UtDygraphComponent implements OnInit {
         (displayedData: Object) => this.handleInitialData(displayedData),
         error => this.handlePrometheusErrors(error)
       );
+  }
+
+  updateDyGraphOptions() {
+    for (const key in this.extraDyGraphConfig) {
+      if (this.extraDyGraphConfig.hasOwnProperty(key)) {
+        this.dyGraphOptions[key] = this.extraDyGraphConfig[key];
+      }
+    }
   }
 
   parseToSeconds(inputString: string): number {
@@ -430,6 +434,11 @@ export class UtDygraphComponent implements OnInit {
     this.Dygraph.updateOptions({ file: this.displayedData });
     if (this.runningAvgSeconds) {
       this.Dygraph.adjustRoll(this.runningAvgSeconds);
+    }
+    if (this.dyGraphOptions['dateWindow']) {
+      this.Dygraph.updateOptions({
+        'dateWindow': this.dyGraphOptions['dateWindow']
+      });
     }
     // console.log(      'historical length: ' + this.historicalData.length + ' elements'    );
     // console.log(this.annotations)
