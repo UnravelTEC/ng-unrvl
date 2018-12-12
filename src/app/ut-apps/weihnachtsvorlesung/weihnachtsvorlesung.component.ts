@@ -19,9 +19,9 @@ import { experimentList } from './experiment-list';
 export class WeihnachtsvorlesungComponent implements OnInit {
   // serverHostName: string = 'http://koffer.lan';
   // serverHostName: string = 'http://belinda.cgv.tugraz.at'
-  serverHostName = 'http://192.168.43.27'; // 'raspigas.lan'; http://192.168.43.27/  scpexploratory02.tugraz.at
-  serverPort = '9090';  // 443
-  serverPath = 'api/v1/'; // prometheus/api/v1/
+  serverHostName = 'scpexploratory02.tugraz.at'; // 'raspigas.lan'; '192.168.11.171'
+  serverPort = '443';
+  serverPath = 'prometheus/api/v1/';
   // queryString: string = 'mic_audiolevel';
   // queryString: string = 'co2{location="FuzzyLab",sensor="scd30"}'
   queryString = 'adc1_c1'; //'adc1_c1';
@@ -55,7 +55,8 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   currentExperiment: string; // id: shortText
 
   extraDyGraphConfig1 = {
-    underlayCallback: this.underlayCallback
+    underlayCallback: this.underlayCallback,
+    //    legend: <any>'onmouseover'
   };
 
   underlayCallback(canvas, area, g) {
@@ -91,7 +92,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 timeStamp: Date = new Date();
 
 end2 = 'now';
-start2 = this.timeStamp; 
+start2 = this.timeStamp;
 console.log ('Start2 = ', start2);
 extraDyGraphConfig2 = {
   dateWindow: [
@@ -105,13 +106,15 @@ extraDyGraphConfig2 = {
   // for final usage
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-11 12:00';
+  start2 = '2018-12-12 08:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-11 12:00'), // earliest
-      new Date('2018-12-11 15:00') // latest
+      new Date('2018-12-12 06:00'), // earliest
+      new Date('2018-12-12 08:00') // latest
     ],
-    underlayCallback: this.underlayCallback
+    dateWindowEnd: "15m",
+    underlayCallback: this.underlayCallback,
+    legend: <any>'onmouseover'
     // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
   };
 

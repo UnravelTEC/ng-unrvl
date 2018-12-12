@@ -68,7 +68,7 @@ export class AnnotationTopListComponent implements OnInit {
     let currentExperimentNumber = undefined;
     for (let i = 0; i < this.annotationList.length; i++) {
       let tmpExperiment = this.annotationList[i];
-      if (tmpExperiment['maxDB']) {
+      if (tmpExperiment['dBs']) {
         tmpArray.push(tmpExperiment);
       }
       if (tmpExperiment['shortText'] == this.currentExperiment) {
@@ -76,7 +76,7 @@ export class AnnotationTopListComponent implements OnInit {
       }
     }
 
-    tmpArray.sort((a, b) => b['maxDB'] - a['maxDB']);
+    tmpArray.sort((a, b) => b['dBs'] - a['dBs']);
 
     let rankNumber = undefined;
     for (let i = 0; i < tmpArray.length; i++) {

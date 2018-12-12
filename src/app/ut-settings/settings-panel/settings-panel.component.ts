@@ -14,9 +14,9 @@ export class SettingsPanelComponent implements OnInit {
         title: 'Server Settings'
       },
       settings: {
-        serverHostName: { fieldName: 'Server Host Name', fieldValue: '' }, // entry
-        serverPort: { fieldName: 'Server Port', fieldValue: '9090' },
-        serverPath: { fieldName: 'Server Path', fieldValue: '/api/v1/' }
+        serverHostName: { fieldName: 'Server Host Name', fieldValue: 'scpexploratory02.tugraz.at' }, // entry
+        serverPort: { fieldName: 'Server Port', fieldValue: '443' }, // 9090
+        serverPath: { fieldName: 'Server Path', fieldValue: 'prometheus/api/v1/' } // -prom
       }
     }
   };

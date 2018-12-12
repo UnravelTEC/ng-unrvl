@@ -9,6 +9,7 @@ import {
 import { interval, Subscription } from 'rxjs';
 
 import { LocalStorageService } from '../../../core/local-storage.service';
+import { HelperFunctionsService } from '../../../core/helper-functions.service';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 
 @Component({
@@ -17,12 +18,18 @@ import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
   styleUrls: ['./annotations-editor.component.css']
 })
 export class AnnotationsEditorComponent implements OnInit {
-  currentAnnotation = {
+  currentAnnotation: Experiment = {
+    nr: undefined,
     series: 'test',
-    x: 2,
+    x: undefined,
     shortText: '#1',
     text: 'String',
-    maxDB: undefined
+    maxDB: undefined,
+    clapStart: undefined, // Date
+    clapStop: undefined, // Date
+    clapLength: undefined, // Number
+    baseLine: undefined,
+    dBs: undefined
   };
 
   @Input()
@@ -67,12 +74,14 @@ export class AnnotationsEditorComponent implements OnInit {
 
   private intervalSubscription100ms: Subscription;
   private intervalSubscription10s: Subscription;
+  private intervalSubscriptionClap1s: Subscription;
   private baseLine: number;
   public nowTic: Date;
 
   constructor(
     private localStorage: LocalStorageService,
-    private utHTTP: UtFetchdataService
+    private utHTTP: UtFetchdataService,
+    private h: HelperFunctionsService
   ) {}
 
   ngOnInit() {
@@ -196,12 +205,38 @@ export class AnnotationsEditorComponent implements OnInit {
 
     this.experimentRunning = true;
     this.requestRunningAverage.emit(
-      new Date(this.currentAnnotation['clapStart'] - 1000)
+      new Date(this.currentAnnotation['clapStart'].valueOf() - 1000)
     );
     this.saveToLocalStorage();
+
+    this.intervalSubscriptionClap1s = interval(1000).subscribe(counter => {
+      const now = new Date();
+      this.currentAnnotation['ceilClapLength'] = Math.ceil(
+        this.currentAnnotation.clapLength
+      );
+      const url =
+        this.utHTTP.constructPrometheusEndPoint() +
+        'query?query=avg_over_time(adc1_c1:avg_1s_b30[' +
+        String(this.currentAnnotation['ceilClapLength']) +
+        's])&time=' +
+        now.toISOString();
+      console.log(['clapstart: ', url]);
+      this.utHTTP.getHTTPData(url).subscribe((data: Object) => {
+        const dBsAverage = this.h.getDeep(data, [
+          'data',
+          'result',
+          0,
+          'value',
+          1
+        ]);
+        console.log(dBsAverage, this.currentAnnotation['ceilClapLength']);
+        this.currentAnnotation.dBs = dBsAverage * this.currentAnnotation['ceilClapLength'];
+      });
+    });
   }
 
   stop(Experiment?: Object) {
+    this.intervalSubscriptionClap1s.unsubscribe();
     if (!Experiment) {
       Experiment = this.currentAnnotation;
     }
@@ -219,6 +254,7 @@ export class AnnotationsEditorComponent implements OnInit {
   show(which: string) {
     this.edit[which] = !this.edit[which];
   }
+
   delete() {
     for (let i = 0; i < this.annotationList.length; i++) {
       if (this.annotationList[i]['x'] == this.currentAnnotation['x']) {
@@ -305,4 +341,18 @@ export class AnnotationsEditorComponent implements OnInit {
     console.log(this.localStorage.get('annotations.' + 'miclvl'));
     this.localStorage.delete('annotations.' + 'miclvl');
   }
+}
+
+interface Experiment {
+  series: string;
+  nr: string;
+  shortText: string;
+  text: string;
+  maxDB: number;
+  x: Date;
+  clapStop: Date;
+  clapStart: Date;
+  baseLine: number;
+  clapLength: number;
+  dBs: number;
 }

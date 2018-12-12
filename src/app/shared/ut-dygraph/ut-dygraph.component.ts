@@ -113,48 +113,7 @@ export class UtDygraphComponent implements OnInit {
     port: string = this.serverPort,
     path: string = this.serverPath
   ) {
-    let globalSettings;
-    if (!server || !port || !path) {
-      globalSettings = this.localStorage.get('globalSettings');
-      console.log(globalSettings);
-    }
-    if (!server) {
-      server = this.h.getDeep(globalSettings, [
-        'server',
-        'settings',
-        'serverHostName',
-        'fieldValue'
-      ]);
-    }
-    if (server.endsWith('/')) {
-      console.error('servername has to be without slash(/) at the end!');
-    }
-    if (!port) {
-      port = this.h.getDeep(globalSettings, [
-        'server',
-        'settings',
-        'serverPort',
-        'fieldValue'
-      ]);
-      if(!port) {
-        port = "9090";
-      }
-    }
-    if (!path) {
-      path = this.h.getDeep(globalSettings, [
-        'server',
-        'settings',
-        'serverPath',
-        'fieldValue'
-      ]);
-      if(!path) {
-        path='api/v1/';
-      }
-
-    }
-    const protocol = port == '443' ? 'https://' : 'http://';
-    const protAndHost = server.startsWith('http') ? server : protocol + server;
-    return protAndHost + ':' + port + (path.startsWith('/') ? '' : '/') + path;
+    return this.utFetchdataService.constructPrometheusEndPoint(server,port,path);
   }
 
   ngOnInit() {
@@ -165,11 +124,7 @@ export class UtDygraphComponent implements OnInit {
       this.dyGraphOptions.labels[1] = this.queryString;
     }
 
-    for (const key in this.extraDyGraphConfig) {
-      if (this.extraDyGraphConfig.hasOwnProperty(key)) {
-        this.dyGraphOptions[key] = this.extraDyGraphConfig[key];
-      }
-    }
+    this.updateDyGraphOptions();
 
     this.displayedData = [[undefined, null]];
     this.htmlID = 'graph_' + (Math.random() + 1).toString();
@@ -204,6 +159,14 @@ export class UtDygraphComponent implements OnInit {
         (displayedData: Object) => this.handleInitialData(displayedData),
         error => this.handlePrometheusErrors(error)
       );
+  }
+
+  updateDyGraphOptions() {
+    for (const key in this.extraDyGraphConfig) {
+      if (this.extraDyGraphConfig.hasOwnProperty(key)) {
+        this.dyGraphOptions[key] = this.extraDyGraphConfig[key];
+      }
+    }
   }
 
   parseToSeconds(inputString: string): number {
@@ -430,6 +393,20 @@ export class UtDygraphComponent implements OnInit {
     this.Dygraph.updateOptions({ file: this.displayedData });
     if (this.runningAvgSeconds) {
       this.Dygraph.adjustRoll(this.runningAvgSeconds);
+    }
+    if (this.dyGraphOptions['dateWindow']) {
+      if (this.dyGraphOptions['dateWindowEnd']) {
+        const extension = this.parseToSeconds(this.dyGraphOptions['dateWindowEnd']) * 1000;
+        const now = new Date();
+        const extendedEnd = new Date(now.valueOf() + extension);
+        if(this.dyGraphOptions['dateWindow'][1].valueOf() < extendedEnd.valueOf()) {
+          this.dyGraphOptions['dateWindow'][1] = extendedEnd;
+        }
+
+      }
+      this.Dygraph.updateOptions({
+        'dateWindow': this.dyGraphOptions['dateWindow']
+      });
     }
     // console.log(      'historical length: ' + this.historicalData.length + ' elements'    );
     // console.log(this.annotations)
