@@ -56,7 +56,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   extraDyGraphConfig1 = {
     underlayCallback: this.underlayCallback,
-    legend: <any>'onmouseover'
+    //    legend: <any>'onmouseover'
   };
 
   underlayCallback(canvas, area, g) {

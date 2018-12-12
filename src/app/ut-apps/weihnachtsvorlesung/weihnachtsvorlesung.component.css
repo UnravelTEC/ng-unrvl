@@ -70,6 +70,11 @@ button.fullscreen {
   bottom: 5px;
   right: 5px;
   background: transparent;
-  border: 1px solid gray;
-  color: gray;
+  border: 1px solid rgba(128, 128, 128, 0);
+  color: rgba(128, 128, 128, 0);
+}
+
+button.fullscreen:hover {
+  color: rgba(128, 128, 128, 1);;
+  border: 1px solid rgba(128, 128, 128, 1);
 }
