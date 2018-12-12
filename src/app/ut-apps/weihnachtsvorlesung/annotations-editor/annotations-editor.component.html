@@ -146,10 +146,37 @@
       />
     </div>
     <div class="form-group">
+      <label for="currentAnnotation.dBs">dBs:</label>
+      <input
+        type="text"
+        id="currentAnnotation.dBs"
+        [(ngModel)]="currentAnnotation.dBs"
+        name="currentAnnotation.dBs"
+      />
+    </div>
+    <div class="form-group">
       <!-- <button (click)="delete()">Delete</button> -->
       <button (click)="save()">Save</button>
       <button (click)="loadFromExt()">Load</button>
       <button (click)="deleteLocalStorage()">Delete Local Storage</button>
     </div>
+    <!-- <div class="form-group">
+      <label for="y.min">Y min (dBa): </label>
+      <input
+        type="text"
+        id="y.min"
+        [(ngModel)]="y.min"
+        name="y.min"
+      />
+    </div>
+    <div class="form-group">
+      <label for="y.max">Y max (dBa): </label>
+      <input
+        type="text"
+        id="y.max"
+        [(ngModel)]="y.max"
+        name="y.max"
+      />
+    </div> -->
   </form>
 </div>

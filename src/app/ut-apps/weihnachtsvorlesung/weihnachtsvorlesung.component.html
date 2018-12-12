@@ -25,6 +25,7 @@
       [calculateRunningAvgFrom]="calculateRunningAvgFrom"
       (returnRunningAvg)="returnRunningAvg($event)"
       YLabel="dBa"
+      XLabel="Zeit"
       runningAvgSeconds="10"
     ></app-ut-dygraph>
     <!-- [annotations]="annotations1" -->
@@ -34,7 +35,7 @@
     <!-- [queryString]="'avg_over_time(' + queryString + '[1s])'" -->
     <!-- adc1_c1:avg_1s -->
     <app-ut-dygraph
-      [queryString]="'max_over_time(' + 'adc1_c1:avg_1s' + '[20s])'"  
+      [queryString]="'max_over_time(' + 'adc1_c1:avg_1s' + '[20s])'"
       dataBaseQueryStepMS="2000"
       [dataSeriesLabels]="dataSeriesNames"
       [style]="style2"
@@ -48,6 +49,7 @@
       [extraDyGraphConfig]="extraDyGraphConfig2"
       [multiplicateFactors]="multiplicateFactors"
       YLabel="dBa"
+      XLabel="Zeit"
     ></app-ut-dygraph>
     <!-- [annotations]="annotations2" -->
   </div>
@@ -59,6 +61,7 @@
       [getRunningAverage]="runningAvgToDisplay"
       (requestRunningAverage)="requestRunningAverage($event)"
       (setNewCurrentExperiment)="setNewCurrentExperiment($event)"
+      #editor
     >
     </app-annotations-editor>
   </div>
