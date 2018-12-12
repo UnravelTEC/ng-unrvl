@@ -38,7 +38,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   style1 = {
     position: 'absolute',
     top: '6rem' /*3rem*/,
-    bottom: '31vh',
+    bottom: '35vh',
     left: '22em',
     right: '5vw'
   };
@@ -56,7 +56,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   extraDyGraphConfig1 = {
     underlayCallback: this.underlayCallback,
-    //    legend: <any>'onmouseover'
+    legend: <any>'never'  // options: follow, always, never, onlouseover (default)
   };
 
   underlayCallback(canvas, area, g) {
@@ -106,15 +106,15 @@ extraDyGraphConfig2 = {
   // for final usage
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-12 08:00';
+  start2 = '2018-12-12 10:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-12 06:00'), // earliest
-      new Date('2018-12-12 08:00') // latest
+      new Date('2018-12-12 10:00'), // earliest
+      new Date('2018-12-12 12:00') // latest
     ],
     dateWindowEnd: "15m",
     underlayCallback: this.underlayCallback,
-    legend: <any>'onmouseover'
+    legend: <any>'never'  // options: follow, always, never, onlouseover (default)
     // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
   };
 
