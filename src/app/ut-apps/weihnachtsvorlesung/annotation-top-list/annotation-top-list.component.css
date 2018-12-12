@@ -68,8 +68,8 @@ table tr td {
   vertical-align: top;
 }
 
-table td:first-child {
-  width: 4ch;
+table.current_experiment td:first-child {
+  width: 13ch;
   text-align: left;
 }
 
@@ -80,17 +80,22 @@ th {
 
 
 .values td.dBValue {
-  width: 33%;
+  width: 35%;
   text-align: left;
 }
 
 .values td.sValue {
-  width: 33%;
   text-align: center;
 }
 
+.values td.dbsKey {
+  width: 10%;
+  text-align: right;
+  font-weight: bold;
+}
+
 .values td.dbsValue {
-  width: 33%;
+  width: 32%;
   text-align: right;
   font-weight: bold;
 }

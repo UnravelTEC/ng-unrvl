@@ -6,7 +6,7 @@
         <th class="shortText">
           E{{ current.shortText }} <br />
           <span *ngIf="current.dBs > 0"
-            >{{ current.dBs * 100 | number: '1.1-1' }} dBs</span
+            >&#8747;: {{ current.dBs * 100 | number: '1.1-1' }} dBs</span
           >
         </th>
         <th class="text">{{ current.text }}</th>
@@ -15,7 +15,7 @@
         <td class="nr">Platz {{ current.nr }}</td>
         <td class="dBValue">
           t = {{ current.clapLength || 0 | number: '1.1-1' }} s | Max:
-          {{ current.maxDB | number: '1.2-2' }} dBa
+          {{ current.maxDB | number: '1.1-1' }} dBa
         </td>
       </tr>
     </table>
@@ -38,9 +38,10 @@
       </table>
 
       <table class="values" width="100%">
-        <td class="dBValue">{{ entry.maxDB | number: '1.2-2' }} dBa</td>
+        <td class="dBValue">{{ entry.maxDB | number: '1.1-1' }} dBa</td>
         <td class="sValue">{{ entry.clapLength | number: '1.1-1' }} s</td>
-        <td class="dbsValue">{{ entry.dBs * 100 | number: '1.1-1' }} dBs</td>
+        <td class="dbsKey">&#8747;:</td>
+        <td class="dbsValue">{{ entry.dBs * 100 | number: '1.1-1' }}&nbsp;dBs</td>
       </table>
       <!--
         <table class="entry" *ngIf="entry.maxDB > 0">
