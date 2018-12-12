@@ -112,11 +112,11 @@ extraDyGraphConfig2 = {
   // for final usage
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-12 14:00';
+  start2 = '2018-12-12 15:30';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-12 14:00'), // earliest
-      new Date('2018-12-12 16:00') // latest
+      new Date('2018-12-12 15:30'), // earliest
+      new Date('2018-12-12 18:00') // latest
     ],
     dateWindowEnd: "15m",
     underlayCallback: this.underlayCallback,
