@@ -1,12 +1,19 @@
 import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { RouterModule, Routes } from '@angular/router';
+
+
+import { registerLocaleData } from '@angular/common';
+import localeDe from '@angular/common/locales/de';
+
 
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { TopBarComponent } from './top-bar/top-bar.component';
 import { environment } from '../environments/environment';
+
+registerLocaleData(localeDe, 'de');
 
 const appRoutes: Routes = [
   {
@@ -56,7 +63,7 @@ const appRoutes: Routes = [
       { enableTracing: false } // !environment.production
     )
   ],
-  providers: [Title],
+  providers: [{ provide: LOCALE_ID, useValue: 'de' }, Title],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
