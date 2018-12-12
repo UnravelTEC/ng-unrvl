@@ -57,6 +57,11 @@ export class AnnotationsEditorComponent implements OnInit {
   @Input()
   serverPort: string;
 
+  public y = {
+    min: 30,
+    max: 120
+  }
+
   edit = {
     x: false,
     clapStart: false,
@@ -220,7 +225,7 @@ export class AnnotationsEditorComponent implements OnInit {
       );
       const url =
         this.utHTTP.constructPrometheusEndPoint() +
-        'query?query=avg_over_time(adc1_c1:avg_1s_b30[' +
+        'query?query=avg_over_time(adc1_c1:avg_1s_b10[' +
         String(this.currentAnnotation['ceilClapLength']) +
         's])&time=' +
         now.toISOString();
