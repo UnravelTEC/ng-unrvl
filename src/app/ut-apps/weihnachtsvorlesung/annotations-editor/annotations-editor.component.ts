@@ -60,7 +60,7 @@ export class AnnotationsEditorComponent implements OnInit {
   public y = {
     min: 30,
     max: 120
-  }
+  };
 
   edit = {
     x: false,
@@ -239,7 +239,8 @@ export class AnnotationsEditorComponent implements OnInit {
           1
         ]);
         console.log(dBsAverage, this.currentAnnotation['ceilClapLength']);
-        this.currentAnnotation.dBs = dBsAverage * this.currentAnnotation['ceilClapLength'];
+        this.currentAnnotation.dBs =
+          dBsAverage * this.currentAnnotation['ceilClapLength'];
       });
     });
   }
