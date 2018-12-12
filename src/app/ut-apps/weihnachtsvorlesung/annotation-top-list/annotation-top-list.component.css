@@ -22,7 +22,7 @@ h2:first-child {
 }
 
 h2.sequence {
-  margin-top: 2.5em; /* Aktelle Reihung Abstand zu Aktuelles Experiment */
+  margin-top: 1.8em; /* Aktelle Reihung Abstand zu Aktuelles Experiment */
 }
 
 table {
