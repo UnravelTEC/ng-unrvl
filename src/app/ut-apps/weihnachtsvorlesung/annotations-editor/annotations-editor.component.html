@@ -3,7 +3,7 @@
   <form id="annolist">
     <label
       >Annotations
-      <select name="annotations" size="10">
+      <select name="annotations" size="10" [disabled]="!allowSelection">
         <option
           *ngFor="let annotation of annotationList"
           (click)="setCurrent(annotation)"
