@@ -3,7 +3,11 @@
   <div *ngIf="current.shortText != '.'">
     <table class="current_experiment">
       <tr class="entry">
-        <th class="shortText">E{{ current.shortText }} <br /><span *ngIf="current.dBs > 0">{{ current.dBs * 100 | number: '1.1-1' }} dBs</span></th>
+        <th class="shortText">
+          E{{ current.shortText }} <br /><span *ngIf="current.dBs > 0"
+            >{{ current.dBs * 100 | number: '1.1-1' }} dBs</span
+          >
+        </th>
         <th class="text">{{ current.text }}</th>
       </tr>
       <tr>
@@ -25,16 +29,31 @@
           <span class="dBValue">{{ entry.maxDB | number : "1.2-2"}} dBa</span>
         </div
       -->
+
       <table class="entry" *ngIf="entry.maxDB > 0">
         <tr>
           <td class="shortText">E{{ entry.shortText }}</td>
           <td class="text">{{ entry.text }}</td>
         </tr>
-        <tr>
-          <td>{{ entry.dBs * 100 | number: '1.1-1' }} dBs</td>
-          <td class="dBValue">{{ entry.maxDB | number: '1.2-2' }} dBa</td>
-        </tr>
       </table>
+
+      <table class="values" width="100%">
+        <td class="dBValue">{{ entry.maxDB | number: '1.2-2' }} dBa</td>
+        <td class="sValue">{{ current.clapLength | number: '1.2-2' }} s</td>
+        <td class="dbsValue">{{ entry.dBs * 100 | number: '1.1-1' }} dBs</td>
+      </table>
+      <!--
+        <table class="entry" *ngIf="entry.maxDB > 0">
+          <tr>
+            <td class="shortText">E{{ entry.shortText }}</td>
+            <td class="text">{{ entry.text }}</td>
+          </tr>
+          <tr>
+            <td>{{ entry.dBs * 100 | number: '1.1-1' }} dBs</td>
+            <td class="dBValue">{{ entry.maxDB | number: '1.2-2' }} dBa</td>
+          </tr>
+        </table>
+      -->
     </li>
   </ol>
 </div>
