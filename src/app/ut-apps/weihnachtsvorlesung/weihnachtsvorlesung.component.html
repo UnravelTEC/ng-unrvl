@@ -8,7 +8,7 @@
     <h1>Weihnachtsvorlesung Lautstärkemessung</h1>
   </div>
 
-  <div class="mydygraph">
+  <div class="mydygraph upperdygraph">
     <app-ut-dygraph
       [queryString]="queryString"
       dataBaseQueryStepMS="100"
@@ -32,8 +32,9 @@
   <br />
   <div class="mydygraph lowergraph">
     <!-- [queryString]="'avg_over_time(' + queryString + '[1s])'" -->
+    <!-- adc1_c1:avg_1s -->
     <app-ut-dygraph
-      [queryString]="'max_over_time(' + 'adc1_c1:avg_1s' + '[20s])'"
+      [queryString]="'max_over_time(' + 'adc1_c1:avg_1s' + '[20s])'"  
       dataBaseQueryStepMS="2000"
       [dataSeriesLabels]="dataSeriesNames"
       [style]="style2"

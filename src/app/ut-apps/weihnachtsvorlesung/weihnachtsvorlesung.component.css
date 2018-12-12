@@ -1,6 +1,8 @@
 * {
   font-family: Source Sans Pro, Helvetica, Arial, sans-serif;
+  font-size: 16pt;
 }
+
 
 .utAnnotation {
   font-family: Source Sans Pro, Helvetica, Arial, sans-serif !important;
@@ -39,8 +41,8 @@
   position: absolute;
   top: 6em; /* 3em */
   bottom: 7vh;
-  left: 10px;
-  width: 20em;
+  left: .5em;
+  width: 22em;
   overflow: hidden;
 }
 
@@ -58,11 +60,26 @@
   line-height: 1.1em;
 }
 
+.mydygraph.upperdygraph .dygraph-label.dygraph-ylabel {
+  /* transform: translateY(+.5em); */
+  transform: rotate(90deg) translateY(-27vh) translateX(+2em);
+  /* text-align: right;   */
+}
+
+.mydygraph.lowergraph .dygraph-label.dygraph-ylabel {
+  transform: rotate(90deg) translateY(-15vh) translateX(+2em);
+}
+
+.dygraph-label.dygraph-xlabel {
+  transform: translateY(.5em);
+}
+
 h1 {
   /*margin:0.5em;*/
   margin: 0;
   margin-top: 1vh;
   text-align: center;
+  font-size: 1.8em;
 }
 
 button.fullscreen {
@@ -70,6 +87,11 @@ button.fullscreen {
   bottom: 5px;
   right: 5px;
   background: transparent;
-  border: 1px solid gray;
-  color: gray;
+  border: 1px solid rgba(128, 128, 128, 0);
+  color: rgba(128, 128, 128, 0);
+}
+
+button.fullscreen:hover {
+  color: rgba(128, 128, 128, 1);;
+  border: 1px solid rgba(128, 128, 128, 1);
 }
