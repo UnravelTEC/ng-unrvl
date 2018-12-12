@@ -97,6 +97,7 @@ export class AnnotationsEditorComponent implements OnInit {
           (this.nowTic.valueOf() -
             this.currentAnnotation['clapStart'].valueOf()) /
           1000;
+        this.saveToLocalStorage();
       }
     });
     // this.intervalSubscription10s = interval(10000).subscribe(counter => {
