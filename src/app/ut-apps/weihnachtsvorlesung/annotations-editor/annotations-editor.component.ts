@@ -78,6 +78,8 @@ export class AnnotationsEditorComponent implements OnInit {
   private baseLine: number;
   public nowTic: Date;
 
+  public allowSelection = true;
+
   constructor(
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
@@ -95,6 +97,7 @@ export class AnnotationsEditorComponent implements OnInit {
           (this.nowTic.valueOf() -
             this.currentAnnotation['clapStart'].valueOf()) /
           1000;
+        this.saveToLocalStorage();
       }
     });
     // this.intervalSubscription10s = interval(10000).subscribe(counter => {
@@ -192,6 +195,7 @@ export class AnnotationsEditorComponent implements OnInit {
   }
 
   start() {
+    this.allowSelection = false;
     // if something running, stop
     if (
       this.currentlyDisplayedExperiment['clapStart'] &&
@@ -236,6 +240,8 @@ export class AnnotationsEditorComponent implements OnInit {
   }
 
   stop(Experiment?: Object) {
+    this.allowSelection = true;
+
     this.intervalSubscriptionClap1s.unsubscribe();
     if (!Experiment) {
       Experiment = this.currentAnnotation;

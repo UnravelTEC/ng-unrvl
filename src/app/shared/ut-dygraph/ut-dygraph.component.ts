@@ -83,7 +83,7 @@ export class UtDygraphComponent implements OnInit {
     animatedZooms: true,
     pointSize: 4,
     hideOverlayOnMouseOut: true,
-    legend: <any>'always'
+    legend: <any>'always' // also 'never' possible
   };
   displayedData = [];
   historicalData = [];
@@ -113,7 +113,11 @@ export class UtDygraphComponent implements OnInit {
     port: string = this.serverPort,
     path: string = this.serverPath
   ) {
-    return this.utFetchdataService.constructPrometheusEndPoint(server,port,path);
+    return this.utFetchdataService.constructPrometheusEndPoint(
+      server,
+      port,
+      path
+    );
   }
 
   ngOnInit() {
@@ -286,10 +290,12 @@ export class UtDygraphComponent implements OnInit {
       this.Dygraph.adjustRoll(this.runningAvgSeconds);
     }
     let usedAnnotations = [];
-    if(this.annotations) {
+    if (this.annotations) {
       usedAnnotations = this.annotations;
     } else {
-      usedAnnotations = this.localStorage.get('annotations.' +  this.dyGraphOptions['labels'][1]);
+      usedAnnotations = this.localStorage.get(
+        'annotations.' + this.dyGraphOptions['labels'][1]
+      );
     }
 
     if (usedAnnotations) {
@@ -325,18 +331,31 @@ export class UtDygraphComponent implements OnInit {
     if (from) {
       [lower, upper] = this.binarySearchNearDate(targetArray, from);
       console.log([lower, upper]);
-      console.log(['avg (', (targetArray[datalen-1][0] - targetArray[upper][0])/1000, ')s from ', targetArray[upper][0], ' to ', targetArray[datalen-1][0] ])
+      console.log([
+        'avg (',
+        (targetArray[datalen - 1][0] - targetArray[upper][0]) / 1000,
+        ')s from ',
+        targetArray[upper][0],
+        ' to ',
+        targetArray[datalen - 1][0]
+      ]);
     }
     for (let i = upper; i < datalen; i++) {
       sum += targetArray[i][1];
     }
     const avg = sum / (datalen - upper);
-//    console.log([avg, datalen - upper]);
+    //    console.log([avg, datalen - upper]);
     return avg;
   }
 
   handleUpdatedData(displayedData: Object) {
     this.requestsUnderway--;
+    const dataArray = this.h.getDeep(displayedData, ['data', 'result']);
+    if(Array.isArray(dataArray) && dataArray.length == 0) {
+      console.log('handleUpdatedData: empty dataset received');
+      return;
+    }
+
     const values = this.h.getDeep(displayedData, [
       'data',
       'result',
@@ -396,25 +415,29 @@ export class UtDygraphComponent implements OnInit {
     }
     if (this.dyGraphOptions['dateWindow']) {
       if (this.dyGraphOptions['dateWindowEnd']) {
-        const extension = this.parseToSeconds(this.dyGraphOptions['dateWindowEnd']) * 1000;
+        const extension =
+          this.parseToSeconds(this.dyGraphOptions['dateWindowEnd']) * 1000;
         const now = new Date();
         const extendedEnd = new Date(now.valueOf() + extension);
-        if(this.dyGraphOptions['dateWindow'][1].valueOf() < extendedEnd.valueOf()) {
+        if (
+          this.dyGraphOptions['dateWindow'][1].valueOf() < extendedEnd.valueOf()
+        ) {
           this.dyGraphOptions['dateWindow'][1] = extendedEnd;
         }
-
       }
       this.Dygraph.updateOptions({
-        'dateWindow': this.dyGraphOptions['dateWindow']
+        dateWindow: this.dyGraphOptions['dateWindow']
       });
     }
     // console.log(      'historical length: ' + this.historicalData.length + ' elements'    );
     // console.log(this.annotations)
     let usedAnnotations = [];
-    if(this.annotations) {
+    if (this.annotations) {
       usedAnnotations = this.annotations;
     } else {
-      usedAnnotations = this.localStorage.get('annotations.' +  this.dyGraphOptions['labels'][1]);
+      usedAnnotations = this.localStorage.get(
+        'annotations.' + this.dyGraphOptions['labels'][1]
+      );
     }
 
     if (usedAnnotations) {

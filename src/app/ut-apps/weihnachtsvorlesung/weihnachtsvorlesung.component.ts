@@ -56,6 +56,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   extraDyGraphConfig1 = {
     underlayCallback: this.underlayCallback,
+    valueRange: [ 30, 120 ],
     legend: <any>'never'  // options: follow, always, never, onlouseover (default)
   };
 
@@ -81,6 +82,11 @@ export class WeihnachtsvorlesungComponent implements OnInit {
       if (annotation.clapStart && annotation.clapStop) {
         const begin = annotation.clapStart;
         const end = annotation.clapStop;
+        highlight_period(begin, end);
+      }
+      if(annotation.clapStart && !annotation.clapStop) {
+        const begin = annotation.clapStart;
+        const end = new Date();
         highlight_period(begin, end);
       }
     }
