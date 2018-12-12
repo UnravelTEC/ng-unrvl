@@ -4,7 +4,8 @@
     <table class="current_experiment">
       <tr class="entry">
         <th class="shortText">
-          E{{ current.shortText }} <br /><span *ngIf="current.dBs > 0"
+          E{{ current.shortText }} <br />
+          <span *ngIf="current.dBs > 0"
             >{{ current.dBs * 100 | number: '1.1-1' }} dBs</span
           >
         </th>
@@ -13,13 +14,12 @@
       <tr>
         <td class="nr">Platz {{ current.nr }}</td>
         <td class="dBValue">
-          Max: {{ current.maxDB | number: '1.2-2' }} dBa, t=
-          {{ current.clapLength | number: '1.2-2' }} s
+          t = {{ current.clapLength | number: '1.2-2' }} s | Max: {{ current.maxDB | number: '1.2-2' }} dBa
         </td>
       </tr>
     </table>
   </div>
-  <h2>Aktuelle Reihung</h2>
+  <h2 class="sequence">Aktuelle Reihung</h2>
   <ol>
     <li *ngFor="let entry of topList">
       <!--

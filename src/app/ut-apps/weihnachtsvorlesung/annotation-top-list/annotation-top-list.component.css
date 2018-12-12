@@ -8,15 +8,21 @@ h2 {
   text-align: center;
   padding: 0;
   padding-left: 0em;
+  padding-top: .2em;
+  padding-bottom: .2em;
   margin-left: 0em;
   margin-bottom: 0em;
   color: white;
-  background: #666;
+  background: black;
   font-weight: 550;
 }
 
 h2:first-child {
   margin-top: 0;
+}
+
+h2.sequence {
+  margin-top: 2.5em; /* Aktelle Reihung Abstand zu Aktuelles Experiment */
 }
 
 table {
@@ -110,6 +116,10 @@ th.shortText {
   border-right: none;
   border-bottom: none;
   border-left: none;
+}
+
+.current_experiment td.dBValue {
+  text-align: right;
 }
 
 .current_experiment th:first-child,
