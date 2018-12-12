@@ -49,7 +49,7 @@
   position: absolute;
   left: 5px;
   top: 100vh;
-  transform: translateY(-3em);
+  transform: translateY(-1.8em);
 }
 
 .mydygraph.lowergraph .utAnnotation {
