@@ -14,7 +14,7 @@
       <tr>
         <td class="nr">Platz {{ current.nr }}</td>
         <td class="dBValue">
-          t = {{ current.clapLength || 0 | number: '1.2-2' }} s | Max:
+          t = {{ current.clapLength || 0 | number: '1.1-1' }} s | Max:
           {{ current.maxDB | number: '1.2-2' }} dBa
         </td>
       </tr>
@@ -39,7 +39,7 @@
 
       <table class="values" width="100%">
         <td class="dBValue">{{ entry.maxDB | number: '1.2-2' }} dBa</td>
-        <td class="sValue">{{ current.clapLength | number: '1.2-2' }} s</td>
+        <td class="sValue">{{ entry.clapLength | number: '1.1-1' }} s</td>
         <td class="dbsValue">{{ entry.dBs * 100 | number: '1.1-1' }} dBs</td>
       </table>
       <!--
