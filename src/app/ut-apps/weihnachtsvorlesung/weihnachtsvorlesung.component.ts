@@ -84,6 +84,11 @@ export class WeihnachtsvorlesungComponent implements OnInit {
         const end = annotation.clapStop;
         highlight_period(begin, end);
       }
+      if(annotation.clapStart && !annotation.clapStop) {
+        const begin = annotation.clapStart;
+        const end = new Date();
+        highlight_period(begin, end);
+      }
     }
   }
 
