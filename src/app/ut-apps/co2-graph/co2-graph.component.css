@@ -10,3 +10,10 @@ h4 {
   /* background: blue; */
   padding: 5px;
 }
+
+form {
+  position: absolute;
+  bottom: 1rem;
+  left:5vh;
+  right: 5vh;
+}
