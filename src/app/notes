@@ -73,13 +73,9 @@ dygraph css - you have to disable ng component encapsulation
 
 # deployment 
 
-cd /Frontend/Web; npm run build.prod
+cd /Frontend/Web/src/app; npm run build.prod
+scp -r ../../dist/Web/* root@co2-mm.lan://var/www/ng/ #*
 
-cd dist/Web
-rsync -rax * root@henri0.lan:~/Frontend/
-git checkout --orphan
-git rm --cached -r .
-rm -rf *
 
 # Two-Way Databinding forms
 https://angular.io/guide/forms
