@@ -8,12 +8,14 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
 })
 export class PressureGraphComponent implements OnInit {
 
+  fetchFromServerIntervalMS = 1000;
+
   graphstyle = {
     position: 'absolute',
-    top: '3rem',
-    bottom: '3rem',
-    left: '5vw',
-    right: '5vw'
+    top: '1vh',
+    bottom: '3em',
+    left: '1vw',
+    right: '1vw'
   };
   dataSeriesLabels = ['Pressure'];
   startTime = '3h';

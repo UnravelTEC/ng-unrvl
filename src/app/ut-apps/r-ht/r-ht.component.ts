@@ -12,17 +12,17 @@ export class RHTComponent implements OnInit {
 
   graphstyleT = {
     position: 'absolute',
-    top: '3rem',
-    bottom: '49vh',
-    left: '5vw',
-    right: '5vw'
+    top: '1.4em',
+    bottom: '50%',
+    left: '1vw',
+    right: '1vw'
   };
   graphstyleH = {
     position: 'absolute',
-    top: '51vh',
+    top: '50%',
     bottom: '3rem',
-    left: '5vw',
-    right: '5vw'
+    left: '1vw',
+    right: '1vw'
   };
 
   dataSeriesLabelsT = ['Temperature'];
