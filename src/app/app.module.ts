@@ -33,6 +33,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/co2-graph/co2-graph.module#Co2GraphModule'
   },
   {
+    path: 'Apps/PressureGraph',
+    loadChildren: './ut-apps/pressure-graph/pressure-graph.module#PressureGraphModule'
+  },
+  {
     path: 'Apps/Dygraph-Playground',
     loadChildren: './ut-apps/dygraph-dev/dygraph-dev.module#DygraphDevModule'
   },
