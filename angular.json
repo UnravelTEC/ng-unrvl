@@ -99,5 +99,10 @@
       }
     }
   },
-  "defaultProject": "Web"
+  "defaultProject": "Web",
+  "schematics": {
+    "@schematics/angular:component": {
+      "styleext": "scss"
+    }
+  }
 }
