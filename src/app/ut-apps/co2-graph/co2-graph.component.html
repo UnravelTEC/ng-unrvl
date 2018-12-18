@@ -1,26 +1,18 @@
 <div class="graphapp">
     <div id="co2dygraph">
     <app-ut-dygraph
-      serverHostName=""
-      serverPort="80"
-      serverPath="prometheus/api/v1/"
       queryString="scd30_co2"
       fetchFromServerIntervalMS="2000"
       dataBaseQueryStepMS="2000"
       [dataSeriesLabels]="dataSeriesLabels"
       YLabel="CO₂ (ppm)"
-      Debug="true"
       [style]="graphstyle"
       [startTime]="startTime"
       #graph
     ></app-ut-dygraph>
-    <!--
-      serverPath="http://192.168.11.206"
-      queryString="bme280_pressure" c20_co2
-      queryString="c20_co2"
-      queryString="scd30_co2"
-      queryString="co2{location=&quot;FuzzyLab&quot;,sensor=&quot;scd30&quot;}"
-    -->
+    <!-- serverHostName=""
+    serverPort="80"
+    serverPath="prometheus/api/v1/" -->
   </div>
   <form>
     <label for="startTime">Time Range: </label>

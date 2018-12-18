@@ -21,6 +21,6 @@ export class Co2GraphComponent implements OnInit {
     left: '5vw',
     right: '5vw'
   };
-  dataSeriesLabels = ['CO2'];
+  dataSeriesLabels = ['CO₂'];
   startTime = '15m';
 }
