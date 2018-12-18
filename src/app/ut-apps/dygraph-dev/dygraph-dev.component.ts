@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalStorageService } from '../../core/local-storage.service';
+import { GlobalSettingsService } from '../../core/global-settings.service';
 
 @Component({
   selector: 'app-dygraph-dev',
@@ -35,7 +36,7 @@ export class DygraphDevComponent implements OnInit {
     'fetchFromServerIntervalMS'
   ];
 
-  constructor(private localStorage: LocalStorageService) {}
+  constructor(private localStorage: LocalStorageService, private globalSettings: GlobalSettingsService) {}
 
   ngOnInit() {
     let valueInLocalStorage;
@@ -45,6 +46,7 @@ export class DygraphDevComponent implements OnInit {
         this[elementName] = valueInLocalStorage;
       }
     });
+    this.globalSettings.emitChange({ appName: 'DyGraph Dev App' });
   }
 
   save() {

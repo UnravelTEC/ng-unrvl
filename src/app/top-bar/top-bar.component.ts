@@ -10,6 +10,9 @@ export class TopBarComponent implements OnInit {
   @Input()
   hide = false;
 
+  @Input()
+  appName = '/';
+
   constructor() { }
 
   ngOnInit() {

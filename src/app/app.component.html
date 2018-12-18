@@ -1,7 +1,7 @@
 <!-- The content below is only a placeholder and can be replaced. -->
 
 <div id="appbody">
-  <app-top-bar [hide]="topBarHidden"></app-top-bar>
+  <app-top-bar [hide]="topBarHidden" [appName]="appName"></app-top-bar>
 
   <div class="content" (toogleFullScreen)="toggleFullScreen($event)">
     <router-outlet></router-outlet>
