@@ -8,14 +8,22 @@ import { LocalStorageService } from '../../core/local-storage.service';
 })
 export class DygraphDevComponent implements OnInit {
   serverHostName = '';
-  queryString = 'veml6075_uva';
-  dataBaseQueryStepMS = 1000;
-  startTime = '60s';
+  queryString = 'scd30_co2';
+  dataBaseQueryStepMS = 2000;
+  startTime = '30m';
   endTime = 'now';
-  serverPort = '9090';
+  serverPort = '80';
   serverPath = 'prometheus/api/v1/';
   runningAvgSeconds = 0;
-  fetchFromServerIntervalMS = 1000;
+  fetchFromServerIntervalMS = 2000;
+
+  style = {
+    position: 'absolute',
+    top: '3rem',
+    bottom: '35vh',
+    left: '5vw',
+    right: '5vw'
+  };
 
   private variablesToSave = [
     'serverHostName',

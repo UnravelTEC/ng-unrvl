@@ -3,7 +3,9 @@
 
   <div id="co2dygraph">
     <app-ut-dygraph
-      serverHostName ="192.168.11.233"
+      serverHostName=""
+      serverPort="80"
+      serverPath="prometheus/api/v1/"
       queryString="scd30_co2"
       fetchFromServerIntervalMS="2000"
       dataBaseQueryStepMS="2000"
@@ -23,14 +25,17 @@
     -->
   </div>
   <form>
-  <label for="startTime">Time Range: </label>
-      <input
-        type="text"
-        id="startTime"
-        [(ngModel)]="startTime"
-        name="startTime"
-      />
-      Current Value: {{ graph['displayedData'][graph['displayedData'].length-1][1] | number :'1.1-3'}}&#8239;ppm
-    </form>
-
+    <label for="startTime">Time Range: </label>
+    <input
+      type="text"
+      id="startTime"
+      [(ngModel)]="startTime"
+      name="startTime"
+    />
+    Current Value:
+    {{
+      graph['displayedData'][graph['displayedData'].length - 1][1]
+        | number: '1.1-3'
+    }}&#8239;ppm
+  </form>
 </div>
