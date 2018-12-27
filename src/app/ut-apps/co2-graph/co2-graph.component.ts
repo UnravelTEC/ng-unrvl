@@ -9,6 +9,10 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
 export class Co2GraphComponent implements OnInit {
   public title = 'CO₂ Graph';
 
+  extraDyGraphConfig = {
+    strokeWidth: 3.0
+  }
+
   constructor(private globalSettings: GlobalSettingsService) {}
   ngOnInit() {
     this.globalSettings.emitChange({ appName: this.title });

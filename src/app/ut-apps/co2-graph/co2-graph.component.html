@@ -1,13 +1,14 @@
 <div class="graphapp">
     <div id="co2dygraph">
     <app-ut-dygraph
-      queryString="scd30_co2"
+      queryString="co2"
       fetchFromServerIntervalMS="2000"
       dataBaseQueryStepMS="2000"
       [dataSeriesLabels]="dataSeriesLabels"
       YLabel="CO₂ (ppm)"
       [style]="graphstyle"
       [startTime]="startTime"
+      [extraDyGraphConfig]="extraDyGraphConfig"
       #graph
     ></app-ut-dygraph>
     <!-- serverHostName=""

@@ -1,9 +1,9 @@
 <div class="graphapp">
   <div id="Tdygraph">
     <app-ut-dygraph
-      queryString="bme280_temp"
+      queryString="temperature"
       [fetchFromServerIntervalMS]="fetchFromServerIntervalMS"
-      dataBaseQueryStepMS="1000"
+      dataBaseQueryStepMS="2000"
       [dataSeriesLabels]="dataSeriesLabelsT"
       YLabel="Atmospheric Temperature (°C)"
       [style]="graphstyleT"
@@ -20,9 +20,9 @@
 
   <div id="rHdygraph">
     <app-ut-dygraph
-      queryString="bme280_humidity"
+      queryString="humidity"
       [fetchFromServerIntervalMS]="fetchFromServerIntervalMS"
-      dataBaseQueryStepMS="1000"
+      dataBaseQueryStepMS="2000"
       [dataSeriesLabels]="dataSeriesLabelsH"
       YLabel="relative Humidity (%)"
       [style]="graphstyleH"
