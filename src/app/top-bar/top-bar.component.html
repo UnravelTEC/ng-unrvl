@@ -1,12 +1,12 @@
 <nav *ngIf="hide == false">
   <a routerLink="/Dashboard" routerLinkActive="active">Dashboard</a>
-  <em class=search>Search</em>
-  <em class=wifi>Wifi</em>
-  <em class=hostname>Hostname</em>:
+  <!-- <em class=search>Search</em> -->
+  <!-- <em class=wifi>Wifi</em> -->
+  <em class=hostname>{{ hostName }}</em>:
   <em class=appname>{{ appName }}</em>
   <span class="spacer">&nbsp;</span>
-  <a routerLink="/Store" routerLinkActive="active">Store</a>
-  <em class="date">24.10.2018</em>
+  <!-- <a routerLink="/Store" routerLinkActive="active">Store</a> -->
+  <em class="date">{{ currentTime | date: 'yyyy-MM-dd H:mm:ss' }}</em>
   <em class="batt">Bat: 100%</em>
   <a routerLink="/Settings" routerLinkActive="active">Settings</a>&nbsp;&nbsp;
 </nav>
