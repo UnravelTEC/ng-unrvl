@@ -60,7 +60,7 @@ export class UtFetchdataService {
         'fieldValue'
       ]);
       if (!port) {
-        port = '9090';
+        port = '80';
       }
     }
     if (!path) {
@@ -71,7 +71,7 @@ export class UtFetchdataService {
         'fieldValue'
       ]);
       if (!path) {
-        path = 'api/v1/';
+        path = 'prometheus/api/v1/';
       }
     }
     const protocol = port == '443' ? 'https://' : 'http://';
