@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GlobalSettingsService } from '../../core/global-settings.service';
+import { LocalStorageService } from '../../core/local-storage.service';
 
 @Component({
   selector: 'app-co2-graph',
@@ -8,23 +9,43 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
 })
 export class Co2GraphComponent implements OnInit {
   public title = 'CO₂ Graph';
+  step = 1000;
 
   extraDyGraphConfig = {
     strokeWidth: 3.0
-  }
-
-  constructor(private globalSettings: GlobalSettingsService) {}
-  ngOnInit() {
-    this.globalSettings.emitChange({ appName: this.title });
-  }
+  };
 
   graphstyle = {
     position: 'absolute',
-    top: '1vh',
+    top: '4em',
     bottom: '3rem',
     left: '1vw',
     right: '1vw'
   };
-  dataSeriesLabels = ['CO₂'];
+  dataSeriesLabels = ['SCD 30'];
   startTime = '15m';
+
+  constructor(
+    private localStorage: LocalStorageService,
+    private globalSettings: GlobalSettingsService
+  ) {}
+  ngOnInit() {
+    const lsStep = this.localStorage.get('pm.step');
+    if (lsStep) {
+      this.step = lsStep;
+    }
+    const lsStartTime = this.localStorage.get('pm.start');
+    if (lsStartTime) {
+      this.startTime = lsStartTime;
+    }
+
+    this.globalSettings.emitChange({ appName: this.title });
+  }
+
+  adjustTime(startTime: string, step: number) {
+    this.startTime = startTime;
+    this.step = step;
+    this.localStorage.set('pm.step', step);
+    this.localStorage.set('pm.start', startTime);
+  }
 }
