@@ -12,7 +12,7 @@ export class HelperFunctionsService {
     const url = window.location.href;
     const angularRoute = this.loc.path();
     this.domainAndApp = url.replace(angularRoute, '');
-    this.domain = this.domainAndApp.replace(/:[0-9]*$/, '')
+    this.domain = this.domainAndApp.replace(/:[0-9]*$/, '').replace(/[?]/,'');
   }
 
   getBaseURL() {
