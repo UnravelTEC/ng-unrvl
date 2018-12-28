@@ -9,10 +9,11 @@
     YLabel="Particulate Matter (µg/m³)"
     [style]="graphstyle"
     [startTime]="startTime"
-    [extraDyGraphConfig]="extraDyGraphConfig"
+
     #graph
   ></app-ut-dygraph>
-  <!-- serverHostName=""
+  <!-- [extraDyGraphConfig]="extraDyGraphConfig"
+    serverHostName=""
   serverPort="80"
   serverPath="prometheus/api/v1/" -->
   <form class="time">
@@ -22,6 +23,6 @@
     <button (click)="adjustTime('6h', 2000)">6h</button>
     <button (click)="adjustTime('1d', 10000)">24h</button>
     <button (click)="adjustTime('7d', 70000)">7d</button>
-    Range: {{ startTime }}, Step: {{ step }}
+    Range: {{ startTime }}, Step: {{ step }}ms
   </form>
 </div>
