@@ -1,0 +1,27 @@
+
+<div class="graphapp">
+  <!-- queryString="(sds011_pm25+sds011_pm10)*0.5" -->
+  <app-ut-dygraph
+    queryString="sds011_pm25"
+    [fetchFromServerIntervalMS]="step"
+    [dataBaseQueryStepMS]="step"
+    [dataSeriesLabels]="dataSeriesLabels"
+    YLabel="Particulate Matter (µg/m³)"
+    [style]="graphstyle"
+    [startTime]="startTime"
+    [extraDyGraphConfig]="extraDyGraphConfig"
+    #graph
+  ></app-ut-dygraph>
+  <!-- serverHostName=""
+  serverPort="80"
+  serverPath="prometheus/api/v1/" -->
+  <form class="time">
+    <button (click)="adjustTime('5m', 1000)">5m</button>
+    <button (click)="adjustTime('30m', 1000)">30m</button>
+    <button (click)="adjustTime('1h', 1000)">1h</button>
+    <button (click)="adjustTime('6h', 2000)">6h</button>
+    <button (click)="adjustTime('1d', 10000)">24h</button>
+    <button (click)="adjustTime('7d', 70000)">7d</button>
+    Range: {{ startTime }}, Step: {{ step }}
+  </form>
+</div>
