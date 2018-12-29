@@ -13,9 +13,9 @@
   </span>
   <div id="co2dygraph">
     <app-ut-dygraph
-      queryString="co2"
-      fetchFromServerIntervalMS="2000"
-      dataBaseQueryStepMS="2000"
+      queryString="scd30_co2"
+      [fetchFromServerIntervalMS]="step"
+      [dataBaseQueryStepMS]="step"
       [dataSeriesLabels]="dataSeriesLabels"
       YLabel="CO₂ (ppm)"
       [style]="graphstyle"
