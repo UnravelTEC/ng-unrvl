@@ -4,8 +4,10 @@ Angular Frontend to visualize data - primarly from Prometheus database as sensor
 
 # building
 
-  npm install
+```
+npm install
 
-  npm run build.prod
+npm run build.prod
+```
 
 the built project can now be found in `dist/Web`
