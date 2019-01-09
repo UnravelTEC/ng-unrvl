@@ -10,6 +10,7 @@
 .mydygraph-component .debug {
     background: rgb(198, 198, 255);
     z-index: 200;
+    transform: translateY(8em);
 }
 
 .mydygraph-component .info {

@@ -27,3 +27,7 @@ nav em {
 nav a:hover {
     background:rgb(201, 201, 207);
 }
+
+nav em.appname {
+    color: rgb(255, 255, 255);
+}

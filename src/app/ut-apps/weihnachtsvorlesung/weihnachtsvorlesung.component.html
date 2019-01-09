@@ -1,6 +1,6 @@
 <div class="graphapp">
   <img
-    src="https://www.unraveltec.com/wp-content/uploads/2018/12/cropped-UnravelTEC_Logo-komplett_freigestellt.png"
+    src="/assets/cropped-UnravelTEC_Logo-komplett_freigestellt.png"
     class="UT-Logo"
   />
 
@@ -14,9 +14,7 @@
       dataBaseQueryStepMS="100"
       [dataSeriesLabels]="dataSeriesNames"
       [style]="style1"
-      [serverHostName]="serverHostName"
-      [serverPath]="serverPath"
-      [serverPort]="serverPort"
+
       startTime="10m"
       fetchFromServerIntervalMS="100"
       debug="false"
@@ -26,7 +24,7 @@
       (returnRunningAvg)="returnRunningAvg($event)"
       YLabel="dBa"
       XLabel="Zeit"
-      runningAvgSeconds="10"
+      runningAvgSeconds="0"
     ></app-ut-dygraph>
     <!-- [annotations]="annotations1" -->
   </div>
@@ -34,14 +32,16 @@
   <div class="mydygraph lowergraph">
     <!-- [queryString]="'avg_over_time(' + queryString + '[1s])'" -->
     <!-- adc1_c1:avg_1s -->
+    <!--
+       [serverHostName]="serverHostName"
+    [serverPath]="serverPath"
+      [serverPort]="serverPort"
+     -->
     <app-ut-dygraph
       [queryString]="'max_over_time(' + 'adc1_c1:avg_1s' + '[20s])'"
       dataBaseQueryStepMS="2000"
       [dataSeriesLabels]="dataSeriesNames"
       [style]="style2"
-      [serverHostName]="serverHostName"
-      [serverPath]="serverPath"
-      [serverPort]="serverPort"
       [endTime]="end2"
       [startTime]="start2"
       fetchFromServerIntervalMS="2000"

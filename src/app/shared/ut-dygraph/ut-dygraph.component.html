@@ -10,6 +10,7 @@
     [style.bottom]="style.bottom"
     [style.left]="style.left"
     [style.right]="style.right"
+    style.padding-bottom="20vh"
   ></div>
   <div
     *ngIf="noData == true"
@@ -50,9 +51,14 @@
   >
     {{ error }}
   </div>
-
+  <!-- "debug == 'true' ? style.bottom - 6em : style.bottom -->
   <!-- <button (click)="fetchNewData()">Update!</button> -->
-  <ul class="debug" *ngIf="debug == 'true'">
+  <ul
+    class="debug"
+    *ngIf="debug == 'true'"
+    [style.position]="style.position"
+    [style.bottom]="style.bottom"
+  >
     <li>Average: {{ average }}</li>
     <li>From {{ displayedData[0][0] | date: 'yyyy-MM-dd HH:mm:ss (z)' }}</li>
     <li>

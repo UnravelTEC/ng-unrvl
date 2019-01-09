@@ -43,12 +43,13 @@ export class UtFetchdataService {
         'serverHostName',
         'fieldValue'
       ]);
-      if(!server) {
-        console.error('you have to supply server or set it!')
+      if (!server) {
+        console.error('you have to supply server or set it!');
+        server = this.h.getBaseURL();
       }
     }
     if (server.endsWith('/')) {
-      server = server.substr(0,server.length - 1);
+      server = server.substr(0, server.length - 1);
       console.log('servername has to be without slash(/) at the end! - fixed.');
     }
     if (!port) {
@@ -58,8 +59,8 @@ export class UtFetchdataService {
         'serverPort',
         'fieldValue'
       ]);
-      if(!port) {
-        port = "9090";
+      if (!port) {
+        port = '80';
       }
     }
     if (!path) {
@@ -69,10 +70,9 @@ export class UtFetchdataService {
         'serverPath',
         'fieldValue'
       ]);
-      if(!path) {
-        path='api/v1/';
+      if (!path) {
+        path = 'prometheus/api/v1/';
       }
-
     }
     const protocol = port == '443' ? 'https://' : 'http://';
     const protAndHost = server.startsWith('http') ? server : protocol + server;

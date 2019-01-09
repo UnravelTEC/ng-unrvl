@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalStorageService } from '../../core/local-storage.service';
+import { HelperFunctionsService } from '../../core/helper-functions.service';
 
 @Component({
   selector: 'app-settings-panel',
@@ -26,7 +27,9 @@ export class SettingsPanelComponent implements OnInit {
 
   debug = true;
 
-  constructor(private localStorage: LocalStorageService) {}
+  public ourHostName: string;
+
+  constructor(private localStorage: LocalStorageService, private h: HelperFunctionsService) {}
 
   ngOnInit() {
     // before, read out all localstorage items
@@ -38,6 +41,8 @@ export class SettingsPanelComponent implements OnInit {
         this.globalSettingsUnsaved[item] = JSON.parse(deepcopy);
       }
     }
+
+    this.ourHostName = this.h.getBaseURL();
   }
 
   load() {

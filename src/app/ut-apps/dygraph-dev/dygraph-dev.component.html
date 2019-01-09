@@ -1,12 +1,9 @@
 <div class="graphapp">
-  <h4>This is the Dev Graph app</h4>
-
   <div class="mydygraph">
     <app-ut-dygraph
       [queryString]="queryString"
       [dataBaseQueryStepMS]="dataBaseQueryStepMS"
-      graphHeight="300"
-      graphWidth="765"
+      [style]="style"
       [serverHostName]="serverHostName"
       [serverPort]="serverPort"
       [endTime]="endTime"

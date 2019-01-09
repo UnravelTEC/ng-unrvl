@@ -24,10 +24,11 @@ wenn das singleValue net definiert ist, kompilierts mit ng serve beim 1.Mal nich
 
 
 
-how to add an app:
+# how to add an app:
 ng g m ut-apps/co2-graph --routing
 ng g c ut-apps/co2-graph
-#  edit -routing.module.ts, add
+
+##  edit -routing.module.ts, add
     import { Co2GraphComponent } from './co2-graph.component';
     add it to Routes = [ 
       {
@@ -35,8 +36,14 @@ ng g c ut-apps/co2-graph
         component: IaqComponent
       }
 ]
-# in dashboard/comp.html add the tile
-# in /app.module.ts, add the route
+
+## in -module.ts
+  add needed imports like Dygraphs and Forms
+
+## in dashboard/comp.html add the tile
+
+## in /app.module.ts, add the route
+
 
 # Use of feature modules
 
@@ -66,13 +73,9 @@ dygraph css - you have to disable ng component encapsulation
 
 # deployment 
 
-cd /Frontend/Web; npm run build.prod
+cd /Frontend/Web/src/app; npm run build.prod
+scp -r ../../dist/Web/* root@co2-mm.lan://var/www/ng/ #*
 
-cd dist/Web
-rsync -rax * root@henri0.lan:~/Frontend/
-git checkout --orphan
-git rm --cached -r .
-rm -rf *
 
 # Two-Way Databinding forms
 https://angular.io/guide/forms
@@ -83,3 +86,8 @@ need
         name="QueryString"
               />
 where QueryString is a member of the components class
+
+
+# SCSS
+
+ng config schematics.@schematics/angular:component.styleext scss

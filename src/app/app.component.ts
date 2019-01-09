@@ -18,6 +18,8 @@ export class AppComponent implements OnInit {
   public topBarHidden = false;
   public footerHidden = false;
 
+  public appName = 'Dashboard'
+
   public constructor(
     private http: HttpClient,
     private titleService: Title,
@@ -31,6 +33,9 @@ export class AppComponent implements OnInit {
       console.log(obj);
       if (obj && obj.hasOwnProperty('fullscreen')) {
         this.toggleFullScreen(obj['fullscreen']);
+      }
+      if (obj && obj.hasOwnProperty('appName')) {
+        this.setAppName(obj['appName']);
       }
     });
 
@@ -46,6 +51,10 @@ export class AppComponent implements OnInit {
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
+  }
+
+  public setAppName(newAppName: string) {
+    this.appName = newAppName;
   }
 
   public toggleFullScreen(newState?: boolean) {

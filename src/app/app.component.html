@@ -1,13 +1,13 @@
 <!-- The content below is only a placeholder and can be replaced. -->
 
 <div id="appbody">
-  <app-top-bar [hide]="topBarHidden"></app-top-bar>
+  <app-top-bar [hide]="topBarHidden" [appName]="appName"></app-top-bar>
 
   <div class="content" (toogleFullScreen)="toggleFullScreen($event)">
     <router-outlet></router-outlet>
   </div>
 
-  <div id="footer" *ngIf="footerHidden == false">this is {{ title }}.</div>
+  <div id="footer" *ngIf="footerHidden == false">this is <b>ng-unrvl</b> (<a href="https://github.com/UnravelTEC/ng-unrvl">github.com/UnravelTEC/ng-unrvl</a>), Angular frontend for sensor data visualisation.</div>
 </div>
 
 <!--

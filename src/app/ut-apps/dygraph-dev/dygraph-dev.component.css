@@ -10,12 +10,7 @@ h2 {
 }
 
 .mydygraph {
-  width: 790px;
-  height: 400px;
-  /* background: yellow; */
-  text-align: center;
-  /* border: 1px solid red; */
-  border-radius: 10px;
+
 }
 
 .graphapp {
@@ -24,7 +19,9 @@ h2 {
 }
 
 form {
-  width: 790px;
+  max-width: 790px;
+  margin-top:65vh;
+  padding-top: 3.5em;
 }
 label {
   display: inline-block;

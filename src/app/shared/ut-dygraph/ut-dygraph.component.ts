@@ -91,6 +91,8 @@ export class UtDygraphComponent implements OnInit {
   dataEndTime: Date;
   average: number;
 
+  private overrideDateWindow = [];
+
   public noData = false;
   public waiting = true;
   public error: string = undefined;
@@ -129,6 +131,14 @@ export class UtDygraphComponent implements OnInit {
     }
 
     this.updateDyGraphOptions();
+
+    if (
+      this.dyGraphOptions['dateWindow'] &&
+      this.dyGraphOptions['dateWindow'].length
+    ) {
+      this.overrideDateWindow[0] = this.dyGraphOptions['dateWindow'][0];
+      this.overrideDateWindow[1] = this.dyGraphOptions['dateWindow'][1];
+    }
 
     this.displayedData = [[undefined, null]];
     this.htmlID = 'graph_' + (Math.random() + 1).toString();
@@ -351,7 +361,7 @@ export class UtDygraphComponent implements OnInit {
   handleUpdatedData(displayedData: Object) {
     this.requestsUnderway--;
     const dataArray = this.h.getDeep(displayedData, ['data', 'result']);
-    if(Array.isArray(dataArray) && dataArray.length == 0) {
+    if (Array.isArray(dataArray) && dataArray.length == 0) {
       console.log('handleUpdatedData: empty dataset received');
       return;
     }
@@ -404,16 +414,20 @@ export class UtDygraphComponent implements OnInit {
     const dataLength = this.displayedData.length;
     // console.log('current length: ' + dataLength + ' elements');
     this.displayedData = this.displayedData.concat(newData);
-    this.displayedData = this.displayedData.slice(
-      -dataLength,
-      this.displayedData.length
-    );
+
+    // disabled, we're working with dateWindow now!
+    // this.displayedData = this.displayedData.slice(
+    //   -dataLength,
+    //   this.displayedData.length
+    // );
+
     // console.log('new length: ' + this.displayedData.length + ' elements');
     this.Dygraph.updateOptions({ file: this.displayedData });
     if (this.runningAvgSeconds) {
       this.Dygraph.adjustRoll(this.runningAvgSeconds);
     }
-    if (this.dyGraphOptions['dateWindow']) {
+
+    if (this.overrideDateWindow.length) {
       if (this.dyGraphOptions['dateWindowEnd']) {
         const extension =
           this.parseToSeconds(this.dyGraphOptions['dateWindowEnd']) * 1000;
@@ -425,10 +439,24 @@ export class UtDygraphComponent implements OnInit {
           this.dyGraphOptions['dateWindow'][1] = extendedEnd;
         }
       }
-      this.Dygraph.updateOptions({
-        dateWindow: this.dyGraphOptions['dateWindow']
-      });
+    } else {
+      const dataEndTime =
+        this.endTime === 'now' ? new Date() : new Date(this.endTime);
+
+      let seconds = this.parseToSeconds(this.startTime);
+      let dataBeginTime;
+      if (seconds) {
+        dataBeginTime = new Date(dataEndTime.valueOf() - seconds * 1000);
+        console.log('length of interval displayed (s): ' + seconds.toString());
+      } else {
+        dataBeginTime = new Date(this.startTime);
+      }
+      this.dyGraphOptions['dateWindow'] = [dataBeginTime, dataEndTime];
     }
+    this.Dygraph.updateOptions({
+      dateWindow: this.dyGraphOptions['dateWindow']
+    });
+
     // console.log(      'historical length: ' + this.historicalData.length + ' elements'    );
     // console.log(this.annotations)
     let usedAnnotations = [];

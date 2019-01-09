@@ -1,0 +1,44 @@
+<div class="graphapp">
+  <div id="Tdygraph">
+    <app-ut-dygraph
+      queryString="temperature"
+      [fetchFromServerIntervalMS]="fetchFromServerIntervalMS"
+      dataBaseQueryStepMS="2000"
+      [dataSeriesLabels]="dataSeriesLabelsT"
+      YLabel="Atmospheric Temperature (°C)"
+      [style]="graphstyleT"
+      [startTime]="startTime"
+      #T
+    ></app-ut-dygraph>
+    Current Values:
+    {{
+      T['displayedData'][T['displayedData'].length - 1][1] | number: '1.2-2'
+    }}&#8239;°C, {{
+      rH['displayedData'][rH['displayedData'].length - 1][1] | number: '1.1-1'
+    }}&#8239;%
+  </div>
+
+  <div id="rHdygraph">
+    <app-ut-dygraph
+      queryString="humidity"
+      [fetchFromServerIntervalMS]="fetchFromServerIntervalMS"
+      dataBaseQueryStepMS="2000"
+      [dataSeriesLabels]="dataSeriesLabelsH"
+      YLabel="relative Humidity (%)"
+      [style]="graphstyleH"
+      [startTime]="startTime"
+      #rH
+    ></app-ut-dygraph>
+
+  </div>
+
+  <form>
+    <label for="startTime">Time Range: </label>
+    <input
+      type="text"
+      id="startTime"
+      [(ngModel)]="startTime"
+      name="startTime"
+    />
+  </form>
+</div>

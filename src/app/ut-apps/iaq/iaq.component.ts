@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 
 import { interval, Subscription } from 'rxjs';
+
+import { GlobalSettingsService } from '../../core/global-settings.service';
+import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
+
+
+
 
 @Component({
   selector: 'app-iaq',
@@ -21,7 +26,10 @@ export class IaqComponent implements OnInit {
 
   intervalSubscription: Subscription;
 
-  constructor(private utFetchdataService: UtFetchdataService) {}
+  constructor(
+    private utFetchdataService: UtFetchdataService,
+    private globalSettings: GlobalSettingsService
+  ) {}
 
   ngOnInit() {
     this.getData();
@@ -29,6 +37,7 @@ export class IaqComponent implements OnInit {
     this.intervalSubscription = interval(1000).subscribe(counter => {
       this.getData();
     });
+    this.globalSettings.emitChange({ appName: 'iAQ' });
   }
 
   getData() {

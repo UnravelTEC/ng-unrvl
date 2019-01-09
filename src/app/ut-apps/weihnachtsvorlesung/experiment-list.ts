@@ -1,6 +1,10 @@
 // https://www.csvjson.com/csv2json
 export const experimentList = [
   {
+    shortText: -1,
+    text: 'Testapplaus'
+  },
+  {
     shortText: 0,
     text: 'Singing Tesla Jingle Bell Plasma Neon Röhre'
   },
@@ -171,5 +175,9 @@ export const experimentList = [
   {
     shortText: 41,
     text: 'Windholz – Weihnachtsmann + Singing Tesla'
+  },
+  {
+    shortText: 42,
+    text: 'UnravelTEC Lautstärkemessung'
   }
 ];
