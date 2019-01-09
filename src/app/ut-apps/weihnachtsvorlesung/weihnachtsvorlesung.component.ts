@@ -56,7 +56,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   extraDyGraphConfig1 = {
     underlayCallback: this.underlayCallback,
-    valueRange: [ 30, 120 ],
+    // valueRange: [ 30, 120 ],
     legend: <any>'never'  // options: follow, always, never, onlouseover (default)
   };
 
@@ -112,11 +112,11 @@ extraDyGraphConfig2 = {
   // for final usage
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-12 15:30';
+  start2 = '2019-01-09 12:30';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2018-12-12 15:30'), // earliest
-      new Date('2018-12-12 18:00') // latest
+      new Date('2019-01-09 12:30'), // earliest
+      new Date('2019-01-09 15:00') // latest
     ],
     dateWindowEnd: "15m",
     underlayCallback: this.underlayCallback,

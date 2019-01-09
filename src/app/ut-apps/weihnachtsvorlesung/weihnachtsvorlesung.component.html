@@ -10,13 +10,14 @@
 
   <div class="mydygraph upperdygraph">
     <app-ut-dygraph
-      [queryString]="queryString"
-      dataBaseQueryStepMS="100"
+      queryString="sensor_radiation_Sv * 10000000"
+      server="scpexploratory02.tugraz.at"
+      dataBaseQueryStepMS="10000"
       [dataSeriesLabels]="dataSeriesNames"
       [style]="style1"
 
       startTime="10m"
-      fetchFromServerIntervalMS="100"
+      fetchFromServerIntervalMS="10000"
       debug="false"
       [extraDyGraphConfig]="extraDyGraphConfig1"
       [multiplicateFactors]="multiplicateFactors"
@@ -38,7 +39,8 @@
       [serverPort]="serverPort"
      -->
     <app-ut-dygraph
-      [queryString]="'max_over_time(' + 'adc1_c1:avg_1s' + '[20s])'"
+      [queryString]="'max_over_time(' + 'sensor_radiation_Sv' + '[20s])*10000000'"
+      server="scpexploratory02.tugraz.at"
       dataBaseQueryStepMS="2000"
       [dataSeriesLabels]="dataSeriesNames"
       [style]="style2"
