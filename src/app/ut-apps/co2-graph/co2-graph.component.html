@@ -13,7 +13,7 @@
   </span>
   <div id="co2dygraph">
     <app-ut-dygraph
-      queryString="scd30_co2"
+      queryString='gas_ppm{gas="CO2"}'
       [fetchFromServerIntervalMS]="step"
       [dataBaseQueryStepMS]="step"
       [dataSeriesLabels]="dataSeriesLabels"

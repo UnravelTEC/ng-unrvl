@@ -9,7 +9,7 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
 })
 export class DygraphDevComponent implements OnInit {
   serverHostName = '';
-  queryString = 'scd30_co2';
+  queryString = 'temperature_degC';
   dataBaseQueryStepMS = 2000;
   startTime = '30m';
   endTime = 'now';

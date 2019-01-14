@@ -1,7 +1,7 @@
 <div class="graphapp">
   <div id="pressuredygraph">
   <app-ut-dygraph
-    queryString="bme280_pressure"
+    queryString="avg(pressure_hPa)"
     [fetchFromServerIntervalMS]="fetchFromServerIntervalMS"
     dataBaseQueryStepMS="1000"
     [dataSeriesLabels]="dataSeriesLabels"

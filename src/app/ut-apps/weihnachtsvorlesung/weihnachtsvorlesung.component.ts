@@ -24,7 +24,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   serverPath = 'api/v1/'; //prometheus/api/v1/
   // queryString: string = 'mic_audiolevel';
   // queryString: string = 'co2{location="FuzzyLab",sensor="scd30"}'
-  queryString = 'adc1_c1'; //'adc1_c1';
+  queryString = 'loudness_crapunit'; //'adc1_c1';
   dataBaseQueryStepMS = 1000;
   timeRange = 60; // 1 min
   runningAvgSeconds = 0;
@@ -50,13 +50,13 @@ export class WeihnachtsvorlesungComponent implements OnInit {
     right: '5vw'
   };
 
-  multiplicateFactors = [100];
+  multiplicateFactors = [1];
 
   currentExperiment: string; // id: shortText
 
   extraDyGraphConfig1 = {
     underlayCallback: this.underlayCallback,
-    valueRange: [ 30, 120 ],
+    // valueRange: [ 30, 120 ],
     legend: <any>'never'  // options: follow, always, never, onlouseover (default)
   };
 
@@ -112,12 +112,12 @@ extraDyGraphConfig2 = {
   // for final usage
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2018-12-12 15:30';
+  start2 =  '3h'; //'2018-12-12 15:30';
   extraDyGraphConfig2 = {
-    dateWindow: [
-      new Date('2018-12-12 15:30'), // earliest
-      new Date('2018-12-12 18:00') // latest
-    ],
+    // dateWindow: [
+    //   new Date('2018-12-12 15:30'), // earliest
+    //   new Date('2018-12-12 18:00') // latest
+    // ],
     dateWindowEnd: "15m",
     underlayCallback: this.underlayCallback,
     legend: <any>'never'  // options: follow, always, never, onlouseover (default)
