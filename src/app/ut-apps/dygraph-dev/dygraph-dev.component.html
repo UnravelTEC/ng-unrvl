@@ -47,6 +47,16 @@
       />
     </div>
     <div class="form-group">
+      <label for="serverPort">Server Port</label> ( "{{ serverPort }}" )
+      <input
+        type="text"
+        class="form-control"
+        id="serverPort"
+        [(ngModel)]="serverPort"
+        name="serverPort"
+      />
+    </div>
+    <div class="form-group">
       <label for="dataBaseQueryStepMS"
         >DataBase Query Step Frequency (ms)</label
       >

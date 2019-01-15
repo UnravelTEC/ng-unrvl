@@ -59,9 +59,12 @@ export class UtFetchdataService {
         'serverPort',
         'fieldValue'
       ]);
-      if (!port) {
-        port = '80';
-      }
+    }
+    if(port) {
+      port = ":" + port;
+    }
+    if(!port) {
+      port = "";
     }
     if (!path) {
       path = this.h.getDeep(globalSettings, [
@@ -76,7 +79,7 @@ export class UtFetchdataService {
     }
     const protocol = port == '443' ? 'https://' : 'http://';
     const protAndHost = server.startsWith('http') ? server : protocol + server;
-    return protAndHost + ':' + port + (path.startsWith('/') ? '' : '/') + path;
+    return protAndHost + port + (path.startsWith('/') ? '' : '/') + path;
   }
 
   private buildRangeQuery(
