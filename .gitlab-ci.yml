@@ -2,7 +2,7 @@ cache:
   untracked: true
   key: "$CI_BUILD_REF_NAME"
   paths:
-    - Web/node_modules/
+    - node_modules/
 
 stages: 
   - setup
@@ -14,7 +14,6 @@ setup:
   tags:
     - Newton
   script:
-    - cd Web
     - npm set progress=false
     - npm install
 
@@ -23,7 +22,6 @@ build:
   tags:
     - Newton
   script:
-    - cd Web
     - ng build --prod --no-progress
 
 deploy:
@@ -33,4 +31,4 @@ deploy:
   only:
     - master
   script:
-    - rsync -ravx --delete Web/dist/Web/ /var/www/angular/
+    - rsync -ravx --delete dist/Web/ /var/www/angular/
