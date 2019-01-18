@@ -175,6 +175,12 @@ export class UtDygraphComponent implements OnInit {
       );
   }
 
+  OnDestroy() {
+    this.intervalSubscription.unsubscribe();
+    this.Dygraph.destroy();
+    console.log("DyGraph destroyed")
+  }
+
   updateDyGraphOptions() {
     for (const key in this.extraDyGraphConfig) {
       if (this.extraDyGraphConfig.hasOwnProperty(key)) {
@@ -363,6 +369,12 @@ export class UtDygraphComponent implements OnInit {
     const dataArray = this.h.getDeep(displayedData, ['data', 'result']);
     if (Array.isArray(dataArray) && dataArray.length == 0) {
       console.log('handleUpdatedData: empty dataset received');
+      return;
+    }
+
+    if(!this.Dygraph) {
+      console.error("Dygraph not there, unsubscribing");
+      this.intervalSubscription.unsubscribe();
       return;
     }
 

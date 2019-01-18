@@ -16,4 +16,9 @@ import { UtDygraphModule } from '../../shared/ut-dygraph/ut-dygraph.module';
   ],
   declarations: [Co2GraphComponent]
 })
-export class Co2GraphModule { }
+export class Co2GraphModule {
+  OnDestroy() {
+    console.log("CO2-App Module destroyed")
+  }
+
+ }
