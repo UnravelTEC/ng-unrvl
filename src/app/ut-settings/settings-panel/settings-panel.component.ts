@@ -15,9 +15,15 @@ export class SettingsPanelComponent implements OnInit {
         title: 'Server Settings'
       },
       settings: {
-        serverHostName: { fieldName: 'Server Host Name', fieldValue: 'scpexploratory02.tugraz.at' }, // entry
+        serverHostName: {
+          fieldName: 'Server Host Name',
+          fieldValue: 'scpexploratory02.tugraz.at'
+        }, // entry
         serverPort: { fieldName: 'Server Port', fieldValue: '443' }, // 9090
-        serverPath: { fieldName: 'Server Path', fieldValue: 'prometheus/api/v1/' } // -prom
+        serverPath: {
+          fieldName: 'Server Path',
+          fieldValue: 'prometheus/api/v1/'
+        } // -prom
       }
     }
   };
@@ -29,7 +35,10 @@ export class SettingsPanelComponent implements OnInit {
 
   public ourHostName: string;
 
-  constructor(private localStorage: LocalStorageService, private h: HelperFunctionsService) {}
+  constructor(
+    private localStorage: LocalStorageService,
+    private h: HelperFunctionsService
+  ) {}
 
   ngOnInit() {
     // before, read out all localstorage items
@@ -37,7 +46,7 @@ export class SettingsPanelComponent implements OnInit {
 
     for (let item in this.defaultSettings) {
       if (!this.globalSettingsUnsaved[item]) {
-        let deepcopy = JSON.stringify(this.defaultSettings[item]);
+        const deepcopy = JSON.stringify(this.defaultSettings[item]);
         this.globalSettingsUnsaved[item] = JSON.parse(deepcopy);
       }
     }
@@ -46,8 +55,8 @@ export class SettingsPanelComponent implements OnInit {
   }
 
   load() {
-    const loadedSettings = this.localStorage.get('globalSettings'); //returns deep copy
-    if(loadedSettings) {
+    const loadedSettings = this.localStorage.get('globalSettings'); // returns deep copy
+    if (loadedSettings) {
       this.globalSettings = loadedSettings;
       this.globalSettingsUnsaved = this.localStorage.get('globalSettings');
     }
@@ -55,11 +64,15 @@ export class SettingsPanelComponent implements OnInit {
 
   save() {
     this.localStorage.set('globalSettings', this.globalSettingsUnsaved);
-    this.globalSettings = JSON.parse(JSON.stringify(this.globalSettingsUnsaved));
+    this.globalSettings = JSON.parse(
+      JSON.stringify(this.globalSettingsUnsaved)
+    );
     // alert('save ok');
   }
   reset() {
-    this.globalSettingsUnsaved = JSON.parse(JSON.stringify(this.defaultSettings));
+    this.globalSettingsUnsaved = JSON.parse(
+      JSON.stringify(this.defaultSettings)
+    );
     // alert('reset ok');
   }
 }
