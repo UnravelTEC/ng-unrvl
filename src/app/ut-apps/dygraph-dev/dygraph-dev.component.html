@@ -13,116 +13,108 @@
       debug="true"
     ></app-ut-dygraph>
     <!-- [serverPath]="serverPath" -->
-
   </div>
   <form #graphForm="ngForm">
-    <div class="form-group">
+    <div>
       <label for="queryString">Query String</label> ({{ queryString }})
       <input
         type="text"
-        class="form-control"
         id="queryString"
         [(ngModel)]="queryString"
         name="queryString"
       />
     </div>
-    <div class="form-group">
+    <div>
       <label for="serverHostName">Server</label> ({{ serverHostName }})
       <input
         type="text"
-        class="form-control"
         id="serverHostName"
         [(ngModel)]="serverHostName"
         name="serverHostName"
       />
     </div>
-    <div class="form-group">
+    <div>
       <label for="serverPath">Server Path</label> ( "{{ serverPath }}" )
       <input
         type="text"
-        class="form-control"
         id="serverPath"
         [(ngModel)]="serverPath"
         name="serverPath"
       />
     </div>
-    <div class="form-group">
+    <div>
       <label for="serverPort">Server Port</label> ( "{{ serverPort }}" )
       <input
         type="text"
-        class="form-control"
         id="serverPort"
         [(ngModel)]="serverPort"
         name="serverPort"
       />
     </div>
-    <div class="form-group">
+    <div>
       <label for="dataBaseQueryStepMS"
         >DataBase Query Step Frequency (ms)</label
       >
       ({{ dataBaseQueryStepMS }})
       <input
         type="text"
-        class="form-control"
         id="dataBaseQueryStepMS"
         [(ngModel)]="dataBaseQueryStepMS"
         name="dataBaseQueryStepMS"
-        style="width:4em;"
+        style="width:5em;"
       />
     </div>
-    <div class="form-group">
+    <div>
       <label for="fetchFromServerIntervalMS"
         >Frontend Update Frequency (ms)</label
       >
       ({{ fetchFromServerIntervalMS }})
       <input
         type="text"
-        class="form-control"
         id="fetchFromServerIntervalMS"
         [(ngModel)]="fetchFromServerIntervalMS"
         name="fetchFromServerIntervalMS"
-        style="width:4em;"
+        style="width:5em;"
       />
     </div>
 
-    <div class="form-group">
+    <div>
       <label for="endTime">End Time (mostly now)</label> ({{ endTime }})
       <input
         type="text"
-        class="form-control"
         id="endTime"
         [(ngModel)]="endTime"
         name="endTime"
-        style="width:4em;"
+        style="width:5em;"
       />
     </div>
-    <div class="form-group">
+    <div>
       <label for="startTime">Start Time</label> ({{ startTime }})
       <input
         type="text"
-        class="form-control"
         id="startTime"
         [(ngModel)]="startTime"
         name="startTime"
-        style="width:4em;"
+        style="width:5em;"
       />
     </div>
-    <div class="form-group">
+    <div>
       <label for="runningAvgSeconds">
         Running Average in Frontend (seconds)
       </label>
       ({{ runningAvgSeconds }})
       <input
         type="text"
-        class="form-control"
         id="runningAvgSeconds"
         [(ngModel)]="runningAvgSeconds"
         name="runningAvgSeconds"
-        style="width:4em;"
+        style="width:5em;"
       />
     </div>
 
-    <button type="submit" class="btn btn-success" (click)="save()">Save</button>
-    <button type="submit" class="btn btn-success" (click)="reset()">Reset</button>
+    <button type="submit" (click)="save()">Save</button>
+    <button type="submit" (click)="reset()">
+      Reset
+    </button>
   </form>
 </div>
