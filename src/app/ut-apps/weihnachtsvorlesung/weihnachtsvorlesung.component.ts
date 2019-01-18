@@ -57,7 +57,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   extraDyGraphConfig1 = {
     underlayCallback: this.underlayCallback,
     // valueRange: [ 30, 120 ],
-    legend: <any>'never'  // options: follow, always, never, onlouseover (default)
+    legend: <any>'never' // options: follow, always, never, onlouseover (default)
   };
 
   underlayCallback(canvas, area, g) {
@@ -84,7 +84,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
         const end = annotation.clapStop;
         highlight_period(begin, end);
       }
-      if(annotation.clapStart && !annotation.clapStop) {
+      if (annotation.clapStart && !annotation.clapStop) {
         const begin = annotation.clapStart;
         const end = new Date();
         highlight_period(begin, end);
@@ -112,15 +112,15 @@ extraDyGraphConfig2 = {
   // for final usage
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 =  '3h'; //'2018-12-12 15:30';
+  start2 = '3h'; //'2018-12-12 15:30';
   extraDyGraphConfig2 = {
     // dateWindow: [
     //   new Date('2018-12-12 15:30'), // earliest
     //   new Date('2018-12-12 18:00') // latest
     // ],
-    dateWindowEnd: "15m",
+    dateWindowEnd: '15m',
     underlayCallback: this.underlayCallback,
-    legend: <any>'never'  // options: follow, always, never, onlouseover (default)
+    legend: <any>'never' // options: follow, always, never, onlouseover (default)
     // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
   };
 

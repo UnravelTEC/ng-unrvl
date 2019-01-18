@@ -10,7 +10,6 @@ import { HelperFunctionsService } from '../core/helper-functions.service';
   styleUrls: ['./top-bar.component.css']
 })
 export class TopBarComponent implements OnInit {
-
   @Input()
   hide = false;
 
@@ -22,15 +21,14 @@ export class TopBarComponent implements OnInit {
 
   private intervalSubscription: Subscription;
 
-  constructor(private h: HelperFunctionsService) { }
+  constructor(private h: HelperFunctionsService) {}
 
   ngOnInit() {
     this.currentTime = new Date();
-    this.hostName = this.h.getBaseURL().replace(/http[s]?:\/\//,'');
+    this.hostName = this.h.getBaseURL().replace(/http[s]?:\/\//, '');
 
     this.intervalSubscription = interval(60000).subscribe(counter => {
       this.currentTime = new Date();
     });
   }
-
 }
