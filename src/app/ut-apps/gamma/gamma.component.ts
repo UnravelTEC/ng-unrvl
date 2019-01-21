@@ -13,6 +13,7 @@ export class GammaComponent implements OnInit {
   step = 10000;
   dataSeriesLabels = ['RS 04'];
   multiplicateFactors = [1000000000];
+  runningAvgSeconds = 0;
 
   graphstyle = {
     position: 'absolute',
@@ -37,6 +38,10 @@ export class GammaComponent implements OnInit {
     if (lsStartTime) {
       this.startTime = lsStartTime;
     }
+    const lsRunningAvgSeconds = this.localStorage.get('gamma.runningAvgSeconds');
+    if(lsRunningAvgSeconds) {
+      this.runningAvgSeconds = lsRunningAvgSeconds;
+    }
 
     this.globalSettings.emitChange({ appName: 'Gamma Radiation' });
   }
@@ -46,6 +51,8 @@ export class GammaComponent implements OnInit {
     this.step = step;
     this.localStorage.set('gamma.step', step);
     this.localStorage.set('gamma.start', startTime);
+    this.localStorage.set('gamma.runningAvgSeconds', this.runningAvgSeconds);
+
   }
   save() {
     this.step = 10000;
@@ -56,5 +63,6 @@ export class GammaComponent implements OnInit {
     }
     this.localStorage.set('gamma.step', this.step);
     this.localStorage.set('gamma.start', this.startTime);
+    this.localStorage.set('gamma.runningAvgSeconds', this.runningAvgSeconds);
   }
 }
