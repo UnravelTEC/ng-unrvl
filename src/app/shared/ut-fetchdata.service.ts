@@ -77,7 +77,7 @@ export class UtFetchdataService {
         path = 'prometheus/api/v1/';
       }
     }
-    const protocol = port == '443' ? 'https://' : 'http://';
+    const protocol = port == ':443' ? 'https://' : 'http://';
     const protAndHost = server.startsWith('http') ? server : protocol + server;
     return protAndHost + port + (path.startsWith('/') ? '' : '/') + path;
   }
