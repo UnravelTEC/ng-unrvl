@@ -4,7 +4,8 @@ import {
   Input,
   OnInit,
   Output,
-  ViewEncapsulation
+  ViewEncapsulation,
+  OnDestroy
 } from '@angular/core';
 
 import Dygraph from 'dygraphs';
@@ -21,7 +22,7 @@ import { ValueSansProvider } from '@angular/core/src/di/provider';
   styleUrls: ['./ut-dygraph.component.css'],
   encapsulation: ViewEncapsulation.None // from https://coryrylan.com/blog/css-encapsulation-with-angular-components
 })
-export class UtDygraphComponent implements OnInit {
+export class UtDygraphComponent implements OnInit, OnDestroy {
   // define on start what doesn't change
   @Input()
   // queryString: string;
@@ -149,7 +150,7 @@ export class UtDygraphComponent implements OnInit {
     const dataEndTime =
       this.endTime === 'now' ? new Date() : new Date(this.endTime);
 
-    let seconds = this.h.parseToSeconds(this.startTime);
+    const seconds = this.h.parseToSeconds(this.startTime);
 
     let dataBeginTime;
     if (seconds) {
@@ -175,6 +176,12 @@ export class UtDygraphComponent implements OnInit {
         (displayedData: Object) => this.handleInitialData(displayedData),
         error => this.handlePrometheusErrors(error)
       );
+  }
+
+  ngOnDestroy() {
+    this.intervalSubscription.unsubscribe();
+    this.Dygraph.destroy();
+    console.log('DyGraph destroyed');
   }
 
   updateDyGraphOptions() {
@@ -218,7 +225,9 @@ export class UtDygraphComponent implements OnInit {
           return;
         }
       }
-    } else this.error = 'unknown error';
+    } else {
+      this.error = 'unknown error';
+    }
   }
 
   handleInitialData(receivedData: Object) {
@@ -248,14 +257,10 @@ export class UtDygraphComponent implements OnInit {
 
       // insert NaN gap for Dygraphs to not connect lines if point missing
       if (values.length > 1) {
-        if (i == 0) {
+        if (i === 0) {
           gap = values[1][0] - values[0][0];
-        }
-        else if (element[0] - values[i-1][0] > gap ) {
-          this.displayedData.push([
-            new Date((element[0] + gap) * 1000),
-            NaN
-          ])
+        } else if (element[0] - values[i - 1][0] > gap) {
+          this.displayedData.push([new Date((element[0] + gap) * 1000), NaN]);
         }
       }
 
@@ -302,7 +307,7 @@ export class UtDygraphComponent implements OnInit {
     if (usedAnnotations) {
       const from = this.displayedData[0][0];
       const to = new Date();
-      let inViewAnnos = this.filterinViewAnnos(usedAnnotations, from, to);
+      const inViewAnnos = this.filterinViewAnnos(usedAnnotations, from, to);
       this.adjustAnnotationsXtoMS(inViewAnnos);
       this.Dygraph.setAnnotations(inViewAnnos);
     }
@@ -352,8 +357,14 @@ export class UtDygraphComponent implements OnInit {
   handleUpdatedData(displayedData: Object) {
     this.requestsUnderway--;
     const dataArray = this.h.getDeep(displayedData, ['data', 'result']);
-    if (Array.isArray(dataArray) && dataArray.length == 0) {
+    if (Array.isArray(dataArray) && dataArray.length === 0) {
       console.log('handleUpdatedData: empty dataset received');
+      return;
+    }
+
+    if (!this.Dygraph) {
+      console.error('Dygraph not there, unsubscribing');
+      this.intervalSubscription.unsubscribe();
       return;
     }
 
@@ -439,11 +450,11 @@ export class UtDygraphComponent implements OnInit {
     if (usedAnnotations) {
       const from = this.displayedData[0][0];
       const to = new Date();
-      let inViewAnnos = this.filterinViewAnnos(usedAnnotations, from, to);
+      const inViewAnnos = this.filterinViewAnnos(usedAnnotations, from, to);
       this.adjustAnnotationsXtoMS(inViewAnnos);
       this.Dygraph.setAnnotations(inViewAnnos);
     }
-    if (this.debug == 'true') {
+    if (this.debug === 'true') {
       this.average = this.calculateAverage();
     }
     if (this.calculateRunningAvgFrom) {
@@ -472,7 +483,7 @@ export class UtDygraphComponent implements OnInit {
       const dataEndTime =
         this.endTime === 'now' ? new Date() : new Date(this.endTime);
 
-      let seconds = this.h.parseToSeconds(this.startTime);
+      const seconds = this.h.parseToSeconds(this.startTime);
       let dataBeginTime;
       if (seconds) {
         dataBeginTime = new Date(dataEndTime.valueOf() - seconds * 1000);
@@ -544,7 +555,7 @@ export class UtDygraphComponent implements OnInit {
   }
 
   filterinViewAnnos(annotations: Array<Object>, from: Date, to: Date) {
-    let returnedAnnos = [];
+    const returnedAnnos = [];
     annotations.forEach(annotation => {
       const annoDateMS = annotation['x'];
       if (!annoDateMS) {
@@ -568,7 +579,9 @@ export class UtDygraphComponent implements OnInit {
       upperIndex = inputArray.length - 1;
 
     function compareDate(date1: Date, date2: Date) {
-      if (!date1 || !date2) return undefined;
+      if (!date1 || !date2) {
+        return undefined;
+      }
       if (date1.valueOf() === date2.valueOf()) {
         return 0;
       }
@@ -580,7 +593,9 @@ export class UtDygraphComponent implements OnInit {
       const halfElem = inputArray[halfIndex][0];
 
       const comparisonResult = compareDate(target, halfElem);
-      if (comparisonResult === undefined) return [undefined, undefined];
+      if (comparisonResult === undefined) {
+        return [undefined, undefined];
+      }
       if (comparisonResult === 0) {
         lowerIndex = halfIndex;
         upperIndex = halfIndex;

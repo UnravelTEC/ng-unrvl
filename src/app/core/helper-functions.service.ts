@@ -12,7 +12,7 @@ export class HelperFunctionsService {
     const url = window.location.href;
     const angularRoute = this.loc.path();
     this.domainAndApp = url.replace(angularRoute, '');
-    this.domain = this.domainAndApp.replace(/:[0-9]*$/, '').replace(/[?]/,'');
+    this.domain = this.domainAndApp.replace(/:[0-9]*$/, '').replace(/[?]/, '');
   }
 
   getBaseURL() {
@@ -25,7 +25,7 @@ export class HelperFunctionsService {
       return undefined;
     }
     while (argumentsArray.length) {
-      let currentIndex = argumentsArray.shift();
+      const currentIndex = argumentsArray.shift();
       if (obj[currentIndex]) {
         obj = obj[currentIndex];
       } else {
