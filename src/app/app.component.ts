@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   public topBarHidden = false;
   public footerHidden = false;
 
-  public appName = 'Dashboard'
+  public appName = 'Home';
 
   public constructor(
     private http: HttpClient,

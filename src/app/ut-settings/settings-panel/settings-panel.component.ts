@@ -44,7 +44,7 @@ export class SettingsPanelComponent implements OnInit {
     // before, read out all localstorage items
     this.load();
 
-    for (let item in this.defaultSettings) {
+    for (const item in this.defaultSettings) {
       if (!this.globalSettingsUnsaved[item]) {
         const deepcopy = JSON.stringify(this.defaultSettings[item]);
         this.globalSettingsUnsaved[item] = JSON.parse(deepcopy);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 import { LocalStorageService } from '../../core/local-storage.service';
 
@@ -7,7 +7,7 @@ import { LocalStorageService } from '../../core/local-storage.service';
   templateUrl: './co2-graph.component.html',
   styleUrls: ['./co2-graph.component.css']
 })
-export class Co2GraphComponent implements OnInit {
+export class Co2GraphComponent implements OnInit, OnDestroy {
   public title = 'CO₂ Graph';
   step = 1000;
 
@@ -42,7 +42,7 @@ export class Co2GraphComponent implements OnInit {
     this.globalSettings.emitChange({ appName: this.title });
   }
   ngOnDestroy() {
-    console.log("CO2-App destroyed")
+    console.log('CO2-App destroyed');
   }
 
   adjustTime(startTime: string, step: number) {

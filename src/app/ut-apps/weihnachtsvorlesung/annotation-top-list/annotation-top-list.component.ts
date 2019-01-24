@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges, OnChanges } from '@angular/core';
 
 import { interval, Subscription } from 'rxjs';
 
@@ -9,7 +9,7 @@ import { LocalStorageService } from '../../../core/local-storage.service';
   templateUrl: './annotation-top-list.component.html',
   styleUrls: ['./annotation-top-list.component.css']
 })
-export class AnnotationTopListComponent implements OnInit {
+export class AnnotationTopListComponent implements OnInit, OnChanges {
   @Input()
   annotationList: Array<Experiment>;
   @Input()
@@ -64,23 +64,23 @@ export class AnnotationTopListComponent implements OnInit {
     //   'get currentExperiment from localstorage' + this.currentExperiment
     // );
 
-    let tmpArray: Array<Experiment> = [];
-    let currentExperimentNumber = undefined;
+    const tmpArray: Array<Experiment> = [];
+    let currentExperimentNumber;
     for (let i = 0; i < this.annotationList.length; i++) {
-      let tmpExperiment = this.annotationList[i];
+      const tmpExperiment = this.annotationList[i];
       if (tmpExperiment['dBs']) {
         tmpArray.push(tmpExperiment);
       }
-      if (tmpExperiment['shortText'] == this.currentExperiment) {
+      if (tmpExperiment['shortText'] === this.currentExperiment) {
         currentExperimentNumber = i;
       }
     }
 
     tmpArray.sort((a, b) => b['dBs'] - a['dBs']);
 
-    let rankNumber = undefined;
+    let rankNumber;
     for (let i = 0; i < tmpArray.length; i++) {
-      if (tmpArray[i]['shortText'] == this.currentExperiment) {
+      if (tmpArray[i]['shortText'] === this.currentExperiment) {
         rankNumber = i;
       }
     }

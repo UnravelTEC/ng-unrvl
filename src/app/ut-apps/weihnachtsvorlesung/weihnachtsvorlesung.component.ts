@@ -20,11 +20,11 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   // serverHostName: string = 'http://koffer.lan';
   // serverHostName: string = 'http://belinda.cgv.tugraz.at'
   // serverHostName = 'scpexploratory02.tugraz.at'; // 'raspigas.lan'; '192.168.11.171'
-  serverPort = '9090'; //443
-  serverPath = 'api/v1/'; //prometheus/api/v1/
+  serverPort = '9090'; // 443
+  serverPath = 'api/v1/'; // prometheus/api/v1/
   // queryString: string = 'mic_audiolevel';
   // queryString: string = 'co2{location="FuzzyLab",sensor="scd30"}'
-  queryString = 'loudness_crapunit'; //'adc1_c1';
+  queryString = 'loudness_crapunit'; // 'adc1_c1';
   dataBaseQueryStepMS = 1000;
   timeRange = 60; // 1 min
   runningAvgSeconds = 0;
@@ -60,37 +60,6 @@ export class WeihnachtsvorlesungComponent implements OnInit {
     legend: <any>'never' // options: follow, always, never, onlouseover (default)
   };
 
-  underlayCallback(canvas, area, g) {
-    // console.log(['underlayCallback: ',canvas,area,g]);
-
-    // canvas.fillStyle = 'rgba(255, 255, 102, 1.0)';
-    canvas.fillStyle = 'rgba(236, 166, 86, 1.0)';
-
-    function highlight_period(x_start, x_end) {
-      const canvas_left_x = g.toDomXCoord(x_start);
-      const canvas_right_x = g.toDomXCoord(x_end);
-      const canvas_width = canvas_right_x - canvas_left_x;
-      canvas.fillRect(canvas_left_x, area.y, canvas_width, area.h);
-    }
-
-    const min_data_x = g.getValue(0, 0);
-    const max_data_x = g.getValue(g.numRows() - 1, 0);
-
-    let localAnnotations = g.annotations();
-    for (let i = 0; i < localAnnotations.length; i++) {
-      let annotation = localAnnotations[i];
-      if (annotation.clapStart && annotation.clapStop) {
-        const begin = annotation.clapStart;
-        const end = annotation.clapStop;
-        highlight_period(begin, end);
-      }
-      if (annotation.clapStart && !annotation.clapStop) {
-        const begin = annotation.clapStart;
-        const end = new Date();
-        highlight_period(begin, end);
-      }
-    }
-  }
 
   // for testing purposes
 
@@ -112,7 +81,7 @@ extraDyGraphConfig2 = {
   // for final usage
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '3h'; //'2018-12-12 15:30';
+  start2 = '3h'; // '2018-12-12 15:30';
   extraDyGraphConfig2 = {
     // dateWindow: [
     //   new Date('2018-12-12 15:30'), // earliest
@@ -132,9 +101,42 @@ extraDyGraphConfig2 = {
     private globalSettings: GlobalSettingsService
   ) {}
 
-  ngOnChanges(changes: SimpleChanges) {
-    // console.log('app: ngOnC triggered');
+  underlayCallback(canvas, area, g) {
+    // console.log(['underlayCallback: ',canvas,area,g]);
+
+    // canvas.fillStyle = 'rgba(255, 255, 102, 1.0)';
+    canvas.fillStyle = 'rgba(236, 166, 86, 1.0)';
+
+    function highlight_period(x_start, x_end) {
+      const canvas_left_x = g.toDomXCoord(x_start);
+      const canvas_right_x = g.toDomXCoord(x_end);
+      const canvas_width = canvas_right_x - canvas_left_x;
+      canvas.fillRect(canvas_left_x, area.y, canvas_width, area.h);
+    }
+
+    const min_data_x = g.getValue(0, 0);
+    const max_data_x = g.getValue(g.numRows() - 1, 0);
+
+    const localAnnotations = g.annotations();
+    for (let i = 0; i < localAnnotations.length; i++) {
+      const annotation = localAnnotations[i];
+      if (annotation.clapStart && annotation.clapStop) {
+        const begin = annotation.clapStart;
+        const end = annotation.clapStop;
+        highlight_period(begin, end);
+      }
+      if (annotation.clapStart && !annotation.clapStop) {
+        const begin = annotation.clapStart;
+        const end = new Date();
+        highlight_period(begin, end);
+      }
+    }
   }
+
+
+  // ngOnChanges(changes: SimpleChanges) {
+  // console.log('app: ngOnC triggered');
+  // }
 
   setNewCurrentExperiment(newExperiment: string) {
     this.currentExperiment = newExperiment;
@@ -163,7 +165,7 @@ extraDyGraphConfig2 = {
 
     let lower = 0;
     experimentList.forEach(item => {
-      let newitem = {
+      const newitem = {
         shortText: item.shortText,
         text: item.text,
         series: 'miclvl',
@@ -178,13 +180,13 @@ extraDyGraphConfig2 = {
         maxDB: 0 // :Number
       };
       lower = lower + 1;
-      if (lower == 4) {
+      if (lower === 4) {
         lower = 0;
       }
       console.log('tickheigth, width');
       console.log([newitem.tickHeight, newitem.tickWidth]);
       this.annotations1.push(newitem);
-      let newAnno = JSON.parse(JSON.stringify(newitem));
+      const newAnno = JSON.parse(JSON.stringify(newitem));
       newAnno.attachAtBottom = false;
       newAnno.tickColor = 'rgb(255, 0, 0)';
       this.annotations2.push(newAnno);

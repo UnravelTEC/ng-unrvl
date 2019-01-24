@@ -3,6 +3,7 @@ import {
   EventEmitter,
   Input,
   OnInit,
+  OnChanges,
   Output,
   SimpleChanges
 } from '@angular/core';
@@ -17,7 +18,7 @@ import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
   templateUrl: './annotations-editor.component.html',
   styleUrls: ['./annotations-editor.component.css']
 })
-export class AnnotationsEditorComponent implements OnInit {
+export class AnnotationsEditorComponent implements OnInit, OnChanges {
   currentAnnotation: Experiment = {
     nr: undefined,
     series: 'test',
@@ -142,7 +143,7 @@ export class AnnotationsEditorComponent implements OnInit {
 
     const index = this.currentAnnotation['shortText'];
     this.annotationList2.forEach(element => {
-      if (element['shortText'] == index) {
+      if (element['shortText'] === index) {
         element[key] += secondsToAdjust * 1000;
       }
     });
@@ -156,8 +157,8 @@ export class AnnotationsEditorComponent implements OnInit {
   setDateInField(elementId: string, field: string) {
     // id = shortText
     for (let i = 0; i < this.annotationList.length; i++) {
-      let elem = this.annotationList[i];
-      if (elem['shortText'] == elementId) {
+      const elem = this.annotationList[i];
+      if (elem['shortText'] === elementId) {
         elem[field] = new Date().valueOf();
         this.annotationList2[i][field] = elem[field];
         break;
@@ -245,17 +246,17 @@ export class AnnotationsEditorComponent implements OnInit {
     });
   }
 
-  stop(Experiment?: Object) {
+  stop(ExperimentToStop?: Object) {
     this.allowSelection = true;
 
     this.intervalSubscriptionClap1s.unsubscribe();
-    if (!Experiment) {
-      Experiment = this.currentAnnotation;
+    if (!ExperimentToStop) {
+      ExperimentToStop = this.currentAnnotation;
     }
-    if (!Experiment['clapStop']) {
+    if (!ExperimentToStop['clapStop']) {
       const stopdate = new Date().valueOf();
 
-      this.setDateInField(Experiment['shortText'], 'clapStop');
+      this.setDateInField(ExperimentToStop['shortText'], 'clapStop');
     }
 
     this.experimentRunning = false;
@@ -269,7 +270,7 @@ export class AnnotationsEditorComponent implements OnInit {
 
   delete() {
     for (let i = 0; i < this.annotationList.length; i++) {
-      if (this.annotationList[i]['x'] == this.currentAnnotation['x']) {
+      if (this.annotationList[i]['x'] === this.currentAnnotation['x']) {
         this.annotationList.splice(i, 1);
         this.annotationList2.splice(i, 1);
       }
@@ -282,19 +283,19 @@ export class AnnotationsEditorComponent implements OnInit {
 
   // element-for-element copy, to preserve data binding
   loadFromLocalStorage() {
-    let localAnnotations = this.localStorage.get('annotations.' + 'miclvl');
+    const localAnnotations = this.localStorage.get('annotations.' + 'miclvl');
     if (!localAnnotations) {
       console.log('not loading from localStorage, empty.');
       return;
     }
 
     // first, delete every annotation not in LocalStorage
-    let toDelete = [];
+    const toDelete = [];
     for (let i = 0; i < this.annotationList.length; i++) {
-      let elem = this.annotationList[i];
+      const elem = this.annotationList[i];
       let found = false;
       localAnnotations.forEach(annotation => {
-        if (elem['shortText'] == annotation['shortText']) {
+        if (elem['shortText'] === annotation['shortText']) {
           found = true;
         }
       });
@@ -310,8 +311,8 @@ export class AnnotationsEditorComponent implements OnInit {
 
     localAnnotations.forEach(annotation => {
       for (let i = 0; i < this.annotationList.length; i++) {
-        let elem = this.annotationList[i];
-        if (elem['shortText'] == annotation['shortText']) {
+        const elem = this.annotationList[i];
+        if (elem['shortText'] === annotation['shortText']) {
           for (const key in annotation) {
             if (annotation.hasOwnProperty(key)) {
               elem[key] = annotation[key];
