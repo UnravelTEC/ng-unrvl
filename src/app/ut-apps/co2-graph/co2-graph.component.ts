@@ -41,7 +41,7 @@ export class Co2GraphComponent implements OnInit {
 
     this.globalSettings.emitChange({ appName: this.title });
   }
-  OnDestroy() {
+  ngOnDestroy() {
     console.log("CO2-App destroyed")
   }
 

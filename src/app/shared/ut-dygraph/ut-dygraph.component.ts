@@ -177,7 +177,7 @@ export class UtDygraphComponent implements OnInit {
       );
   }
 
-  OnDestroy() {
+  ngOnDestroy() {
     this.intervalSubscription.unsubscribe();
     this.Dygraph.destroy();
     console.log("DyGraph destroyed")
