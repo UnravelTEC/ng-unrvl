@@ -13,6 +13,7 @@ import { interval, Subscription } from 'rxjs';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
+import { ValueSansProvider } from '@angular/core/src/di/provider';
 
 @Component({
   selector: 'app-ut-dygraph',
@@ -81,6 +82,7 @@ export class UtDygraphComponent implements OnInit {
     labels: ['Date'], // one element needed for further code.
     title: '',
     animatedZooms: true,
+    connectSeparatedPoints: false,
     pointSize: 4,
     hideOverlayOnMouseOut: true,
     legend: <any>'always' // also 'never' possible
@@ -147,7 +149,7 @@ export class UtDygraphComponent implements OnInit {
     const dataEndTime =
       this.endTime === 'now' ? new Date() : new Date(this.endTime);
 
-    let seconds = this.parseToSeconds(this.startTime);
+    let seconds = this.h.parseToSeconds(this.startTime);
 
     let dataBeginTime;
     if (seconds) {
@@ -187,35 +189,6 @@ export class UtDygraphComponent implements OnInit {
         this.dyGraphOptions[key] = this.extraDyGraphConfig[key];
       }
     }
-  }
-
-  parseToSeconds(inputString: string): number {
-    let seconds = 0;
-    if (
-      inputString.endsWith('s') &&
-      parseInt(inputString.slice(0, -1), 10) > 0
-    ) {
-      seconds = parseInt(inputString.slice(0, -1), 10);
-    }
-    if (
-      inputString.endsWith('m') &&
-      parseInt(inputString.slice(0, -1), 10) > 0
-    ) {
-      seconds = parseInt(inputString.slice(0, -1), 10) * 60;
-    }
-    if (
-      inputString.endsWith('h') &&
-      parseInt(inputString.slice(0, -1), 10) > 0
-    ) {
-      seconds = parseInt(inputString.slice(0, -1), 10) * 60 * 60;
-    }
-    if (
-      inputString.endsWith('d') &&
-      parseInt(inputString.slice(0, -1), 10) > 0
-    ) {
-      seconds = parseInt(inputString.slice(0, -1), 10) * 60 * 60 * 24;
-    }
-    return seconds;
   }
 
   handlePrometheusErrors(error) {
@@ -275,12 +248,28 @@ export class UtDygraphComponent implements OnInit {
     const values = receivedData['data']['result'][0]['values'];
 
     this.displayedData = [];
-    values.forEach(element => {
+    let gap = 0;
+    for (let i = 0; i < values.length; i++) {
+      const element = values[i];
+
+      // insert NaN gap for Dygraphs to not connect lines if point missing
+      if (values.length > 1) {
+        if (i == 0) {
+          gap = values[1][0] - values[0][0];
+        }
+        else if (element[0] - values[i-1][0] > gap ) {
+          this.displayedData.push([
+            new Date((element[0] + gap) * 1000),
+            NaN
+          ])
+        }
+      }
+
       this.displayedData.push([
         new Date(element[0] * 1000),
         Number(element[1]) * this.multiplicateFactors[0]
       ]);
-    });
+    }
 
     if (metric['location']) {
       this.dyGraphOptions['labels'][1] = metric['location'];
@@ -295,6 +284,8 @@ export class UtDygraphComponent implements OnInit {
 
     this.historicalData = this.displayedData;
     this.average = this.calculateAverage();
+
+    this.updateDateWindow();
 
     this.waiting = false;
     this.Dygraph = new Dygraph(
@@ -396,6 +387,8 @@ export class UtDygraphComponent implements OnInit {
     let lastDate: number; // mseconds since 1970
     let currentDate: number; // mseconds since 1970
     const newData = [];
+
+    // TODO: check for gaps and insert NaN (see initial handling)
     values.forEach(element => {
       currentDate = element[0] * 1000;
 
@@ -439,32 +432,7 @@ export class UtDygraphComponent implements OnInit {
       this.Dygraph.adjustRoll(this.runningAvgSeconds);
     }
 
-    if (this.overrideDateWindow.length) {
-      if (this.dyGraphOptions['dateWindowEnd']) {
-        const extension =
-          this.parseToSeconds(this.dyGraphOptions['dateWindowEnd']) * 1000;
-        const now = new Date();
-        const extendedEnd = new Date(now.valueOf() + extension);
-        if (
-          this.dyGraphOptions['dateWindow'][1].valueOf() < extendedEnd.valueOf()
-        ) {
-          this.dyGraphOptions['dateWindow'][1] = extendedEnd;
-        }
-      }
-    } else {
-      const dataEndTime =
-        this.endTime === 'now' ? new Date() : new Date(this.endTime);
-
-      let seconds = this.parseToSeconds(this.startTime);
-      let dataBeginTime;
-      if (seconds) {
-        dataBeginTime = new Date(dataEndTime.valueOf() - seconds * 1000);
-        console.log('length of interval displayed (s): ' + seconds.toString());
-      } else {
-        dataBeginTime = new Date(this.startTime);
-      }
-      this.dyGraphOptions['dateWindow'] = [dataBeginTime, dataEndTime];
-    }
+    this.updateDateWindow();
     this.Dygraph.updateOptions({
       dateWindow: this.dyGraphOptions['dateWindow']
     });
@@ -496,6 +464,35 @@ export class UtDygraphComponent implements OnInit {
         this.historicalData
       );
       this.returnRunningAvg.emit(avg);
+    }
+  }
+
+  updateDateWindow() {
+    if (this.overrideDateWindow.length) {
+      if (this.dyGraphOptions['dateWindowEnd']) {
+        const extension =
+          this.h.parseToSeconds(this.dyGraphOptions['dateWindowEnd']) * 1000;
+        const now = new Date();
+        const extendedEnd = new Date(now.valueOf() + extension);
+        if (
+          this.dyGraphOptions['dateWindow'][1].valueOf() < extendedEnd.valueOf()
+        ) {
+          this.dyGraphOptions['dateWindow'][1] = extendedEnd;
+        }
+      }
+    } else {
+      const dataEndTime =
+        this.endTime === 'now' ? new Date() : new Date(this.endTime);
+
+      let seconds = this.h.parseToSeconds(this.startTime);
+      let dataBeginTime;
+      if (seconds) {
+        dataBeginTime = new Date(dataEndTime.valueOf() - seconds * 1000);
+        console.log('length of interval displayed (s): ' + seconds.toString());
+      } else {
+        dataBeginTime = new Date(this.startTime);
+      }
+      this.dyGraphOptions['dateWindow'] = [dataBeginTime, dataEndTime];
     }
   }
 

@@ -34,4 +34,39 @@ export class HelperFunctionsService {
     }
     return obj;
   }
+
+  parseToSeconds(inputString: string): number {
+    let seconds = 0;
+    if (
+      inputString.endsWith('s') &&
+      parseInt(inputString.slice(0, -1), 10) > 0
+    ) {
+      seconds = parseInt(inputString.slice(0, -1), 10);
+    }
+    if (
+      inputString.endsWith('m') &&
+      parseInt(inputString.slice(0, -1), 10) > 0
+    ) {
+      seconds = parseInt(inputString.slice(0, -1), 10) * 60;
+    }
+    if (
+      inputString.endsWith('h') &&
+      parseInt(inputString.slice(0, -1), 10) > 0
+    ) {
+      seconds = parseInt(inputString.slice(0, -1), 10) * 60 * 60;
+    }
+    if (
+      inputString.endsWith('d') &&
+      parseInt(inputString.slice(0, -1), 10) > 0
+    ) {
+      seconds = parseInt(inputString.slice(0, -1), 10) * 60 * 60 * 24;
+    }
+    if (
+      inputString.endsWith('y') &&
+      parseInt(inputString.slice(0, -1), 10) > 0
+    ) {
+      seconds = parseInt(inputString.slice(0, -1), 10) * 60 * 60 * 24 * 365;
+    }
+    return seconds;
+  }
 }

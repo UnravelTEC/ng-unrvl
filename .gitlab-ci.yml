@@ -32,3 +32,12 @@ deploy:
     - master
   script:
     - rsync -ravx --delete dist/Web/ /var/www/angular/
+
+deploy-galileo:
+  stage: deploy
+  tags:
+    - Newton
+  only:
+    - develop
+  script:
+    - rsync -ravx --delete dist/Web/ Galileo:/var/www/angular/
