@@ -15,11 +15,12 @@ import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 import { ValueSansProvider } from '@angular/core/src/di/provider';
+import { shiftInitState } from '@angular/core/src/view';
 
 @Component({
   selector: 'app-ut-dygraph',
   templateUrl: './ut-dygraph.component.html',
-  styleUrls: ['./ut-dygraph.component.css'],
+  styleUrls: ['./ut-dygraph.component.scss'],
   encapsulation: ViewEncapsulation.None // from https://coryrylan.com/blog/css-encapsulation-with-angular-components
 })
 export class UtDygraphComponent implements OnInit, OnDestroy {
@@ -99,6 +100,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public noData = false;
   public waiting = true;
   public error: string = undefined;
+
+  public running = false;
+  public optionsOpen = false;
+
   public htmlID: string;
   private requestsUnderway = 0; // don't flood the server if it is not fast enough
   private queryEndPoint: string;
@@ -179,7 +184,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.intervalSubscription.unsubscribe();
+    this.stopUpdate();
     this.Dygraph.destroy();
     console.log('DyGraph destroyed');
   }
@@ -221,7 +226,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
           ) > -1
         ) {
           this.error += 'too many points';
-          this.intervalSubscription.unsubscribe();
+          this.stopUpdate();
           return;
         }
       }
@@ -316,12 +321,23 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     console.log(this.displayedData);
 
     if (this.fetchFromServerIntervalMS > 0) {
-      this.intervalSubscription = interval(
-        this.fetchFromServerIntervalMS
-      ).subscribe(counter => {
-        this.fetchNewData();
-      });
+      this.startUpdate();
     }
+  }
+
+  startUpdate() {
+    this.intervalSubscription = interval(
+      this.fetchFromServerIntervalMS
+    ).subscribe(counter => {
+      this.fetchNewData();
+    });
+    this.running = true;
+  }
+  stopUpdate() {
+    if (this.intervalSubscription) {
+      this.intervalSubscription.unsubscribe();
+    }
+    this.running = false;
   }
 
   calculateAverage(from?: Date, targetArray = this.displayedData) {
@@ -364,7 +380,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     if (!this.Dygraph) {
       console.error('Dygraph not there, unsubscribing');
-      this.intervalSubscription.unsubscribe();
+      this.stopUpdate();
       return;
     }
 
@@ -609,5 +625,18 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
 
     return [lowerIndex, upperIndex];
+  }
+
+  toggleOptions() {
+    this.optionsOpen = !this.optionsOpen;
+  }
+  toggleFetching() {
+    if (this.running) {
+      this.stopUpdate();
+      this.running = false;
+    } else {
+      this.startUpdate();
+      this.running = true;
+    }
   }
 }

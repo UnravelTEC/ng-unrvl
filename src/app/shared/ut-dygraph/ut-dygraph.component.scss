@@ -1,0 +1,57 @@
+.mydygraph-component {
+    border: 0px solid black;
+
+  ul {
+    text-align: left;
+  }
+
+   .debug {
+    background: rgb(198, 198, 255);
+    z-index: 200;
+    transform: translateY(8em);
+  }
+
+   .info {
+    margin: 1em;
+    border: 1px solid blue;
+    padding: 1em;
+  }
+
+   .nodata {
+    border-color: orange;
+  }
+   .waiting {
+    border-color: yellow;
+  }
+   .error {
+    border-color: red;
+  }
+
+  .dygraph-legend {
+    /* background: rgba(123, 123, 252, 0.993); */
+    min-width: 100%;
+    padding: 5px;
+    text-align: right;
+    background: transparent;
+    text-shadow: 1px 1px white, -1px 1px white, 1px -1px white, -1px -1px white,
+      2px 2px white, -2px 2px white, 2px -2px white, -2px -2px white;
+  }
+
+  button.toggleOptions {
+    height: 4rem;
+    width: 4rem;
+    border-radius: 1rem;
+    font-size: 3rem;
+    background: red;
+    transform: translateY(3rem);
+    cursor: pointer;
+    border: 0;
+  }
+  div.options {
+    transform: translateY(3rem) translateX(-5rem);
+    background: green;
+    height: 3rem;
+    border-radius: 1rem;
+    padding:0.5rem;
+  }
+}

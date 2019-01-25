@@ -12,6 +12,7 @@
     [style.right]="style.right"
     style.padding-bottom="20vh"
   ></div>
+
   <div
     *ngIf="noData == true"
     class="info nodata"
@@ -25,6 +26,7 @@
   >
     No data to display.
   </div>
+
   <div
     *ngIf="waiting == true"
     class="info waiting"
@@ -38,6 +40,7 @@
   >
     Waiting for data...
   </div>
+
   <div
     *ngIf="error != undefined"
     class="info error"
@@ -51,6 +54,29 @@
   >
     {{ error }}
   </div>
+
+  <button
+    (click)="toggleOptions()"
+    class="toggleOptions"
+    [style.position]="style.position"
+    [style.bottom]="style.bottom"
+    [style.right]="style.right"
+  >
+    &#9881;
+  </button>
+
+  <div
+    *ngIf="optionsOpen == true"
+    class="options"
+    [style.position]="style.position"
+    [style.bottom]="style.bottom"
+    [style.right]="style.right"
+  >
+    <button (click)="toggleFetching()">
+      {{ running ? 'Stop' : 'Start' }}
+    </button>
+  </div>
+
   <!-- "debug == 'true' ? style.bottom - 6em : style.bottom -->
   <!-- <button (click)="fetchNewData()">Update!</button> -->
   <ul
