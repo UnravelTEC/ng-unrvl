@@ -75,6 +75,8 @@
     <button (click)="toggleFetching()">
       {{ running ? 'Stop' : 'Start' }}
     </button>
+    <span>{{ fromZoom | date: 'yyyy-MM-dd HH:mm:ss' }}</span> -
+    <span>{{ toZoom | date: 'yyyy-MM-dd HH:mm:ss' }}</span>
   </div>
 
   <!-- "debug == 'true' ? style.bottom - 6em : style.bottom -->

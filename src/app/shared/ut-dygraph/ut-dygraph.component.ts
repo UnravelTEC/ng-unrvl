@@ -81,6 +81,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
   dyGraphOptions = {
     // http://dygraphs.com/options.html
+    drawCallback: this.afterDrawCallback, // this.afterZoomCallBack,
+
     labels: ['Date'], // one element needed for further code.
     title: '',
     animatedZooms: true,
@@ -89,6 +91,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     hideOverlayOnMouseOut: true,
     legend: <any>'always' // also 'never' possible
   };
+
+  fromZoom: Date;
+  toZoom: Date;
+
   displayedData = [];
   historicalData = [];
   dataBeginTime: Date;
@@ -325,7 +331,31 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
   }
 
+  afterZoomCallBack(
+    minDate: Date,
+    maxDate: Date,
+    yRanges?: Array<Array<number>>
+  ) {
+    console.log('after dygraph zoom');
+    console.log([minDate, maxDate, yRanges]);
+    this.fromZoom = new Date(minDate);
+    this.toZoom = new Date(maxDate);
+  }
+  afterDrawCallback(g: Dygraph, isOInitial: boolean) {
+    console.log('after dygraph draw');
+    const xrange = g.xAxisRange();
+    console.log(xrange);
+    const fromZoom = new Date(xrange[0]);
+    const toZoom = new Date(xrange[1]);
+    this.updateFromTo(fromZoom, toZoom); // doesn't work, we're no longer in class context, but in Dygraph
+  }
+  updateFromTo(from: Date, to: Date) {
+    this.fromZoom = from;
+    this.toZoom = to;
+  }
+
   startUpdate() {
+    if (1 == 1) return;
     this.intervalSubscription = interval(
       this.fetchFromServerIntervalMS
     ).subscribe(counter => {
@@ -508,6 +538,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         dataBeginTime = new Date(this.startTime);
       }
       this.dyGraphOptions['dateWindow'] = [dataBeginTime, dataEndTime];
+      this.fromZoom = dataBeginTime;
+      this.toZoom = dataEndTime;
     }
   }
 
