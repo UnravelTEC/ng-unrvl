@@ -108,7 +108,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public error: string = undefined;
 
   public running = false;
-  public optionsOpen = false;
+  public optionsOpen = true;
 
   public htmlID: string;
   private requestsUnderway = 0; // don't flood the server if it is not fast enough
@@ -303,6 +303,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.displayedData,
       this.dyGraphOptions
     );
+    this.Dygraph['parent'] = this;
     if (this.runningAvgSeconds) {
       this.Dygraph.adjustRoll(this.runningAvgSeconds);
     }
@@ -345,13 +346,27 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     console.log('after dygraph draw');
     const xrange = g.xAxisRange();
     console.log(xrange);
-    const fromZoom = new Date(xrange[0]);
-    const toZoom = new Date(xrange[1]);
-    this.updateFromTo(fromZoom, toZoom); // doesn't work, we're no longer in class context, but in Dygraph
-  }
-  updateFromTo(from: Date, to: Date) {
-    this.fromZoom = from;
-    this.toZoom = to;
+    const from = xrange[0];
+    const to = xrange[1];
+    if(!from  || !to ) {
+      console.error('after Draw error: from/to NaN');
+      // g.resetZoom();
+      return;
+    }
+
+    if (g.hasOwnProperty('parent')) {
+      const parent = g['parent'];
+      if (
+        parent &&
+        parent.hasOwnProperty('fromZoom') &&
+        parent.hasOwnProperty('toZoom')
+      ) {
+        parent.fromZoom = new Date(from);
+        parent.toZoom = new Date(to);
+      }
+    } else {
+      console.log('no parent');
+    }
   }
 
   startUpdate() {
