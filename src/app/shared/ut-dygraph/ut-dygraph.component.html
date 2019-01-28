@@ -73,10 +73,15 @@
     [style.right]="style.right"
   >
     <button (click)="toggleFetching()">
-      {{ running ? 'Stop' : 'Start' }}
+      {{ running ? 'Stop Fetch' : 'Start Fetch' }}
     </button>
+    <button (click)="toggleAutoPan()">
+      {{ updateOnNewData ? 'No Autopan' : 'Autopan' }}
+    </button>
+
     <span>{{ fromZoom | date: 'yyyy-MM-dd HH:mm:ss' }}</span> -
     <span>{{ toZoom | date: 'yyyy-MM-dd HH:mm:ss' }}</span>
+
   </div>
 
   <!-- "debug == 'true' ? style.bottom - 6em : style.bottom -->

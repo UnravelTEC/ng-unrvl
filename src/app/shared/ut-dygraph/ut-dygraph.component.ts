@@ -109,6 +109,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
   public running = false;
   public optionsOpen = true;
+  public updateOnNewData = true;
 
   public htmlID: string;
   private requestsUnderway = 0; // don't flood the server if it is not fast enough
@@ -357,11 +358,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         g['modified'] = 1;
       } else {
         g['modified'] = g['modified'] + 1;
-        if(g['modified'] < 10) {
-          g.updateOptions({'dateWindow': dw});
+        if (g['modified'] < 10) {
+          g.updateOptions({ dateWindow: dw });
         }
       }
-
 
       return;
     }
@@ -395,6 +395,13 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.intervalSubscription.unsubscribe();
     }
     this.running = false;
+  }
+
+  startUpdateOnNewData() {
+    this.updateOnNewData = true;
+  }
+  stopUpdateOnNewData() {
+    this.updateOnNewData = false;
   }
 
   calculateAverage(from?: Date, targetArray = this.displayedData) {
@@ -499,15 +506,20 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     // );
 
     // console.log('new length: ' + this.displayedData.length + ' elements');
-    this.Dygraph.updateOptions({ file: this.displayedData });
+
     if (this.runningAvgSeconds) {
       this.Dygraph.adjustRoll(this.runningAvgSeconds);
     }
 
-    this.updateDateWindow();
-    this.Dygraph.updateOptions({
-      dateWindow: this.dyGraphOptions['dateWindow']
-    });
+    if (this.updateOnNewData) {
+      this.updateDateWindow();
+      this.Dygraph.updateOptions(
+        {
+          dateWindow: this.dyGraphOptions['dateWindow']
+        },
+        true
+      );
+    }
 
     // console.log(      'historical length: ' + this.historicalData.length + ' elements'    );
     // console.log(this.annotations)
@@ -525,7 +537,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       const to = new Date();
       const inViewAnnos = this.filterinViewAnnos(usedAnnotations, from, to);
       this.adjustAnnotationsXtoMS(inViewAnnos);
-      this.Dygraph.setAnnotations(inViewAnnos);
+      this.Dygraph.setAnnotations(inViewAnnos, true);
     }
     if (this.debug === 'true') {
       this.average = this.calculateAverage();
@@ -537,6 +549,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       );
       this.returnRunningAvg.emit(avg);
     }
+
+    this.Dygraph.updateOptions({ file: this.displayedData }, false); // redraw only once at the end
   }
 
   updateDateWindow() {
@@ -696,6 +710,15 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     } else {
       this.startUpdate();
       this.running = true;
+    }
+  }
+  toggleAutoPan() {
+    if (this.updateOnNewData) {
+      this.stopUpdateOnNewData();
+      this.updateOnNewData = false;
+    } else {
+      this.startUpdateOnNewData();
+      this.updateOnNewData = true;
     }
   }
 }
