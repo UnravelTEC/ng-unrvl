@@ -348,9 +348,21 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     console.log(xrange);
     const from = xrange[0];
     const to = xrange[1];
-    if(!from  || !to ) {
+    if (!from || !to) {
       console.error('after Draw error: from/to NaN');
-      // g.resetZoom();
+      // g.resetZoom(); //DONT do, infinite loop!
+      const dw = g.getOption('dateWindow');
+      console.log(dw);
+      if (!g.hasOwnProperty('modified')) {
+        g['modified'] = 1;
+      } else {
+        g['modified'] = g['modified'] + 1;
+        if(g['modified'] < 10) {
+          g.updateOptions({'dateWindow': dw});
+        }
+      }
+
+
       return;
     }
 
@@ -370,7 +382,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   startUpdate() {
-    if (1 == 1) return;
+    // if (1 == 1) return;
     this.intervalSubscription = interval(
       this.fetchFromServerIntervalMS
     ).subscribe(counter => {
