@@ -61,6 +61,9 @@
         border: 1px solid black;
         display: inline-block;
         padding: 0.2em;
+        * {
+            margin:0 0.25ch;
+        }
         h5 {
           margin: 0;
           padding: 0;
@@ -78,9 +81,7 @@
             padding:0.5em;
             cursor: pointer;
         }
-        .unit {
-            margin:0.5ch;
-        }
+
         .time {
             h5 {
                 display: inline-block;
