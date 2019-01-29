@@ -248,21 +248,26 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     console.log('received Data:');
     console.log(receivedData);
 
-    const metric = this.h.getDeep(receivedData, [
-      'data',
-      'result',
-      0,
-      'metric'
-    ]);
-    const values = this.h.getDeep(receivedData, [
-      'data',
-      'result',
-      0,
-      'values'
-    ]);
-    if (!values || !metric) {
-      console.log('Error: no valid data received.');
-      console.log(receivedData);
+    const result = this.h.getDeep(receivedData, ['data', 'result']);
+    if (!result) {
+      console.error('Error: no valid data received.');
+      this.noData = true;
+      this.waiting = false;
+      return;
+    }
+
+    const nrResults = result.length;
+    console.log('handleInitialData: ' + nrResults + ' data series received.');
+    if (!nrResults) {
+      this.noData = true;
+      this.waiting = false;
+      return;
+    }
+
+    const metric0 = this.h.getDeep(result, [0, 'metric']);
+    const values0 = this.h.getDeep(result, [0, 'values']);
+    if (!values0 || !metric0) {
+      console.error('Error: no valid data received.');
       this.noData = true;
       this.waiting = false;
       return;
@@ -270,33 +275,57 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     this.displayedData = [];
     let gap = 0;
-    for (let i = 0; i < values.length; i++) {
-      const element = values[i];
+    for (let i = 0; i < values0.length; i++) {
+      // calculate usual gap - bet there is no gap between the first two
+      // if (i === 0 && values0.length > 1) {
+      //   gap = values0[1][0] - values0[0][0];
+      // }
 
-      // insert NaN gap for Dygraphs to not connect lines if point missing
-      if (values.length > 1) {
-        if (i === 0) {
-          gap = values[1][0] - values[0][0];
-        } else if (element[0] - values[i - 1][0] > gap) {
-          this.displayedData.push([new Date((element[0] + gap) * 1000), NaN]);
-        }
+      let dygraphsElement = [];
+      dygraphsElement.push(new Date(values0[i][0] * 1000));
+
+      for (let seriesNr = 0; seriesNr < nrResults; seriesNr++) {
+        const prometheusElementN = this.h.getDeep(result, [
+          seriesNr,
+          'values',
+          i,
+          1
+        ]);
+        dygraphsElement.push(
+          Number(prometheusElementN) * this.multiplicateFactors[0]
+        );
       }
 
-      this.displayedData.push([
-        new Date(element[0] * 1000),
-        Number(element[1]) * this.multiplicateFactors[0]
-      ]);
+      // insert NaN gap for Dygraphs to not connect lines if point missing
+      // if (values0.length > 1) {
+      //   if (i === 0) {
+
+      //   } else if (element[0] - values[i - 1][0] > gap) {
+      //     this.displayedData.push([new Date((element[0] + gap) * 1000), NaN]);
+      //   }
+      // }
+
+      this.displayedData.push(dygraphsElement);
     }
 
-    if (metric['location']) {
-      this.dyGraphOptions['labels'][1] = metric['location'];
-    }
+    for (let seriesNr = 0; seriesNr < nrResults; seriesNr++) {
+      const labelsN = this.h.getDeep(result, [seriesNr, 'metric']);
+      let labelString = '';
+      let firstDone = false;
+      for (var key in labelsN) {
+        if(key === '__name__') {
+          continue;
+        }
+        const value = labelsN[key];
+        if(firstDone) {
+          labelString += ', ';
+        } else {
+          firstDone = true;
+        }
+        labelString += key + ': ' + value;
 
-    if (metric['sensor']) {
-      this.dyGraphOptions['labels'][1] += ' ' + metric['sensor'];
-    }
-    if (!this.dyGraphOptions['labels'][1]) {
-      this.dyGraphOptions['labels'][1] = 'undefined';
+      }
+      this.dyGraphOptions['labels'][seriesNr + 1] = labelString ? labelString : 'undefined';
     }
 
     this.historicalData = this.displayedData;
@@ -333,7 +362,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     console.log(this.dyGraphOptions);
     console.log(this.displayedData);
-
+    if (1 === 1) return;
     if (this.fetchFromServerIntervalMS > 0) {
       this.startUpdate();
     }
