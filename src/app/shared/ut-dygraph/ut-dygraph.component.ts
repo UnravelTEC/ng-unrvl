@@ -81,7 +81,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
   dyGraphOptions = {
     // http://dygraphs.com/options.html
-    drawCallback: this.afterDrawCallback, // this.afterZoomCallBack,
+    drawCallback: this.afterDrawCallback,
+    zoomCallback: this.afterZoomCallback,
+    panEdgeFraction: 0.1,
 
     labels: ['Date'], // one element needed for further code.
     title: '',
@@ -246,21 +248,25 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     console.log('received Data:');
     console.log(receivedData);
 
-    if (
-      !receivedData['data'] ||
-      !receivedData['data']['result'] ||
-      !receivedData['data']['result'][0] ||
-      !receivedData['data']['result'][0]['metric'] ||
-      !receivedData['data']['result'][0]['values']
-    ) {
+    const metric = this.h.getDeep(receivedData, [
+      'data',
+      'result',
+      0,
+      'metric'
+    ]);
+    const values = this.h.getDeep(receivedData, [
+      'data',
+      'result',
+      0,
+      'values'
+    ]);
+    if (!values || !metric) {
       console.log('Error: no valid data received.');
       console.log(receivedData);
       this.noData = true;
       this.waiting = false;
       return;
     }
-    const metric = receivedData['data']['result'][0]['metric'];
-    const values = receivedData['data']['result'][0]['values'];
 
     this.displayedData = [];
     let gap = 0;
@@ -333,26 +339,42 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
   }
 
-  afterZoomCallBack(
+  afterZoomCallback(
     minDate: Date,
     maxDate: Date,
     yRanges?: Array<Array<number>>
   ) {
-    console.log('after dygraph zoom');
-    console.log([minDate, maxDate, yRanges]);
-    this.fromZoom = new Date(minDate);
-    this.toZoom = new Date(maxDate);
+    console.log('after dygraph zoom callback');
+    console.log([typeof(minDate),minDate, maxDate, yRanges]);
+
+    if (this.hasOwnProperty('parent')) {
+      const parent = this['parent'];
+      // parent.fromZoom = new Date(minDate);
+      // parent.toZoom = new Date(maxDate);
+    } else {
+      console.log('afterZoom: No parent');
+    }
   }
   afterDrawCallback(g: Dygraph, isOInitial: boolean) {
-    console.log('after dygraph draw');
+    console.log('after dygraph draw callback');
+
+    if (!g.hasOwnProperty('parent')) {
+      console.error('afterDrawCallback: no parent');
+      return;
+    }
+
     const xrange = g.xAxisRange();
-    console.log(xrange);
+    const dw = g.getOption('dateWindow');
     const from = xrange[0];
     const to = xrange[1];
+    console.log(['xr:',from, to, 'dw:', dw[0], dw[1]]);
     if (!from || !to) {
       console.error('after Draw error: from/to NaN');
       // g.resetZoom(); //DONT do, infinite loop!
-      const dw = g.getOption('dateWindow');
+
+      if (dw[0] === dw[1]) {
+        console.error('dateWindow the same');
+      }
       console.log(dw);
       if (!g.hasOwnProperty('modified')) {
         g['modified'] = 1;
@@ -360,24 +382,21 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         g['modified'] = g['modified'] + 1;
         if (g['modified'] < 10) {
           g.updateOptions({ dateWindow: dw });
+          console.log('reset dateWindow');
         }
       }
 
       return;
     }
 
-    if (g.hasOwnProperty('parent')) {
-      const parent = g['parent'];
-      if (
-        parent &&
-        parent.hasOwnProperty('fromZoom') &&
-        parent.hasOwnProperty('toZoom')
-      ) {
-        parent.fromZoom = new Date(from);
-        parent.toZoom = new Date(to);
-      }
-    } else {
-      console.log('no parent');
+    const parent = g['parent'];
+    if (
+      parent &&
+      parent.hasOwnProperty('fromZoom') &&
+      parent.hasOwnProperty('toZoom')
+    ) {
+      parent.fromZoom = new Date(from);
+      parent.toZoom = new Date(to);
     }
   }
 

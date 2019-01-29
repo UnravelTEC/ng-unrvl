@@ -1,29 +1,29 @@
 .mydygraph-component {
-    border: 0px solid black;
+  border: 0px solid black;
 
   ul {
     text-align: left;
   }
 
-   .debug {
+  .debug {
     background: rgb(198, 198, 255);
     z-index: 200;
     transform: translateY(8em);
   }
 
-   .info {
+  .info {
     margin: 1em;
     border: 1px solid blue;
     padding: 1em;
   }
 
-   .nodata {
+  .nodata {
     border-color: orange;
   }
-   .waiting {
+  .waiting {
     border-color: yellow;
   }
-   .error {
+  .error {
     border-color: red;
   }
 
@@ -37,21 +37,60 @@
       2px 2px white, -2px 2px white, 2px -2px white, -2px -2px white;
   }
 
-  button.toggleOptions {
-    height: 4rem;
-    width: 4rem;
-    border-radius: 1rem;
-    font-size: 3rem;
-    background: red;
-    transform: translateY(3rem);
-    cursor: pointer;
-    border: 0;
-  }
-  div.options {
-    transform: translateY(3rem) translateX(-5rem);
-    background: green;
-    height: 3rem;
-    border-radius: 1rem;
-    padding:0.5rem;
+  div.optionsarea {
+    transform: translateY(-3rem);
+    button.toggleOptions {
+      height: 4rem;
+      width: 4rem;
+      border-radius: 0.5rem;
+      font-size: 3rem;
+      background: transparent;
+      cursor: pointer;
+      border: 1px solid gray;
+      display: block;
+      margin-left: auto;
+      margin-right: 0;
+    }
+    button.toggleOptions:hover {
+      background-color: aqua;
+    }
+    div.options {
+      margin-top: 0.3rem;
+      background: green;
+      .subbox {
+        border: 1px solid black;
+        display: inline-block;
+        padding: 0.2em;
+        h5 {
+          margin: 0;
+          padding: 0;
+          font-weight: bold;
+          font-size: 0.7em;
+        }
+        input[type='text'] {
+          padding: 0.1em;
+          border-radius: 0.5em;
+        }
+        button {
+            border:0;
+            border-radius: 0.5em;
+            background:#5cb85c;
+            padding:0.5em;
+            cursor: pointer;
+        }
+        .unit {
+            margin:0.5ch;
+        }
+        .time {
+            h5 {
+                display: inline-block;
+                margin-right: 1em;
+            }
+            small {
+                font-size: 0.7em;
+            }
+        }
+      }
+    }
   }
 }
