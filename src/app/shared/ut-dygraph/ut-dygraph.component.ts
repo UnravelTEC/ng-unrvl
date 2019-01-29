@@ -110,8 +110,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public error: string = undefined;
 
   public running = false;
-  public optionsOpen = true;
+  public optionsOpen = false;
   public updateOnNewData = true;
+
+  public panAmount = 0.5  ;
 
   public htmlID: string;
   private requestsUnderway = 0; // don't flood the server if it is not fast enough
@@ -161,18 +163,12 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.htmlID = 'graph_' + (Math.random() + 1).toString();
 
     console.log(this.endTime);
-    const dataEndTime =
-      this.endTime === 'now' ? new Date() : new Date(this.endTime);
 
-    const seconds = this.h.parseToSeconds(this.startTime);
 
-    let dataBeginTime;
-    if (seconds) {
-      dataBeginTime = new Date(dataEndTime.valueOf() - seconds * 1000);
-      console.log('length of interval displayed (s): ' + seconds.toString());
-    } else {
-      dataBeginTime = new Date(this.startTime);
-    }
+    let dataEndTime:Date;
+    let dataBeginTime:Date;
+
+    [dataBeginTime, dataEndTime] = this.calculateTimeRange(this.startTime, this.endTime);
 
     console.log('dataEndTime ' + (dataEndTime.valueOf() / 1000).toString());
 
@@ -340,8 +336,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   afterZoomCallback(
-    minDate: Date,
-    maxDate: Date,
+    minDate: number,
+    maxDate: number,
     yRanges?: Array<Array<number>>
   ) {
     console.log('after dygraph zoom callback');
@@ -734,10 +730,59 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   toggleAutoPan() {
     if (this.updateOnNewData) {
       this.stopUpdateOnNewData();
-      this.updateOnNewData = false;
     } else {
       this.startUpdateOnNewData();
-      this.updateOnNewData = true;
     }
+  }
+  pan(direction: string) {
+    this.stopUpdateOnNewData();
+    const dw = this.Dygraph.getOption('dateWindow');
+    const currentTimeRangeSeconds = dw[1].valueOf() - dw[0].valueOf();
+    const panFor = currentTimeRangeSeconds * this.panAmount;
+    console.log([direction, this.panAmount, panFor]);
+    if(direction === 'forward') {
+      dw[0] = new Date(dw[0].valueOf() + panFor);
+      dw[1] = new Date(dw[1].valueOf() + panFor);
+    }
+    if(direction === 'back') {
+      dw[0] = new Date(dw[0].valueOf() - panFor);
+      dw[1] = new Date(dw[1].valueOf() - panFor);
+    }
+    this.Dygraph.updateOptions({'dateWindow': dw});
+  }
+  resetZoom() {
+    let newDateWindow = [];
+    if(this.overrideDateWindow && this.overrideDateWindow.length) {
+      this.Dygraph.updateOptions({'dateWindow': this.overrideDateWindow});
+      console.log('resetZoom: took dateWindow from override');
+      return;
+    }
+    let dataEndTime:Date;
+    let dataBeginTime:Date;
+    [dataBeginTime, dataEndTime] = this.calculateTimeRange(this.startTime, this.endTime);
+
+    this.Dygraph.updateOptions({'dateWindow': [dataBeginTime.valueOf(), dataEndTime.valueOf()]});
+    console.log(['resetZoom:',dataBeginTime,dataEndTime,this.startTime,this.endTime]);
+  }
+  fullZoom() {
+    this.Dygraph.resetZoom();
+  }
+
+  calculateTimeRange(startTime: string, endTime: string): [Date, Date] {
+    let startDate: Date;
+    let endDate: Date;
+
+    endDate = endTime === 'now' ? new Date() : new Date(endTime);
+
+    const seconds = this.h.parseToSeconds(startTime);
+
+    if (seconds) {
+      startDate = new Date(endDate.valueOf() - seconds * 1000);
+      // console.log('length of interval displayed (s): ' + seconds.toString());
+    } else {
+      startDate = new Date(startTime);
+    }
+
+    return [startDate, endDate];
   }
 }
