@@ -244,12 +244,128 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
   }
 
+  /*
+    Prometheus data format:
+    {
+      data: {
+        result: [
+          { // series 1
+            metric: {
+              __name__ : "metricname",
+              $keyN: $valueN,
+              ...
+            },
+            values : [
+              [
+                timestamp0, // number
+                value0 // String
+              ],
+              [
+                timestamp1,
+                value1
+              ],
+              ....
+            ]
+          },
+          { // series 2
+            metric: { },
+            values: [ [ timestamp, value ], [ t,v ], ... ] // timestamps correspond between series.
+          }
+        ]
+      }
+    }
+    Dygraphs data format:
+    this.displayedData = [
+      [ timestamp0, value01, value02, value03, ...],
+      [ timestamp1, value11, value12, value13, ...],
+      ...
+    ]
+    this.dyGraphOptions['labels'] = [
+      "Time",
+      "labelstring1",
+      "labelstring2",
+      ...
+    ]
+
+    handle any data:
+      1. check which columns are there in prometheus data -> concat to a "labelstring"
+      1. check which columns are there in this.dyGraphOptions.labels <- this is our index for labelstrings
+      -> if missing
+        , push to this.dyGraphOptions.labels
+        , add NaN to all previous columns of this.displayedData
+
+        there can be holes in any dataset received...
+
+        if receiving several datasets:
+          start with "oldest" (has oldest first entry)
+              if timestamp < newest we have, delete it
+            look with column nr in our labels it is
+            receiveddataset = {
+              labelstring1 : [ ],
+              labelstring2 : [ ],
+            }
+            create entry [timestamp, undefined, entry, undefined, ...]; array.delete it from source data column
+
+
+  */
+
+  updateDataSet(pData: Object): boolean {
+    // prometheus data
+    console.log('updateDataSet');
+    console.log(pData);
+
+    const result = this.h.getDeep(pData, ['data', 'result']);
+    if (!result || !Array.isArray(result)) {
+      console.error('updateDataSet: no valid data received.');
+      return false;
+    }
+    const nrResults = result.length;
+    console.log('updateDataSet: ' + nrResults + ' data series received.');
+    if (!nrResults) {
+      return false;
+    }
+    const metric0 = this.h.getDeep(result, [0, 'metric']);
+    const values0 = this.h.getDeep(result, [0, 'values']);
+    if (!values0 || !metric0) {
+      console.error('updateDataSet: no valid data received.');
+      return false;
+    }
+
+    // update labels
+    const oldLabels = this.dyGraphOptions['labels'];
+    const newLabels = [];
+    for (let seriesNr = 0; seriesNr < nrResults; seriesNr++) {
+      const lObj = this.h.getDeep(result, [seriesNr, 'metric']);
+      newLabels.push(this.createLabelString(lObj));
+    }
+
+    return true;
+  }
+
+  createLabelString(lObj: Object): string {
+    let labelString = '';
+    let firstDone = false;
+    for (var key in lObj) {
+      if (key === '__name__') {
+        continue;
+      }
+      const value = lObj[key];
+      if (firstDone) {
+        labelString += ', ';
+      } else {
+        firstDone = true;
+      }
+      labelString += key + ': ' + value;
+    }
+    return labelString;
+  }
+
   handleInitialData(receivedData: Object) {
     console.log('received Data:');
     console.log(receivedData);
 
     const result = this.h.getDeep(receivedData, ['data', 'result']);
-    if (!result) {
+    if (!result || !Array.isArray(result)) {
       console.error('Error: no valid data received.');
       this.noData = true;
       this.waiting = false;
@@ -313,19 +429,20 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       let labelString = '';
       let firstDone = false;
       for (var key in labelsN) {
-        if(key === '__name__') {
+        if (key === '__name__') {
           continue;
         }
         const value = labelsN[key];
-        if(firstDone) {
+        if (firstDone) {
           labelString += ', ';
         } else {
           firstDone = true;
         }
         labelString += key + ': ' + value;
-
       }
-      this.dyGraphOptions['labels'][seriesNr + 1] = labelString ? labelString : 'undefined';
+      this.dyGraphOptions['labels'][seriesNr + 1] = labelString
+        ? labelString
+        : 'undefined';
     }
 
     this.historicalData = this.displayedData;
@@ -362,7 +479,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     console.log(this.dyGraphOptions);
     console.log(this.displayedData);
-    if (1 === 1) return;
+    // if (1 === 1) return;
     if (this.fetchFromServerIntervalMS > 0) {
       this.startUpdate();
     }
@@ -496,17 +613,15 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const values = this.h.getDeep(displayedData, [
-      'data',
-      'result',
-      0,
-      'values'
-    ]);
-    if (!values) {
+    const values0 = this.h.getDeep(dataArray, [0, 'values']);
+    if (!values0) {
       console.error('handleUpdatedData: input object wrong');
       console.log(displayedData);
       return;
     }
+
+    console.log(dataArray);
+    if (1 == 1) return;
 
     // check if there is already newer data from an earlier request
     let iteratedDate: Date;
@@ -541,17 +656,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     // console.log('got ' + values.length + ' elements');
     // console.log('new ' + newData.length + ' elements');
 
-    // trigger ngOnChanges
-    this.historicalData = this.historicalData.concat(newData);
-    const dataLength = this.displayedData.length;
     // console.log('current length: ' + dataLength + ' elements');
     this.displayedData = this.displayedData.concat(newData);
-
-    // disabled, we're working with dateWindow now!
-    // this.displayedData = this.displayedData.slice(
-    //   -dataLength,
-    //   this.displayedData.length
-    // );
 
     // console.log('new length: ' + this.displayedData.length + ' elements');
 
