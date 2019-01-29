@@ -113,7 +113,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public optionsOpen = false;
   public updateOnNewData = true;
 
-  public panAmount = 0.5  ;
+  public panAmount = 0.5;
+  public zoomValue = 5;
+  public zoomMultiplicator = 60;
 
   public htmlID: string;
   private requestsUnderway = 0; // don't flood the server if it is not fast enough
@@ -164,11 +166,13 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     console.log(this.endTime);
 
+    let dataEndTime: Date;
+    let dataBeginTime: Date;
 
-    let dataEndTime:Date;
-    let dataBeginTime:Date;
-
-    [dataBeginTime, dataEndTime] = this.calculateTimeRange(this.startTime, this.endTime);
+    [dataBeginTime, dataEndTime] = this.calculateTimeRange(
+      this.startTime,
+      this.endTime
+    );
 
     console.log('dataEndTime ' + (dataEndTime.valueOf() / 1000).toString());
 
@@ -341,7 +345,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     yRanges?: Array<Array<number>>
   ) {
     console.log('after dygraph zoom callback');
-    console.log([typeof(minDate),minDate, maxDate, yRanges]);
+    console.log([typeof minDate, minDate, maxDate, yRanges]);
 
     if (this.hasOwnProperty('parent')) {
       const parent = this['parent'];
@@ -363,7 +367,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const dw = g.getOption('dateWindow');
     const from = xrange[0];
     const to = xrange[1];
-    console.log(['xr:',from, to, 'dw:', dw[0], dw[1]]);
+    console.log(['xr:', from, to, 'dw:', dw[0], dw[1]]);
     if (!from || !to) {
       console.error('after Draw error: from/to NaN');
       // g.resetZoom(); //DONT do, infinite loop!
@@ -740,29 +744,40 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const currentTimeRangeSeconds = dw[1].valueOf() - dw[0].valueOf();
     const panFor = currentTimeRangeSeconds * this.panAmount;
     console.log([direction, this.panAmount, panFor]);
-    if(direction === 'forward') {
+    if (direction === 'forward') {
       dw[0] = new Date(dw[0].valueOf() + panFor);
       dw[1] = new Date(dw[1].valueOf() + panFor);
     }
-    if(direction === 'back') {
+    if (direction === 'back') {
       dw[0] = new Date(dw[0].valueOf() - panFor);
       dw[1] = new Date(dw[1].valueOf() - panFor);
     }
-    this.Dygraph.updateOptions({'dateWindow': dw});
+    this.Dygraph.updateOptions({ dateWindow: dw });
   }
   resetZoom() {
     let newDateWindow = [];
-    if(this.overrideDateWindow && this.overrideDateWindow.length) {
-      this.Dygraph.updateOptions({'dateWindow': this.overrideDateWindow});
+    if (this.overrideDateWindow && this.overrideDateWindow.length) {
+      this.Dygraph.updateOptions({ dateWindow: this.overrideDateWindow });
       console.log('resetZoom: took dateWindow from override');
       return;
     }
-    let dataEndTime:Date;
-    let dataBeginTime:Date;
-    [dataBeginTime, dataEndTime] = this.calculateTimeRange(this.startTime, this.endTime);
+    let dataEndTime: Date;
+    let dataBeginTime: Date;
+    [dataBeginTime, dataEndTime] = this.calculateTimeRange(
+      this.startTime,
+      this.endTime
+    );
 
-    this.Dygraph.updateOptions({'dateWindow': [dataBeginTime.valueOf(), dataEndTime.valueOf()]});
-    console.log(['resetZoom:',dataBeginTime,dataEndTime,this.startTime,this.endTime]);
+    this.Dygraph.updateOptions({
+      dateWindow: [dataBeginTime.valueOf(), dataEndTime.valueOf()]
+    });
+    console.log([
+      'resetZoom:',
+      dataBeginTime,
+      dataEndTime,
+      this.startTime,
+      this.endTime
+    ]);
   }
   fullZoom() {
     this.Dygraph.resetZoom();
@@ -784,5 +799,20 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
 
     return [startDate, endDate];
+  }
+
+  changeRange(param) {
+    console.log(['changeRange', param]);
+    let startDate: Date;
+    let endDate: Date;
+
+    endDate = this.endTime === 'now' ? new Date() : new Date(this.endTime);
+
+    const seconds = this.zoomValue * this.zoomMultiplicator;
+    startDate = new Date(endDate.valueOf() - seconds * 1000);
+
+    this.Dygraph.updateOptions({
+      dateWindow: [startDate.valueOf(), endDate.valueOf()]
+    });
   }
 }

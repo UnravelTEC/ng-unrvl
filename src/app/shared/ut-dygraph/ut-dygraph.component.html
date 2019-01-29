@@ -81,6 +81,13 @@ style.padding-bottom="20vh"-->
         </button>
       </form>
 
+      <form class="subbox">
+        <h5>Autopan:</h5>
+        <button (click)="toggleAutoPan()">
+          {{ updateOnNewData ? 'disable' : 'enable' }}
+        </button>
+      </form>
+
       <div class="subbox">
         <div class="time">
           <h5>From:</h5>
@@ -91,9 +98,35 @@ style.padding-bottom="20vh"-->
       </div>
 
       <form class="subbox">
-        <button (click)="toggleAutoPan()">
-          {{ updateOnNewData ? 'No Autopan' : 'Autopan' }}
-        </button>
+        <h5>Display Range:</h5>
+        <select
+          [(ngModel)]="zoomValue"
+          (ngModelChange)="changeRange($event)"
+          id="zoomValue"
+          name="zoomValue"
+          style="width:4em"
+        >
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="5" selected="selected">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+        </select>
+        <select
+          [(ngModel)]="zoomMultiplicator"
+          (ngModelChange)="changeRange($event)"
+          id="zoomMultiplicator"
+          name="zoomMultiplicator"
+          style="width:6em"
+        >
+          <option value="1">sec</option>
+          <option value="60" selected="selected">min</option>
+          <option value="3600">hours</option>
+          <option value="68400">days</option>
+          <option value="2592000">months</option>
+          <option value="31536000">years</option>
+        </select>
       </form>
 
       <div class="subbox">
@@ -106,7 +139,12 @@ style.padding-bottom="20vh"-->
       </div>
       <form class="subbox">
         <button (click)="pan('back')">&lt;</button>
-        <select [(ngModel)]="panAmount" id="panAmount" name="panAmount" style="width:5em">
+        <select
+          [(ngModel)]="panAmount"
+          id="panAmount"
+          name="panAmount"
+          style="width:5em"
+        >
           <option value="0.1">1/10</option>
           <option value="0.2">1/5</option>
           <option value="0.5" selected="selected">1/2</option>
