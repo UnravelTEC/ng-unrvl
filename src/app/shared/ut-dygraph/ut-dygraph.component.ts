@@ -2,20 +2,16 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnDestroy,
   OnInit,
   Output,
-  ViewEncapsulation,
-  OnDestroy
+  ViewEncapsulation
 } from '@angular/core';
-
 import Dygraph from 'dygraphs';
 import { interval, Subscription } from 'rxjs';
-
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
-import { ValueSansProvider } from '@angular/core/src/di/provider';
-import { shiftInitState } from '@angular/core/src/view';
 
 @Component({
   selector: 'app-ut-dygraph',
@@ -97,8 +93,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   fromZoom: Date;
   toZoom: Date;
 
-  displayedData = [];
+  public displayedData = [];
+  public lastValue = undefined;
   historicalData = [];
+
   dataBeginTime: Date;
   dataEndTime: Date;
   average: number;
@@ -146,10 +144,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.dyGraphOptions['ylabel'] = this.YLabel;
     this.dyGraphOptions['xlabel'] = this.XLabel;
-    this.dyGraphOptions.labels.push(...this.dataSeriesLabels);
+    /*this.dyGraphOptions.labels.push(...this.dataSeriesLabels);
     if (!this.dyGraphOptions.labels[1]) {
       this.dyGraphOptions.labels[1] = this.queryString;
-    }
+    }*/
 
     this.updateDyGraphOptions();
 
@@ -161,7 +159,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.overrideDateWindow[1] = this.dyGraphOptions['dateWindow'][1];
     }
 
-    this.displayedData = [[undefined, null]];
+    // this.displayedData = [[undefined, null]];
     this.htmlID = 'graph_' + (Math.random() + 1).toString();
 
     console.log(this.endTime);
@@ -257,7 +255,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
             },
             values : [
               [
-                timestamp0, // number
+                timestamp0, // number (Seconds since epoch)
                 value0 // String
               ],
               [
@@ -274,9 +272,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         ]
       }
     }
-    Dygraphs data format:
+    Dygraphs data format: http://dygraphs.com/data.html
     this.displayedData = [
-      [ timestamp0, value01, value02, value03, ...],
+      [ timestamp0, value01, value02, value03, ...], // timestamp: Date object
       [ timestamp1, value11, value12, value13, ...],
       ...
     ]
@@ -300,19 +298,25 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
           start with "oldest" (has oldest first entry)
               if timestamp < newest we have, delete it
             look with column nr in our labels it is
-            receiveddataset = {
+            receivedDataset = {[]
               labelstring1 : [ ],
               labelstring2 : [ ],
-            }
+            } =>
+            resortedPData [ // in the order of this.displayedData
+              "time",
+              values0[],
+              values1[]
+            ]
             create entry [timestamp, undefined, entry, undefined, ...]; array.delete it from source data column
 
 
   */
 
   updateDataSet(pData: Object): boolean {
+    const debugFun = false;
     // prometheus data
-    console.log('updateDataSet');
-    console.log(pData);
+    true && console.log('updateDataSet');
+    true && console.log(pData);
 
     const result = this.h.getDeep(pData, ['data', 'result']);
     if (!result || !Array.isArray(result)) {
@@ -320,7 +324,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       return false;
     }
     const nrResults = result.length;
-    console.log('updateDataSet: ' + nrResults + ' data series received.');
+    debugFun &&
+      console.log('updateDataSet: ' + nrResults + ' data series received.');
     if (!nrResults) {
       return false;
     }
@@ -331,12 +336,165 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       return false;
     }
 
+    const receivedDataset = {}; // labelstring : data[] foreach series
+
     // update labels
-    const oldLabels = this.dyGraphOptions['labels'];
+    const oldLabels = this.dyGraphOptions['labels']; // content: another array => call by ref
+    debugFun && console.log(['old labels:', oldLabels]);
     const newLabels = [];
     for (let seriesNr = 0; seriesNr < nrResults; seriesNr++) {
       const lObj = this.h.getDeep(result, [seriesNr, 'metric']);
-      newLabels.push(this.createLabelString(lObj));
+      const newLabelString = this.createLabelString(lObj);
+      newLabels.push(newLabelString);
+
+      const seriesData = this.h.getDeep(result, [seriesNr, 'values']);
+      receivedDataset[newLabelString] = seriesData;
+    }
+    true && console.log('new labels:', newLabels);
+
+    const resortedPData = []; // in the order of this.displayedData
+    resortedPData.push(['Timestamp']); // dummy to have indices the same
+
+    for (let i = 0; i < newLabels.length; i++) {
+      const currentNewLabelString = newLabels[i];
+      const oldIndex = oldLabels.indexOf(currentNewLabelString);
+      if (oldIndex === -1) {
+        // update old data with up to now with NaN
+        this.displayedData.forEach(element => {
+          element.push(NaN);
+        });
+        resortedPData[this.dyGraphOptions.labels.length] =
+          receivedDataset[currentNewLabelString];
+        this.dyGraphOptions.labels.push(currentNewLabelString);
+        debugFun &&
+          console.log(['added new label, result:', this.dyGraphOptions.labels]);
+      } else {
+        resortedPData[oldIndex] = receivedDataset[currentNewLabelString];
+      }
+      // it may be the case that resortedPData has empty indices!!
+    }
+    debugFun && console.log(['resortedPData:', resortedPData, oldLabels]); // should be resorted to indices like in oldLabels
+
+    // go through resortedPData[][], shift firsts...
+    let counter = 0;
+    while (true) {
+      debugFun &&
+        console.log([
+          'while',
+          counter,
+          this.displayedData.length,
+          this.displayedData
+        ]);
+      counter++;
+
+      let lastTime;
+      if (
+        this.displayedData.length &&
+        this.displayedData[this.displayedData.length - 1] &&
+        this.displayedData[this.displayedData.length - 1][0]
+      ) {
+        lastTime = this.displayedData[
+          this.displayedData.length - 1
+        ][0].valueOf();
+      } else {
+        lastTime = 0;
+      }
+
+      debugFun && console.log(['lastTime:', lastTime]);
+
+      // look up "oldest" timestamp in this row - and take it as base for this row
+      let oldestTime = new Date().valueOf();
+      let stillWorking = false;
+      for (let i = 1; i < oldLabels.length; i++) {
+        // 1 to start not on timestamp column
+        const column = resortedPData[i];
+        if (column.length === 0) { //FIXME somewhere a "column is undefined" error, if less columns returned than in this.displayeddata
+          continue;
+        } else {
+          stillWorking = true;
+        }
+        const element = column[0];
+        const elementsTime = element[0] * 1000;
+        if (elementsTime < oldestTime) {
+          oldestTime = elementsTime;
+        }
+      }
+      if (stillWorking === false) {
+        debugFun && console.log('updateDataSet: done.');
+        break;
+      }
+
+      // for every entry in this row that matches the timestamp, take it
+      let newRow = [];
+      let rowValid = false;
+      newRow.push(new Date(oldestTime));
+      for (let i = 1; i < oldLabels.length; i++) {
+        const column = resortedPData[i];
+        if(!column[0]) {
+          newRow[i] = NaN; // not to leave any empty
+          continue;
+        }
+
+        const elementsTime = column[0][0] * 1000;
+        if (elementsTime <= lastTime) {
+          column.shift(); // we already have it, drop it
+          newRow[i] = NaN; // not to leave any empty
+          debugFun &&
+            console.log([
+              'drop',
+              oldLabels[i],
+              'on',
+              new Date(elementsTime),
+              'before',
+              new Date(lastTime)
+            ]);
+          continue;
+        }
+        if (elementsTime === oldestTime) {
+          // what we want
+          const element = column.shift();
+          if (this.multiplicateFactors[i - 1]) {
+            newRow[i] = Number(element[1]) * this.multiplicateFactors[i - 1];
+          } else {
+            newRow[i] = Number(element[1]);
+          }
+          rowValid = true;
+          continue;
+        }
+        if (elementsTime > oldestTime) {
+          debugFun &&
+            console.log([
+              'column',
+              oldLabels[i],
+              'date',
+              new Date(elementsTime),
+              'behind',
+              new Date(oldestTime)
+            ]);
+          newRow[i] = NaN;
+        }
+      }
+
+      // TODO: Gap detection
+
+      if (rowValid) {
+        debugFun && console.log(['new row ready:', newRow]);
+        this.displayedData.push(newRow);
+      }
+    }
+
+    if (
+      this.displayedData.length &&
+      this.displayedData[this.displayedData.length - 1]
+    ) {
+      const nrCols = this.displayedData.length - 1;
+      let avg = 0;
+      let last = this.displayedData[nrCols];
+      for (let i = 1; i < oldLabels.length; i++) {
+        console.log('4avg:',last[i]);
+        avg += last[i];
+      }
+      this.lastValue = avg / (oldLabels.length -1);
     }
 
     return true;
@@ -361,91 +519,12 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   handleInitialData(receivedData: Object) {
-    console.log('received Data:');
+    console.log('handleInitialData: received Data:');
     console.log(receivedData);
 
-    const result = this.h.getDeep(receivedData, ['data', 'result']);
-    if (!result || !Array.isArray(result)) {
-      console.error('Error: no valid data received.');
-      this.noData = true;
-      this.waiting = false;
-      return;
-    }
+    this.updateDataSet(receivedData); //TMP for testing
 
-    const nrResults = result.length;
-    console.log('handleInitialData: ' + nrResults + ' data series received.');
-    if (!nrResults) {
-      this.noData = true;
-      this.waiting = false;
-      return;
-    }
-
-    const metric0 = this.h.getDeep(result, [0, 'metric']);
-    const values0 = this.h.getDeep(result, [0, 'values']);
-    if (!values0 || !metric0) {
-      console.error('Error: no valid data received.');
-      this.noData = true;
-      this.waiting = false;
-      return;
-    }
-
-    this.displayedData = [];
-    let gap = 0;
-    for (let i = 0; i < values0.length; i++) {
-      // calculate usual gap - bet there is no gap between the first two
-      // if (i === 0 && values0.length > 1) {
-      //   gap = values0[1][0] - values0[0][0];
-      // }
-
-      let dygraphsElement = [];
-      dygraphsElement.push(new Date(values0[i][0] * 1000));
-
-      for (let seriesNr = 0; seriesNr < nrResults; seriesNr++) {
-        const prometheusElementN = this.h.getDeep(result, [
-          seriesNr,
-          'values',
-          i,
-          1
-        ]);
-        dygraphsElement.push(
-          Number(prometheusElementN) * this.multiplicateFactors[0]
-        );
-      }
-
-      // insert NaN gap for Dygraphs to not connect lines if point missing
-      // if (values0.length > 1) {
-      //   if (i === 0) {
-
-      //   } else if (element[0] - values[i - 1][0] > gap) {
-      //     this.displayedData.push([new Date((element[0] + gap) * 1000), NaN]);
-      //   }
-      // }
-
-      this.displayedData.push(dygraphsElement);
-    }
-
-    for (let seriesNr = 0; seriesNr < nrResults; seriesNr++) {
-      const labelsN = this.h.getDeep(result, [seriesNr, 'metric']);
-      let labelString = '';
-      let firstDone = false;
-      for (var key in labelsN) {
-        if (key === '__name__') {
-          continue;
-        }
-        const value = labelsN[key];
-        if (firstDone) {
-          labelString += ', ';
-        } else {
-          firstDone = true;
-        }
-        labelString += key + ': ' + value;
-      }
-      this.dyGraphOptions['labels'][seriesNr + 1] = labelString
-        ? labelString
-        : 'undefined';
-    }
-
-    this.historicalData = this.displayedData;
+    // this.historicalData = this.displayedData;
     this.average = this.calculateAverage();
 
     this.updateDateWindow();
@@ -613,53 +692,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const values0 = this.h.getDeep(dataArray, [0, 'values']);
-    if (!values0) {
-      console.error('handleUpdatedData: input object wrong');
-      console.log(displayedData);
-      return;
-    }
-
-    console.log(dataArray);
-    if (1 == 1) return;
-
-    // check if there is already newer data from an earlier request
-    let iteratedDate: Date;
-    let iteratingOnOldData = true;
-    let lastDate: number; // mseconds since 1970
-    let currentDate: number; // mseconds since 1970
-    const newData = [];
-
-    // TODO: check for gaps and insert NaN (see initial handling)
-    values.forEach(element => {
-      currentDate = element[0] * 1000;
-
-      if (iteratingOnOldData) {
-        lastDate = this.displayedData[
-          this.displayedData.length - 1
-        ][0].valueOf();
-        if (lastDate >= currentDate) {
-          // console.log('iterating on old number');
-          return;
-        } else {
-          iteratingOnOldData = false;
-        }
-      }
-
-      iteratedDate = new Date(currentDate);
-      newData.push([
-        iteratedDate,
-        Number(element[1]) * this.multiplicateFactors[0]
-      ]);
-    });
-
-    // console.log('got ' + values.length + ' elements');
-    // console.log('new ' + newData.length + ' elements');
-
-    // console.log('current length: ' + dataLength + ' elements');
-    this.displayedData = this.displayedData.concat(newData);
-
-    // console.log('new length: ' + this.displayedData.length + ' elements');
+    this.updateDataSet(displayedData);
 
     if (this.runningAvgSeconds) {
       this.Dygraph.adjustRoll(this.runningAvgSeconds);
