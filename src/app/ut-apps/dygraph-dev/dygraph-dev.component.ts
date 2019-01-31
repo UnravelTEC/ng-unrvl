@@ -36,7 +36,12 @@ export class DygraphDevComponent implements OnInit {
     'fetchFromServerIntervalMS'
   ];
 
-  constructor(private localStorage: LocalStorageService, private globalSettings: GlobalSettingsService) {}
+  constructor(
+    private localStorage: LocalStorageService,
+    private globalSettings: GlobalSettingsService
+  ) {
+    this.globalSettings.emitChange({ appName: 'DyGraph Dev App' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+  }
 
   ngOnInit() {
     let valueInLocalStorage;
@@ -46,7 +51,6 @@ export class DygraphDevComponent implements OnInit {
         this[elementName] = valueInLocalStorage;
       }
     });
-    this.globalSettings.emitChange({ appName: 'DyGraph Dev App' });
   }
 
   save() {

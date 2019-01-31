@@ -17,10 +17,9 @@ export class UvComponent implements OnInit {
 
   startTime = '3m';
 
-  constructor(private globalSettings: GlobalSettingsService) { }
-
-  ngOnInit() {
-    this.globalSettings.emitChange({ appName: 'UV radiation' });
+  constructor(private globalSettings: GlobalSettingsService) {
+    this.globalSettings.emitChange({ appName: 'UV radiation' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
   }
 
+  ngOnInit() {}
 }

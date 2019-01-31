@@ -7,7 +7,6 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
   styleUrls: ['./r-ht.component.scss']
 })
 export class RHTComponent implements OnInit {
-
   fetchFromServerIntervalMS = 1000;
 
   graphstyleT = {
@@ -29,10 +28,9 @@ export class RHTComponent implements OnInit {
   dataSeriesLabelsH = ['rel. Humidity'];
   startTime = '1h';
 
-  constructor(private globalSettings: GlobalSettingsService) { }
-
-  ngOnInit() {
-    this.globalSettings.emitChange({ appName: 'rH / T' });
+  constructor(private globalSettings: GlobalSettingsService) {
+    this.globalSettings.emitChange({ appName: 'rH / T' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
   }
 
+  ngOnInit() {}
 }

@@ -27,7 +27,9 @@ export class GammaComponent implements OnInit {
     private globalSettings: GlobalSettingsService,
     private h: HelperFunctionsService,
     private localStorage: LocalStorageService
-  ) {}
+  ) {
+    this.globalSettings.emitChange({ appName: 'Gamma Radiation' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+  }
 
   ngOnInit() {
     const lsStep = this.localStorage.get('gamma.step');
@@ -44,8 +46,6 @@ export class GammaComponent implements OnInit {
     if (lsRunningAvgSeconds) {
       this.runningAvgSeconds = lsRunningAvgSeconds;
     }
-
-    this.globalSettings.emitChange({ appName: 'Gamma Radiation' });
   }
 
   adjustTime(startTime: string, step: number) {

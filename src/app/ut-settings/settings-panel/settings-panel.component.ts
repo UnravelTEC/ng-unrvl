@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
+import { GlobalSettingsService } from '../../core/global-settings.service';
 
 @Component({
   selector: 'app-settings-panel',
@@ -37,8 +38,11 @@ export class SettingsPanelComponent implements OnInit {
 
   constructor(
     private localStorage: LocalStorageService,
-    private h: HelperFunctionsService
-  ) {}
+    private h: HelperFunctionsService,
+    private globalSettingsService: GlobalSettingsService
+  ) {
+    this.globalSettingsService.emitChange({ appName: 'Settings' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+  }
 
   ngOnInit() {
     // before, read out all localstorage items
