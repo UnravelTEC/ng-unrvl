@@ -37,6 +37,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/r-ht/r-ht.module#RHTModule'
   },
   {
+    path: 'Apps/UV',
+    loadChildren: './ut-apps/uv/uv.module#UvModule'
+  },
+  {
     path: 'Apps/PressureGraph',
     loadChildren: './ut-apps/pressure-graph/pressure-graph.module#PressureGraphModule'
   },
