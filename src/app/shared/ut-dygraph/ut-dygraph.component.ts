@@ -92,18 +92,18 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     legend: <any>'always' // also 'never' possible
   };
 
-  fromZoom: Date;
-  toZoom: Date;
+  public fromZoom: Date;
+  public toZoom: Date;
 
   public displayedData = [];
   public lastValue = undefined;
-  historicalData = [];
+  public lastValues = [];
 
-  dataBeginTime: Date;
-  dataEndTime: Date;
-  average: number;
+  public columnLabels = [];
 
-  private overrideDateWindow = [];
+  public dataBeginTime: Date;
+  public dataEndTime: Date;
+  public average: number;
 
   public noData = false;
   public waiting = true;
@@ -118,6 +118,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public zoomMultiplicator = 60;
 
   public htmlID: string;
+
+  private overrideDateWindow = [];
   private requestsUnderway = 0; // don't flood the server if it is not fast enough
   private queryEndPoint: string;
 
@@ -376,6 +378,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         resortedPData[oldLabels.length] =
           receivedDataset[currentNewLabelString];
         oldLabels.push(currentNewLabelString);
+        this.columnLabels[oldLabels.length -2] = this.h.getDeep(result, [i, 'metric']);
+        console.log('columnlabels now:',cloneDeep(this.columnLabels));
         debugFun && console.log(['added new label, result:', oldLabels]);
       } else {
         resortedPData[oldIndex] = receivedDataset[currentNewLabelString];
@@ -509,6 +513,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         avg += last[i];
       }
       this.lastValue = avg / (oldLabels.length - 1);
+      this.lastValues = last;
     }
 
     return true;
@@ -538,7 +543,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     this.updateDataSet(receivedData); //TMP for testing
 
-    // this.historicalData = this.displayedData;
     this.average = this.calculateAverage();
 
     this.updateDateWindow();
@@ -724,7 +728,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       );
     }
 
-    // console.log(      'historical length: ' + this.historicalData.length + ' elements'    );
     // console.log(this.annotations)
     let usedAnnotations = [];
     if (this.annotations) {
@@ -748,7 +751,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     if (this.calculateRunningAvgFrom) {
       const avg = this.calculateAverage(
         this.calculateRunningAvgFrom,
-        this.historicalData
+        this.displayedData
       );
       this.returnRunningAvg.emit(avg);
     }

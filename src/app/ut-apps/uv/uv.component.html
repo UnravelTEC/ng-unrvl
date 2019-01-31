@@ -10,3 +10,17 @@
   [extraDyGraphConfig]="extraDyGraphConfig"
   #graph
 ></app-ut-dygraph>
+
+<table *ngIf="graph.lastValues && graph.lastValues.length">
+  <tr>
+    <th>Wavelength:</th>
+    <th *ngFor="let wavelength of graph.columnLabels">
+      {{ wavelength.wavelength }}
+    </th>
+  </tr>
+  <tr>
+     <td *ngFor="let value of graph.lastValues">
+       {{ value < 1000000 ? value : "Value" }} <!-- <: hack to sort out date -->
+     </td>
+    </tr>
+</table>
