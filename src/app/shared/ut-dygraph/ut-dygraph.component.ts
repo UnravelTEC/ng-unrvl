@@ -13,6 +13,8 @@ import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 
+import cloneDeep from 'lodash-es/cloneDeep';
+
 @Component({
   selector: 'app-ut-dygraph',
   templateUrl: './ut-dygraph.component.html',
@@ -313,7 +315,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   */
 
   updateDataSet(pData: Object): boolean {
-    const debugFun = false;
+    const debugFun = true;
     // prometheus data
     true && console.log('updateDataSet');
     true && console.log(pData);
@@ -340,17 +342,26 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     // update labels
     const oldLabels = this.dyGraphOptions['labels']; // content: another array => call by ref
-    debugFun && console.log(['old labels:', oldLabels]);
+    debugFun && console.log(['old labels:', cloneDeep(oldLabels)]); // deepcopy
     const newLabels = [];
+    let dataThere = false;
     for (let seriesNr = 0; seriesNr < nrResults; seriesNr++) {
       const lObj = this.h.getDeep(result, [seriesNr, 'metric']);
       const newLabelString = this.createLabelString(lObj);
       newLabels.push(newLabelString);
 
       const seriesData = this.h.getDeep(result, [seriesNr, 'values']);
+      if(seriesData.length) {
+        dataThere = true;
+      }
       receivedDataset[newLabelString] = seriesData;
     }
-    true && console.log('new labels:', newLabels);
+    if(!dataThere) {
+      console.log('all data columns received empty');
+      return;
+    }
+
+    true && console.log('new labels:', cloneDeep(newLabels));
 
     const resortedPData = []; // in the order of this.displayedData
     resortedPData.push(['Timestamp']); // dummy to have indices the same
@@ -371,8 +382,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       } else {
         resortedPData[oldIndex] = receivedDataset[currentNewLabelString];
       }
-      // it may be the case that resortedPData has empty indices!!
+      // Note: it may be the case that resortedPData has empty indices!!
     }
+    true && console.log('old labels after:', cloneDeep(oldLabels));
     debugFun && console.log(['resortedPData:', resortedPData, oldLabels]); // should be resorted to indices like in oldLabels
 
     // go through resortedPData[][], shift firsts...
@@ -408,7 +420,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       for (let i = 1; i < oldLabels.length; i++) {
         // 1 to start not on timestamp column
         const column = resortedPData[i];
-        if (column.length === 0) { //FIXME somewhere a "column is undefined" error, if less columns returned than in this.displayeddata
+        if (!column || column.length === 0) { //FIXME somewhere a "column is undefined" error, if less columns returned than in this.displayeddata
           continue;
         } else {
           stillWorking = true;
@@ -418,6 +430,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         if (elementsTime < oldestTime) {
           oldestTime = elementsTime;
         }
+      }
+      if(counter>200) { // FIXME dead man's switch
+        stillWorking = false;
       }
       if (stillWorking === false) {
         debugFun && console.log('updateDataSet: done.');
@@ -430,7 +445,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       newRow.push(new Date(oldestTime));
       for (let i = 1; i < oldLabels.length; i++) {
         const column = resortedPData[i];
-        if(!column[0]) {
+        if(!column || column[0]) {
           newRow[i] = NaN; // not to leave any empty
           continue;
         }
@@ -558,7 +573,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     console.log(this.dyGraphOptions);
     console.log(this.displayedData);
-    // if (1 === 1) return;
+    if (1 === 1) return;
     if (this.fetchFromServerIntervalMS > 0) {
       this.startUpdate();
     }
