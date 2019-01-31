@@ -1,33 +1,29 @@
 <div class="graphapp">
   <div id="pressuredygraph">
-  <app-ut-dygraph
-    queryString="avg(pressure_hPa)"
-    [fetchFromServerIntervalMS]="fetchFromServerIntervalMS"
-    dataBaseQueryStepMS="1000"
-    [dataSeriesLabels]="dataSeriesLabels"
-    YLabel="Atmospheric Pressure (hPa)"
-    [style]="graphstyle"
-    [startTime]="startTime"
-    #graph
-  ></app-ut-dygraph>
-  <!-- serverHostName=""
+    <app-ut-dygraph
+      queryString="avg(pressure_hPa)"
+      [fetchFromServerIntervalMS]="fetchFromServerIntervalMS"
+      dataBaseQueryStepMS="1000"
+      [dataSeriesLabels]="dataSeriesLabels"
+      YLabel="Atmospheric Pressure (hPa)"
+      [style]="graphstyle"
+      [startTime]="startTime"
+      #graph
+    ></app-ut-dygraph>
+    <!-- serverHostName=""
   serverPort="80"
   serverPath="prometheus/api/v1/" -->
-</div>
-<form>
-  <label for="startTime">Time Range: </label>
-  <input
-    type="text"
-    id="startTime"
-    [(ngModel)]="startTime"
-    name="startTime"
-  />
-  Current Value:
-  {{
-    graph['displayedData'][graph['displayedData'].length - 1][1]
-      | number: '1.1-3'
-  }}&#8239;hPa
-  <!-- <br />
+  </div>
+  <form>
+    <label for="startTime">Time Range: </label>
+    <input
+      type="text"
+      id="startTime"
+      [(ngModel)]="startTime"
+      name="startTime"
+    />
+    Current Value: {{ graph['lastValue'] | number: '1.1-3' }}&#8239;hPa
+    <!-- <br />
   <label for="updateRate">Update rate: </label>
   <input
     type="text"
@@ -39,5 +35,5 @@
   {{
     fetchFromServerIntervalMS
   }}&#8239;ms -->
-</form>
+  </form>
 </div>

@@ -3,7 +3,7 @@
     <app-ut-dygraph
       queryString='temperature_degC{sensor="BME280"}'
       [fetchFromServerIntervalMS]="fetchFromServerIntervalMS"
-      dataBaseQueryStepMS="2000"
+      dataBaseQueryStepMS="1000"
       [dataSeriesLabels]="dataSeriesLabelsT"
       YLabel="Atmospheric Temperature (°C)"
       [style]="graphstyleT"
@@ -12,9 +12,9 @@
     ></app-ut-dygraph>
     Current Values:
     {{
-      T['displayedData'][T['displayedData'].length - 1][1] | number: '1.2-2'
+      T['lastValue'] | number: '1.2-2'
     }}&#8239;°C, {{
-      rH['displayedData'][rH['displayedData'].length - 1][1] | number: '1.1-1'
+      rH['lastValue'] | number: '1.1-1'
     }}&#8239;%
   </div>
 
@@ -22,7 +22,7 @@
     <app-ut-dygraph
       queryString='humidity_rel_percent{sensor="BME280"}'
       [fetchFromServerIntervalMS]="fetchFromServerIntervalMS"
-      dataBaseQueryStepMS="2000"
+      dataBaseQueryStepMS="1000"
       [dataSeriesLabels]="dataSeriesLabelsH"
       YLabel="relative Humidity (%)"
       [style]="graphstyleH"

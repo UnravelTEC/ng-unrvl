@@ -167,8 +167,8 @@ style.padding-bottom="20vh"-->
     [style.bottom]="style.bottom"
   >
     <li>Average: {{ average }}</li>
-    <li>From {{ displayedData[0][0] | date: 'yyyy-MM-dd HH:mm:ss (z)' }}</li>
-    <li>
+    <li *ngIf="displayedData && displayedData.length > 0">From {{ displayedData[0][0] | date: 'yyyy-MM-dd HH:mm:ss (z)' }}</li>
+    <li *ngIf="displayedData && displayedData.length > 0">
       To
       {{
         displayedData[displayedData.length - 1][0]
@@ -183,7 +183,7 @@ style.padding-bottom="20vh"-->
     </li>
     <li *ngIf="displayedData && displayedData.length > 0">
       Last Value:
-      {{ displayedData[displayedData.length - 1][1] | number: '1.0-1' }}
+      {{ lastValue | number: '1.0-1' }}
     </li>
     <li *ngIf="annotations && annotations.length > 0">
       Annotations: {{ annotations[0]['series'] }} "{{

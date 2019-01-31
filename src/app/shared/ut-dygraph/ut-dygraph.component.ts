@@ -386,11 +386,12 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     debugFun && console.log(['resortedPData:', resortedPData, oldLabels]); // should be resorted to indices like in oldLabels
 
     // go through resortedPData[][], shift firsts...
-    let counter = 0;
+    let deadManCounter = 0;
+    let validRows = 0;
     while (true) {
       debugFun &&
-        console.log(['while', counter, resortedPData, this.displayedData]);
-      counter++;
+        console.log(['while', deadManCounter, resortedPData, this.displayedData]);
+        deadManCounter++;
 
       let lastTime;
       if (
@@ -426,12 +427,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         }
       }
       debugFun && console.log('oldestTime', oldestTime);
-      if (counter > 11000) {
-        // FIXME dead man's switch
+      if (deadManCounter > 11000) {
         stillWorking = false;
       }
       if (stillWorking === false) {
-        debugFun && console.log('updateDataSet: done.');
+        console.log('updateDataSet: done, added',validRows,'rows.');
         break;
       }
 
@@ -491,6 +491,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       if (rowValid) {
         debugFun && console.log(['new row ready:', newRow]);
         this.displayedData.push(newRow);
+        validRows++;
       } else {
         debugFun && console.log('row invalid');
       }
@@ -582,19 +583,21 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     maxDate: number,
     yRanges?: Array<Array<number>>
   ) {
-    console.log('after dygraph zoom callback');
-    console.log([typeof minDate, minDate, maxDate, yRanges]);
+    const debugFun = false;
+    debugFun && console.log('after dygraph zoom callback');
+    debugFun && console.log([typeof minDate, minDate, maxDate, yRanges]);
 
     if (this.hasOwnProperty('parent')) {
       const parent = this['parent'];
       // parent.fromZoom = new Date(minDate);
       // parent.toZoom = new Date(maxDate);
     } else {
-      console.log('afterZoom: No parent');
+      debugFun && console.log('afterZoom: No parent');
     }
   }
   afterDrawCallback(g: Dygraph, isOInitial: boolean) {
-    console.log('after dygraph draw callback');
+    const debugFun = false;
+    debugFun && console.log('after dygraph draw callback');
 
     if (!g.hasOwnProperty('parent')) {
       console.error('afterDrawCallback: no parent');
@@ -605,7 +608,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const dw = g.getOption('dateWindow');
     const from = xrange[0];
     const to = xrange[1];
-    console.log(['xr:', from, to, 'dw:', dw[0], dw[1]]);
+    debugFun && console.log(['xr:', from, to, 'dw:', dw[0], dw[1]]);
     if (!from || !to) {
       console.error('after Draw error: from/to NaN');
       // g.resetZoom(); //DONT do, infinite loop!
@@ -613,14 +616,14 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       if (dw[0] === dw[1]) {
         console.error('dateWindow the same');
       }
-      console.log(dw);
+      debugFun && console.log(dw);
       if (!g.hasOwnProperty('modified')) {
         g['modified'] = 1;
       } else {
         g['modified'] = g['modified'] + 1;
         if (g['modified'] < 10) {
           g.updateOptions({ dateWindow: dw });
-          console.log('reset dateWindow');
+          debugFun && console.log('reset dateWindow');
         }
       }
 
@@ -754,6 +757,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   updateDateWindow() {
+    const debugFun = false;
     if (this.overrideDateWindow.length) {
       if (this.dyGraphOptions['dateWindowEnd']) {
         const extension =
@@ -774,7 +778,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       let dataBeginTime;
       if (seconds) {
         dataBeginTime = new Date(dataEndTime.valueOf() - seconds * 1000);
-        console.log('length of interval displayed (s): ' + seconds.toString());
+        debugFun &&
+          console.log(
+            'length of interval displayed (s): ' + seconds.toString()
+          );
       } else {
         dataBeginTime = new Date(this.startTime);
       }
