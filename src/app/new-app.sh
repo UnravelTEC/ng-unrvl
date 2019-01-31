@@ -51,7 +51,7 @@ import { $componentName } from './$appname.component';\
 \
 const routes: Routes = [\
   {\
-    path: '',\
+    path: '', \
     component: $componentName\
   }\
 ];\

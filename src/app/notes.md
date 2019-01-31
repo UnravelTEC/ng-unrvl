@@ -45,6 +45,14 @@ ng g c ut-apps/co2-graph
 ## in /app.module.ts, add the route
 
 
+
+# App Info
+title
+path Apps/$path
+component/module path
+Class name
+
+
 # Use of feature modules
 
 * import into module.ts
@@ -91,3 +99,4 @@ where QueryString is a member of the components class
 # SCSS
 
 ng config schematics.@schematics/angular:component.styleext scss
+

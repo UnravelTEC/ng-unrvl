@@ -45,6 +45,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/pm/pm.module#PmModule'
   },
   {
+    path: 'Apps/loudness',
+    loadChildren: './ut-apps/loudness/loudness.module#LoudnessModule'
+  },
+  {
     path: 'Apps/gamma',
     loadChildren: './ut-apps/gamma/gamma.module#GammaModule'
   },

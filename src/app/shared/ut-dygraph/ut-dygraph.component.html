@@ -1,4 +1,5 @@
-<!-- presenting: ut-dygraph: -->
+<!-- presenting: ut-dygraph:
+style.padding-bottom="20vh"-->
 <div class="mydygraph-component">
   <div
     class="graph"
@@ -10,8 +11,8 @@
     [style.bottom]="style.bottom"
     [style.left]="style.left"
     [style.right]="style.right"
-    style.padding-bottom="20vh"
   ></div>
+
   <div
     *ngIf="noData == true"
     class="info nodata"
@@ -25,6 +26,7 @@
   >
     No data to display.
   </div>
+
   <div
     *ngIf="waiting == true"
     class="info waiting"
@@ -38,6 +40,7 @@
   >
     Waiting for data...
   </div>
+
   <div
     *ngIf="error != undefined"
     class="info error"
@@ -51,6 +54,110 @@
   >
     {{ error }}
   </div>
+
+  <div
+    class="optionsarea"
+    [style.position]="style.position"
+    [style.bottom]="style.bottom"
+    [style.right]="style.right"
+    [style.left]="style.left"
+  >
+    <button (click)="toggleOptions()" class="toggleOptions">&#9881;</button>
+
+    <div *ngIf="optionsOpen == true" class="options">
+      <form class="subbox">
+        <h5>Fetching</h5>
+        <label for="fetchFromServerIntervalMS">interval:</label>
+        <input
+          type="text"
+          id="fetchFromServerIntervalMS"
+          name="fetchFromServerIntervalMS"
+          [(ngModel)]="fetchFromServerIntervalMS"
+          style="width:4em"
+        />
+        <span class="unit">ms</span>
+        <button (click)="toggleFetching()" [class]="running">
+          {{ running ? 'Stop' : 'Start' }}
+        </button>
+      </form>
+
+      <form class="subbox">
+        <h5>Autopan:</h5>
+        <button (click)="toggleAutoPan()">
+          {{ updateOnNewData ? 'disable' : 'enable' }}
+        </button>
+      </form>
+
+      <div class="subbox">
+        <div class="time">
+          <h5>From:</h5>
+          <small>{{ fromZoom | date: 'yyyy-MM-dd' }}</small
+          ><br />
+          <span>{{ fromZoom | date: 'HH:mm:ss' }}</span>
+        </div>
+      </div>
+
+      <form class="subbox">
+        <h5>Display Range:</h5>
+        <select
+          [(ngModel)]="zoomValue"
+          (ngModelChange)="changeRange($event)"
+          id="zoomValue"
+          name="zoomValue"
+          style="width:4em"
+        >
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="5" selected="selected">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+        </select>
+        <select
+          [(ngModel)]="zoomMultiplicator"
+          (ngModelChange)="changeRange($event)"
+          id="zoomMultiplicator"
+          name="zoomMultiplicator"
+          style="width:6em"
+        >
+          <option value="1">sec</option>
+          <option value="60" selected="selected">min</option>
+          <option value="3600">hours</option>
+          <option value="68400">days</option>
+          <option value="2592000">months</option>
+          <option value="31536000">years</option>
+        </select>
+      </form>
+
+      <div class="subbox">
+        <div class="time">
+          <h5>To:</h5>
+          <small>{{ toZoom | date: 'yyyy-MM-dd' }}</small
+          ><br />
+          <span>{{ toZoom | date: 'HH:mm:ss' }}</span>
+        </div>
+      </div>
+      <form class="subbox">
+        <button (click)="pan('back')">&lt;</button>
+        <select
+          [(ngModel)]="panAmount"
+          id="panAmount"
+          name="panAmount"
+          style="width:5em"
+        >
+          <option value="0.1">1/10</option>
+          <option value="0.2">1/5</option>
+          <option value="0.5" selected="selected">1/2</option>
+          <option value="1">1</option>
+        </select>
+        <span title="on click, load/save should open">Jump</span>
+        <button (click)="resetZoom()">Reset</button>
+        <button (click)="fullZoom()">All</button>
+        <button (click)="pan('forward')">&gt;</button>
+      </form>
+    </div>
+  </div>
+
   <!-- "debug == 'true' ? style.bottom - 6em : style.bottom -->
   <!-- <button (click)="fetchNewData()">Update!</button> -->
   <ul
@@ -60,8 +167,8 @@
     [style.bottom]="style.bottom"
   >
     <li>Average: {{ average }}</li>
-    <li>From {{ displayedData[0][0] | date: 'yyyy-MM-dd HH:mm:ss (z)' }}</li>
-    <li>
+    <li *ngIf="displayedData && displayedData.length > 0">From {{ displayedData[0][0] | date: 'yyyy-MM-dd HH:mm:ss (z)' }}</li>
+    <li *ngIf="displayedData && displayedData.length > 0">
       To
       {{
         displayedData[displayedData.length - 1][0]
@@ -76,7 +183,7 @@
     </li>
     <li *ngIf="displayedData && displayedData.length > 0">
       Last Value:
-      {{ displayedData[displayedData.length - 1][1] | number: '1.0-1' }}
+      {{ lastValue | number: '1.0-1' }}
     </li>
     <li *ngIf="annotations && annotations.length > 0">
       Annotations: {{ annotations[0]['series'] }} "{{

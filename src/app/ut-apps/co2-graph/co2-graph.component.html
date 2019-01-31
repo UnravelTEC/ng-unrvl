@@ -2,12 +2,11 @@
   <span class="value">
     CO2:
     <span class="{{
-      (graph['displayedData'][graph['displayedData'].length - 1][1]) < 1000 ? 'green' :
-      (graph['displayedData'][graph['displayedData'].length - 1][1] < 2000 ? 'yellow' : 'red')
+      (graph['lastValue'] < 1000) ? 'green' :
+      ((graph['lastValue'] < 2000) ? 'yellow' : 'red')
      }} ">
       {{
-        graph['displayedData'][graph['displayedData'].length - 1][1]
-          | number: '1.1-1'
+        graph['lastValue']  | number: '1.1-1'
       }}</span
     >&#8239;ppm
   </span>

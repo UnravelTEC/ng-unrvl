@@ -1,0 +1,97 @@
+.mydygraph-component {
+  border: 0px solid black;
+
+  ul {
+    text-align: left;
+  }
+
+  .debug {
+    background: rgb(198, 198, 255);
+    z-index: 200;
+    transform: translateY(8em);
+  }
+
+  .info {
+    margin: 1em;
+    border: 1px solid blue;
+    padding: 1em;
+  }
+
+  .nodata {
+    border-color: orange;
+  }
+  .waiting {
+    border-color: yellow;
+  }
+  .error {
+    border-color: red;
+  }
+
+  .dygraph-legend {
+    /* background: rgba(123, 123, 252, 0.993); */
+    min-width: 100%;
+    padding: 5px;
+    text-align: right;
+    background: transparent;
+    text-shadow: 1px 1px white, -1px 1px white, 1px -1px white, -1px -1px white,
+      2px 2px white, -2px 2px white, 2px -2px white, -2px -2px white;
+  }
+
+  div.optionsarea {
+    transform: translateY(-3rem);
+    button.toggleOptions {
+      height: 4rem;
+      width: 4rem;
+      border-radius: 0.5rem;
+      font-size: 3rem;
+      background: transparent;
+      cursor: pointer;
+      border: 1px solid gray;
+      display: block;
+      margin-left: auto;
+      margin-right: 0;
+    }
+    button.toggleOptions:hover {
+      background-color: gray;
+    }
+    div.options {
+      margin-top: 0.3rem;
+      background: grey;
+      .subbox {
+        border: 1px solid black;
+        display: inline-block;
+        padding: 0.2em;
+        * {
+            margin:0 0.25ch;
+        }
+        h5 {
+          margin: 0;
+          padding: 0;
+          font-weight: bold;
+          font-size: 0.7em;
+        }
+        input[type='text'] {
+          padding: 0.1em;
+          border-radius: 0.5em;
+        }
+        button {
+            border:0;
+            border-radius: 0.5em;
+            background:#5cb85c;
+            padding:0.5em;
+            cursor: pointer;
+        }
+
+        .time {
+            h5 {
+                display: inline-block;
+                margin-right: 1em;
+            }
+            small {
+                font-size: 0.7em;
+            }
+        }
+      }
+    }
+  }
+}
