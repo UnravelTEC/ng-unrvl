@@ -314,11 +314,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
   */
 
-  updateDataSet(pData: Object): boolean {
-    const debugFun = true;
+  updateDataSet(pData: Object, debugFun = false): boolean {
     // prometheus data
-    true && console.log('updateDataSet');
-    true && console.log(pData);
+    debugFun && console.log('updateDataSet');
+    debugFun && console.log(pData);
 
     const result = this.h.getDeep(pData, ['data', 'result']);
     if (!result || !Array.isArray(result)) {
@@ -351,17 +350,17 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       newLabels.push(newLabelString);
 
       const seriesData = this.h.getDeep(result, [seriesNr, 'values']);
-      if(seriesData.length) {
+      if (seriesData.length) {
         dataThere = true;
       }
       receivedDataset[newLabelString] = seriesData;
     }
-    if(!dataThere) {
+    if (!dataThere) {
       console.log('all data columns received empty');
       return;
     }
 
-    true && console.log('new labels:', cloneDeep(newLabels));
+    debugFun && console.log('new labels:', cloneDeep(newLabels));
 
     const resortedPData = []; // in the order of this.displayedData
     resortedPData.push(['Timestamp']); // dummy to have indices the same
@@ -374,29 +373,23 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         this.displayedData.forEach(element => {
           element.push(NaN);
         });
-        resortedPData[this.dyGraphOptions.labels.length] =
+        resortedPData[oldLabels.length] =
           receivedDataset[currentNewLabelString];
-        this.dyGraphOptions.labels.push(currentNewLabelString);
-        debugFun &&
-          console.log(['added new label, result:', this.dyGraphOptions.labels]);
+        oldLabels.push(currentNewLabelString);
+        debugFun && console.log(['added new label, result:', oldLabels]);
       } else {
         resortedPData[oldIndex] = receivedDataset[currentNewLabelString];
       }
       // Note: it may be the case that resortedPData has empty indices!!
     }
-    true && console.log('old labels after:', cloneDeep(oldLabels));
+    debugFun && console.log('old labels after:', cloneDeep(oldLabels));
     debugFun && console.log(['resortedPData:', resortedPData, oldLabels]); // should be resorted to indices like in oldLabels
 
     // go through resortedPData[][], shift firsts...
     let counter = 0;
     while (true) {
       debugFun &&
-        console.log([
-          'while',
-          counter,
-          this.displayedData.length,
-          this.displayedData
-        ]);
+        console.log(['while', counter, resortedPData, this.displayedData]);
       counter++;
 
       let lastTime;
@@ -412,7 +405,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         lastTime = 0;
       }
 
-      debugFun && console.log(['lastTime:', lastTime]);
+      debugFun && console.log('lastTime:', lastTime);
 
       // look up "oldest" timestamp in this row - and take it as base for this row
       let oldestTime = new Date().valueOf();
@@ -420,7 +413,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       for (let i = 1; i < oldLabels.length; i++) {
         // 1 to start not on timestamp column
         const column = resortedPData[i];
-        if (!column || column.length === 0) { //FIXME somewhere a "column is undefined" error, if less columns returned than in this.displayeddata
+        if (!column || column.length === 0) {
+          debugFun && console.log('oldestsearch: column empty');
           continue;
         } else {
           stillWorking = true;
@@ -431,7 +425,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
           oldestTime = elementsTime;
         }
       }
-      if(counter>200) { // FIXME dead man's switch
+      debugFun && console.log('oldestTime', oldestTime);
+      if (counter > 11000) {
+        // FIXME dead man's switch
         stillWorking = false;
       }
       if (stillWorking === false) {
@@ -445,7 +441,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       newRow.push(new Date(oldestTime));
       for (let i = 1; i < oldLabels.length; i++) {
         const column = resortedPData[i];
-        if(!column || column[0]) {
+        if (!column || !column[0]) {
           newRow[i] = NaN; // not to leave any empty
           continue;
         }
@@ -495,6 +491,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       if (rowValid) {
         debugFun && console.log(['new row ready:', newRow]);
         this.displayedData.push(newRow);
+      } else {
+        debugFun && console.log('row invalid');
       }
     }
 
@@ -506,10 +504,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       let avg = 0;
       let last = this.displayedData[nrCols];
       for (let i = 1; i < oldLabels.length; i++) {
-        console.log('4avg:',last[i]);
+        debugFun && console.log('4avg:', last[i]);
         avg += last[i];
       }
-      this.lastValue = avg / (oldLabels.length -1);
+      this.lastValue = avg / (oldLabels.length - 1);
     }
 
     return true;
@@ -573,7 +571,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     console.log(this.dyGraphOptions);
     console.log(this.displayedData);
-    if (1 === 1) return;
+    // f (1 === 1) return;
     if (this.fetchFromServerIntervalMS > 0) {
       this.startUpdate();
     }
