@@ -435,7 +435,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         stillWorking = false;
       }
       if (stillWorking === false) {
-        console.log('updateDataSet: done, added',validRows,'rows.');
+        debugFun && console.log('updateDataSet: done, added',validRows,'rows.');
         break;
       }
 
