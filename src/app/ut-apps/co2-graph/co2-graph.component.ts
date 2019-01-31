@@ -34,7 +34,7 @@ export class Co2GraphComponent implements OnInit, OnDestroy {
     if (lsStep) {
       this.step = lsStep;
     }
-    const lsStartTime = this.localStorage.get('pm.start');
+    const lsStartTime = this.localStorage.get('co2.start');
     if (lsStartTime) {
       this.startTime = lsStartTime;
     }
@@ -48,7 +48,7 @@ export class Co2GraphComponent implements OnInit, OnDestroy {
   adjustTime(startTime: string, step: number) {
     this.startTime = startTime;
     this.step = step;
-    this.localStorage.set('pm.step', step);
-    this.localStorage.set('pm.start', startTime);
+    this.localStorage.set('co2.step', step);
+    this.localStorage.set('co2.start', startTime);
   }
 }
