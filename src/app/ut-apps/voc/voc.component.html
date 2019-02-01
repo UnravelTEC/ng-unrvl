@@ -18,10 +18,10 @@
   <tr>
     <td *ngFor="let value of graph.lastValues">
       <span *ngIf="value > 10000000">
-        <!-- >: hack to sort out date -->
+        <!-- >: to sort out date -->
         Value
       </span>
-      <span *ngIf="value < 10000000">{{ value | number: '1.0-10' }} </span>
+      <span *ngIf="value < 10000000">{{ value | number: '1.0-10' }} Ohm</span>
     </td>
   </tr>
 </table>
