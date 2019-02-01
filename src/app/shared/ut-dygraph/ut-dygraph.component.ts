@@ -439,6 +439,17 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         break;
       }
 
+      // Gap detection
+      if(lastTime && (lastTime + (Number(this.dataBaseQueryStepMS) * 1.1) < oldestTime)) {
+        const gapRow = [];
+        gapRow.push(new Date(lastTime + Number(this.dataBaseQueryStepMS)));
+        debugFun && console.log('gapRow:',gapRow);
+        for (let i = 1; i < oldLabels.length; i++) {
+          gapRow.push(NaN);
+        }
+        this.displayedData.push(gapRow);
+      }
+
       // for every entry in this row that matches the timestamp, take it
       let newRow = [];
       let rowValid = false;
@@ -489,8 +500,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
           newRow[i] = NaN;
         }
       }
-
-      // TODO: Gap detection
 
       if (rowValid) {
         debugFun && console.log(['new row ready:', newRow]);
