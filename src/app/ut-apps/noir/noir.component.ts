@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 
@@ -15,7 +15,13 @@ export class NoirComponent implements OnInit {
     this.globalSettings.emitChange({ appName: 'NoIR-Camera' });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.start();
+  }
+
+  ngOnDestroy() {
+    this.stop();
+  }
 
   start() {
     this.utFetchdataService
