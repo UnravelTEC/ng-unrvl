@@ -30,7 +30,7 @@ input {
     width: 20em;
 }
 
-section#submit {
+section.center {
     text-align: center;
 }
 

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { GlobalSettingsService } from '../../core/global-settings.service';
+import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
 
 @Component({
   selector: 'app-settings-panel',
@@ -39,7 +40,8 @@ export class SettingsPanelComponent implements OnInit {
   constructor(
     private localStorage: LocalStorageService,
     private h: HelperFunctionsService,
-    private globalSettingsService: GlobalSettingsService
+    private globalSettingsService: GlobalSettingsService,
+    private utHTTP: UtFetchdataService
   ) {
     this.globalSettingsService.emitChange({ appName: 'Settings' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
   }
@@ -111,5 +113,42 @@ export class SettingsPanelComponent implements OnInit {
             document.msExitFullscreen();
         } */
     }
+  }
+
+  ack(data: Object) {
+    console.log('api retval:', data);
+    if (data['shutdown']) {
+      switch (data['shutdown']) {
+        case 'halt':
+          alert('system halted');
+          break;
+        case 'reboot':
+          alert('system rebooted');
+          break;
+      }
+    }
+  }
+
+  halt() {
+    if (confirm('Halt now?')) {
+      this.utHTTP
+        .getHTTPData(this.getServer() + 'system/halt.php')
+        .subscribe((data: Object) => this.ack(data));
+    }
+  }
+  reboot() {
+    if (confirm('Reboot now?')) {
+      this.utHTTP
+        .getHTTPData(this.getServer() + 'system/reboot.php')
+        .subscribe((data: Object) => this.ack(data));
+    }
+  }
+
+  getServer(): string {
+    return (
+      'http://' +
+      this.globalSettings['server']['settings'].serverHostName.fieldValue +
+      '/api/'
+    );
   }
 }
