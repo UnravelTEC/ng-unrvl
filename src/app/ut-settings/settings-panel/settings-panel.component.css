@@ -40,7 +40,7 @@ button {
     margin-left: 0.3em;
 }
 
-a {
+section > a {
     display: block;
     background-color: #5cb85c;
     border-color: #4cae4c;
