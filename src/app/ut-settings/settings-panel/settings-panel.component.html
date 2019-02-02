@@ -1,7 +1,9 @@
 <h1>Global Settings</h1>
+<div class="settingspage">
 <section *ngFor="let settingsSection of (globalSettingsUnsaved | keyvalue)">
   <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
   <section *ngFor="let entry of (settingsSection.value.settings | keyvalue)">
+    <div class="fields">
     <label for="{{ settingsSection.key }}-{{ entry.key }}"
       >{{ entry.value.fieldName }}:
     </label>
@@ -11,6 +13,7 @@
       id="{{ settingsSection.key }}-{{ entry.key }}"
       [(ngModel)]="entry.value.fieldValue"
     />
+  </div>
     <div class="valuedebug" *ngIf="debug == true">
       <!-- '{{ entry.value.fieldValue }}', -->
       <span *ngIf="entry.key == 'serverHostName'"
@@ -57,3 +60,4 @@
 <section>
   <a (click)="fullscreen()">Fullscreen</a>
 </section>
+</div>
