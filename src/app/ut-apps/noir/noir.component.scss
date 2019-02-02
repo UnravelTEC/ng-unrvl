@@ -1,4 +1,10 @@
 .buttons {
-    position: absolute;
-    bottom: 0;
+  position: absolute;
+  bottom: 0;
+
+  .offbtn.off,
+  .onbtn.on,
+  .autobtn.auto {
+    border: 3px solid green;
+  }
 }

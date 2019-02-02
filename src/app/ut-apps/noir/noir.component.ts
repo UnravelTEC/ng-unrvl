@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
+import { HelperFunctionsService } from '../../core/helper-functions.service';
+import { LocalStorageService } from '../../core/local-storage.service';
 
 @Component({
   selector: 'app-noir',
@@ -8,9 +10,13 @@ import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
   styleUrls: ['./noir.component.scss']
 })
 export class NoirComponent implements OnInit {
+  ledstatus = 'off';
+
   constructor(
     private globalSettings: GlobalSettingsService,
-    private utFetchdataService: UtFetchdataService
+    private localStorage: LocalStorageService,
+    private utFetchdataService: UtFetchdataService,
+    private h: HelperFunctionsService
   ) {
     this.globalSettings.emitChange({ appName: 'NoIR-Camera' });
   }
@@ -25,15 +31,53 @@ export class NoirComponent implements OnInit {
 
   start() {
     this.utFetchdataService
-      .getHTTPData('/api/noir/running.php')
+      .getHTTPData(this.getServer() + '/api/noir/running.php')
       .subscribe((data: Object) => this.ack(data));
   }
 
   stop() {
     this.utFetchdataService
-      .getHTTPData('/api/noir/stopping.php')
+      .getHTTPData(this.getServer() + '/api/noir/stopping.php')
       .subscribe((data: Object) => this.ack(data));
   }
 
-  ack(data: Object) {}
+  ack(data: Object) {
+    console.log('api retval:', data);
+
+    if (data['ledstatus']) {
+      switch (data['ledstatus']) {
+        case 'on':
+          this.ledstatus = 'on';
+          break;
+        case 'off':
+          this.ledstatus = 'off';
+          break;
+        case 'auto':
+          this.ledstatus = 'auto';
+          break;
+        default:
+          console.log('retval of ledstatus incorrect:', data['ledstatus']);
+          break;
+      }
+    }
+  }
+
+  led(newstat: string) {
+    this.utFetchdataService
+      .getHTTPData(this.getServer() + '/api/noir/ir-led.php?irstatus=' + newstat)
+      .subscribe((data: Object) => this.ack(data));
+
+    this.ledstatus = 'pending';
+  }
+
+  getServer(): string {
+    const globalSettings = this.localStorage.get('globalSettings');
+    const server = this.h.getDeep(globalSettings, [
+      'server',
+      'settings',
+      'serverHostName',
+      'fieldValue'
+    ]);
+    return 'http://' + server;
+  }
 }
