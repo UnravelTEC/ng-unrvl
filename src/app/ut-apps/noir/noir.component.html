@@ -1,7 +1,7 @@
 <div class="buttons">
-  <button (click)="start()">Start</button>
-  <button (click)="stop()">Stop</button>
-LED:
+  <button (click)="start()" *ngIf="!cameraRunning">Start</button>
+  <button (click)="stop()" *ngIf="cameraRunning">Stop</button>
+  LED:
   <button (click)="led('off')" class="offbtn {{ ledstatus }}">Off</button>
   <button (click)="led('on')" class="onbtn {{ ledstatus }}">On</button>
   <button (click)="led('auto')" class="autobtn {{ ledstatus }}">Auto</button>

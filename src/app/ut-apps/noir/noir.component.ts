@@ -11,6 +11,7 @@ import { LocalStorageService } from '../../core/local-storage.service';
 })
 export class NoirComponent implements OnInit {
   ledstatus = 'off';
+  cameraRunning = false;
 
   constructor(
     private globalSettings: GlobalSettingsService,
@@ -43,6 +44,22 @@ export class NoirComponent implements OnInit {
 
   ack(data: Object) {
     console.log('api retval:', data);
+    if (data['cameraRunning']) {
+      switch (data['cameraRunning']) {
+        case true:
+          this.cameraRunning = true;
+          break;
+        case false:
+          this.cameraRunning = false;
+          break;
+        default:
+          console.log(
+            'retval of cameraRunning incorrect:',
+            data['cameraRunning']
+          );
+          break;
+      }
+    }
 
     if (data['ledstatus']) {
       switch (data['ledstatus']) {
@@ -64,7 +81,9 @@ export class NoirComponent implements OnInit {
 
   led(newstat: string) {
     this.utFetchdataService
-      .getHTTPData(this.getServer() + '/api/noir/ir-led.php?irstatus=' + newstat)
+      .getHTTPData(
+        this.getServer() + '/api/noir/ir-led.php?irstatus=' + newstat
+      )
       .subscribe((data: Object) => this.ack(data));
 
     this.ledstatus = 'pending';
