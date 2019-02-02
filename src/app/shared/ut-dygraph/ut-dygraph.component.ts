@@ -196,8 +196,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stopUpdate();
-    this.Dygraph.destroy();
-    console.log('DyGraph destroyed');
+    if (this.Dygraph) {
+      this.Dygraph.destroy();
+      console.log('DyGraph destroyed');
+    }
   }
 
   updateDyGraphOptions() {
@@ -378,8 +380,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         resortedPData[oldLabels.length] =
           receivedDataset[currentNewLabelString];
         oldLabels.push(currentNewLabelString);
-        this.columnLabels[oldLabels.length -2] = this.h.getDeep(result, [i, 'metric']);
-        console.log('columnlabels now:',cloneDeep(this.columnLabels));
+        this.columnLabels[oldLabels.length - 2] = this.h.getDeep(result, [
+          i,
+          'metric'
+        ]);
+        console.log('columnlabels now:', cloneDeep(this.columnLabels));
         debugFun && console.log(['added new label, result:', oldLabels]);
       } else {
         resortedPData[oldIndex] = receivedDataset[currentNewLabelString];
@@ -394,8 +399,13 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     let validRows = 0;
     while (true) {
       debugFun &&
-        console.log(['while', deadManCounter, resortedPData, this.displayedData]);
-        deadManCounter++;
+        console.log([
+          'while',
+          deadManCounter,
+          resortedPData,
+          this.displayedData
+        ]);
+      deadManCounter++;
 
       let lastTime;
       if (
@@ -435,15 +445,19 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         stillWorking = false;
       }
       if (stillWorking === false) {
-        debugFun && console.log('updateDataSet: done, added',validRows,'rows.');
+        debugFun &&
+          console.log('updateDataSet: done, added', validRows, 'rows.');
         break;
       }
 
       // Gap detection
-      if(lastTime && (lastTime + (Number(this.dataBaseQueryStepMS) * 1.1) < oldestTime)) {
+      if (
+        lastTime &&
+        lastTime + Number(this.dataBaseQueryStepMS) * 1.1 < oldestTime
+      ) {
         const gapRow = [];
         gapRow.push(new Date(lastTime + Number(this.dataBaseQueryStepMS)));
-        debugFun && console.log('gapRow:',gapRow);
+        debugFun && console.log('gapRow:', gapRow);
         for (let i = 1; i < oldLabels.length; i++) {
           gapRow.push(NaN);
         }
