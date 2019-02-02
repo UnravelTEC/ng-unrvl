@@ -79,4 +79,8 @@ export class SettingsPanelComponent implements OnInit {
     );
     // alert('reset ok');
   }
+
+  fullscreen() {
+    document.documentElement.requestFullscreen();
+  }
 }
