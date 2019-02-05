@@ -71,7 +71,7 @@
   </section>
 
   <section>
-    <h2>Brightness:</h2>
-      <app-display-brighness></app-display-brighness>
+    <h2>Brightness: {{ currentBrightness / 255 * 100 | number: '1.0-0' }}&#8239;%</h2>
+      <app-display-brighness (brightnessEvent)="setNewBN($event)"></app-display-brighness>
   </section>
 </div>

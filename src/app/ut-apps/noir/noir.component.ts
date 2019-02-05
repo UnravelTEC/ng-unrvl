@@ -91,12 +91,15 @@ export class NoirComponent implements OnInit {
 
   getServer(): string {
     const globalSettings = this.localStorage.get('globalSettings');
-    const server = this.h.getDeep(globalSettings, [
+    let server = this.h.getDeep(globalSettings, [
       'server',
       'settings',
       'serverHostName',
       'fieldValue'
     ]);
+    if(!server) {
+      server = 'localhost';
+    }
     return 'http://' + server;
   }
 }

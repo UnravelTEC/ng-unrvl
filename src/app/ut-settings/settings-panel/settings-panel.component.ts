@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { GlobalSettingsService } from '../../core/global-settings.service';
-import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
+import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 
 @Component({
   selector: 'app-settings-panel',
@@ -36,6 +36,7 @@ export class SettingsPanelComponent implements OnInit {
   debug = true;
 
   public ourHostName: string;
+  public currentBrightness = 0;
 
   constructor(
     private localStorage: LocalStorageService,
@@ -145,10 +146,18 @@ export class SettingsPanelComponent implements OnInit {
   }
 
   getServer(): string {
-    return (
-      'http://' +
-      this.globalSettings['server']['settings'].serverHostName.fieldValue +
-      '/api/'
-    );
+    let server = this.h.getDeep(this.globalSettings, [
+      'server',
+      'settings',
+      'serverHostName',
+      'fieldValue'
+    ]);
+    if (!server) {
+      server = this.ourHostName;
+    }
+    return 'http://' + server + '/api/';
+  }
+  setNewBN(bn) {
+    this.currentBrightness = bn;
   }
 }
