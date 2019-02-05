@@ -71,7 +71,7 @@
   </section>
 
   <section>
-    <h2>Brightness: {{ currentBrightness / 255 * 100 | number: '1.0-0' }}&#8239;%</h2>
-      <app-display-brighness (brightnessEvent)="setNewBN($event)"></app-display-brighness>
+    <h2>Brightness: <span *ngIf="! bn.disabled">{{ currentBrightness / 255 * 100 | number: '1.0-0' }}&#8239;%</span></h2>
+      <app-display-brighness (brightnessEvent)="setNewBN($event)" #bn></app-display-brighness>
   </section>
 </div>

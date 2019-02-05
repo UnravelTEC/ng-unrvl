@@ -21,6 +21,7 @@ export class DisplayBrighnessComponent implements OnInit {
 
   public currentBrightness = 64;
   private ourHostName: string;
+  disabled = true;
 
   ngOnInit() {
     this.getBrightness();
@@ -35,6 +36,7 @@ export class DisplayBrighnessComponent implements OnInit {
 
   getBrightness() {
     console.log('getbn called');
+    // alert('get bn called');
     this.utHTTP
       .getHTTPData(this.getServer() + 'screen/getBrightness.php')
       .subscribe((data: Object) => this.acceptBrighness(data));
@@ -46,16 +48,18 @@ export class DisplayBrighnessComponent implements OnInit {
       this.currentBrightness = data['brightness'];
       this.brightnessEvent.emit(this.currentBrightness);
     }
+    // alert('got bn:' + JSON.stringify(data));
+    this.disabled = false;
   }
 
   setBrightness(MatSliderChange) {
     console.log(MatSliderChange);
-    // if(MatSliderChange && MatSliderChange['value'])
+    // alert(JSON.stringify(MatSliderChange)); // ERROR: cyclic data
     this.utHTTP
       .getHTTPData(
         this.getServer() + 'screen/brightness.php?bn=' + MatSliderChange.value
       )
-      .subscribe((data: Object) => this.ack(data));
+      .subscribe((data: Object ) => this.ack(data));
     this.currentBrightness = MatSliderChange.value;
     this.brightnessEvent.emit(this.currentBrightness);
   }
@@ -69,7 +73,7 @@ export class DisplayBrighnessComponent implements OnInit {
       'fieldValue'
     ]);
     if (!server) {
-      return this.ourHostName + '/api/';
+      return 'http://localhost/api/';
     }
     return 'http://' + server + '/api/';
   }
