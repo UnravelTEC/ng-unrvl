@@ -153,7 +153,7 @@ export class SettingsPanelComponent implements OnInit {
       'fieldValue'
     ]);
     if (!server) {
-      server = this.ourHostName;
+      return this.ourHostName + '/api/';
     }
     return 'http://' + server + '/api/';
   }
