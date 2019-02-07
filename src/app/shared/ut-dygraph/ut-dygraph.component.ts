@@ -13,7 +13,10 @@ import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 
+import * as FileSaver from 'file-saver';
+
 import cloneDeep from 'lodash-es/cloneDeep';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-ut-dygraph',
@@ -130,7 +133,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   constructor(
     private utFetchdataService: UtFetchdataService,
     private localStorage: LocalStorageService,
-    private h: HelperFunctionsService
+    private h: HelperFunctionsService,
+    private http: HttpClient
   ) {}
 
   constructQueryEndpoint(
@@ -1028,5 +1032,51 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.Dygraph.updateOptions({
       dateWindow: [startDate.valueOf(), endDate.valueOf()]
     });
+  }
+
+  exportCSV() {
+    //header
+    const separator = '\t';
+    const linebreak = '\n';
+
+    const labels = this.dyGraphOptions['labels'];
+    const data = this.displayedData;
+    let header = '';
+    if (labels.length === 0 || data.length === 0) {
+      alert('no data to export');
+      return;
+    }
+    for (let i = 0; i < labels.length; i++) {
+      const element = labels[i];
+      if (i > 0) {
+        header += separator;
+      }
+      header += element.replace(/,/g, ';');
+    }
+    header += linebreak;
+
+    let csvbody = '';
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i];
+      for (let column = 0; column < row.length; column++) {
+        const element = row[column];
+        if (column > 0) {
+          csvbody += separator;
+        }
+        if (column === 0) {
+          csvbody += element.valueOf() / 1000;
+        } else {
+          csvbody += String(element);
+        }
+      }
+      csvbody += linebreak;
+    }
+    // values
+
+    const csv = header + csvbody;
+    // console.log(csv);
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    FileSaver.saveAs(blob, 'data.csv');
   }
 }
