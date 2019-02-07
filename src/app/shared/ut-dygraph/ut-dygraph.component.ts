@@ -1064,7 +1064,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
           csvbody += separator;
         }
         if (column === 0) {
-          csvbody += element.valueOf() / 1000;
+          csvbody += (element.valueOf() / 1000).toPrecision(14);
         } else {
           csvbody += String(element);
         }
