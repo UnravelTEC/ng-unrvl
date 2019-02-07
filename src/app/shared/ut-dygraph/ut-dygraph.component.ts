@@ -833,9 +833,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
     this.requestsUnderway++;
 
-    const startDate = this.displayedData[this.displayedData.length - 1][0];
+    const startDate = this.displayedData.length
+      ? this.displayedData[this.displayedData.length - 1][0]
+      : undefined;
     if (!startDate) {
-      // unsure if needed, because now interval is only triggered when initial data here.
       console.log(startDate);
       console.error('error in fetchNewData: no previous data found');
       this.requestsUnderway--;
@@ -1019,7 +1020,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     const difference = endDate.valueOf() - startDate.valueOf();
     if (difference / this.fetchFromServerIntervalMS > maxPointsToFetch) {
-      console.log('more than ' + maxPointsToFetch + ' points requested, reducing');
+      console.log(
+        'more than ' + maxPointsToFetch + ' points requested, reducing'
+      );
       const maxStartDateValue =
         endDate.valueOf() - this.fetchFromServerIntervalMS * maxPointsToFetch;
       startDate = new Date(maxStartDateValue);
