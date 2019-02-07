@@ -1002,6 +1002,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   calculateTimeRange(startTime: string, endTime: string): [Date, Date] {
+    const maxPointsToFetch = 1000; // 10500; // Prometheus allows 11k max
     let startDate: Date;
     let endDate: Date;
 
@@ -1014,6 +1015,14 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       // console.log('length of interval displayed (s): ' + seconds.toString());
     } else {
       startDate = new Date(startTime);
+    }
+
+    const difference = endDate.valueOf() - startDate.valueOf();
+    if (difference / this.fetchFromServerIntervalMS > maxPointsToFetch) {
+      console.log('more than ' + maxPointsToFetch + ' points requested, reducing');
+      const maxStartDateValue =
+        endDate.valueOf() - this.fetchFromServerIntervalMS * maxPointsToFetch;
+      startDate = new Date(maxStartDateValue);
     }
 
     return [startDate, endDate];
