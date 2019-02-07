@@ -5,12 +5,11 @@ import { Subject } from 'rxjs';
 import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
 import { HelperFunctionsService } from './helper-functions.service';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class GlobalSettingsService implements OnInit {
-  private hostName = "";
+  private hostName = '';
 
   // Observable string sources
   private emitChangeSource = new Subject<any>();
@@ -20,7 +19,10 @@ export class GlobalSettingsService implements OnInit {
   emitChange(change: any) {
     this.emitChangeSource.next(change);
   }
-  constructor(private utFetchdataService: UtFetchdataService, private h: HelperFunctionsService) {}
+  constructor(
+    private utFetchdataService: UtFetchdataService,
+    private h: HelperFunctionsService
+  ) {}
 
   ngOnInit() {
     this.fetchHostName();
@@ -28,16 +30,14 @@ export class GlobalSettingsService implements OnInit {
 
   private fetchHostName() {
     this.utFetchdataService
-      .getHTTPData(
-        this.h.getBaseURL() + '/api/system/hostname.php'
-      )
+      .getHTTPData(this.h.getBaseURL() + '/api/system/hostname.php')
       .subscribe((data: Object) => this.setHostName(data));
   }
-  setHostName(data:Object) {
+  setHostName(data: Object) {
     if (data['hostname']) {
       this.hostName = data['hostName'];
     }
-    this.emitChange({hostname: this.hostName});
+    this.emitChange({ hostname: this.hostName });
   }
 
   public getHostName(): string {
