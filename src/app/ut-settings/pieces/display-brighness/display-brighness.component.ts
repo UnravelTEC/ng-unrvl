@@ -1,7 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { MatSliderModule } from '@angular/material/slider';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
-import { LocalStorageService } from '../../../core/local-storage.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
 import { GlobalSettingsService } from '../../../core/global-settings.service';
 
@@ -17,18 +16,17 @@ export class DisplayBrighnessComponent implements OnInit {
   constructor(
     private utHTTP: UtFetchdataService,
     private gss: GlobalSettingsService,
-    private localStorage: LocalStorageService,
     private h: HelperFunctionsService
   ) {}
 
   public currentBrightness = 64;
-  private ourHostName: string;
   disabled = true;
 
   ngOnInit() {
-    this.getBrightness();
-    this.ourHostName = this.h.getBaseURL();
-    this.brightnessEvent.emit(this.currentBrightness);
+    if (this.gss.getAPIEndpoint()) {
+      this.getBrightness();
+      this.brightnessEvent.emit(this.currentBrightness);
+    }
   }
 
   ack(data: Object) {
@@ -59,9 +57,11 @@ export class DisplayBrighnessComponent implements OnInit {
     // alert(JSON.stringify(MatSliderChange)); // ERROR: cyclic data
     this.utHTTP
       .getHTTPData(
-        this.gss.getAPIEndpoint() + 'screen/brightness.php?bn=' + MatSliderChange.value
+        this.gss.getAPIEndpoint() +
+          'screen/brightness.php?bn=' +
+          MatSliderChange.value
       )
-      .subscribe((data: Object ) => this.ack(data));
+      .subscribe((data: Object) => this.ack(data));
     this.currentBrightness = MatSliderChange.value;
     this.brightnessEvent.emit(this.currentBrightness);
   }

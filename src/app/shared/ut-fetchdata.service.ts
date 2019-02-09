@@ -36,7 +36,7 @@ export class UtFetchdataService {
     if (!port) {
       port = this.globalSettingsService.defaultPrometheusPort;
     }
-    if (port) {
+    if (Number(port) > 0) {
       port = ':' + port;
     }
     if (!port) {

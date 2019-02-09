@@ -53,9 +53,13 @@ export class SettingsPanelComponent implements OnInit {
 
   public currentBrightness = 0;
 
+  public prometheusPath = '';
+  public oldIFPath = '';
+
+  public API = '';
+
   constructor(
     private localStorage: LocalStorageService,
-    private h: HelperFunctionsService,
     private globalSettingsService: GlobalSettingsService,
     private utHTTP: UtFetchdataService
   ) {
@@ -72,6 +76,13 @@ export class SettingsPanelComponent implements OnInit {
         this.globalSettingsUnsaved[item] = JSON.parse(deepcopy);
       }
     }
+    this.API = this.globalSettingsService.getAPIEndpoint();
+    if (this.API) {
+      this.oldIFPath = this.API.replace(/api\/$/, '');
+    }
+    this.prometheusPath = this.globalSettingsService
+      .getPrometheusEndpoint()
+      .replace(/api\/v1\/$/, '');
   }
 
   load() {
@@ -146,14 +157,14 @@ export class SettingsPanelComponent implements OnInit {
   halt() {
     if (confirm('Halt now?')) {
       this.utHTTP
-        .getHTTPData(this.globalSettingsService.getAPIEndpoint() + 'system/halt.php')
+        .getHTTPData(this.API + 'system/halt.php')
         .subscribe((data: Object) => this.ack(data));
     }
   }
   reboot() {
     if (confirm('Reboot now?')) {
       this.utHTTP
-        .getHTTPData(this.globalSettingsService.getAPIEndpoint() + 'system/reboot.php')
+        .getHTTPData(this.API + 'system/reboot.php')
         .subscribe((data: Object) => this.ack(data));
     }
   }

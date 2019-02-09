@@ -13,11 +13,11 @@ export class GlobalSettingsService implements OnInit {
   private hostName = '';
 
   private prometheusRunningOnWebserver = false;
-  public defaultPrometheusPath = '/api/v1/'; // later switch to '/prometheus/api/v1/'
+  public defaultPrometheusPath = '/prometheus/api/v1/';
   public defaultPrometheusPort = undefined; // '9090'; // later switch to default port
   private defaultAPIPath = '/api/';
   private fallbackPrometheusEndpoint =
-    'https://scpexploratory02.tugraz.at/api/v1/';
+    'https://scpexploratory02.tugraz.at/prometheus/api/v1/';
 
   // Observable string sources
   private emitChangeSource = new Subject<any>();
@@ -36,11 +36,15 @@ export class GlobalSettingsService implements OnInit {
   ngOnInit() {
     console.log('GlobalSettingsDervice: startup');
     this.testPrometheusOnEndpoint(this.h.getBaseURL());
-    this.fetchHostName(this.getAPIEndpoint());
+    const API = this.getAPIEndpoint();
+    if (API) {
+      this.fetchHostName(API);
+    }
   }
 
   private fetchHostName(server: string) {
-    this.http.get(server + 'system/hostname.php')
+    this.http
+      .get(server + 'system/hostname.php')
       .subscribe(
         (data: Object) => this.setHostName(data),
         error => this.handleNoHostnameAPI(error)
@@ -82,7 +86,8 @@ export class GlobalSettingsService implements OnInit {
       endpoint = endpoint + this.defaultPrometheusPath;
     }
     // console.log('testing prometheus on', endpoint);
-    this.http.get(endpoint + 'query?query=scrape_samples_scraped')
+    this.http
+      .get(endpoint + 'query?query=scrape_samples_scraped')
       .subscribe(
         (data: Object) => this.prometheusTestSuccess(data),
         error => this.prometheusTestFailure(error)
@@ -112,7 +117,7 @@ export class GlobalSettingsService implements OnInit {
       const protocol = settings['prometheusProtocol']['fieldValue'];
       const server = settings['serverHostName']['fieldValue'];
       let port = settings['prometheusPort']['fieldValue'];
-      if (port) {
+      if (Number(port) > 0) {
         port = ':' + port;
       }
       let path = settings['prometheusPath']['fieldValue'];
@@ -127,12 +132,10 @@ export class GlobalSettingsService implements OnInit {
 
     if (this.prometheusRunningOnWebserver) {
       // hostname of webserver
-      return (
-        this.h.getBaseURL() +
-        ':' +
-        this.defaultPrometheusPort +
-        this.defaultPrometheusPath
-      );
+      const port = this.defaultPrometheusPort
+        ? ':' + this.defaultPrometheusPort
+        : '';
+      return this.h.getBaseURL() + port + this.defaultPrometheusPath;
     } else {
       // fallback
       return this.fallbackPrometheusEndpoint;
