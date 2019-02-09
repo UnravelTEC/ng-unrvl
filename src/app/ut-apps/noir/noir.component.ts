@@ -23,7 +23,7 @@ export class NoirComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.globalSettings.getAPIEndpoint()) {
+    if (this.globalSettings.getAPIEndpoint()) { // FIXME check if noir php scripts are here or return "camera ok"
       this.start();
       this.globalSettings.emitChange({ footer: false });
     } else {
