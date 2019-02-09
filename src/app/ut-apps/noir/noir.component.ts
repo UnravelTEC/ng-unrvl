@@ -1,8 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
-import { HelperFunctionsService } from '../../core/helper-functions.service';
-import { LocalStorageService } from '../../core/local-storage.service';
 
 @Component({
   selector: 'app-noir',
@@ -42,8 +40,9 @@ export class NoirComponent implements OnInit {
 
   ack(data: Object) {
     console.log('api retval:', data);
-    if (data['cameraRunning']) {
-      switch (data['cameraRunning']) {
+    if (data.hasOwnProperty('cameraRunning')) {
+      console.log('bef. switch');
+      switch (data['cameraRunning'] ) {
         case true:
           this.cameraRunning = true;
           break;
