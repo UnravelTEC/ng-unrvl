@@ -35,8 +35,10 @@ section.center {
 }
 
 
-div.fields {
-    float: left;
+div.valuedebug {
+     position: relative;
+     left: 20em;
+     margin-top: -3em;
 }
 .valuedebug {
     display:inline-block;

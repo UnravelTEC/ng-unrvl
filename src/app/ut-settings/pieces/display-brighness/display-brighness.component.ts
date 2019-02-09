@@ -3,6 +3,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { LocalStorageService } from '../../../core/local-storage.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
+import { GlobalSettingsService } from '../../../core/global-settings.service';
 
 @Component({
   selector: 'app-display-brighness',
@@ -15,6 +16,7 @@ export class DisplayBrighnessComponent implements OnInit {
 
   constructor(
     private utHTTP: UtFetchdataService,
+    private gss: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private h: HelperFunctionsService
   ) {}
@@ -38,7 +40,7 @@ export class DisplayBrighnessComponent implements OnInit {
     console.log('getbn called');
     // alert('get bn called');
     this.utHTTP
-      .getHTTPData(this.getServer() + 'screen/getBrightness.php')
+      .getHTTPData(this.gss.getAPIEndpoint() + 'screen/getBrightness.php')
       .subscribe((data: Object) => this.acceptBrighness(data));
   }
 
@@ -57,24 +59,10 @@ export class DisplayBrighnessComponent implements OnInit {
     // alert(JSON.stringify(MatSliderChange)); // ERROR: cyclic data
     this.utHTTP
       .getHTTPData(
-        this.getServer() + 'screen/brightness.php?bn=' + MatSliderChange.value
+        this.gss.getAPIEndpoint() + 'screen/brightness.php?bn=' + MatSliderChange.value
       )
       .subscribe((data: Object ) => this.ack(data));
     this.currentBrightness = MatSliderChange.value;
     this.brightnessEvent.emit(this.currentBrightness);
-  }
-
-  getServer(): string {
-    const globalSettings = this.localStorage.get('globalSettings');
-    let server = this.h.getDeep(globalSettings, [
-      'server',
-      'settings',
-      'serverHostName',
-      'fieldValue'
-    ]);
-    if (!server) {
-      return 'http://localhost/api/';
-    }
-    return 'http://' + server + '/api/';
   }
 }

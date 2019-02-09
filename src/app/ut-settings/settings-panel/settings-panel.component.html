@@ -15,15 +15,17 @@
         />
       </div>
       <div class="valuedebug" *ngIf="debug == true">
-        <!-- '{{ entry.value.fieldValue }}', -->
+        <!-- '{{ entry.value.fieldValue }}',-->
+        <!--
         <span *ngIf="entry.key == 'serverHostName'"
           ><a href="http://{{ entry.value.fieldValue }}">{{
             entry.value.fieldValue
           }}</a></span
-        >
+        > -->
         Default: '{{
+
           defaultSettings[settingsSection.key].settings[entry.key].fieldValue
-        }}', Global: '<span
+        }}',<br /> Global: '<span
           *ngIf="
             globalSettings &&
             globalSettings[settingsSection.key] &&

@@ -15,9 +15,7 @@ export class NoirComponent implements OnInit {
 
   constructor(
     private globalSettings: GlobalSettingsService,
-    private localStorage: LocalStorageService,
-    private utFetchdataService: UtFetchdataService,
-    private h: HelperFunctionsService
+    private utFetchdataService: UtFetchdataService
   ) {
     this.globalSettings.emitChange({ appName: 'NoIR-Camera' });
   }
@@ -32,13 +30,13 @@ export class NoirComponent implements OnInit {
 
   start() {
     this.utFetchdataService
-      .getHTTPData(this.getServer() + '/api/noir/running.php')
+      .getHTTPData(this.globalSettings.getAPIEndpoint() + 'noir/running.php')
       .subscribe((data: Object) => this.ack(data));
   }
 
   stop() {
     this.utFetchdataService
-      .getHTTPData(this.getServer() + '/api/noir/stopping.php')
+      .getHTTPData(this.globalSettings.getAPIEndpoint() + 'noir/stopping.php')
       .subscribe((data: Object) => this.ack(data));
   }
 
@@ -82,24 +80,12 @@ export class NoirComponent implements OnInit {
   led(newstat: string) {
     this.utFetchdataService
       .getHTTPData(
-        this.getServer() + '/api/noir/ir-led.php?irstatus=' + newstat
+        this.globalSettings.getAPIEndpoint() +
+          'noir/ir-led.php?irstatus=' +
+          newstat
       )
       .subscribe((data: Object) => this.ack(data));
 
     this.ledstatus = 'pending';
-  }
-
-  getServer(): string {
-    const globalSettings = this.localStorage.get('globalSettings');
-    let server = this.h.getDeep(globalSettings, [
-      'server',
-      'settings',
-      'serverHostName',
-      'fieldValue'
-    ]);
-    if(!server) {
-      server = 'localhost';
-    }
-    return 'http://' + server;
   }
 }

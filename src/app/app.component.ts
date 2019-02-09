@@ -37,7 +37,10 @@ export class AppComponent implements OnInit {
       if (obj && obj.hasOwnProperty('appName')) {
         this.setAppName(obj['appName']);
       }
+
     });
+
+    this.globalSettings.ngOnInit();
 
     // this.http.get('/rest/test').subscribe(
     //   value => {
