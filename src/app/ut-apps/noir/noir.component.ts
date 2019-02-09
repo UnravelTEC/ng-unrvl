@@ -11,6 +11,10 @@ export class NoirComponent implements OnInit {
   ledstatus = 'off';
   cameraRunning = false;
 
+  cameraHere = false;
+
+  loading = true;
+
   constructor(
     private globalSettings: GlobalSettingsService,
     private utFetchdataService: UtFetchdataService
@@ -19,11 +23,19 @@ export class NoirComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.start();
+    if (this.globalSettings.getAPIEndpoint()) {
+      this.start();
+      this.globalSettings.emitChange({ footer: false });
+    } else {
+      this.loading = false;
+    }
   }
 
   ngOnDestroy() {
-    this.stop();
+    if (this.globalSettings.getAPIEndpoint()) {
+      this.stop();
+    }
+    this.globalSettings.emitChange({ footer: true });
   }
 
   start() {
@@ -40,9 +52,13 @@ export class NoirComponent implements OnInit {
 
   ack(data: Object) {
     console.log('api retval:', data);
+
+    this.cameraHere = true;
+    this.loading = false;
+
     if (data.hasOwnProperty('cameraRunning')) {
       console.log('bef. switch');
-      switch (data['cameraRunning'] ) {
+      switch (data['cameraRunning']) {
         case true:
           this.cameraRunning = true;
           break;

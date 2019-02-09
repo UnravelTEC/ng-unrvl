@@ -37,7 +37,9 @@ export class AppComponent implements OnInit {
       if (obj && obj.hasOwnProperty('appName')) {
         this.setAppName(obj['appName']);
       }
-
+      if (obj && obj.hasOwnProperty('footer')) {
+        this.toggleFooter(obj['footer']);
+      }
     });
 
     this.globalSettings.ngOnInit();
@@ -70,5 +72,15 @@ export class AppComponent implements OnInit {
       this.topBarHidden = !this.topBarHidden;
       this.footerHidden = !this.footerHidden;
     }
+  }
+  public toggleFooter(newState?: boolean) {
+    setTimeout(() => { // to prevent ExpressionChangedAfterItHasBeenCheckedError
+      console.log(['footer toggled to ', newState]);
+      if (newState !== undefined) {
+        this.footerHidden = !newState;
+      } else {
+        this.footerHidden = !this.footerHidden;
+      }
+    }, 100);
   }
 }

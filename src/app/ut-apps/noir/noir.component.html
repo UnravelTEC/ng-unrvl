@@ -1,8 +1,14 @@
-<div class="buttons">
+<div class="buttons" *ngIf="cameraHere">
   <button (click)="start()" *ngIf="!cameraRunning">Start</button>
   <button (click)="stop()" *ngIf="cameraRunning">Stop</button>
   LED:
   <button (click)="led('off')" class="offbtn {{ ledstatus }}">Off</button>
   <button (click)="led('on')" class="onbtn {{ ledstatus }}">On</button>
   <button (click)="led('auto')" class="autobtn {{ ledstatus }}">Auto</button>
+</div>
+<div class="error" *ngIf="! cameraHere && ! loading">
+  No Camera connected.
+</div>
+<div class="loading" *ngIf="loading">
+  Loading…
 </div>
