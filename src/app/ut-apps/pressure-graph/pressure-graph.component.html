@@ -8,11 +8,9 @@
       YLabel="Atmospheric Pressure (hPa)"
       [style]="graphstyle"
       [startTime]="startTime"
+      runningAvgSeconds="60"
       #graph
     ></app-ut-dygraph>
-    <!-- serverHostName=""
-  serverPort="80"
-  serverPath="prometheus/api/v1/" -->
   </div>
   <form>
     <label for="startTime">Time Range: </label>
