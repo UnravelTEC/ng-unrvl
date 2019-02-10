@@ -898,9 +898,15 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       console.log('old request already running, dont');
       return;
     }
+    const earliestDataDate = this.displayedData[0][0];
 
     const fromNum = from.valueOf();
-    const toNum = to.valueOf();
+    let toNum = to.valueOf();
+
+    if(toNum >= earliestDataDate) {
+      toNum = earliestDataDate - this.dataBaseQueryStepMS;
+    }
+
     if (fromNum >= toNum) {
       console.error('fetchOldData: difference wrong');
       return;
