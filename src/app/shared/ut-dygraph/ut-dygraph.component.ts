@@ -697,10 +697,19 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       parent.hasOwnProperty('fromZoom') &&
       parent.hasOwnProperty('toZoom')
     ) {
-      parent.fromZoom = new Date(from);
-      parent.toZoom = new Date(to);
+      const oldFrom = parent.fromZoom.valueOf();
+      const oldTo = parent.toZoom.valueOf();
+      // const ceilFrom = oldFrom % 1000;
+      // const ceilTo = oldTo % 1000;
+      // console.log('ceils:', ceilFrom, ceilTo, from % 1000, to % 1000);
+      if (oldFrom % 1000 !== from % 1000 || oldTo % 1000 !== to % 1000) {
+        console.log('manual zoom detected');
+        parent.fromZoom = new Date(from);
+        parent.toZoom = new Date(to);
+        parent.checkAndFetchOldData();
+        parent.stopUpdateOnNewData();
+      }
     }
-    parent.checkAndFetchOldData();
   }
 
   checkAndFetchOldData() {
@@ -903,7 +912,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const fromNum = from.valueOf();
     let toNum = to.valueOf();
 
-    if(toNum >= earliestDataDate) {
+    if (toNum >= earliestDataDate) {
       toNum = earliestDataDate - this.dataBaseQueryStepMS;
     }
 
@@ -1037,6 +1046,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       } else {
         console.error('row invalid');
       }
+    }
+    if (!validRows) {
+      return;
     }
 
     // todo update running avg
