@@ -85,6 +85,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     // http://dygraphs.com/options.html
     drawCallback: this.afterDrawCallback,
     zoomCallback: this.afterZoomCallback,
+    clickCallback: this.clickCallback,
     panEdgeFraction: 0.1,
 
     labels: ['Date'], // one element needed for further code.
@@ -624,7 +625,13 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       new Date(this.displayedData[0][0])
     );
   }
-
+  clickCallback(e, x, points) {
+    console.log('clickCallback');
+    if (this.hasOwnProperty('parent')) {
+      const parent = this['parent'];
+      parent.stopUpdateOnNewData();
+    }
+  }
   afterZoomCallback(
     minDate: number,
     maxDate: number,
@@ -646,10 +653,18 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const debugFun = false;
     debugFun && console.log('after dygraph draw callback');
 
+    if (isOInitial) {
+      console.log('ignoring initial afterDrawCallback');
+      return;
+    }
     if (!g.hasOwnProperty('parent')) {
       console.error('afterDrawCallback: no parent');
       return;
     }
+    const parent = g['parent'];
+    // if('$manualzoom') {
+    //   parent.stopUpdateOnNewData();
+    // }
 
     const xrange = g.xAxisRange();
     const dw = g.getOption('dateWindow');
@@ -677,7 +692,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const parent = g['parent'];
     if (
       parent &&
       parent.hasOwnProperty('fromZoom') &&
