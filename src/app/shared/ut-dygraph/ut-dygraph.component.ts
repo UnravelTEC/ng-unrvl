@@ -17,6 +17,7 @@ import * as FileSaver from 'file-saver';
 
 import cloneDeep from 'lodash-es/cloneDeep';
 import { HttpClient } from '@angular/common/http';
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-ut-dygraph',
@@ -854,6 +855,12 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         this.handleUpdatedData(displayedData)
       );
   }
+  fetchOldData(from: Date, to: Date) {
+    let startString: String;
+    let endString: String;
+
+    //     [startString, endString] = this.calculateTimeRange(from, to);
+  }
 
   adjustAnnotationsXtoMS(annotations) {
     annotations.forEach(annotation => {
@@ -1046,13 +1053,15 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     });
   }
 
-  exportCSV() {
+  exportCSV(data?) {
     //header
     const separator = '\t';
     const linebreak = '\n';
 
     const labels = this.dyGraphOptions['labels'];
-    const data = this.displayedData;
+    if (!data) {
+      data = this.displayedData;
+    }
     let header = '';
     if (labels.length === 0 || data.length === 0) {
       alert('no data to export');
@@ -1089,6 +1098,15 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     // console.log(csv);
 
     const blob = new Blob([csv], { type: 'text/csv' });
-    FileSaver.saveAs(blob, 'data.csv');
+
+    const startDate = data[0][0];
+    const endDate = data[data.length - 1][0];
+
+    const name =
+      formatDate(startDate, 'yyyy-MM-dd_HH.mm.ss', 'en-uk') +
+      '-' +
+      formatDate(endDate, 'HH.mm.ss', 'en-uk') +
+      '.csv';
+    FileSaver.saveAs(blob, name);
   }
 }
