@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { HelperFunctionsService } from '../core/helper-functions.service';
-import { LocalStorageService } from '../core/local-storage.service';
+import { GlobalSettingsService } from 'app/core/global-settings.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +9,7 @@ import { LocalStorageService } from '../core/local-storage.service';
 export class UtFetchdataService {
   constructor(
     private http: HttpClient,
-    private localStorage: LocalStorageService,
-    private h: HelperFunctionsService
+    private globalSettingsService: GlobalSettingsService
   ) {}
 
   httpURL =
@@ -31,51 +29,21 @@ export class UtFetchdataService {
     port?: string,
     path?: string
   ) {
-    let globalSettings;
-    if (!server || !port || !path) {
-      globalSettings = this.localStorage.get('globalSettings');
-      // console.log(globalSettings);
+    if (!server && !port && !path) {
+      return this.globalSettingsService.getPrometheusEndpoint();
     }
-    if (!server) {
-      server = this.h.getDeep(globalSettings, [
-        'server',
-        'settings',
-        'serverHostName',
-        'fieldValue'
-      ]);
-      if (!server) {
-        console.error('you have to supply server or set it!');
-        server = this.h.getBaseURL();
-      }
-    }
-    if (server.endsWith('/')) {
-      server = server.substr(0, server.length - 1);
-      console.log('servername has to be without slash(/) at the end! - fixed.');
-    }
+
     if (!port) {
-      port = this.h.getDeep(globalSettings, [
-        'server',
-        'settings',
-        'serverPort',
-        'fieldValue'
-      ]);
+      port = this.globalSettingsService.defaultPrometheusPort;
     }
-    if (port) {
+    if (Number(port) > 0) {
       port = ':' + port;
     }
     if (!port) {
       port = '';
     }
     if (!path) {
-      path = this.h.getDeep(globalSettings, [
-        'server',
-        'settings',
-        'serverPath',
-        'fieldValue'
-      ]);
-      if (!path) {
-        path = 'prometheus/api/v1/';
-      }
+      path = this.globalSettingsService.defaultPrometheusPath;
     }
     const protocol = port === ':443' ? 'https://' : 'http://';
     const protAndHost = server.startsWith('http') ? server : protocol + server;

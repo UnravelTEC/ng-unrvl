@@ -18,14 +18,30 @@ export class SettingsPanelComponent implements OnInit {
       },
       settings: {
         serverHostName: {
-          fieldName: 'Server Host Name',
+          fieldName: 'Server hostname/ip',
           fieldValue: 'scpexploratory02.tugraz.at'
-        }, // entry
-        serverPort: { fieldName: 'Server Port', fieldValue: '443' }, // 9090
-        serverPath: {
-          fieldName: 'Server Path',
+        },
+        prometheusPort: { fieldName: 'Prometheus port', fieldValue: '443' }, // 9090
+        prometheusPath: {
+          fieldName: 'Prometheus database API path',
           fieldValue: 'prometheus/api/v1/'
-        } // -prom
+        },
+        prometheusProtocol: {
+          fieldName: 'Prometheus Protocol',
+          fieldValue: 'https'
+        },
+        apiPort: {
+          fieldName: 'API port',
+          fieldValue: '80'
+        },
+        apiPath: {
+          fieldName: 'API path',
+          fieldValue: 'api/'
+        },
+        apiProtocol: {
+          fieldName: 'API protocol',
+          fieldValue: 'http'
+        }
       }
     }
   };
@@ -35,12 +51,15 @@ export class SettingsPanelComponent implements OnInit {
 
   debug = true;
 
-  public ourHostName: string;
   public currentBrightness = 0;
+
+  public prometheusPath = '';
+  public oldIFPath = '';
+
+  public API = '';
 
   constructor(
     private localStorage: LocalStorageService,
-    private h: HelperFunctionsService,
     private globalSettingsService: GlobalSettingsService,
     private utHTTP: UtFetchdataService
   ) {
@@ -57,8 +76,13 @@ export class SettingsPanelComponent implements OnInit {
         this.globalSettingsUnsaved[item] = JSON.parse(deepcopy);
       }
     }
-
-    this.ourHostName = this.h.getBaseURL();
+    this.API = this.globalSettingsService.getAPIEndpoint();
+    if (this.API) {
+      this.oldIFPath = this.API.replace(/api\/$/, '');
+    }
+    this.prometheusPath = this.globalSettingsService
+      .getPrometheusEndpoint()
+      .replace(/api\/v1\/$/, '');
   }
 
   load() {
@@ -133,30 +157,18 @@ export class SettingsPanelComponent implements OnInit {
   halt() {
     if (confirm('Halt now?')) {
       this.utHTTP
-        .getHTTPData(this.getServer() + 'system/halt.php')
+        .getHTTPData(this.API + 'system/halt.php')
         .subscribe((data: Object) => this.ack(data));
     }
   }
   reboot() {
     if (confirm('Reboot now?')) {
       this.utHTTP
-        .getHTTPData(this.getServer() + 'system/reboot.php')
+        .getHTTPData(this.API + 'system/reboot.php')
         .subscribe((data: Object) => this.ack(data));
     }
   }
 
-  getServer(): string {
-    let server = this.h.getDeep(this.globalSettings, [
-      'server',
-      'settings',
-      'serverHostName',
-      'fieldValue'
-    ]);
-    if (!server) {
-      return this.ourHostName + '/api/';
-    }
-    return 'http://' + server + '/api/';
-  }
   setNewBN(bn) {
     this.currentBrightness = bn;
   }

@@ -15,15 +15,17 @@
         />
       </div>
       <div class="valuedebug" *ngIf="debug == true">
-        <!-- '{{ entry.value.fieldValue }}', -->
+        <!-- '{{ entry.value.fieldValue }}',-->
+        <!--
         <span *ngIf="entry.key == 'serverHostName'"
           ><a href="http://{{ entry.value.fieldValue }}">{{
             entry.value.fieldValue
           }}</a></span
-        >
+        > -->
         Default: '{{
+
           defaultSettings[settingsSection.key].settings[entry.key].fieldValue
-        }}', Global: '<span
+        }}',<br /> Global: '<span
           *ngIf="
             globalSettings &&
             globalSettings[settingsSection.key] &&
@@ -57,21 +59,21 @@
   </section>
 
   <section id="links">
-    <a href="/old/">Old Interface</a>
-    <a href="{{ ourHostName }}:9090">Prometheus Admin Interface</a>
+    <a *ngIf="API" href="{{ oldIFPath }}">Old Interface</a>
+    <a href="{{ prometheusPath }}">Prometheus Admin Interface</a>
   </section>
 
   <section>
     <a (click)="fullscreen()">Fullscreen</a>
   </section>
 
-  <section class="center">
+  <section class="center" *ngIf="API">
     <button (click)="halt()">Halt</button>
     <button (click)="reboot()">Reboot</button>
   </section>
 
   <section>
-    <h2>Brightness: <span *ngIf="! bn.disabled">{{ currentBrightness / 255 * 100 | number: '1.0-0' }}&#8239;%</span></h2>
+    <h2>Screen Brightness: <span *ngIf="! bn.disabled">{{ currentBrightness / 255 * 100 | number: '1.0-0' }}&#8239;%</span></h2>
       <app-display-brighness (brightnessEvent)="setNewBN($event)" #bn></app-display-brighness>
   </section>
 </div>
