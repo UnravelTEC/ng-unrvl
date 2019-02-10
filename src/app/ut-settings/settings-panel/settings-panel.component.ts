@@ -78,7 +78,7 @@ export class SettingsPanelComponent implements OnInit {
     }
     this.API = this.globalSettingsService.getAPIEndpoint();
     if (this.API) {
-      this.oldIFPath = this.API.replace(/api\/$/, '');
+      this.oldIFPath = this.API.replace(/api\/$/, '') + 'old';
     }
     this.prometheusPath = this.globalSettingsService
       .getPrometheusEndpoint()
