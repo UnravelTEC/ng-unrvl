@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { GlobalSettingsService } from 'app/core/global-settings.service';
+import { GlobalSettingsService } from '../core/global-settings.service';
+import { HelperFunctionsService } from '../core/helper-functions.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,8 @@ import { GlobalSettingsService } from 'app/core/global-settings.service';
 export class UtFetchdataService {
   constructor(
     private http: HttpClient,
-    private globalSettingsService: GlobalSettingsService
+    private globalSettingsService: GlobalSettingsService,
+    private h: HelperFunctionsService
   ) {}
 
   httpURL =
@@ -96,5 +98,31 @@ export class UtFetchdataService {
     );
 
     console.log(['postData', url, data]);
+  }
+
+  checkPrometheusDataValidity(data) {
+    const result = this.h.getDeep(data, ['data', 'result']);
+    if (!result || !Array.isArray(result)) {
+      console.log('checkPrometheusDataValidity: no Array:', data);
+      return false;
+    }
+    if(result.length === 0) {
+      console.log('checkPrometheusDataValidity: datasets returned 0');
+      return null;
+    }
+    const metric0 = this.h.getDeep(result, [0, 'metric']);
+    const values0 = this.h.getDeep(result, [0, 'values']);
+    if (!values0 || !metric0) {
+      console.error('updateDataSet: no valid data received.');
+      return false;
+    }
+    // check if any data there
+    for (let i = 0; i < result.length; i++) {
+      const dataset = result[i].values;
+      if(dataset.length) {
+        return true
+      }
+    }
+    return false;
   }
 }
