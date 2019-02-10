@@ -151,6 +151,8 @@ style.padding-bottom="20vh"-->
           <option value="1">1</option>
         </select>
         <span title="on click, load/save should open">Jump</span>
+        <button (click)="zoom(0.5)">+</button>
+        <button (click)="zoom(2)">-</button>
         <button (click)="resetZoom()">Reset</button>
         <button (click)="fullZoom()">All</button>
         <button (click)="pan('forward')">&gt;</button>

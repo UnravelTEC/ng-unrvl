@@ -86,7 +86,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     drawCallback: this.afterDrawCallback,
     zoomCallback: this.afterZoomCallback,
     clickCallback: this.clickCallback,
-    panEdgeFraction: 0.1,
+    // panEdgeFraction: 0.9,
 
     labels: ['Date'], // one element needed for further code.
     title: '',
@@ -130,6 +130,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   private queryEndPoint: string;
 
   private maxPointsToFetch = 1000; // 10500; // Prometheus allows 11k max
+  public earliestfetched: Date;
+
   Dygraph: Dygraph;
 
   intervalSubscription: Subscription;
@@ -188,6 +190,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     this.queryEndPoint = this.constructQueryEndpoint();
 
+    this.earliestfetched = dataBeginTime;
     this.utFetchdataService
       .getRange(
         this.queryString,
@@ -649,6 +652,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       debugFun && console.log('afterZoom: No parent');
     }
   }
+
   afterDrawCallback(g: Dygraph, isOInitial: boolean) {
     const debugFun = false;
     debugFun && console.log('after dygraph draw callback');
@@ -662,9 +666,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       return;
     }
     const parent = g['parent'];
-    // if('$manualzoom') {
-    //   parent.stopUpdateOnNewData();
-    // }
 
     const xrange = g.xAxisRange();
     const dw = g.getOption('dateWindow');
@@ -901,13 +902,17 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       );
   }
   fetchOldData(from: Date, to: Date) {
-    console.log('fetchOldData:', from, to);
+    console.log('fetchOldData: from', from, 'to', to);
 
     if (this.oldRequestsRunning) {
       console.log('old request already running, dont');
       return;
     }
-    const earliestDataDate = this.displayedData[0][0];
+    const earliestSet = this.earliestfetched.valueOf();
+    const earliestDataDate =
+      this.displayedData[0][0] < earliestSet
+        ? this.displayedData[0][0]
+        : earliestSet;
 
     const fromNum = from.valueOf();
     let toNum = to.valueOf();
@@ -916,7 +921,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       toNum = earliestDataDate - this.dataBaseQueryStepMS;
     }
 
-    if (fromNum >= toNum) {
+    if (fromNum == toNum) {
+      console.log('fetchOldData: no difference');
+      return;
+    }
+    if (fromNum > toNum) {
       console.error('fetchOldData: difference wrong');
       return;
     }
@@ -935,6 +944,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
     // request data
     this.oldRequestsRunning++;
+    this.earliestfetched = from;
     this.utFetchdataService
       .getRange(
         this.queryString,
@@ -971,7 +981,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const maxGap = gap * 1.1;
     let validRows = 0;
     // add row after row
-    for (let deadManCounter = 0; deadManCounter < 110; deadManCounter++) {
+    for (let deadManCounter = 0; deadManCounter < 11000; deadManCounter++) {
       let currentStartTime = dataSet[0][0].valueOf();
 
       // look up newest time in row
@@ -1053,7 +1063,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     // todo update running avg
 
-    this.Dygraph.updateOptions({ file: this.displayedData }, false); // redraw only once at the end
+    console.log('inserted',validRows,'rows of old data');
+    this.Dygraph.updateOptions({ file: this.displayedData });
+    if(validRows == 1000) {
+      true;
+    }
   }
 
   adjustAnnotationsXtoMS(annotations) {
@@ -1169,8 +1183,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       dw[1] = new Date(dw[1].valueOf() + panFor);
     }
     if (direction === 'back') {
-      dw[0] = new Date(dw[0].valueOf() - panFor);
-      dw[1] = new Date(dw[1].valueOf() - panFor);
+      dw[0] = new Date(dw[0].valueOf() - panFor - 1); // offset for avoiding no reloading on auto zoom
+      dw[1] = new Date(dw[1].valueOf() - panFor + 1);
+      this.checkAndFetchOldData();
     }
     this.Dygraph.updateOptions({ dateWindow: dw });
   }
@@ -1201,6 +1216,29 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
   fullZoom() {
     this.Dygraph.resetZoom();
+  }
+  zoom(factor: number) {
+    this.stopUpdateOnNewData();
+    const fromValue = this.fromZoom.valueOf();
+    const toValue = this.toZoom.valueOf();
+
+    const difference = toValue - fromValue;
+    const distanceToCenter = difference / 2;
+    const center = fromValue + distanceToCenter;
+
+    const newdifference = factor * difference;
+    const newDistanceToCenter = newdifference / 2;
+    const newFrom = fromValue + (distanceToCenter - newDistanceToCenter) + 1;
+    const newTo = toValue - (distanceToCenter - newDistanceToCenter) - 1; // offset for avoiding no reloading on auto zoom
+
+    this.toZoom = new Date(newTo);
+    this.fromZoom = new Date(newFrom);
+    this.Dygraph.updateOptions({
+      dateWindow: [newFrom, newTo]
+    });
+    if (factor > 1) {
+      this.checkAndFetchOldData();
+    }
   }
 
   calculateTimeRange(startTime: string, endTime: string): [Date, Date] {
