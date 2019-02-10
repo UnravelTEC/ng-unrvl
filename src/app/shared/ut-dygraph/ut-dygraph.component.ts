@@ -127,6 +127,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   private requestsUnderway = 0; // don't flood the server if it is not fast enough
   private queryEndPoint: string;
 
+  private maxPointsToFetch = 1000; // 10500; // Prometheus allows 11k max
   Dygraph: Dygraph;
 
   intervalSubscription: Subscription;
@@ -323,6 +324,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
   */
 
+  // newData[], oldLabels[]&, this.displayedData[]&, this.columnLabels[]&,
+  //  this.dataBaseQueryStepMS, this.multiplicateFactors[]
+  // this.lastValue, this.lastValues
+  // funs: this.createLabelString
   updateDataSet(pData: Object, debugFun = false): boolean {
     // prometheus data
     debugFun && console.log('updateDataSet');
@@ -455,7 +460,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         break;
       }
 
-      // Gap detection
+      // Gap detection and insertion
       if (
         lastTime &&
         lastTime + Number(this.dataBaseQueryStepMS) * 1.1 < oldestTime
@@ -529,22 +534,36 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       }
     }
 
-    if (
-      this.displayedData.length &&
-      this.displayedData[this.displayedData.length - 1]
-    ) {
-      const nrCols = this.displayedData.length - 1;
-      let avg = 0;
-      let last = this.displayedData[nrCols];
-      for (let i = 1; i < oldLabels.length; i++) {
-        debugFun && console.log('4avg:', last[i]);
-        avg += last[i];
-      }
-      this.lastValue = avg / (oldLabels.length - 1);
-      this.lastValues = last;
-    }
+    this.updateLastValueMembers(this.displayedData);
 
     return true;
+  }
+  updateLastValueMembers(dataset) {
+    if (
+      Array.isArray(dataset) &&
+      dataset.length &&
+      dataset[dataset.length - 1]
+    ) {
+      const lastrow = dataset[dataset.length - 1];
+      this.lastValues = lastrow;
+      this.lastValue = NaN;
+      let nrValidElements = 0;
+      let sum = 0;
+      for (let i = 1; i < lastrow.length; i++) {
+        const element = lastrow[i];
+        if (element === NaN || element === undefined || element === null) {
+          continue;
+        }
+        if (element === Infinity || element === -Infinity) {
+          return;
+        }
+        nrValidElements++;
+        sum += element;
+      }
+      if (nrValidElements) {
+        this.lastValue = sum / nrValidElements;
+      }
+    }
   }
 
   createLabelString(lObj: Object): string {
@@ -856,10 +875,43 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       );
   }
   fetchOldData(from: Date, to: Date) {
-    let startString: String;
-    let endString: String;
+    // correct from date to fetch maximum points allowed
+    const difference = to.valueOf() - from.valueOf();
+    if (difference / this.fetchFromServerIntervalMS > this.maxPointsToFetch) {
+      console.log(
+        'more than ' +
+          this.maxPointsToFetch +
+          ' points requested on refetch old, reducing'
+      );
+      const maxFromValue =
+        to.valueOf() - this.fetchFromServerIntervalMS * this.maxPointsToFetch;
+      from = new Date(maxFromValue);
+    }
+    // request data
+    this.utFetchdataService
+      .getRange(
+        this.queryString,
+        from,
+        to,
+        this.dataBaseQueryStepMS,
+        this.queryEndPoint
+      )
+      .subscribe((data: Object) => this.handleOldRequestedData(data));
+  }
+  // handle requested old data
+  handleOldRequestedData(oldData) {
+    const dataArray = this.h.getDeep(oldData, ['data', 'result']);
+    if (
+      !Array.isArray(dataArray) ||
+      (Array.isArray(dataArray) && dataArray.length === 0)
+    ) {
+      console.log('handleUpdatedData: empty dataset received');
+      return;
+    }
 
-    //     [startString, endString] = this.calculateTimeRange(from, to);
+    // todo update running avg
+
+    this.Dygraph.updateOptions({ file: this.displayedData }, false); // redraw only once at the end
   }
 
   adjustAnnotationsXtoMS(annotations) {
@@ -1010,7 +1062,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   calculateTimeRange(startTime: string, endTime: string): [Date, Date] {
-    const maxPointsToFetch = 1000; // 10500; // Prometheus allows 11k max
     let startDate: Date;
     let endDate: Date;
 
@@ -1026,12 +1077,13 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
 
     const difference = endDate.valueOf() - startDate.valueOf();
-    if (difference / this.fetchFromServerIntervalMS > maxPointsToFetch) {
+    if (difference / this.fetchFromServerIntervalMS > this.maxPointsToFetch) {
       console.log(
-        'more than ' + maxPointsToFetch + ' points requested, reducing'
+        'more than ' + this.maxPointsToFetch + ' points requested, reducing'
       );
       const maxStartDateValue =
-        endDate.valueOf() - this.fetchFromServerIntervalMS * maxPointsToFetch;
+        endDate.valueOf() -
+        this.fetchFromServerIntervalMS * this.maxPointsToFetch;
       startDate = new Date(maxStartDateValue);
     }
 
