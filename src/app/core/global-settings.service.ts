@@ -12,7 +12,6 @@ import { HttpClient } from '@angular/common/http';
 export class GlobalSettingsService implements OnInit {
   private hostName = 'uninitialized';
 
-  private prometheusRunningOnWebserver = false;
   public defaultPrometheusPath = '/prometheus/api/v1/';
   public defaultPrometheusPort = undefined; // '9090'; // later switch to default port
   private defaultAPIPath = '/api/';
@@ -22,24 +21,21 @@ export class GlobalSettingsService implements OnInit {
   private fallbackAPI = this.fallbackEndpoint + 'api/';
 
   public server = {
-    architecture: 'unknown',
+    architecture: undefined,
     type: 'unknown', // Tricorder || PublicServer
     hostname: 'uninitialized',
     hasscreen: undefined, // true || false
     cpu: 'unknown',
     cpus: 0,
     sensors: [],
-    prometheus: undefined // true || false
+    prometheus: undefined, // true || false
+    api: undefined
   };
   public client = {
     type: 'unknown', // local || web
     baseurl: '',
     protocol: 'unknown' // http || https
   };
-
-  public serverType = 'unknown';
-  public clientType = 'unknown'; // none: no valid endpoint could be found
-  public clientProtocol = 'http'; // or https
 
   // Observable string sources
   private emitChangeSource = new Subject<any>();
@@ -56,7 +52,11 @@ export class GlobalSettingsService implements OnInit {
   ) {}
 
   ngOnInit() {
-    const prometheus = this.getPrometheusEndpoint()
+    // first: test on this.h.getBaseURL()
+    // if no api or prometheus there, set server.api / prometheus to false
+    // from there on, getPrometheusEndpoint() returns fallback
+
+    const prometheus = this.getPrometheusEndpoint();
 
     //const baseurl = this.h.getBaseURL();
     //this.client.baseurl = baseurl;
@@ -87,48 +87,33 @@ export class GlobalSettingsService implements OnInit {
       },
       error => {
         console.log('no cpuinfo from api');
+        this.server.architecture = 'unknown';
+        this.server.cpu = 'unknown';
+        this.server.cpus = undefined;
         this.checkIfTricorder();
       }
     );
   }
   getScreen(endpoint) {
-    this.http
-      .get(endpoint + 'screen/getBrightness.php')
-      .subscribe((data: Object) => {
+    this.http.get(endpoint + 'screen/getBrightness.php').subscribe(
+      (data: Object) => {
         if (data && data['brightness']) {
           this.server.hasscreen = true;
-        }
-      });
-  }
 
-  // old, REFACTOR!
-  private setClientType(endpoint) {
-    if (endpoint.startsWith('http://localhost')) {
-      this.http.get('http://localhost/api/screen/getBrightness.php').subscribe(
-        (data: Object) => {
-          console.log('we are on a Raspi with Raspi-Display!');
-          this.client.type = 'local';
-        },
-        error => {
-          console.log('running on localhost without Rpi -> Developing');
-          this.clientType = 'Development';
+          if (endpoint.startsWith('http://localhost')) {
+            console.log('we are on a Raspi with Raspi-Display!');
+            this.client.type = 'local';
+          } else {
+            console.log('running on localhost without Rpi -> Developing');
+            this.client.type = 'web';
+          }
         }
-      );
-    } else if (endpoint.startsWith('https')) {
-      console.log('we are client of a https server.');
-      this.clientType = 'PublicWeb';
-    } else {
-      this.http.get(endpoint + 'screen/getBrightness.php').subscribe(
-        (data: Object) => {
-          console.log('we are client of a Raspi with Raspi-Display!');
-          this.clientType = 'TricorderWeb';
-        },
-        error => {
-          console.log('we are client of something w/o Display!');
-          this.clientType = 'TricorderWebHeadless';
-        }
-      );
-    }
+      },
+      error => {
+        console.log('no raspi screen -> web client');
+        this.client.type = 'web';
+      }
+    );
   }
 
   private fetchHostName(server: string) {
@@ -143,6 +128,7 @@ export class GlobalSettingsService implements OnInit {
       error => {
         console.log('no UTapi running on');
         console.log(error);
+        this.server.api = false;
         this.hostName = 'unknown';
         this.emitChange({ hostname: this.hostName });
       }
@@ -151,6 +137,7 @@ export class GlobalSettingsService implements OnInit {
   public setHostName(data: Object) {
     if (data['hostname']) {
       this.hostName = data['hostname'];
+      this.server.api = true;
     } else {
       console.error('hostname cmd returned no hostname');
       this.hostName = 'undefined';
@@ -192,21 +179,14 @@ export class GlobalSettingsService implements OnInit {
       );
   }
   prometheusTestSuccess(data: Object) {
-    console.log('prometheus test:',data);
+    console.log('prometheus test:', data);
 
     if (data['status'] && data['status'] === 'success') {
-      this.prometheusRunningOnWebserver = true;
       console.log('SUCCESS: prometheus found on endpoint');
       this.server.prometheus = true;
       this.checkIfTricorder();
-
-      // FIXME because service not ready in ngOnInit do it here
-      const API = this.getAPIEndpoint();
-      if (API) {
-        this.fetchHostName(API);
-      } else {
-        console.error('no API available');
-      }
+    } else {
+      this.server.prometheus = false;
     }
   }
   prometheusTestFailure(error) {
@@ -214,27 +194,27 @@ export class GlobalSettingsService implements OnInit {
     this.checkIfTricorder();
     // console.log('no prometheus found on endpoint');
     // console.log(error);
-    const API = this.getAPIEndpoint();
-    if (API) {
-      this.fetchHostName(API);
-    } else {
-      console.error('no API available');
-    }
     true;
   }
 
   checkIfTricorder() {
     if (
+      this.server.architecture === undefined ||
+      this.server.prometheus === undefined
+    ) {
+      console.log('not enough information to check if I am on a Tricorder');
+      return;
+    }
+    if (
       this.server.architecture.startsWith('arm') &&
       this.server.prometheus === true
     ) {
-
       this.server.type = 'Tricorder';
     } else {
       this.server.type = 'PublicServer';
     }
 
-    console.log('i am connected to a', this.server.type);
+    console.log('I am connected to a', this.server.type);
   }
 
   getPrometheusEndpoint() {
@@ -262,15 +242,13 @@ export class GlobalSettingsService implements OnInit {
       return protocol + '://' + server + port + path;
     }
 
-    if (this.prometheusRunningOnWebserver) {
-      // hostname of webserver
+    if (this.server.prometheus === false) {
+      return this.fallbackPrometheusEndpoint;
+    } else {
       const port = this.defaultPrometheusPort
         ? ':' + this.defaultPrometheusPort
         : '';
       return this.h.getBaseURL() + port + this.defaultPrometheusPath;
-    } else {
-      // fallback
-      return this.fallbackPrometheusEndpoint;
     }
   }
 
@@ -295,10 +273,10 @@ export class GlobalSettingsService implements OnInit {
       return protocol + '://' + server + port + path;
     }
 
-    if (this.prometheusRunningOnWebserver) {
-      return this.h.getBaseURL() + this.defaultAPIPath;
-    } else {
+    if (this.server.api === false) {
       return undefined;
+    } else {
+      return this.h.getBaseURL() + this.defaultAPIPath;
     }
   }
 }

@@ -14,16 +14,16 @@
   </section>
 
   <section>
-      <a (click)="fullscreen()">Fullscreen</a>
-    </section>
+    <a (click)="fullscreen()">Fullscreen</a>
+  </section>
 
-    <section
-      class="center"
-      *ngIf="globalSettingsService.server.type == 'Tricorder'"
-    >
-      <button (click)="halt()">Halt</button>
-      <button (click)="reboot()">Reboot</button>
-    </section>
+  <section
+    class="center"
+    *ngIf="globalSettingsService.server.type == 'Tricorder'"
+  >
+    <button (click)="halt()">Halt</button>
+    <button (click)="reboot()">Reboot</button>
+  </section>
 
   <section *ngFor="let settingsSection of (globalSettingsUnsaved | keyvalue)">
     <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
@@ -90,6 +90,4 @@
     >
     <a href="{{ prometheusPath }}">Prometheus Admin Interface</a>
   </section>
-
-
 </div>
