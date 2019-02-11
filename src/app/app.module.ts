@@ -53,6 +53,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/voc/voc.module#VocModule'
   },
   {
+    path: 'Apps/voc-raw',
+    loadChildren: './ut-apps/voc-raw/voc.module#VocModule'
+  },
+  {
     path: 'Apps/loudness',
     loadChildren: './ut-apps/loudness/loudness.module#LoudnessModule'
   },

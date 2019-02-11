@@ -1,10 +1,10 @@
-<h3>VOC</h3>
+<h3>VOC raw sensor data</h3>
 
 <app-ut-dygraph
-  queryString='gas_ppm{gas="VOC"}'
-  fetchFromServerIntervalMS="1000"
-  dataBaseQueryStepMS="1000"
-  YLabel="VOC MOx (ppm)"
+  queryString="gas_ohm"
+  fetchFromServerIntervalMS="3000"
+  dataBaseQueryStepMS="3000"
+  YLabel="VOC MOx sensor resistance (Ohm)"
   [style]="graphstyle"
   [startTime]="startTime"
   #graph
@@ -21,7 +21,7 @@
         <!-- >: to sort out date -->
         Value
       </span>
-      <span *ngIf="value < 10000000">{{ value | number: '1.0-10' }} ppm</span>
+      <span *ngIf="value < 10000000">{{ value | number: '1.0-10' }} Ohm</span>
     </td>
   </tr>
 </table>
