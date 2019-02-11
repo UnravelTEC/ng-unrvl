@@ -1,5 +1,30 @@
 <h1>Global Settings</h1>
 <div class="settingspage">
+  <section *ngIf="globalSettingsService.server.type == 'Tricorder'">
+    <h2>
+      Screen Brightness:
+      <span *ngIf="!bn.disabled"
+        >{{ (currentBrightness / 255) * 100 | number: '1.0-0' }}&#8239;%</span
+      >
+    </h2>
+    <app-display-brighness
+      (brightnessEvent)="setNewBN($event)"
+      #bn
+    ></app-display-brighness>
+  </section>
+
+  <section>
+      <a (click)="fullscreen()">Fullscreen</a>
+    </section>
+
+    <section
+      class="center"
+      *ngIf="globalSettingsService.server.type == 'Tricorder'"
+    >
+      <button (click)="halt()">Halt</button>
+      <button (click)="reboot()">Reboot</button>
+    </section>
+
   <section *ngFor="let settingsSection of (globalSettingsUnsaved | keyvalue)">
     <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
     <section *ngFor="let entry of (settingsSection.value.settings | keyvalue)">
@@ -23,9 +48,9 @@
           }}</a></span
         > -->
         Default: '{{
-
           defaultSettings[settingsSection.key].settings[entry.key].fieldValue
-        }}',<br /> Global: '<span
+        }}',<br />
+        Global: '<span
           *ngIf="
             globalSettings &&
             globalSettings[settingsSection.key] &&
@@ -41,39 +66,30 @@
         >'
       </div>
     </section>
-  </section>
-
-  <section id="submit" class="center">
-    <div>
-      <!-- div needed for text-align center -->
-      <button type="submit" class="btn btn-success" (click)="save()">
-        Save
-      </button>
-      <button type="submit" class="btn btn-success" (click)="load()">
-        Load
-      </button>
-      <button type="submit" class="btn btn-success" (click)="reset()">
-        Reset
-      </button>
-    </div>
+    <section id="submit" class="center">
+      <div>
+        <!-- div needed for text-align center -->
+        <button type="submit" class="btn btn-success" (click)="save()">
+          Save
+        </button>
+        <button type="submit" class="btn btn-success" (click)="load()">
+          Load
+        </button>
+        <button type="submit" class="btn btn-success" (click)="reset()">
+          Reset
+        </button>
+      </div>
+    </section>
   </section>
 
   <section id="links">
-    <a *ngIf="API" href="{{ oldIFPath }}">Old Interface</a>
+    <a
+      *ngIf="globalSettingsService.server.type == 'Tricorder'"
+      href="{{ oldIFPath }}"
+      >Old Interface</a
+    >
     <a href="{{ prometheusPath }}">Prometheus Admin Interface</a>
   </section>
 
-  <section>
-    <a (click)="fullscreen()">Fullscreen</a>
-  </section>
 
-  <section class="center" *ngIf="API">
-    <button (click)="halt()">Halt</button>
-    <button (click)="reboot()">Reboot</button>
-  </section>
-
-  <section>
-    <h2>Screen Brightness: <span *ngIf="! bn.disabled">{{ currentBrightness / 255 * 100 | number: '1.0-0' }}&#8239;%</span></h2>
-      <app-display-brighness (brightnessEvent)="setNewBN($event)" #bn></app-display-brighness>
-  </section>
 </div>

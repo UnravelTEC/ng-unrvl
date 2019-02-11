@@ -1,5 +1,5 @@
 div.settingspage {
-    padding: 0.5em;
+    padding: 0 0.5em;
 }
 
 section {
@@ -11,6 +11,7 @@ section {
 
 h1 {
     text-align: center;
+    margin: 1rem;
 }
 h2 {margin: 0}
 
