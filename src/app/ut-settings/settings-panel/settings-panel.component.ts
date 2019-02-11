@@ -60,7 +60,7 @@ export class SettingsPanelComponent implements OnInit {
 
   constructor(
     private localStorage: LocalStorageService,
-    private globalSettingsService: GlobalSettingsService,
+    public globalSettingsService: GlobalSettingsService,
     private utHTTP: UtFetchdataService
   ) {
     this.globalSettingsService.emitChange({ appName: 'Settings' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
