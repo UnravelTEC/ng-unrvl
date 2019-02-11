@@ -623,10 +623,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     if (this.fetchFromServerIntervalMS > 0) {
       this.startUpdate();
     }
-    this.fetchOldData(
-      new Date(this.displayedData[0][0] - 10000),
-      new Date(this.displayedData[0][0])
-    );
+    this.checkAndFetchOldData();
   }
   clickCallback(e, x, points) {
     console.log('clickCallback');
@@ -1063,10 +1060,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     // todo update running avg
 
-    console.log('inserted',validRows,'rows of old data');
+    console.log('inserted', validRows, 'rows of old data');
     this.Dygraph.updateOptions({ file: this.displayedData });
-    if(validRows == 1000) {
-      true;
+    if (validRows >= 1000 && validRows < 1005) {
+      //there seem to be more
+      this.checkAndFetchOldData();
     }
   }
 
