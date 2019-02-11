@@ -52,6 +52,34 @@ export class GlobalSettingsService implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.reloadSettings();
+
+    }
+
+    reloadSettings() {
+      const localStoredServer = this.getPrometheusServerFromLocalStorage();
+      if(localStoredServer) {
+        const API = localStoredServer + this.defaultAPIPath;
+        this.fetchHostName(API);
+        this.getCPUinfo(API);
+        this.getScreen(API);
+      } else {
+        const firstURL = this.h.getBaseURL();
+        this.http
+        .get(firstURL + this.defaultPrometheusPath + 'query?query=scrape_samples_scraped')
+        .subscribe(
+          (data: Object) => {
+            if (data['status'] && data['status'] === 'success') {
+              console.log('SUCCESS: prometheus found on endpoint');
+              this.server.prometheus = true;
+              this.checkIfTricorder();
+          },
+          error => {
+
+          }
+        );
+    }
+
     // first: test on this.h.getBaseURL()
     // if no api or prometheus there, set server.api / prometheus to false
     // from there on, getPrometheusEndpoint() returns fallback
@@ -68,12 +96,17 @@ export class GlobalSettingsService implements OnInit {
       API = this.h.getBaseURL() + '/api/';
     }
 
-    this.fetchHostName(API);
-    this.getCPUinfo(API);
+
 
     // fill our information
     // Tricorder | Pubserver
     // tricorder: Prometheus on ARM
+  }
+
+  testLocalEndPoint(url) {
+    this.testPrometheusOnEndpoint()
+    this.fetchHostName(API);
+    this.getCPUinfo(API);
   }
 
   getCPUinfo(endpoint) {
@@ -117,12 +150,12 @@ export class GlobalSettingsService implements OnInit {
   }
 
   private fetchHostName(server: string) {
-    if (
-      server.startsWith(this.h.getBaseURL()) &&
-      this.getPrometheusEndpoint() == this.fallbackPrometheusEndpoint
-    ) {
-      server = this.fallbackAPI;
-    }
+    // if (
+    //   server.startsWith(this.h.getBaseURL()) &&
+    //   this.getPrometheusEndpoint() == this.fallbackPrometheusEndpoint
+    // ) {
+    //   server = this.fallbackAPI;
+    // }
     this.http.get(server + 'system/hostname.php').subscribe(
       (data: Object) => this.setHostName(data),
       error => {
@@ -215,6 +248,11 @@ export class GlobalSettingsService implements OnInit {
     }
 
     console.log('I am connected to a', this.server.type);
+  }
+
+  getPrometheusServerFromLocalStorage(): string {
+    const localSettings = this.localStorage.get('globalSettings');
+    return this.h.getDeep(localSettings, ['server', 'settings','serverHostName','fieldValue']);
   }
 
   getPrometheusEndpoint() {
