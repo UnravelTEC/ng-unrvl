@@ -1,6 +1,6 @@
 <h1>Global Settings</h1>
 <div class="settingspage">
-  <section *ngIf="globalSettingsService.server.type == 'Tricorder'">
+  <section *ngIf="globalSettingsService.server.type === 'Tricorder'">
     <h2>
       Screen Brightness:
       <span *ngIf="!bn.disabled"
@@ -13,7 +13,7 @@
     ></app-display-brighness>
   </section>
 
-  <section>
+  <section *ngIf="globalSettingsService.client.type !== 'local'">
     <a (click)="fullscreen()">Fullscreen</a>
   </section>
 
@@ -27,6 +27,17 @@
 
   <section *ngFor="let settingsSection of (globalSettingsUnsaved | keyvalue)">
     <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
+    <ul
+      *ngIf="settingsSection.value.settingAttributes.title == 'Server Settings'"
+    >
+      <li>
+        Current Server ({{ globalSettingsService.server.type }}):
+        {{ globalSettingsService.server.baseurl }}
+      </li>
+      <li>Database: {{ globalSettingsService.server.prometheus }}</li>
+      <li>API: {{ globalSettingsService.server.api }}</li>
+    </ul>
+
     <section *ngFor="let entry of (settingsSection.value.settings | keyvalue)">
       <div class="fields">
         <label for="{{ settingsSection.key }}-{{ entry.key }}"
@@ -40,13 +51,6 @@
         />
       </div>
       <div class="valuedebug" *ngIf="debug == true">
-        <!-- '{{ entry.value.fieldValue }}',-->
-        <!--
-        <span *ngIf="entry.key == 'serverHostName'"
-          ><a href="http://{{ entry.value.fieldValue }}">{{
-            entry.value.fieldValue
-          }}</a></span
-        > -->
         Default: '{{
           defaultSettings[settingsSection.key].settings[entry.key].fieldValue
         }}',<br />
@@ -78,7 +82,13 @@
         <button type="submit" class="btn btn-success" (click)="reset()">
           Reset
         </button>
-        <button type="submit" class="btn btn-success" (click)="deleteStoredSettings()">Delete Settings</button>
+        <button
+          type="submit"
+          class="btn btn-success"
+          (click)="deleteStoredSettings()"
+        >
+          Delete Settings
+        </button>
       </div>
     </section>
   </section>
@@ -89,6 +99,7 @@
       href="{{ oldIFPath }}"
       >Old Interface</a
     >
-    <a href="{{ prometheusPath }}">Prometheus Admin Interface</a>
+    <a *ngIf="prometheusPath"
+     href="{{ prometheusPath }}">Prometheus Admin Interface</a>
   </section>
 </div>

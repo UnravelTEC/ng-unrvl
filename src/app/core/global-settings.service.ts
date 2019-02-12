@@ -12,10 +12,10 @@ import { HttpClient } from '@angular/common/http';
 export class GlobalSettingsService implements OnInit {
   private hostName = 'uninitialized';
 
-  public defaultPrometheusPath = 'prometheus/api/v1/';
+  public defaultPrometheusPath = '/prometheus/api/v1/';
   public defaultPrometheusPort = undefined; // '9090'; // later switch to default port
   private defaultAPIPath = '/api/';
-  private fallbackEndpoint = 'https://scpexploratory02.tugraz.at/';
+  private fallbackEndpoint = 'https://scpexploratory02.tugraz.at';
   private fallbackPrometheusEndpoint =
     this.fallbackEndpoint + this.defaultPrometheusPath;
   private fallbackAPI = this.fallbackEndpoint + 'api/';
@@ -91,7 +91,7 @@ export class GlobalSettingsService implements OnInit {
         'prometheusPath',
         'fieldValue'
       ]);
-      if(!prometheusPath) {
+      if (!prometheusPath) {
         prometheusPath = this.defaultPrometheusPath;
       }
       if (!prometheusPath.startsWith('/')) {
@@ -110,7 +110,7 @@ export class GlobalSettingsService implements OnInit {
       if (!prometheusProtocol) {
         prometheusProtocol = prometheusPort === ':443' ? 'https://' : 'http://';
       } else {
-        if(!prometheusProtocol.endsWith('://')) {
+        if (!prometheusProtocol.endsWith('://')) {
           prometheusProtocol = prometheusProtocol + '://';
         }
       }
@@ -124,8 +124,8 @@ export class GlobalSettingsService implements OnInit {
         'apiPath',
         'fieldValue'
       ]);
-      if(!apiPath) {
-        apiPath = this.defaultAPIPath
+      if (!apiPath) {
+        apiPath = this.defaultAPIPath;
       }
       if (!apiPath.startsWith('/')) {
         apiPath = '/' + apiPath;
@@ -139,16 +139,16 @@ export class GlobalSettingsService implements OnInit {
         'apiProtocol',
         'fieldValue'
       ]);
-      if(!apiProtocol) {
+      if (!apiProtocol) {
         apiProtocol = apiPort === ':443' ? 'https://' : 'http://';
       } else {
-        if(!apiProtocol.endsWith('://')) {
+        if (!apiProtocol.endsWith('://')) {
           apiProtocol = apiProtocol + '://';
         }
       }
       protAndHost = servername.startsWith('http')
-      ? servername
-      : apiProtocol + servername;
+        ? servername
+        : apiProtocol + servername;
 
       this.server.api = protAndHost + apiPort + apiPath;
 
@@ -162,8 +162,12 @@ export class GlobalSettingsService implements OnInit {
       );
     } else {
       const firstURL = this.h.getBaseURL();
-      console.log('No settings in LocalStorage, try our webendpoint', firstURL);
       const prometheusTestQuery = 'query?query=scrape_samples_scraped';
+      console.log(
+        'No settings in LocalStorage, try our webendpoint',
+        firstURL + this.defaultPrometheusPath + prometheusTestQuery
+      );
+
       this.http
         .get(firstURL + this.defaultPrometheusPath + prometheusTestQuery)
         .subscribe(
