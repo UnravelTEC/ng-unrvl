@@ -77,8 +77,9 @@ export class SettingsPanelComponent implements OnInit {
       }
     }
     this.API = this.globalSettingsService.getAPIEndpoint();
+
     if (this.API) {
-      this.oldIFPath = this.API.replace(/api\/$/, '') + 'old';
+      this.oldIFPath = this.API.replace(/api\/$/, '') + 'old/';
     }
     this.prometheusPath = this.globalSettingsService
       .getPrometheusEndpoint()
@@ -99,12 +100,17 @@ export class SettingsPanelComponent implements OnInit {
       JSON.stringify(this.globalSettingsUnsaved)
     );
     // alert('save ok');
+    this.globalSettingsService.reloadSettings();
   }
   reset() {
     this.globalSettingsUnsaved = JSON.parse(
       JSON.stringify(this.defaultSettings)
     );
     // alert('reset ok');
+  }
+  deleteStoredSettings() {
+    this.localStorage.delete('globalSettings');
+    this.globalSettingsService.reloadSettings();
   }
 
   fullscreen() {

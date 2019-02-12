@@ -12,12 +12,12 @@ import { HttpClient } from '@angular/common/http';
 export class GlobalSettingsService implements OnInit {
   private hostName = 'uninitialized';
 
-  public defaultPrometheusPath = '/prometheus/api/v1/';
+  public defaultPrometheusPath = 'prometheus/api/v1/';
   public defaultPrometheusPort = undefined; // '9090'; // later switch to default port
   private defaultAPIPath = '/api/';
   private fallbackEndpoint = 'https://scpexploratory02.tugraz.at/';
   private fallbackPrometheusEndpoint =
-    this.fallbackEndpoint + 'prometheus/api/v1/';
+    this.fallbackEndpoint + this.defaultPrometheusPath;
   private fallbackAPI = this.fallbackEndpoint + 'api/';
 
   public server = {
@@ -29,7 +29,7 @@ export class GlobalSettingsService implements OnInit {
     cpu: 'unknown',
     cpus: 0,
     sensors: [],
-    prometheus: undefined, // true || false
+    prometheus: undefined, // String
     api: undefined
   };
   public client = {
@@ -55,23 +55,124 @@ export class GlobalSettingsService implements OnInit {
     this.reloadSettings();
   }
 
+  // order - what is the criteria a server must met?
+  // prometheus running? - yes
+  // api running? - maybe
+  // 1. local storage settings
+  // 2. hostname of url (if api working)
+  // 3. fallback to Newton
+
+  // following use cases:
+  // developing on localhost:4200 with ng
+  // - default: connect to Newton
+  // - connect to other tricorders on demand
+  // connected to a Tricorder
+  // using public Webif on Newton:
+  // - default: stay on newton
+  // - try out switching to another server
   reloadSettings() {
-    const localStoredServer = this.getPrometheusServerFromLocalStorage();
+    //const localStoredServer = this.getPrometheusServerFromLocalStorage();
+    const localSettings = this.localStorage.get('globalSettings');
+    const localStoredServer = this.h.getDeep(localSettings, [
+      'server',
+      'settings'
+    ]);
     if (localStoredServer) {
-      const API = localStoredServer + this.defaultAPIPath;
-      this.fetchHostName(API);
-      this.getCPUinfo(API);
-      this.getScreen(API);
-      console.log('reloadSettings: got', API, 'from LocalStorage');
+      let servername = this.h.getDeep(localStoredServer, [
+        'serverHostName',
+        'fieldValue'
+      ]);
+      if (servername.endsWith('/')) {
+        servername = servername.substr(0, -1);
+      }
+      this.server.baseurl = servername;
+
+      let prometheusPath = this.h.getDeep(localStoredServer, [
+        'prometheusPath',
+        'fieldValue'
+      ]);
+      if(!prometheusPath) {
+        prometheusPath = this.defaultPrometheusPath;
+      }
+      if (!prometheusPath.startsWith('/')) {
+        prometheusPath = '/' + prometheusPath;
+      }
+      let prometheusPort = this.h.getDeep(localStoredServer, [
+        'prometheusPort',
+        'fieldValue'
+      ]);
+      prometheusPort = Number(prometheusPort) > 0 ? ':' + prometheusPort : '';
+
+      let prometheusProtocol = this.h.getDeep(localStoredServer, [
+        'prometheusProtocol',
+        'fieldValue'
+      ]);
+      if (!prometheusProtocol) {
+        prometheusProtocol = prometheusPort === ':443' ? 'https://' : 'http://';
+      } else {
+        if(!prometheusProtocol.endsWith('://')) {
+          prometheusProtocol = prometheusProtocol + '://';
+        }
+      }
+      let protAndHost = servername.startsWith('http')
+        ? servername
+        : prometheusProtocol + servername;
+
+      this.server.prometheus = protAndHost + prometheusPort + prometheusPath;
+
+      let apiPath = this.h.getDeep(localStoredServer, [
+        'apiPath',
+        'fieldValue'
+      ]);
+      if(!apiPath) {
+        apiPath = this.defaultAPIPath
+      }
+      if (!apiPath.startsWith('/')) {
+        apiPath = '/' + apiPath;
+      }
+      let apiPort = this.h.getDeep(localStoredServer, [
+        'apiPort',
+        'fieldValue'
+      ]);
+      apiPort = Number(apiPort) > 0 ? ':' + apiPort : '';
+      let apiProtocol = this.h.getDeep(localStoredServer, [
+        'apiProtocol',
+        'fieldValue'
+      ]);
+      if(!apiProtocol) {
+        apiProtocol = apiPort === ':443' ? 'https://' : 'http://';
+      } else {
+        if(!apiProtocol.endsWith('://')) {
+          apiProtocol = apiProtocol + '://';
+        }
+      }
+      protAndHost = servername.startsWith('http')
+      ? servername
+      : apiProtocol + servername;
+
+      this.server.api = protAndHost + apiPort + apiPath;
+
+      this.fetchHostName(this.server.api);
+      this.getCPUinfo(this.server.api);
+      this.getScreen(this.server.api);
+      console.log(
+        'reloadSettings: got',
+        this.server.baseurl,
+        'from LocalStorage'
+      );
     } else {
       const firstURL = this.h.getBaseURL();
-      console.log('No saved settings in LocalStorage, try server',firstURL);
+      console.log('No settings in LocalStorage, try our webendpoint', firstURL);
       const prometheusTestQuery = 'query?query=scrape_samples_scraped';
       this.http
         .get(firstURL + this.defaultPrometheusPath + prometheusTestQuery)
         .subscribe(
           (data: Object) => {
-            this.checkPrometheusTestResponse(data, firstURL);
+            this.checkPrometheusTestResponse(
+              data,
+              firstURL,
+              this.defaultPrometheusPath
+            );
           },
           error => {
             console.log(
@@ -84,11 +185,15 @@ export class GlobalSettingsService implements OnInit {
               .get(this.fallbackPrometheusEndpoint + prometheusTestQuery)
               .subscribe(
                 (data: Object) => {
-                  this.checkPrometheusTestResponse(data, this.fallbackEndpoint);
+                  this.checkPrometheusTestResponse(
+                    data,
+                    this.fallbackEndpoint,
+                    this.defaultPrometheusPath
+                  );
                 },
                 error => {
                   console.log('no prometheus found on', this.fallbackEndpoint);
-                  this.server.prometheus = false;
+                  this.server.prometheus = '';
                   this.server.baseurl = undefined;
                 }
               );
@@ -96,40 +201,20 @@ export class GlobalSettingsService implements OnInit {
         );
     }
   }
-  dummy() {
-    // first: test on this.h.getBaseURL()
-    // if no api or prometheus there, set server.api / prometheus to false
-    // from there on, getPrometheusEndpoint() returns fallback
 
-    const prometheus = this.getPrometheusEndpoint();
-
-    //const baseurl = this.h.getBaseURL();
-    //this.client.baseurl = baseurl;
-    console.log('GlobalSettingsDervice: startup on', prometheus);
-    this.testPrometheusOnEndpoint(prometheus);
-
-    let API = this.getAPIEndpoint();
-    if (!API) {
-      API = this.h.getBaseURL() + '/api/';
-    }
-
-    // fill our information
-    // Tricorder | Pubserver
-    // tricorder: Prometheus on ARM
-  }
-
-  checkPrometheusTestResponse(data: Object, endpoint: string) {
+  checkPrometheusTestResponse(data: Object, endpoint: string, endpath: string) {
     if (data['status'] && data['status'] === 'success') {
-      console.log('SUCCESS: prometheus found on endpoint', endpoint);
-      this.server.prometheus = true;
       this.server.baseurl = endpoint;
-      this.fetchHostName(endpoint);
-      this.getCPUinfo(endpoint);
+      this.server.prometheus = endpoint + endpath;
+      this.server.api = endpoint + this.defaultAPIPath;
+      this.fetchHostName(this.server.api);
+      this.getCPUinfo(this.server.api);
+      this.getScreen(this.server.api);
+      console.log('SUCCESS: prometheus found on endpoint', endpoint);
     } else {
       console.error('FAILURE: prometheus on endpoint not ready', endpoint);
     }
   }
-
 
   getCPUinfo(endpoint) {
     this.http.get(endpoint + 'system/cpuinfo.php').subscribe(
@@ -172,12 +257,6 @@ export class GlobalSettingsService implements OnInit {
   }
 
   private fetchHostName(server: string) {
-    // if (
-    //   server.startsWith(this.h.getBaseURL()) &&
-    //   this.getPrometheusEndpoint() == this.fallbackPrometheusEndpoint
-    // ) {
-    //   server = this.fallbackAPI;
-    // }
     this.http.get(server + 'system/hostname.php').subscribe(
       (data: Object) => this.setHostName(data),
       error => {
@@ -192,7 +271,6 @@ export class GlobalSettingsService implements OnInit {
   public setHostName(data: Object) {
     if (data['hostname']) {
       this.hostName = data['hostname'];
-      this.server.api = true;
     } else {
       console.error('hostname cmd returned no hostname');
       this.hostName = 'undefined';
@@ -205,53 +283,6 @@ export class GlobalSettingsService implements OnInit {
     return this.hostName;
   }
 
-  // order - what is the criteria a server must met?
-  // prometheus running? - yes
-  // api running? - maybe
-  // 1. local storage settings
-  // 2. hostname of url (if api working)
-  // 3. fallback to Newton
-
-  // following use cases:
-  // developing on localhost:4200 with ng
-  // - default: connect to Newton
-  // - connect to other tricorders on demand
-  // connected to a Tricorder
-  // using public Webif on Newton:
-  // - default: stay on newton
-  // - try out switching to another server
-
-  testPrometheusOnEndpoint(endpoint: string) {
-    if (!endpoint.endsWith(this.defaultPrometheusPath)) {
-      endpoint = endpoint + this.defaultPrometheusPath;
-    }
-    console.log('testing prometheus on', endpoint);
-    this.http
-      .get(endpoint + 'query?query=scrape_samples_scraped')
-      .subscribe(
-        (data: Object) => this.prometheusTestSuccess(data),
-        error => this.prometheusTestFailure(error)
-      );
-  }
-  prometheusTestSuccess(data: Object) {
-    console.log('prometheus test:', data);
-
-    if (data['status'] && data['status'] === 'success') {
-      console.log('SUCCESS: prometheus found on endpoint');
-      this.server.prometheus = true;
-      this.checkIfTricorder();
-    } else {
-      this.server.prometheus = false;
-    }
-  }
-  prometheusTestFailure(error) {
-    this.server.prometheus = false;
-    this.checkIfTricorder();
-    // console.log('no prometheus found on endpoint');
-    // console.log(error);
-    true;
-  }
-
   checkIfTricorder() {
     if (
       this.server.architecture === undefined ||
@@ -260,10 +291,7 @@ export class GlobalSettingsService implements OnInit {
       console.log('not enough information to check if I am on a Tricorder');
       return;
     }
-    if (
-      this.server.architecture.startsWith('arm') &&
-      this.server.prometheus === true
-    ) {
+    if (this.server.architecture.startsWith('arm') && this.server.prometheus) {
       this.server.type = 'Tricorder';
     } else {
       this.server.type = 'PublicServer';
@@ -272,76 +300,11 @@ export class GlobalSettingsService implements OnInit {
     console.log('I am connected to a', this.server.type);
   }
 
-  getPrometheusServerFromLocalStorage(): string {
-    const localSettings = this.localStorage.get('globalSettings');
-    return this.h.getDeep(localSettings, [
-      'server',
-      'settings',
-      'serverHostName',
-      'fieldValue'
-    ]);
-  }
-
   getPrometheusEndpoint() {
-    // 1. local storage
-    // 2. hostname of webserver
-    // 3. fallback
-    const localSettings = this.localStorage.get('globalSettings');
-    if (this.h.getDeep(localSettings, ['server', 'settings'])) {
-      // localstorage
-      const settings = this.h.getDeep(localSettings, ['server', 'settings']);
-
-      const protocol = settings['prometheusProtocol']['fieldValue'];
-      const server = settings['serverHostName']['fieldValue'];
-      let port = settings['prometheusPort']['fieldValue'];
-      if (Number(port) > 0) {
-        port = ':' + port;
-      }
-      let path = settings['prometheusPath']['fieldValue'];
-      if (!path.startsWith('/')) {
-        path = '/' + path;
-      }
-      if (!path.endsWith('/')) {
-        path = path + '/';
-      }
-      return protocol + '://' + server + port + path;
-    }
-
-    if (this.server.prometheus === false) {
-      return this.fallbackPrometheusEndpoint;
-    } else {
-      const port = this.defaultPrometheusPort
-        ? ':' + this.defaultPrometheusPort
-        : '';
-      return this.h.getBaseURL() + port + this.defaultPrometheusPath;
-    }
+    return this.server.prometheus;
   }
 
   getAPIEndpoint() {
-    const localSettings = this.localStorage.get('globalSettings');
-    if (this.h.getDeep(localSettings, ['server', 'settings'])) {
-      const settings = this.h.getDeep(localSettings, ['server', 'settings']);
-
-      const protocol = settings['apiProtocol']['fieldValue'];
-      const server = settings['serverHostName']['fieldValue'];
-      let port = settings['apiPort']['fieldValue'];
-      if (port) {
-        port = ':' + port;
-      }
-      let path = settings['apiPath']['fieldValue'];
-      if (!path.startsWith('/')) {
-        path = '/' + path;
-      }
-      if (!path.endsWith('/')) {
-        path = path + '/';
-      }
-      return protocol + '://' + server + port + path;
-    }
-
-    if (this.server.api === false) {
-      return undefined;
-    } else {
-      return this.h.getBaseURL() + this.defaultAPIPath;
-    }
+    return this.server.api;
   }
 }
