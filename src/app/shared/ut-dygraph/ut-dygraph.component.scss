@@ -56,7 +56,7 @@
     }
     div.options {
       margin-top: 0.3rem;
-      background: grey;
+      background: rgba(128, 128, 128, 0.308);
       .subbox {
         border: 1px solid black;
         display: inline-block;
@@ -80,6 +80,7 @@
             background:#5cb85c;
             padding:0.5em;
             cursor: pointer;
+            min-width: 2.25em;
         }
 
         .time {

@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
+import { GlobalSettingsService } from '../core/global-settings.service';
 import { HelperFunctionsService } from '../core/helper-functions.service';
-import { LocalStorageService } from '../core/local-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,7 @@ import { LocalStorageService } from '../core/local-storage.service';
 export class UtFetchdataService {
   constructor(
     private http: HttpClient,
-    private localStorage: LocalStorageService,
+    private globalSettingsService: GlobalSettingsService,
     private h: HelperFunctionsService
   ) {}
 
@@ -31,51 +31,21 @@ export class UtFetchdataService {
     port?: string,
     path?: string
   ) {
-    let globalSettings;
-    if (!server || !port || !path) {
-      globalSettings = this.localStorage.get('globalSettings');
-      // console.log(globalSettings);
+    if (!server && !port && !path) {
+      return this.globalSettingsService.getPrometheusEndpoint();
     }
-    if (!server) {
-      server = this.h.getDeep(globalSettings, [
-        'server',
-        'settings',
-        'serverHostName',
-        'fieldValue'
-      ]);
-      if (!server) {
-        console.error('you have to supply server or set it!');
-        server = this.h.getBaseURL();
-      }
-    }
-    if (server.endsWith('/')) {
-      server = server.substr(0, server.length - 1);
-      console.log('servername has to be without slash(/) at the end! - fixed.');
-    }
+
     if (!port) {
-      port = this.h.getDeep(globalSettings, [
-        'server',
-        'settings',
-        'serverPort',
-        'fieldValue'
-      ]);
+      port = this.globalSettingsService.defaultPrometheusPort;
     }
-    if (port) {
+    if (Number(port) > 0) {
       port = ':' + port;
     }
     if (!port) {
       port = '';
     }
     if (!path) {
-      path = this.h.getDeep(globalSettings, [
-        'server',
-        'settings',
-        'serverPath',
-        'fieldValue'
-      ]);
-      if (!path) {
-        path = 'prometheus/api/v1/';
-      }
+      path = this.globalSettingsService.defaultPrometheusPath;
     }
     const protocol = port === ':443' ? 'https://' : 'http://';
     const protAndHost = server.startsWith('http') ? server : protocol + server;
@@ -128,5 +98,31 @@ export class UtFetchdataService {
     );
 
     console.log(['postData', url, data]);
+  }
+
+  checkPrometheusDataValidity(data) {
+    const result = this.h.getDeep(data, ['data', 'result']);
+    if (!result || !Array.isArray(result)) {
+      console.log('checkPrometheusDataValidity: no Array:', data);
+      return false;
+    }
+    if(result.length === 0) {
+      console.log('checkPrometheusDataValidity: datasets returned 0');
+      return null;
+    }
+    const metric0 = this.h.getDeep(result, [0, 'metric']);
+    const values0 = this.h.getDeep(result, [0, 'values']);
+    if (!values0 || !metric0) {
+      console.error('updateDataSet: no valid data received.');
+      return false;
+    }
+    // check if any data there
+    for (let i = 0; i < result.length; i++) {
+      const dataset = result[i].values;
+      if(dataset.length) {
+        return true
+      }
+    }
+    return false;
   }
 }

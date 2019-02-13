@@ -1,46 +1,53 @@
+div.settingspage {
+    padding: 0 0.5em;
+}
+
 section {
     border: 1px solid black;
     border-radius: 2px;
     padding: 10px;
     margin: 0.5em auto 0.5em auto;
-    width: 60em;
-
 }
 
 h1 {
     text-align: center;
+    margin: 1rem;
 }
 h2 {margin: 0}
 
 section section {
-    border: 1px solid beige;
+    border: 1px solid gray;
     padding: 0.1em 0.1em 0.1em 0.5em;
     margin: 0.2em 0;
-    width: 59em;
+    min-height: 2.5em;
 }
 
 label {
-    display: inline-block;
-    min-width: 20em;
+    display: block;
+    color: #333;
+    font-weight: 700;
 }
 input {
     width: 20em;
 }
 
-section#submit {
+section.center {
     text-align: center;
 }
-button {
-    margin: 0.3em;
-}
 
+
+div.valuedebug {
+     position: relative;
+     left: 20em;
+     margin-top: -3em;
+}
 .valuedebug {
     display:inline-block;
     width: 18em;
     margin-left: 0.3em;
 }
 
-#links a {
+section > a, button {
     display: block;
     background-color: #5cb85c;
     border-color: #4cae4c;
@@ -56,4 +63,10 @@ button {
     color: white;
     margin: 5px;
     text-decoration: none;
+    cursor: pointer;
+}
+
+button {
+    margin: 0.3em;
+    display: inline-block;
 }

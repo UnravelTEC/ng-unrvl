@@ -1,0 +1,39 @@
+.buttons {
+  position: absolute;
+  bottom: 0;
+
+  .offbtn.off,
+  .onbtn.on,
+  .autobtn.auto {
+    border: 3px solid green;
+  }
+}
+.error {
+  margin: 3em;
+  padding: 1em;
+  border: 2px solid red;
+}
+.loading {
+  margin: 3em;
+  padding: 1em;
+  border: 2px solid yellow;
+}
+
+button {
+  display: inline-block;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 7px;
+  color: white;
+  margin: 5px;
+  text-decoration: none;
+  cursor: pointer;
+}

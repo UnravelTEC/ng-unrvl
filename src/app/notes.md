@@ -84,6 +84,13 @@ dygraph css - you have to disable ng component encapsulation
 cd /Frontend/Web/src/app; npm run build.prod
 scp -r ../../dist/Web/* root@co2-mm.lan://var/www/ng/ #*
 
+test:
+  in private browser window -> should use Newton
+  localhost with server Henri
+  on Henri
+  on a co2-logger w/o screen
+
+
 
 # Two-Way Databinding forms
 https://angular.io/guide/forms

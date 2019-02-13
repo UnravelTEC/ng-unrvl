@@ -28,7 +28,9 @@ export class Co2GraphComponent implements OnInit, OnDestroy {
   constructor(
     private localStorage: LocalStorageService,
     private globalSettings: GlobalSettingsService
-  ) {}
+  ) {
+    this.globalSettings.emitChange({ appName: this.title }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+  }
   ngOnInit() {
     const lsStep = this.localStorage.get('pm.step');
     if (lsStep) {
@@ -38,8 +40,6 @@ export class Co2GraphComponent implements OnInit, OnDestroy {
     if (lsStartTime) {
       this.startTime = lsStartTime;
     }
-
-    this.globalSettings.emitChange({ appName: this.title });
   }
   ngOnDestroy() {
     console.log('CO2-App destroyed');

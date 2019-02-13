@@ -37,6 +37,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/r-ht/r-ht.module#RHTModule'
   },
   {
+    path: 'Apps/UV',
+    loadChildren: './ut-apps/uv/uv.module#UvModule'
+  },
+  {
     path: 'Apps/PressureGraph',
     loadChildren: './ut-apps/pressure-graph/pressure-graph.module#PressureGraphModule'
   },
@@ -45,8 +49,16 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/pm/pm.module#PmModule'
   },
   {
+    path: 'Apps/voc',
+    loadChildren: './ut-apps/voc/voc.module#VocModule'
+  },
+  {
     path: 'Apps/loudness',
     loadChildren: './ut-apps/loudness/loudness.module#LoudnessModule'
+  },
+  {
+    path: 'Apps/noir',
+    loadChildren: './ut-apps/noir/noir.module#NoirModule'
   },
   {
     path: 'Apps/gamma',

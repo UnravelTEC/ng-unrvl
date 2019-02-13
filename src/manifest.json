@@ -1,0 +1,13 @@
+{
+  "short_name": "ng-unrvl",
+  "name": "UnravelTEC Sensor Frontend",
+  "icons": [
+    {
+      "src": "assets/UnravelTEC_Logo-transparent-150x150.png",
+      "sizes": "150x150",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/Dashboard",
+  "display": "standalone"
+}

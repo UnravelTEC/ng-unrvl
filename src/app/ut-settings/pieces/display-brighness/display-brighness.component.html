@@ -1,0 +1,8 @@
+<mat-slider
+  min="7"
+  max="255"
+  step="1"
+  [value]="currentBrightness"
+  (change)="setBrightness($event)"
+  [disabled]="disabled"
+></mat-slider>

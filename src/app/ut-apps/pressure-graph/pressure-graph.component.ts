@@ -7,7 +7,6 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
   styleUrls: ['./pressure-graph.component.scss']
 })
 export class PressureGraphComponent implements OnInit {
-
   fetchFromServerIntervalMS = 1000;
 
   graphstyle = {
@@ -20,10 +19,9 @@ export class PressureGraphComponent implements OnInit {
   dataSeriesLabels = ['Pressure'];
   startTime = '3h';
 
-  constructor(private globalSettings: GlobalSettingsService) { }
-
-  ngOnInit() {
-    this.globalSettings.emitChange({ appName: 'Atmospheric Pressure' });
+  constructor(private globalSettings: GlobalSettingsService) {
+    this.globalSettings.emitChange({ appName: 'Atmospheric Pressure' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
   }
 
+  ngOnInit() {}
 }

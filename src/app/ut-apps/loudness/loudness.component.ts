@@ -7,7 +7,6 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
   styleUrls: ['./loudness.component.scss']
 })
 export class LoudnessComponent implements OnInit {
-
   graphstyle = {
     position: 'absolute',
     top: '1vh',
@@ -19,10 +18,9 @@ export class LoudnessComponent implements OnInit {
   dataSeriesLabels = ['Loudness'];
   startTime = '5m';
 
-  constructor(private globalSettings: GlobalSettingsService) { }
-
-  ngOnInit() {
-    this.globalSettings.emitChange({ appName: 'Loudness' });
+  constructor(private globalSettings: GlobalSettingsService) {
+    this.globalSettings.emitChange({ appName: 'Loudness' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
   }
 
+  ngOnInit() {}
 }

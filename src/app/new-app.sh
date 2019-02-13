@@ -72,7 +72,7 @@ cat $appname-routing.module.ts.head \
 rm $appname-routing.module.ts.head $appname-routing.module.ts.routes $appname-routing.module.ts.tail $appname-routing.module.ts.tmp
 
 echo "in *-module.ts:          add needed imports like UtDygraphModule and FormsModule"
-echo "in *-component.ts:       constructor (private globalSettings: GlobalSettingsService"
-echo "                         ngOnInit     this.globalSettings.emitChange({ appName: '$appname' });"
+echo "in *-component.ts:       constructor (private globalSettings: GlobalSettingsService) {"
+echo "                           this.globalSettings.emitChange({ appName: '$appname' }); }"
 echo "in dashboard/comp.html:  add the tile"
 echo "in /app.module.ts:       add the route"
