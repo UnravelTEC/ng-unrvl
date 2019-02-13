@@ -579,6 +579,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       }
       labelString += key + ': ' + value;
     }
+    if(!labelString) {
+      labelString = 'average'; // FIXME maybe something else...
+    }
     return labelString;
   }
 
