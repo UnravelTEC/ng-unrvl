@@ -1285,27 +1285,26 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   returnDataRange(indata, from: Date, to: Date) {
-    if(!indata.length || !from || !to) {
-      console.error('returnDataRange: empty input',indata,from,to);
+    if (!indata.length || !from || !to) {
+      console.error('returnDataRange: empty input', indata, from, to);
       return [];
     }
 
-
     function isbetweenDate(target: Date, lower: Date, upper: Date) {
       return (
-        lower.valueOf() <= target.valueOf() &&
-        upper.valueOf() >= target.valueOf()
+        (lower.valueOf() <= target.valueOf() &&
+        upper.valueOf() > target.valueOf()) || upper.valueOf() == target.valueOf()
       );
     }
 
     console.log('slicing from', from, 'to', to, 'in', indata);
     let startindex = undefined;
-    if(from.valueOf() < indata[0][0].valueOf()) {
-      startindex = 0
+    if (from.valueOf() < indata[0][0].valueOf()) {
+      startindex = 0;
     }
     let endindex = undefined;
-    if(to.valueOf() > indata[indata.length-1][0].valueOf()) {
-      endindex = indata.length -1;
+    if (to.valueOf() > indata[indata.length - 1][0].valueOf()) {
+      endindex = indata.length - 1;
     }
 
     for (let i = 0; i < indata.length - 1; i++) {
