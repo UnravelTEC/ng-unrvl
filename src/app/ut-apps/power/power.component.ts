@@ -60,6 +60,8 @@ export class PowerComponent implements OnInit {
     current_A: ['current_A']
   };
 
+  multiplicateFactors = { cpu_undervolt: [0.2] };
+
   constructor(private globalSettings: GlobalSettingsService) {
     this.globalSettings.emitChange({ appName: 'Power' });
   }

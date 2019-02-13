@@ -1,53 +1,71 @@
 <table>
   <tr>
     <td>
-      Raspberry Pi supply Voltage
+      <h4>Raspberry Pi supply Voltage</h4>
       <app-ut-dygraph
         queryString="voltage_V"
         [fetchFromServerIntervalMS]="step"
         [dataBaseQueryStepMS]="step"
         [dataSeriesLabels]="labels.voltage"
-        YLabel="Supply Voltage"
+        YLabel="Supply Voltage (V)"
         [style]="style.voltage"
         startTime="5m"
         #voltage_V
       ></app-ut-dygraph>
     </td>
     <td>
-      Raspberry Pi CPU Voltage
+      <h4>Raspberry Pi CPU Voltage</h4>
       <app-ut-dygraph
         queryString="cpu_voltage"
         [fetchFromServerIntervalMS]="step"
         [dataBaseQueryStepMS]="step"
         [dataSeriesLabels]="labels.cpu_voltage"
-        YLabel="CPU Voltage"
+        YLabel="CPU Voltage (V)"
         [style]="style.cpu_voltage"
         startTime="5m"
         #voltage_CPU
       ></app-ut-dygraph>
 
-      Raspberry Pi CPU Undervoltage
+      <h4>Raspberry Pi CPU Undervoltage</h4>
       <app-ut-dygraph
         queryString="cpu_undervolt"
         [fetchFromServerIntervalMS]="step"
         [dataBaseQueryStepMS]="step"
         [dataSeriesLabels]="labels.cpu_undervolt"
-        YLabel="CPU Voltage"
+        YLabel="Raspi Undervolt"
         [style]="style.cpu_undervolt"
+        [multiplicateFactors]="multiplicateFactors.cpu_undervolt"
         startTime="5m"
-        #voltage_CPU
+        #cpu_undervolt
       ></app-ut-dygraph>
-
     </td>
   </tr>
   <tr>
     <td>
-      Tricorder System Power Power Usage
-      power_W
+      <h4>Tricorder Battery Power Usage</h4>
+      <app-ut-dygraph
+        queryString="power_W"
+        [fetchFromServerIntervalMS]="step"
+        [dataBaseQueryStepMS]="step"
+        [dataSeriesLabels]="labels.power_W"
+        YLabel="Power Usage (W)"
+        [style]="style.power_W"
+        startTime="5m"
+        #power_W
+      ></app-ut-dygraph>
     </td>
     <td>
-      Battery Discharge Current
-      current_A
+      <h4>Battery Discharge Current</h4>
+      <app-ut-dygraph
+        queryString="current_A"
+        [fetchFromServerIntervalMS]="step"
+        [dataBaseQueryStepMS]="step"
+        [dataSeriesLabels]="labels.current_A"
+        YLabel="Battery Current (A)"
+        [style]="style.current_A"
+        startTime="5m"
+        #current_A
+      ></app-ut-dygraph>
     </td>
   </tr>
 </table>
