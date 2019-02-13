@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { HelperFunctionsService } from './helper-functions.service';
 import { LocalStorageService } from './local-storage.service';
 import { HttpClient } from '@angular/common/http';
+import { e } from '@angular/core/src/render3';
 
 @Injectable({
   providedIn: 'root'
@@ -251,6 +252,9 @@ export class GlobalSettingsService implements OnInit {
             console.log('running on localhost without Rpi -> Developing');
             this.client.type = 'web';
           }
+        } else {
+          this.server.hasscreen = false;
+          this.client.type = 'web';
         }
       },
       error => {
