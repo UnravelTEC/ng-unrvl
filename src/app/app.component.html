@@ -1,6 +1,6 @@
 <!-- The content below is only a placeholder and can be replaced. -->
 
-<div id="appbody">
+<div id="appbody" [style.cursor]="cursor">
   <app-top-bar [hide]="topBarHidden" [appName]="appName"></app-top-bar>
 
   <div class="content" (toogleFullScreen)="toggleFullScreen($event)">
