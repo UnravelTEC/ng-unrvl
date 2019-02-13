@@ -19,7 +19,7 @@ export class SettingsPanelComponent implements OnInit {
       settings: {
         serverHostName: {
           fieldName: 'Server hostname/ip',
-          fieldValue: ''//'scpexploratory02.tugraz.at'
+          fieldValue: '' //'scpexploratory02.tugraz.at'
         },
         prometheusPort: { fieldName: 'Prometheus port', fieldValue: '' }, // 9090
         prometheusPath: {
@@ -47,6 +47,7 @@ export class SettingsPanelComponent implements OnInit {
   };
 
   globalSettings = {};
+  localStoredSettings = false;
   globalSettingsUnsaved = {}; // the 'live' in editor ones the user can change before saving
 
   debug = true;
@@ -92,6 +93,7 @@ export class SettingsPanelComponent implements OnInit {
     if (loadedSettings) {
       this.globalSettings = loadedSettings;
       this.globalSettingsUnsaved = this.localStorage.get('globalSettings');
+      this.localStoredSettings = true;
     }
   }
 
@@ -102,6 +104,7 @@ export class SettingsPanelComponent implements OnInit {
     );
     // alert('save ok');
     this.globalSettingsService.reloadSettings();
+    this.localStoredSettings = true;
   }
   reset() {
     this.globalSettingsUnsaved = JSON.parse(
