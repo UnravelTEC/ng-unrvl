@@ -47,9 +47,10 @@ export class DisplayBrighnessComponent implements OnInit {
     if (data && data['brightness']) {
       this.currentBrightness = data['brightness'];
       this.brightnessEvent.emit(this.currentBrightness);
+      this.disabled = false;
     }
     // alert('got bn:' + JSON.stringify(data));
-    this.disabled = false;
+
   }
 
   setBrightness(MatSliderChange) {

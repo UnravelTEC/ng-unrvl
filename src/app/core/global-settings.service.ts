@@ -253,6 +253,7 @@ export class GlobalSettingsService implements OnInit {
             this.client.type = 'web';
           }
         } else {
+          console.log('no screen here.');
           this.server.hasscreen = false;
           this.client.type = 'web';
         }
