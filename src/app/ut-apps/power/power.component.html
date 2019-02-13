@@ -1,0 +1,53 @@
+<table>
+  <tr>
+    <td>
+      Raspberry Pi supply Voltage
+      <app-ut-dygraph
+        queryString="voltage_V"
+        [fetchFromServerIntervalMS]="step"
+        [dataBaseQueryStepMS]="step"
+        [dataSeriesLabels]="labels.voltage"
+        YLabel="Supply Voltage"
+        [style]="style.voltage"
+        startTime="5m"
+        #voltage_V
+      ></app-ut-dygraph>
+    </td>
+    <td>
+      Raspberry Pi CPU Voltage
+      <app-ut-dygraph
+        queryString="cpu_voltage"
+        [fetchFromServerIntervalMS]="step"
+        [dataBaseQueryStepMS]="step"
+        [dataSeriesLabels]="labels.cpu_voltage"
+        YLabel="CPU Voltage"
+        [style]="style.cpu_voltage"
+        startTime="5m"
+        #voltage_CPU
+      ></app-ut-dygraph>
+
+      Raspberry Pi CPU Undervoltage
+      <app-ut-dygraph
+        queryString="cpu_undervolt"
+        [fetchFromServerIntervalMS]="step"
+        [dataBaseQueryStepMS]="step"
+        [dataSeriesLabels]="labels.cpu_undervolt"
+        YLabel="CPU Voltage"
+        [style]="style.cpu_undervolt"
+        startTime="5m"
+        #voltage_CPU
+      ></app-ut-dygraph>
+
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Tricorder System Power Power Usage
+      power_W
+    </td>
+    <td>
+      Battery Discharge Current
+      current_A
+    </td>
+  </tr>
+</table>
