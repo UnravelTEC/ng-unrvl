@@ -20,6 +20,8 @@ export class AppComponent implements OnInit {
 
   public appName = 'Home';
 
+  public cursor = 'auto';
+
   public constructor(
     private http: HttpClient,
     private titleService: Title,
@@ -39,6 +41,10 @@ export class AppComponent implements OnInit {
       }
       if (obj && obj.hasOwnProperty('footer')) {
         this.toggleFooter(obj['footer']);
+      }
+      if (obj && obj.hasOwnProperty('TricorderLocal')) {
+        this.cursor = obj['TricorderLocal'] == true ? 'none' : 'auto';
+        alert('Welcome to Tricorder');
       }
     });
 
@@ -74,7 +80,8 @@ export class AppComponent implements OnInit {
     }
   }
   public toggleFooter(newState?: boolean) {
-    setTimeout(() => { // to prevent ExpressionChangedAfterItHasBeenCheckedError
+    setTimeout(() => {
+      // to prevent ExpressionChangedAfterItHasBeenCheckedError
       console.log(['footer toggled to ', newState]);
       if (newState !== undefined) {
         this.footerHidden = !newState;

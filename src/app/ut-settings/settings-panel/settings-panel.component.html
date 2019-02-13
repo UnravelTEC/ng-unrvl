@@ -13,7 +13,7 @@
     ></app-display-brighness>
   </section>
 
-  <section>
+  <section *ngIf="globalSettingsService.client.type !== 'local'">
     <a (click)="fullscreen()">Fullscreen</a>
   </section>
 
@@ -21,12 +21,23 @@
     class="center"
     *ngIf="globalSettingsService.server.type == 'Tricorder'"
   >
-    <button (click)="halt()">Halt</button>
+    <button (click)="halt()">Shut Down</button>
     <button (click)="reboot()">Reboot</button>
   </section>
 
   <section *ngFor="let settingsSection of (globalSettingsUnsaved | keyvalue)">
     <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
+    <ul
+      *ngIf="settingsSection.value.settingAttributes.title == 'Server Settings'"
+    >
+      <li>
+        Current Server ({{ globalSettingsService.server.type }}):
+        {{ globalSettingsService.server.baseurl }}
+      </li>
+      <li>Database: {{ globalSettingsService.server.prometheus }}</li>
+      <li>API: {{ globalSettingsService.server.api }}</li>
+    </ul>
+
     <section *ngFor="let entry of (settingsSection.value.settings | keyvalue)">
       <div class="fields">
         <label for="{{ settingsSection.key }}-{{ entry.key }}"
@@ -40,13 +51,6 @@
         />
       </div>
       <div class="valuedebug" *ngIf="debug == true">
-        <!-- '{{ entry.value.fieldValue }}',-->
-        <!--
-        <span *ngIf="entry.key == 'serverHostName'"
-          ><a href="http://{{ entry.value.fieldValue }}">{{
-            entry.value.fieldValue
-          }}</a></span
-        > -->
         Default: '{{
           defaultSettings[settingsSection.key].settings[entry.key].fieldValue
         }}',<br />
@@ -70,13 +74,20 @@
       <div>
         <!-- div needed for text-align center -->
         <button type="submit" class="btn btn-success" (click)="save()">
-          Save
+          Save Settings
         </button>
-        <button type="submit" class="btn btn-success" (click)="load()">
-          Load
+        <button type="submit" class="btn btn-success" (click)="load()" [disabled]="!localStoredSettings">
+          Load Settings
         </button>
         <button type="submit" class="btn btn-success" (click)="reset()">
           Reset
+        </button>
+        <button
+          type="submit"
+          class="btn btn-success"
+          (click)="deleteStoredSettings()"
+        >
+          Delete Settings
         </button>
       </div>
     </section>
@@ -88,6 +99,9 @@
       href="{{ oldIFPath }}"
       >Old Interface</a
     >
-    <a href="{{ prometheusPath }}">Prometheus Admin Interface</a>
+    <a *ngIf="globalSettingsService.server.prometheus" href="{{ prometheusPath }}"
+      >Prometheus Admin Interface</a
+    >
+    <!-- Small Bug: correct Prometheus IF link not displayed on initial load -->
   </section>
 </div>

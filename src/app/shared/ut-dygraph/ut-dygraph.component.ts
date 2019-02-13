@@ -1,24 +1,18 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewEncapsulation
-} from '@angular/core';
+import { formatDate } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewEncapsulation } from '@angular/core';
+
 import Dygraph from 'dygraphs';
+import * as FileSaver from 'file-saver';
+
+import cloneDeep from 'lodash-es/cloneDeep';
+
 import { interval, Subscription } from 'rxjs';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 
-import * as FileSaver from 'file-saver';
 
-import cloneDeep from 'lodash-es/cloneDeep';
-import { HttpClient } from '@angular/common/http';
-import { formatDate } from '@angular/common';
-import { tick } from '@angular/core/src/render3';
 
 @Component({
   selector: 'app-ut-dygraph',
@@ -624,6 +618,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     console.log('handleInitialData: dyoptions', this.dyGraphOptions);
     console.log('handleInitialData: displayedData', this.displayedData);
     // f (1 === 1) return;
+    if(this.displayedData.length == 0) {
+      console.log('no initial data, do not attempt to update');
+      return;
+    }
+
     if (this.fetchFromServerIntervalMS > 0) {
       this.startUpdate();
     }

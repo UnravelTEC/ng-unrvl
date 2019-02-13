@@ -248,6 +248,7 @@ export class GlobalSettingsService implements OnInit {
           if (endpoint.startsWith('http://localhost')) {
             console.log('we are on a Raspi with Raspi-Display!');
             this.client.type = 'local';
+            this.emitChange({ TricorderLocal: true });
           } else {
             console.log('running on localhost without Rpi -> Developing');
             this.client.type = 'web';

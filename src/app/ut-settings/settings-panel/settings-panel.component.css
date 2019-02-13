@@ -70,3 +70,7 @@ button {
     margin: 0.3em;
     display: inline-block;
 }
+button:disabled {
+    background-color: gray;
+    cursor: default;
+}
