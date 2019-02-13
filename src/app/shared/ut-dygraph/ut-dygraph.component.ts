@@ -624,6 +624,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     console.log('handleInitialData: dyoptions', this.dyGraphOptions);
     console.log('handleInitialData: displayedData', this.displayedData);
     // f (1 === 1) return;
+    if(this.displayedData.length == 0) {
+      console.log('no initial data, do not attempt to update');
+      return;
+    }
+
     if (this.fetchFromServerIntervalMS > 0) {
       this.startUpdate();
     }
