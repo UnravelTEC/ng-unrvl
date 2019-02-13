@@ -19,28 +19,28 @@ export class SettingsPanelComponent implements OnInit {
       settings: {
         serverHostName: {
           fieldName: 'Server hostname/ip',
-          fieldValue: 'scpexploratory02.tugraz.at'
+          fieldValue: ''//'scpexploratory02.tugraz.at'
         },
-        prometheusPort: { fieldName: 'Prometheus port', fieldValue: '443' }, // 9090
+        prometheusPort: { fieldName: 'Prometheus port', fieldValue: '' }, // 9090
         prometheusPath: {
           fieldName: 'Prometheus database API path',
           fieldValue: 'prometheus/api/v1/'
         },
         prometheusProtocol: {
           fieldName: 'Prometheus Protocol',
-          fieldValue: 'https'
+          fieldValue: ''
         },
         apiPort: {
           fieldName: 'API port',
-          fieldValue: '80'
+          fieldValue: ''
         },
         apiPath: {
           fieldName: 'API path',
-          fieldValue: 'api/'
+          fieldValue: '' // 'api/'
         },
         apiProtocol: {
           fieldName: 'API protocol',
-          fieldValue: 'http'
+          fieldValue: ''
         }
       }
     }
