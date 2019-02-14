@@ -1,23 +1,18 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewEncapsulation
-} from '@angular/core';
+import { formatDate } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewEncapsulation } from '@angular/core';
+
 import Dygraph from 'dygraphs';
+import * as FileSaver from 'file-saver';
+
+import cloneDeep from 'lodash-es/cloneDeep';
+
 import { interval, Subscription } from 'rxjs';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 
-import * as FileSaver from 'file-saver';
 
-import cloneDeep from 'lodash-es/cloneDeep';
-import { HttpClient } from '@angular/common/http';
-import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-ut-dygraph',
@@ -578,11 +573,14 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       }
       labelString += key + ': ' + value;
     }
+    if(!labelString) {
+      labelString = 'average'; // FIXME maybe something else...
+    }
     return labelString;
   }
 
   handleInitialData(receivedData: Object) {
-    console.log('handleInitialData: received Data:', receivedData);
+    console.log('handleInitialData: received Data:', cloneDeep(receivedData));
 
     this.updateDataSet(receivedData);
 
@@ -620,6 +618,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     console.log('handleInitialData: dyoptions', this.dyGraphOptions);
     console.log('handleInitialData: displayedData', this.displayedData);
     // f (1 === 1) return;
+    if(this.displayedData.length == 0) {
+      console.log('no initial data, do not attempt to update');
+      return;
+    }
+
     if (this.fetchFromServerIntervalMS > 0) {
       this.startUpdate();
     }
@@ -1283,6 +1286,62 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     });
   }
 
+  returnDataRange(indata, from: Date, to: Date) {
+    if (!indata.length || !from || !to) {
+      console.error('returnDataRange: empty input', indata, from, to);
+      return [];
+    }
+
+    function isbetweenDate(target: Date, lower: Date, upper: Date) {
+      return (
+        (lower.valueOf() <= target.valueOf() &&
+        upper.valueOf() > target.valueOf()) || upper.valueOf() == target.valueOf()
+      );
+    }
+
+    console.log('slicing from', from, 'to', to, 'in', indata);
+    let startindex = undefined;
+    if (from.valueOf() < indata[0][0].valueOf()) {
+      startindex = 0;
+    }
+    let endindex = undefined;
+    if (to.valueOf() > indata[indata.length - 1][0].valueOf()) {
+      endindex = indata.length - 1;
+    }
+
+    for (let i = 0; i < indata.length - 1; i++) {
+      const elementDate = indata[i][0];
+      const nextElement = indata[i + 1][0];
+      if (startindex === undefined) {
+        // if(i === 0) {
+        //   console.log(elementDate.valueOf(), from.valueOf())
+        // }
+        if (isbetweenDate(from, elementDate, nextElement)) {
+          startindex = i;
+          continue;
+        }
+      }
+      if (endindex === undefined) {
+        if (isbetweenDate(to, elementDate, nextElement)) {
+          endindex = i;
+          break;
+        }
+      }
+    }
+    if (!startindex) {
+      console.error('startindex not found');
+      return [];
+    }
+    if (!endindex) {
+      endindex = indata.length;
+    }
+    const outdata = indata.slice(startindex, endindex + 1);
+
+    console.log('dataslice from', startindex, 'to', endindex);
+
+    return outdata;
+  }
+
   exportCSV(data?) {
     //header
     const separator = '\t';
@@ -1290,7 +1349,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     const labels = this.dyGraphOptions['labels'];
     if (!data) {
-      data = this.displayedData;
+      data = this.returnDataRange(
+        this.displayedData,
+        this.fromZoom,
+        this.toZoom
+      );
     }
     let header = '';
     if (labels.length === 0 || data.length === 0) {

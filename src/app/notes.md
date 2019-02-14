@@ -88,6 +88,7 @@ test:
   in private browser window -> should use Newton
   localhost with server Henri
   on Henri
+  on a co2-logger w/o screen
 
 
 

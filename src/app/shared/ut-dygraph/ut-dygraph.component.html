@@ -137,7 +137,9 @@ style.padding-bottom="20vh"-->
           <span>{{ toZoom | date: 'HH:mm:ss' }}</span>
         </div>
       </div>
+
       <form class="subbox">
+          <h5>Pan / Jump</h5>
         <button (click)="pan('back')">&lt;</button>
         <select
           [(ngModel)]="panAmount"
@@ -150,12 +152,15 @@ style.padding-bottom="20vh"-->
           <option value="0.5" selected="selected">1/2</option>
           <option value="1">1</option>
         </select>
-        <span title="on click, load/save should open">Jump</span>
+        <button (click)="pan('forward')">&gt;</button>
+      </form>
+      <form class="subbox">
+        <h5 title="on click, load/save should open">Zoom</h5>
         <button (click)="zoom(0.5)">+</button>
         <button (click)="zoom(2)">-</button>
         <button (click)="resetZoom()">Reset</button>
         <button (click)="fullZoom()">All</button>
-        <button (click)="pan('forward')">&gt;</button>
+
       </form>
       <form class="subbox">
         <h5>Export</h5>

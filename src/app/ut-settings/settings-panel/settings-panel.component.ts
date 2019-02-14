@@ -19,34 +19,35 @@ export class SettingsPanelComponent implements OnInit {
       settings: {
         serverHostName: {
           fieldName: 'Server hostname/ip',
-          fieldValue: 'scpexploratory02.tugraz.at'
+          fieldValue: '' //'scpexploratory02.tugraz.at'
         },
-        prometheusPort: { fieldName: 'Prometheus port', fieldValue: '443' }, // 9090
+        prometheusPort: { fieldName: 'Prometheus port', fieldValue: '' }, // 9090
         prometheusPath: {
           fieldName: 'Prometheus database API path',
           fieldValue: 'prometheus/api/v1/'
         },
         prometheusProtocol: {
           fieldName: 'Prometheus Protocol',
-          fieldValue: 'https'
+          fieldValue: ''
         },
         apiPort: {
           fieldName: 'API port',
-          fieldValue: '80'
+          fieldValue: ''
         },
         apiPath: {
           fieldName: 'API path',
-          fieldValue: 'api/'
+          fieldValue: '' // 'api/'
         },
         apiProtocol: {
           fieldName: 'API protocol',
-          fieldValue: 'http'
+          fieldValue: ''
         }
       }
     }
   };
 
   globalSettings = {};
+  localStoredSettings = false;
   globalSettingsUnsaved = {}; // the 'live' in editor ones the user can change before saving
 
   debug = true;
@@ -77,12 +78,14 @@ export class SettingsPanelComponent implements OnInit {
       }
     }
     this.API = this.globalSettingsService.getAPIEndpoint();
+
     if (this.API) {
-      this.oldIFPath = this.API.replace(/api\/$/, '') + 'old';
+      this.oldIFPath = this.API.replace(/api\/$/, '') + 'old/';
     }
-    this.prometheusPath = this.globalSettingsService
-      .getPrometheusEndpoint()
-      .replace(/api\/v1\/$/, '');
+    const globalPrometheusPath = this.globalSettingsService.getPrometheusEndpoint();
+    if (globalPrometheusPath) {
+      this.prometheusPath = globalPrometheusPath.replace(/api\/v1\/$/, '');
+    }
   }
 
   load() {
@@ -90,6 +93,7 @@ export class SettingsPanelComponent implements OnInit {
     if (loadedSettings) {
       this.globalSettings = loadedSettings;
       this.globalSettingsUnsaved = this.localStorage.get('globalSettings');
+      this.localStoredSettings = true;
     }
   }
 
@@ -99,12 +103,18 @@ export class SettingsPanelComponent implements OnInit {
       JSON.stringify(this.globalSettingsUnsaved)
     );
     // alert('save ok');
+    this.globalSettingsService.reloadSettings();
+    this.localStoredSettings = true;
   }
   reset() {
     this.globalSettingsUnsaved = JSON.parse(
       JSON.stringify(this.defaultSettings)
     );
     // alert('reset ok');
+  }
+  deleteStoredSettings() {
+    this.localStorage.delete('globalSettings');
+    this.globalSettingsService.reloadSettings();
   }
 
   fullscreen() {

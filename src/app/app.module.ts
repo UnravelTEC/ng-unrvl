@@ -69,6 +69,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/gamma/gamma.module#GammaModule'
   },
   {
+    path: 'Apps/Power',
+    loadChildren: './ut-apps/power/power.module#PowerModule'
+  },
+  {
     path: 'Apps/Dygraph-Playground',
     loadChildren: './ut-apps/dygraph-dev/dygraph-dev.module#DygraphDevModule'
   },
