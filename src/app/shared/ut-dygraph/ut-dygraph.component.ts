@@ -26,11 +26,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   // queryString: string;
   queryString = 'co2{location="FuzzyLab",sensor="scd30"}';
 
-  // set eigher height+width or a position object
-  @Input()
-  graphHeight: string; // = '350'; // should be any css value
-  @Input()
-  graphWidth: string; // = '750'; // should be any css value
   @Input()
   style = {
     position: undefined,

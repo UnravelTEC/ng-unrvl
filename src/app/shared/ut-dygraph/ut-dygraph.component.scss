@@ -48,15 +48,16 @@
       cursor: pointer;
       border: 1px solid gray;
       display: block;
-      margin-left: auto;
-      margin-right: 0;
+      margin-left: 4.5rem;
+      margin-right: auto;
     }
     button.toggleOptions:hover {
       background-color: gray;
     }
     div.options {
       margin-top: 0.3rem;
-      background: rgba(128, 128, 128, 0.308);
+      margin-left: 4.5rem;
+      background: rgba(128, 128, 128, 0.719);
       .subbox {
         border: 1px solid black;
         display: inline-block;
@@ -73,6 +74,9 @@
         input[type='text'] {
           padding: 0.1em;
           border-radius: 0.5em;
+        }
+        select {
+          height: 2.2em;
         }
         button {
             border:0;
