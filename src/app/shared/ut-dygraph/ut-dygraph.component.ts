@@ -1,6 +1,14 @@
 import { formatDate } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewEncapsulation
+} from '@angular/core';
 
 import Dygraph from 'dygraphs';
 import * as FileSaver from 'file-saver';
@@ -11,8 +19,6 @@ import { interval, Subscription } from 'rxjs';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
-
-
 
 @Component({
   selector: 'app-ut-dygraph',
@@ -98,6 +104,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
   public dataBeginTime: Date;
   public dataEndTime: Date;
+  public currentXrange: number;
   public average: number;
 
   public noData = false;
@@ -568,7 +575,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       }
       labelString += key + ': ' + value;
     }
-    if(!labelString) {
+    if (!labelString) {
       labelString = 'average'; // FIXME maybe something else...
     }
     return labelString;
@@ -613,7 +620,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     console.log('handleInitialData: dyoptions', this.dyGraphOptions);
     console.log('handleInitialData: displayedData', this.displayedData);
     // f (1 === 1) return;
-    if(this.displayedData.length == 0) {
+    if (this.displayedData.length == 0) {
       console.log('no initial data, do not attempt to update');
       return;
     }
@@ -828,39 +835,47 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.Dygraph.updateOptions({ file: this.displayedData }, false); // redraw only once at the end
   }
 
-  updateDateWindow() {
-    const debugFun = false;
-    if (this.overrideDateWindow.length) {
-      if (this.dyGraphOptions['dateWindowEnd']) {
-        const extension =
-          this.h.parseToSeconds(this.dyGraphOptions['dateWindowEnd']) * 1000;
-        const now = new Date();
-        const extendedEnd = new Date(now.valueOf() + extension);
-        if (
-          this.dyGraphOptions['dateWindow'][1].valueOf() < extendedEnd.valueOf()
-        ) {
-          this.dyGraphOptions['dateWindow'][1] = extendedEnd;
-        }
-      }
-    } else {
-      const dataEndTime =
-        this.endTime === 'now' ? new Date() : new Date(this.endTime);
-
-      const seconds = this.h.parseToSeconds(this.startTime);
-      let dataBeginTime;
-      if (seconds) {
-        dataBeginTime = new Date(dataEndTime.valueOf() - seconds * 1000);
-        debugFun &&
-          console.log(
-            'length of interval displayed (s): ' + seconds.toString()
-          );
-      } else {
-        dataBeginTime = new Date(this.startTime);
-      }
-      this.dyGraphOptions['dateWindow'] = [dataBeginTime, dataEndTime];
-      this.fromZoom = dataBeginTime;
-      this.toZoom = dataEndTime;
+  setCurrentXrange() {
+    if (!this.toZoom || !this.fromZoom) {
+      this.currentXrange = 0;
+      return 0;
     }
+    this.currentXrange =
+      (this.toZoom.valueOf() - this.fromZoom.valueOf()) / 1000;
+    console.log('currentXrange', this.currentXrange);
+
+    return this.currentXrange;
+  }
+
+  // following cases:
+  // live pan (updateOnNewData) enabled or not // handled by handleUpdatedData(),
+  //    we are only called to update the Date window if this is true!
+  // initial call (no currentXrange yet set)
+  // this.dyGraphOptions['dateWindowEnd'] // from Weih-VO, kick it
+  updateDateWindow() {
+    const blankSpaceOnFreshPercentage = 3;
+
+    let dataEndTime =
+      this.endTime === 'now' ? new Date() : new Date(this.endTime);
+
+    if (!this.currentXrange) {
+      // initial call from handleInitialData
+      this.currentXrange = this.h.parseToSeconds(this.startTime);
+    }
+
+    let dataBeginTime = new Date(
+      dataEndTime.valueOf() - this.currentXrange * 1000
+    );
+
+    const displayShift = this.currentXrange * blankSpaceOnFreshPercentage / 100;
+    dataEndTime.setSeconds(dataEndTime.getSeconds() + displayShift );
+    dataBeginTime.setSeconds(dataBeginTime.getSeconds() + displayShift);
+
+    this.dyGraphOptions['dateWindow'] = [dataBeginTime.valueOf(), dataEndTime.valueOf()];
+    this.fromZoom = dataBeginTime;
+    this.toZoom = dataEndTime;
+
+    this.checkAndFetchOldData(); // it may be that through moving datewindow after enabling autopan some old data is not there.
   }
 
   fetchNewData() {
@@ -1202,6 +1217,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.Dygraph.updateOptions({
       dateWindow: [dataBeginTime.valueOf(), dataEndTime.valueOf()]
     });
+
+    this.setCurrentXrange();
+
     console.log([
       'resetZoom:',
       dataBeginTime,
@@ -1212,6 +1230,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
   fullZoom() {
     this.Dygraph.resetZoom();
+    this.setCurrentXrange();
   }
   zoom(factor: number) {
     this.stopUpdateOnNewData();
@@ -1235,6 +1254,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     if (factor > 1) {
       this.checkAndFetchOldData();
     }
+    this.setCurrentXrange();
   }
 
   calculateTimeRange(startTime: string, endTime: string): [Date, Date] {
@@ -1290,7 +1310,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     function isbetweenDate(target: Date, lower: Date, upper: Date) {
       return (
         (lower.valueOf() <= target.valueOf() &&
-        upper.valueOf() > target.valueOf()) || upper.valueOf() == target.valueOf()
+          upper.valueOf() > target.valueOf()) ||
+        upper.valueOf() == target.valueOf()
       );
     }
 
