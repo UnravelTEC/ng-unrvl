@@ -3,7 +3,7 @@
     <td>
       <h4>Raspberry Pi supply Voltage</h4>
       <app-ut-dygraph
-        queryString="voltage_V"
+        queryString='voltage_V{rail="5V"}'
         [fetchFromServerIntervalMS]="step"
         [dataBaseQueryStepMS]="step"
         [dataSeriesLabels]="labels.voltage"

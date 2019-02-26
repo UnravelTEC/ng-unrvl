@@ -4,8 +4,6 @@ style.padding-bottom="20vh"-->
   <div
     class="graph"
     id="{{ htmlID }}"
-    [style.width.px]="graphWidth"
-    [style.height.px]="graphHeight"
     [style.position]="style.position"
     [style.top]="style.top"
     [style.bottom]="style.bottom"
@@ -16,8 +14,6 @@ style.padding-bottom="20vh"-->
   <div
     *ngIf="noData == true"
     class="info nodata"
-    [style.width.px]="graphWidth"
-    [style.height.px]="graphHeight"
     [style.position]="style.position"
     [style.top]="style.top"
     [style.bottom]="style.bottom"
@@ -30,8 +26,6 @@ style.padding-bottom="20vh"-->
   <div
     *ngIf="waiting == true"
     class="info waiting"
-    [style.width.px]="graphWidth"
-    [style.height.px]="graphHeight"
     [style.position]="style.position"
     [style.top]="style.top"
     [style.bottom]="style.bottom"
@@ -44,8 +38,6 @@ style.padding-bottom="20vh"-->
   <div
     *ngIf="error != undefined"
     class="info error"
-    [style.width.px]="graphWidth"
-    [style.height.px]="graphHeight"
     [style.position]="style.position"
     [style.top]="style.top"
     [style.bottom]="style.bottom"
@@ -98,7 +90,7 @@ style.padding-bottom="20vh"-->
       </div>
 
       <form class="subbox">
-        <h5>Display Range:</h5>
+        <h5>Display Range: {{ currentXrange }}s </h5>
         <select
           [(ngModel)]="zoomValue"
           (ngModelChange)="changeRange($event)"
