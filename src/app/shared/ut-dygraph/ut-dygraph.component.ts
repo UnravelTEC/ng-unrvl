@@ -716,6 +716,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   checkAndFetchOldData() {
+    if(!this.displayedData.length) {
+      return;
+    }
     const from = this.fromZoom.valueOf();
     const earliestDataDate = this.displayedData[0][0];
     if (from < earliestDataDate) {
