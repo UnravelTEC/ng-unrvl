@@ -124,10 +124,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   private overrideDateWindow = [];
   private requestsUnderway = 0; // don't flood the server if it is not fast enough
   private oldRequestsRunning = 0;
+  public oldFetchRunning = {}; //      {start: Date, end: Date }
+
   private queryEndPoint: string;
 
   private maxPointsToFetch = 1000; // 10500; // Prometheus allows 11k max
-  public earliestfetched: Date;
 
   Dygraph: Dygraph;
 
@@ -175,24 +176,22 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     console.log(this.endTime);
 
-    let dataEndTime: Date;
-    let dataBeginTime: Date;
-
-    [dataBeginTime, dataEndTime] = this.calculateTimeRange(
+    [this.dataBeginTime, this.dataEndTime] = this.calculateTimeRange(
       this.startTime,
       this.endTime
     );
 
-    console.log('dataEndTime ' + (dataEndTime.valueOf() / 1000).toString());
+    console.log(
+      'dataEndTime ' + (this.dataEndTime.valueOf() / 1000).toString()
+    );
 
     this.queryEndPoint = this.constructQueryEndpoint();
 
-    this.earliestfetched = dataBeginTime;
     this.utFetchdataService
       .getRange(
         this.queryString,
-        dataBeginTime,
-        dataEndTime,
+        this.dataBeginTime,
+        this.dataEndTime,
         this.dataBaseQueryStepMS,
         this.queryEndPoint
       )
@@ -619,9 +618,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     console.log('handleInitialData: dyoptions', this.dyGraphOptions);
     console.log('handleInitialData: displayedData', this.displayedData);
-    // f (1 === 1) return;
+
     if (this.displayedData.length == 0) {
       console.log('no initial data, do not attempt to update');
+      this.noData = true;
       return;
     }
 
@@ -716,13 +716,19 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   checkAndFetchOldData() {
-    if(!this.displayedData.length) {
-      return;
-    }
+    // if (!this.displayedData.length) {
+    //   this.noData = true;
+    //   return;
+    // }
     const from = this.fromZoom.valueOf();
-    const earliestDataDate = this.displayedData[0][0];
-    if (from < earliestDataDate) {
-      this.fetchOldData(this.fromZoom, new Date(earliestDataDate));
+
+    const earliestDataDate = this.displayedData.length
+      ? this.displayedData[0][0]
+      : new Date().valueOf();
+    console.log('from:', from, 'earliest', earliestDataDate);
+
+    if (from < this.dataBeginTime.valueOf()) {
+      this.fetchOldData(this.fromZoom, this.dataBeginTime);
     }
   }
 
@@ -870,11 +876,15 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       dataEndTime.valueOf() - this.currentXrange * 1000
     );
 
-    const displayShift = this.currentXrange * blankSpaceOnFreshPercentage / 100;
-    dataEndTime.setSeconds(dataEndTime.getSeconds() + displayShift );
+    const displayShift =
+      (this.currentXrange * blankSpaceOnFreshPercentage) / 100;
+    dataEndTime.setSeconds(dataEndTime.getSeconds() + displayShift);
     dataBeginTime.setSeconds(dataBeginTime.getSeconds() + displayShift);
 
-    this.dyGraphOptions['dateWindow'] = [dataBeginTime.valueOf(), dataEndTime.valueOf()];
+    this.dyGraphOptions['dateWindow'] = [
+      dataBeginTime.valueOf(),
+      dataEndTime.valueOf()
+    ];
     this.fromZoom = dataBeginTime;
     this.toZoom = dataEndTime;
 
@@ -921,9 +931,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       console.log('old request already running, dont');
       return;
     }
-    const earliestSet = this.earliestfetched.valueOf();
+    const earliestSet = this.dataBeginTime.valueOf();
     const earliestDataDate =
-      this.displayedData[0][0] < earliestSet
+      this.displayedData.length && this.displayedData[0][0] < earliestSet
         ? this.displayedData[0][0]
         : earliestSet;
 
@@ -957,7 +967,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
     // request data
     this.oldRequestsRunning++;
-    this.earliestfetched = from;
+    this.dataBeginTime = from;
+    this.oldFetchRunning = { start: from, end: to };
+    this.highLightFetchRegion();
     this.utFetchdataService
       .getRange(
         this.queryString,
@@ -972,6 +984,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   // handle requested old data
   handleOldRequestedData(oldData) {
     this.oldRequestsRunning--;
+    this.oldFetchRunning = {};
+    this.unHighLightFetchRegion();
+
+    this.checkAndFetchOldData();
     if (!this.utFetchdataService.checkPrometheusDataValidity(oldData)) {
       return;
     }
@@ -1047,7 +1063,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
           if (this.multiplicateFactors[c - 1]) {
             newRow[c] = Number(element[1]) * this.multiplicateFactors[c - 1];
           } else {
-            newRow[c] = Number(element[1]);
+            if (this.multiplicateFactors[0]) {
+              newRow[c] = Number(element[1]) * this.multiplicateFactors[0];
+            } else {
+              newRow[c] = Number(element[1]);
+            }
           }
           rowValid = true;
           continue;
@@ -1078,9 +1098,36 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     console.log('inserted', validRows, 'rows of old data');
     this.Dygraph.updateOptions({ file: this.displayedData });
-    if (validRows >= 1000 && validRows < 1005) {
-      //there seem to be more
-      this.checkAndFetchOldData();
+
+    // if (validRows >= 1000 && validRows < 1005) {
+    //  //there seem to be more
+    //  this.checkAndFetchOldData();
+    //}
+  }
+
+  highLightFetchRegionCallBack(canvas, area, g) {
+    canvas.fillStyle = 'rgba(236, 166, 86, 1.0)';
+    function highlight_period(x_start, x_end) {
+      const canvas_left_x = g.toDomXCoord(x_start);
+      const canvas_right_x = g.toDomXCoord(x_end);
+      const canvas_width = canvas_right_x - canvas_left_x;
+      canvas.fillRect(canvas_left_x, area.y, canvas_width, area.h);
+    }
+    const highLightRange = g.parent.oldFetchRunning;
+    highlight_period(highLightRange.start, highLightRange.end);
+    // console.log('underlayCallback called', highLightRange.start, highLightRange.end);
+  }
+
+  highLightFetchRegion() {
+    if (this.Dygraph) {
+      this.Dygraph.updateOptions({
+        underlayCallback: this.highLightFetchRegionCallBack
+      });
+    }
+  }
+  unHighLightFetchRegion() {
+    if (this.Dygraph) {
+      this.Dygraph.updateOptions({ underlayCallback: undefined });
     }
   }
 
