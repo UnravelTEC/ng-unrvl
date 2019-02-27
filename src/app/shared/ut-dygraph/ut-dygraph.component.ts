@@ -1093,6 +1093,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     if (!validRows) {
       return;
     }
+    this.noData = false;
 
     // todo update running avg
 

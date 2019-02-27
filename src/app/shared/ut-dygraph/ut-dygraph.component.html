@@ -16,10 +16,10 @@ style.padding-bottom="20vh"-->
     class="info nodata"
     [style.position]="style.position"
     [style.top]="style.top"
-    [style.bottom]="style.bottom"
     [style.left]="style.left"
-    [style.right]="style.right"
   >
+    <!-- [style.bottom]="style.bottom" -->
+    <!-- [style.right]="style.right" -->
     No data to display.
   </div>
 
@@ -28,9 +28,7 @@ style.padding-bottom="20vh"-->
     class="info waiting"
     [style.position]="style.position"
     [style.top]="style.top"
-    [style.bottom]="style.bottom"
     [style.left]="style.left"
-    [style.right]="style.right"
   >
     Waiting for data...
   </div>
@@ -90,7 +88,7 @@ style.padding-bottom="20vh"-->
       </div>
 
       <form class="subbox">
-        <h5>Display Range: {{ currentXrange }}s </h5>
+        <h5>Display Range: {{ currentXrange }}s</h5>
         <select
           [(ngModel)]="zoomValue"
           (ngModelChange)="changeRange($event)"
@@ -131,7 +129,7 @@ style.padding-bottom="20vh"-->
       </div>
 
       <form class="subbox">
-          <h5>Pan / Jump</h5>
+        <h5>Pan / Jump</h5>
         <button (click)="pan('back')">&lt;</button>
         <select
           [(ngModel)]="panAmount"
@@ -152,7 +150,6 @@ style.padding-bottom="20vh"-->
         <button (click)="zoom(2)">-</button>
         <button (click)="resetZoom()">Reset</button>
         <button (click)="fullZoom()">All</button>
-
       </form>
       <form class="subbox">
         <h5>Export</h5>
