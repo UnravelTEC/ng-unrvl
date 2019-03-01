@@ -50,14 +50,10 @@ export class AppComponent implements OnInit {
 
     this.globalSettings.ngOnInit();
 
-    // this.http.get('/rest/test').subscribe(
-    //   value => {
-    //     this.restMsg = value['msg'];
-    //   },
-    //   error => {
-    //     this.restMsg = error.message;
-    //   }
-    // );
+    if(this.globalSettings.isMobile()) {
+      console.log('mobile detected, remove footer');
+      this.toggleFooter(false);
+    }
   }
 
   public setTitle(newTitle: string) {
