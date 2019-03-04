@@ -268,7 +268,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     let dataThere = false;
     for (let seriesNr = 0; seriesNr < promData.length; seriesNr++) {
       const series = promData[seriesNr];
-      const newLabelString = this.createLabelString(series['metric']);
+      const newLabelString = this.h.createLabelString(series['metric']);
       newLabels.push(newLabelString);
 
       if (series['values'].length) {
@@ -563,27 +563,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
   }
 
-  createLabelString(lObj: Object): string {
-    let labelString = '';
-    let firstDone = false;
-    for (const key in lObj) {
-      if (key === '__name__') {
-        continue;
-      }
-      const value = lObj[key];
-      if (firstDone) {
-        labelString += ', ';
-      } else {
-        firstDone = true;
-      }
-      labelString += key + ': ' + value;
-    }
-    if (!labelString) {
-      labelString = 'average'; // FIXME maybe something else...
-    }
-    return labelString;
-  }
-
   handleInitialData(receivedData: Object) {
     console.log('handleInitialData: received Data:', cloneDeep(receivedData));
 
@@ -785,7 +764,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       upper = 0,
       lower;
     if (from) {
-      [lower, upper] = this.binarySearchNearDate(targetArray, from);
+      [lower, upper] = this.h.binarySearchNearDate(targetArray, from);
       console.log([lower, upper]);
       console.log([
         'avg (',
@@ -1158,7 +1137,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       }
 
       // console.log('old annotation: ' + annotation['x']);
-      const [lower, upper] = this.binarySearchNearDate(
+      const [lower, upper] = this.h.binarySearchNearDate(
         this.displayedData,
         annotation['x']
       );
@@ -1189,49 +1168,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       }
     });
     return returnedAnnos;
-  }
-
-  // array must be consecutive!
-  // returns the two indizes in which between the searched Date is
-  binarySearchNearDate(
-    inputArray: Array<[Date, any]>,
-    target: Date,
-    ObjectPath?: String
-  ) {
-    let lowerIndex = 0,
-      upperIndex = inputArray.length - 1;
-
-    function compareDate(date1: Date, date2: Date) {
-      if (!date1 || !date2) {
-        return undefined;
-      }
-      if (date1.valueOf() === date2.valueOf()) {
-        return 0;
-      }
-      return date1.valueOf() > date2.valueOf() ? 1 : -1;
-    }
-
-    while (lowerIndex + 1 < upperIndex) {
-      const halfIndex = (lowerIndex + upperIndex) >> 1; // tslint:disable-line
-      const halfElem = inputArray[halfIndex][0];
-
-      const comparisonResult = compareDate(target, halfElem);
-      if (comparisonResult === undefined) {
-        return [undefined, undefined];
-      }
-      if (comparisonResult === 0) {
-        lowerIndex = halfIndex;
-        upperIndex = halfIndex;
-        break;
-      }
-      if (comparisonResult > 0) {
-        lowerIndex = halfIndex;
-      } else {
-        upperIndex = halfIndex;
-      }
-    }
-
-    return [lowerIndex, upperIndex];
   }
 
   toggleOptions() {

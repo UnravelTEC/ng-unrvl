@@ -71,6 +71,49 @@ export class HelperFunctionsService {
     return undefined;
   }
 
+  // array must be consecutive!
+  // returns the two indizes in which between the searched Date is
+  binarySearchNearDate(
+    inputArray: Array<[Date, any]>,
+    target: Date,
+    ObjectPath?: String
+  ) {
+    let lowerIndex = 0,
+      upperIndex = inputArray.length - 1;
+
+    function compareDate(date1: Date, date2: Date) {
+      if (!date1 || !date2) {
+        return undefined;
+      }
+      if (date1.valueOf() === date2.valueOf()) {
+        return 0;
+      }
+      return date1.valueOf() > date2.valueOf() ? 1 : -1;
+    }
+
+    while (lowerIndex + 1 < upperIndex) {
+      const halfIndex = (lowerIndex + upperIndex) >> 1; // tslint:disable-line
+      const halfElem = inputArray[halfIndex][0];
+
+      const comparisonResult = compareDate(target, halfElem);
+      if (comparisonResult === undefined) {
+        return [undefined, undefined];
+      }
+      if (comparisonResult === 0) {
+        lowerIndex = halfIndex;
+        upperIndex = halfIndex;
+        break;
+      }
+      if (comparisonResult > 0) {
+        lowerIndex = halfIndex;
+      } else {
+        upperIndex = halfIndex;
+      }
+    }
+
+    return [lowerIndex, upperIndex];
+  }
+
   returnDataRange(indata, from: Date, to: Date) {
     if (!indata.length || !from || !to) {
       console.error('returnDataRange: empty input', indata, from, to);
@@ -127,6 +170,28 @@ export class HelperFunctionsService {
 
     return outdata;
   }
+
+  createLabelString(lObj: Object): string {
+    let labelString = '';
+    let firstDone = false;
+    for (const key in lObj) {
+      if (key === '__name__') {
+        continue;
+      }
+      const value = lObj[key];
+      if (firstDone) {
+        labelString += ', ';
+      } else {
+        firstDone = true;
+      }
+      labelString += key + ': ' + value;
+    }
+    if (!labelString) {
+      labelString = 'average'; // FIXME maybe something else...
+    }
+    return labelString;
+  }
+
 
   exportCSV(data, labels) {
     // header
