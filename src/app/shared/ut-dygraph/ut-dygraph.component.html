@@ -82,14 +82,14 @@ style.padding-bottom="20vh"-->
         <div class="time">
           <h5>From:</h5>
           <mat-form-field>
-            <input matInput [matDatepicker]="picker" [formControl]="fromFormDate" (dateChange)="datePickerChanged($event)">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
+            <input matInput [matDatepicker]="pickerF" [formControl]="fromFormDate" (dateChange)="fromDatePickerChanged($event)">
+            <mat-datepicker-toggle matSuffix [for]="pickerF"></mat-datepicker-toggle>
+            <mat-datepicker #pickerF></mat-datepicker>
           </mat-form-field>
-          <!-- <small>{{ fromZoom | date: 'yyyy-MM-dd' }}</small
-          ><br />
-           placeholder="Choose a date"
-          <span>{{ fromZoom | date: 'HH:mm:ss' }}</span> -->
+          <!-- <small>{{ fromZoom | date: 'yyyy-MM-dd' }}</small> -->
+          <br />
+
+          <span>{{ fromZoom | date: 'HH:mm:ss' }}</span>
         </div>
       </div>
 
@@ -128,7 +128,11 @@ style.padding-bottom="20vh"-->
       <div class="subbox">
         <div class="time">
           <h5>To:</h5>
-          <small>{{ toZoom | date: 'yyyy-MM-dd' }}</small
+          <mat-form-field>
+            <input matInput [matDatepicker]="pickerT" [formControl]="toFormDate" (dateChange)="toDatePickerChanged($event)">
+            <mat-datepicker-toggle matSuffix [for]="pickerT"></mat-datepicker-toggle>
+            <mat-datepicker #pickerT></mat-datepicker>
+          </mat-form-field>
           ><br />
           <span>{{ toZoom | date: 'HH:mm:ss' }}</span>
         </div>

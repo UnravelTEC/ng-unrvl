@@ -95,6 +95,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public fromZoom: Date;
   public fromFormDate = new FormControl(new Date());
   public toZoom: Date;
+  public toFormDate = new FormControl(new Date());
 
   public displayedData = [];
   public lastValue = undefined;
@@ -707,6 +708,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         console.log('manual zoom detected');
         parent.fromZoom = new Date(from);
         parent.toZoom = new Date(to);
+        parent.fromFormDate = new FormControl(parent.fromZoom);
+        parent.toFormDate = new FormControl(parent.toZoom);
         parent.checkAndFetchOldData();
         parent.stopUpdateOnNewData();
       }
@@ -751,6 +754,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
   stopUpdateOnNewData() {
     this.updateOnNewData = false;
+  }
+
+  updateFromToPickers() {
+    this.fromFormDate = new FormControl(this.fromZoom);
+    this.toFormDate = new FormControl(this.toZoom);
   }
 
   calculateAverage(from?: Date, targetArray = this.displayedData) {
@@ -885,6 +893,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     ];
     this.fromZoom = dataBeginTime;
     this.toZoom = dataEndTime;
+    this.updateFromToPickers();
 
     this.checkAndFetchOldData(); // it may be that through moving datewindow after enabling autopan some old data is not there.
   }
@@ -1260,6 +1269,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.checkAndFetchOldData();
     }
     this.setCurrentXrange();
+    this.updateFromToPickers();
   }
 
   calculateTimeRange(startTime: string, endTime: string): [Date, Date] {
@@ -1318,8 +1328,36 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.h.exportCSV(data, labels);
   }
 
-  datePickerChanged($event) {
+  fromDatePickerChanged($event) {
     const newDate = $event['value'];
-    console.log(newDate);
+    console.log(newDate, newDate.valueOf());
+
+    const toSetDate = new Date(newDate.valueOf());
+    toSetDate.setHours(this.fromZoom.getHours());
+    toSetDate.setMinutes(this.fromZoom.getMinutes());
+    toSetDate.setSeconds(this.fromZoom.getSeconds());
+    toSetDate.setMilliseconds(this.fromZoom.getMilliseconds());
+
+    const wasRunning = this.updateOnNewData;
+    if (wasRunning) {
+      this.stopUpdateOnNewData();
+    }
+    this.fromZoom = toSetDate;
+    this.Dygraph.updateOptions({
+      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
+    });
+    if (wasRunning) {
+      this.startUpdateOnNewData();
+    }
+    this.checkAndFetchOldData();
+  }
+  toDatePickerChanged($event) {
+    const newTo = $event['value'];
+
+    const toSetDate = new Date(newTo.valueOf());
+    toSetDate.setHours(this.toZoom.getHours());
+    toSetDate.setMinutes(this.toZoom.getMinutes());
+    toSetDate.setSeconds(this.toZoom.getSeconds());
+    toSetDate.setMilliseconds(this.toZoom.getMilliseconds());
   }
 }
