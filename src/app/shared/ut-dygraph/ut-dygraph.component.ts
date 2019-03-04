@@ -1,5 +1,6 @@
 import { formatDate } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { FormControl } from '@angular/forms';
 import {
   Component,
   EventEmitter,
@@ -94,6 +95,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   };
 
   public fromZoom: Date;
+  public fromFormDate = new FormControl(new Date());
   public toZoom: Date;
 
   public displayedData = [];

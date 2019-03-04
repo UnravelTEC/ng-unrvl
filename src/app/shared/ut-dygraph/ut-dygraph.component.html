@@ -81,9 +81,14 @@ style.padding-bottom="20vh"-->
       <div class="subbox">
         <div class="time">
           <h5>From:</h5>
-          <small>{{ fromZoom | date: 'yyyy-MM-dd' }}</small
+          <mat-form-field>
+            <input matInput [matDatepicker]="picker" placeholder="Choose a date" [formControl]="fromFormDate">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+          <!-- <small>{{ fromZoom | date: 'yyyy-MM-dd' }}</small
           ><br />
-          <span>{{ fromZoom | date: 'HH:mm:ss' }}</span>
+          <span>{{ fromZoom | date: 'HH:mm:ss' }}</span> -->
         </div>
       </div>
 
