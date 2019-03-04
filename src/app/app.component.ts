@@ -43,14 +43,20 @@ export class AppComponent implements OnInit {
         this.toggleFooter(obj['footer']);
       }
       if (obj && obj.hasOwnProperty('TricorderLocal')) {
-        this.cursor = obj['TricorderLocal'] == true ? 'none' : 'auto';
-        alert('Welcome to Tricorder');
+        if (obj['TricorderLocal'] === true) {
+          this.cursor = 'none';
+          this.toggleFooter(false);
+          alert('Welcome to Tricorder');
+        } else {
+          this.toggleFooter(true);
+          this.cursor = 'auto';
+        }
       }
     });
 
     this.globalSettings.ngOnInit();
 
-    if(this.globalSettings.isMobile()) {
+    if (this.globalSettings.isMobile()) {
       console.log('mobile detected, remove footer');
       this.toggleFooter(false);
     }

@@ -28,7 +28,8 @@ export class GammaComponent implements OnInit {
     private h: HelperFunctionsService,
     private localStorage: LocalStorageService
   ) {
-    this.globalSettings.emitChange({ appName: 'Gamma Radiation' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+     // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+    this.globalSettings.emitChange({ appName: 'Gamma Radiation' });
   }
 
   ngOnInit() {

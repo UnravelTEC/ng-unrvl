@@ -106,7 +106,7 @@ export class UtFetchdataService {
       console.log('checkPrometheusDataValidity: no Array:', data);
       return false;
     }
-    if(result.length === 0) {
+    if (result.length === 0) {
       console.log('checkPrometheusDataValidity: datasets returned 0');
       return null;
     }
@@ -119,8 +119,8 @@ export class UtFetchdataService {
     // check if any data there
     for (let i = 0; i < result.length; i++) {
       const dataset = result[i].values;
-      if(dataset.length) {
-        return true
+      if (dataset.length) {
+        return true;
       }
     }
     return false;

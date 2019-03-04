@@ -260,11 +260,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   // update this.columnLabels -> member var
   // add new labels to oldLabels&
   syncNewToOldLabels(promData, oldData, oldLabels) {
-    const debugFun = false;
+    const debugflag = false;
     const receivedDataset = {}; // labelstring : data[] foreach series
 
     // update labels
-    debugFun && console.log('old labels:', cloneDeep(oldLabels));
+    this.debugFun(['old labels:', oldLabels], debugflag);
     const newLabels = [];
     let dataThere = false;
     for (let seriesNr = 0; seriesNr < promData.length; seriesNr++) {
@@ -282,7 +282,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       return undefined;
     }
 
-    debugFun && console.log('new labels:', cloneDeep(newLabels));
+    this.debugFun(['new labels:', newLabels], debugflag);
 
     const resortedPData = []; // in the order of this.displayedData
 
@@ -304,14 +304,14 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
           'metric'
         ]);
         console.log('columnlabels now:', cloneDeep(this.columnLabels));
-        debugFun && console.log(['added new label, result:', oldLabels]);
+        this.debugFun(['added new label, result:', oldLabels], debugflag);
       } else {
         resortedPData[oldIndex] = receivedDataset[currentNewLabelString];
       }
       // Note: it may be the case that resortedPData has empty indices!!
     }
-    debugFun && console.log('old labels after:', cloneDeep(oldLabels));
-    debugFun && console.log(['resortedPData:', resortedPData, oldLabels]); // should be resorted to indices like in oldLabels
+    this.debugFun(['old labels after:', oldLabels], debugflag);
+    this.debugFun(['resortedPData:', resortedPData, oldLabels], debugflag); // should be resorted to indices like in oldLabels
 
     return resortedPData;
   }
@@ -390,16 +390,16 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   //  this.dataBaseQueryStepMS, this.multiplicateFactors[]
   // this.lastValue, this.lastValues
   // funs: this.createLabelString
-  updateDataSet(pData: Object, debugFun = false): boolean {
+  updateDataSet(pData: Object, debugflag = false): boolean {
     if (!this.utFetchdataService.checkPrometheusDataValidity(pData)) {
       return;
     }
     // prometheus data
     const result = this.h.getDeep(pData, ['data', 'result']);
     const nrResults = result.length;
-    debugFun && console.log('updateDataSet: #', nrResults, result);
+    this.debugFun(['updateDataSet: #', nrResults, result], debugflag);
 
-    let dataSet = this.displayedData;
+    const dataSet = this.displayedData;
     const oldLabels = this.dyGraphOptions['labels']; // content: another array => call by ref
 
     const resortedPData = this.syncNewToOldLabels(result, dataSet, oldLabels);
@@ -411,8 +411,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const gap = Number(this.dataBaseQueryStepMS);
     const maxGap = gap * 1.1;
     while (true) {
-      debugFun &&
-        console.log(['while', deadManCounter, resortedPData, dataSet]);
+      this.debugFun(
+        ['while', deadManCounter, resortedPData, dataSet],
+        debugflag
+      );
       deadManCounter++;
 
       let lastTime: number; // unix time (ms)
@@ -426,7 +428,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         lastTime = 0;
       }
 
-      debugFun && console.log('lastTime:', lastTime);
+      this.debugFun(['lastTime:', lastTime], debugflag);
 
       // look up "oldest" timestamp in this row - and take it as base for this row
       let oldestTime = new Date().valueOf();
@@ -435,7 +437,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         // 1 to start not on timestamp column
         const column = resortedPData[i];
         if (!column || column.length === 0) {
-          debugFun && console.log('oldestsearch: column empty');
+          this.debugFun('oldestsearch: column empty', debugflag);
           continue;
         } else {
           stillWorking = true;
@@ -446,13 +448,15 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
           oldestTime = elementsTime;
         }
       }
-      debugFun && console.log('oldestTime', oldestTime);
+      this.debugFun(['oldestTime', oldestTime], debugflag);
       if (deadManCounter > 11000) {
         stillWorking = false;
       }
       if (stillWorking === false) {
-        debugFun &&
-          console.log('updateDataSet: done, added', validRows, 'rows.');
+        this.debugFun(
+          ['updateDataSet: done, added', validRows, 'rows.'],
+          debugflag
+        );
         break;
       }
 
@@ -463,12 +467,12 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         for (let i = 1; i < nrColumns; i++) {
           gapRow.push(NaN);
         }
-        debugFun && console.log('gapRow:', gapRow);
+        this.debugFun(['gapRow:', gapRow], debugflag);
         dataSet.push(gapRow);
       }
 
       // for every entry in this row that matches the timestamp, take it
-      let newRow = [];
+      const newRow = [];
       let rowValid = false;
       newRow.push(new Date(oldestTime));
       for (let i = 1; i < nrColumns; i++) {
@@ -493,37 +497,38 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         if (elementsTime <= lastTime) {
           column.shift(); // we already have it, drop it
           newRow[i] = NaN; // not to leave any empty
-          debugFun &&
-            console.error(
-              'drop',
-              oldLabels[i],
-              'on',
-              new Date(elementsTime),
-              'before',
-              new Date(lastTime)
-            );
+          console.error(
+            'drop',
+            oldLabels[i],
+            'on',
+            new Date(elementsTime),
+            'before',
+            new Date(lastTime)
+          );
           continue;
         }
         if (elementsTime > oldestTime) {
-          debugFun &&
-            console.log([
+          this.debugFun(
+            [
               'column',
               oldLabels[i],
               'date',
               new Date(elementsTime),
               'behind',
               new Date(oldestTime)
-            ]);
+            ],
+            debugflag
+          );
           newRow[i] = NaN;
         }
       }
 
       if (rowValid) {
-        debugFun && console.log(['new row ready:', newRow]);
+        this.debugFun(['new row ready:', newRow], debugflag);
         dataSet.push(newRow);
         validRows++;
       } else {
-        debugFun && console.log('row invalid');
+        this.debugFun('row invalid', debugflag);
       }
     }
 
@@ -562,7 +567,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   createLabelString(lObj: Object): string {
     let labelString = '';
     let firstDone = false;
-    for (var key in lObj) {
+    for (const key in lObj) {
       if (key === '__name__') {
         continue;
       }
@@ -619,7 +624,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     console.log('handleInitialData: dyoptions', this.dyGraphOptions);
     console.log('handleInitialData: displayedData', this.displayedData);
 
-    if (this.displayedData.length == 0) {
+    if (this.displayedData.length === 0) {
       console.log('no initial data, do not attempt to update');
       this.noData = true;
       return;
@@ -642,22 +647,31 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     maxDate: number,
     yRanges?: Array<Array<number>>
   ) {
-    const debugFun = false;
-    debugFun && console.log('after dygraph zoom callback');
-    debugFun && console.log([typeof minDate, minDate, maxDate, yRanges]);
+    const debugflag = false;
+    this.debugFun('after dygraph zoom callback', debugflag);
+    this.debugFun([typeof minDate, minDate, maxDate, yRanges], debugflag);
 
     if (this.hasOwnProperty('parent')) {
       const parent = this['parent'];
       // parent.fromZoom = new Date(minDate);
       // parent.toZoom = new Date(maxDate);
     } else {
-      debugFun && console.log('afterZoom: No parent');
+      this.debugFun('afterZoom: No parent', debugflag);
+    }
+  }
+
+  debugFun(logstring: any, enabled = true) {
+    if (enabled) {
+      const clonetext = cloneDeep(logstring);
+      console.log(clonetext);
     }
   }
 
   afterDrawCallback(g: Dygraph, isOInitial: boolean) {
-    const debugFun = false;
-    debugFun && console.log('after dygraph draw callback');
+    const debugflag = false;
+    if (debugflag) {
+      console.log('after dygraph draw callback');
+    }
 
     if (isOInitial) {
       console.log('ignoring initial afterDrawCallback');
@@ -673,7 +687,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const dw = g.getOption('dateWindow');
     const from = xrange[0];
     const to = xrange[1];
-    debugFun && console.log(['xr:', from, to, 'dw:', dw[0], dw[1]]);
+    if (debugflag) {
+      console.log('xr:', from, to, 'dw:', dw[0], dw[1]);
+    }
     if (!from || !to) {
       console.error('after Draw error: from/to NaN');
       // g.resetZoom(); //DONT do, infinite loop!
@@ -681,14 +697,18 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       if (dw[0] === dw[1]) {
         console.error('dateWindow the same');
       }
-      debugFun && console.log(dw);
+      if (debugflag) {
+        console.log(dw);
+      }
       if (!g.hasOwnProperty('modified')) {
         g['modified'] = 1;
       } else {
         g['modified'] = g['modified'] + 1;
         if (g['modified'] < 10) {
           g.updateOptions({ dateWindow: dw });
-          debugFun && console.log('reset dateWindow');
+          if (debugflag) {
+            console.log('reset dateWindow');
+          }
         }
       }
 
@@ -864,7 +884,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   updateDateWindow() {
     const blankSpaceOnFreshPercentage = 3;
 
-    let dataEndTime =
+    const dataEndTime =
       this.endTime === 'now' ? new Date() : new Date(this.endTime);
 
     if (!this.currentXrange) {
@@ -872,7 +892,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.currentXrange = this.h.parseToSeconds(this.startTime);
     }
 
-    let dataBeginTime = new Date(
+    const dataBeginTime = new Date(
       dataEndTime.valueOf() - this.currentXrange * 1000
     );
 
@@ -944,7 +964,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       toNum = earliestDataDate - this.dataBaseQueryStepMS;
     }
 
-    if (fromNum == toNum) {
+    if (fromNum === toNum) {
       console.log('fetchOldData: no difference');
       return;
     }
@@ -995,7 +1015,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const nrResults = result.length;
     console.log('handleOldData: #', nrResults, cloneDeep(result));
 
-    let dataSet = this.displayedData;
+    const dataSet = this.displayedData;
     if (!dataSet.length) {
       console.log('no initial dataset');
       this.updateDataSet(oldData);
@@ -1011,7 +1031,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     let validRows = 0;
     // add row after row
     for (let deadManCounter = 0; deadManCounter < 11000; deadManCounter++) {
-      let currentStartTime = dataSet[0][0].valueOf();
+      const currentStartTime = dataSet[0][0].valueOf();
 
       // look up newest time in row
       let newestTime = 0;
@@ -1047,7 +1067,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       }
 
       // for every entry in this row that matches the timestamp, take it
-      let newRow = [];
+      const newRow = [];
       let rowValid = false;
       newRow.push(new Date(newestTime));
       for (let c = 1; c < nrColumns; c++) {
@@ -1103,7 +1123,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     // if (validRows >= 1000 && validRows < 1005) {
     //  //there seem to be more
     //  this.checkAndFetchOldData();
-    //}
+    // }
   }
 
   highLightFetchRegionCallBack(canvas, area, g) {
@@ -1252,7 +1272,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.Dygraph.updateOptions({ dateWindow: dw });
   }
   resetZoom() {
-    let newDateWindow = [];
     if (this.overrideDateWindow && this.overrideDateWindow.length) {
       this.Dygraph.updateOptions({ dateWindow: this.overrideDateWindow });
       console.log('resetZoom: took dateWindow from override');
@@ -1362,16 +1381,16 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       return (
         (lower.valueOf() <= target.valueOf() &&
           upper.valueOf() > target.valueOf()) ||
-        upper.valueOf() == target.valueOf()
+        upper.valueOf() === target.valueOf()
       );
     }
 
     console.log('slicing from', from, 'to', to, 'in', indata);
-    let startindex = undefined;
+    let startindex;
     if (from.valueOf() < indata[0][0].valueOf()) {
       startindex = 0;
     }
-    let endindex = undefined;
+    let endindex;
     if (to.valueOf() > indata[indata.length - 1][0].valueOf()) {
       endindex = indata.length - 1;
     }
@@ -1410,7 +1429,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   exportCSV(data?) {
-    //header
+    // header
     const separator = '\t';
     const linebreak = '\n';
 

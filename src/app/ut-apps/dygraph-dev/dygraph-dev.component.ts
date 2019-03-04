@@ -40,7 +40,8 @@ export class DygraphDevComponent implements OnInit {
     private localStorage: LocalStorageService,
     private globalSettings: GlobalSettingsService
   ) {
-    this.globalSettings.emitChange({ appName: 'DyGraph Dev App' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+    // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+    this.globalSettings.emitChange({ appName: 'DyGraph Dev App' });
   }
 
   ngOnInit() {
