@@ -1,5 +1,4 @@
 import { formatDate } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { FormControl } from '@angular/forms';
 import {
   Component,
@@ -140,7 +139,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     private utFetchdataService: UtFetchdataService,
     private localStorage: LocalStorageService,
     private h: HelperFunctionsService,
-    private http: HttpClient
   ) {}
 
   constructQueryEndpoint(
@@ -1431,10 +1429,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   exportCSV(data?) {
-    // header
-    const separator = '\t';
-    const linebreak = '\n';
-
     const labels = this.dyGraphOptions['labels'];
     if (!data) {
       data = this.returnDataRange(
@@ -1443,51 +1437,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         this.toZoom
       );
     }
-    let header = '';
-    if (labels.length === 0 || data.length === 0) {
-      alert('no data to export');
-      return;
-    }
-    for (let i = 0; i < labels.length; i++) {
-      const element = labels[i];
-      if (i > 0) {
-        header += separator;
-      }
-      header += element.replace(/,/g, ';');
-    }
-    header += linebreak;
+    this.h.exportCSV(data, labels);
+  }
 
-    let csvbody = '';
-    for (let i = 0; i < data.length; i++) {
-      const row = data[i];
-      for (let column = 0; column < row.length; column++) {
-        const element = row[column];
-        if (column > 0) {
-          csvbody += separator;
-        }
-        if (column === 0) {
-          csvbody += (element.valueOf() / 1000).toPrecision(14);
-        } else {
-          csvbody += String(element);
-        }
-      }
-      csvbody += linebreak;
-    }
-    // values
-
-    const csv = header + csvbody;
-    // console.log(csv);
-
-    const blob = new Blob([csv], { type: 'text/csv' });
-
-    const startDate = data[0][0];
-    const endDate = data[data.length - 1][0];
-
-    const name =
-      formatDate(startDate, 'yyyy-MM-dd_HH.mm.ss', 'en-uk') +
-      '-' +
-      formatDate(endDate, 'HH.mm.ss', 'en-uk') +
-      '.csv';
-    FileSaver.saveAs(blob, name);
+  datePickerChanged($event) {
+    const newDate = $event['value']
+    console.log(newDate);
   }
 }
