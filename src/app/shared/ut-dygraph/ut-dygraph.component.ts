@@ -1359,5 +1359,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     toSetDate.setMinutes(this.toZoom.getMinutes());
     toSetDate.setSeconds(this.toZoom.getSeconds());
     toSetDate.setMilliseconds(this.toZoom.getMilliseconds());
+
+    this.toZoom = toSetDate;
+    this.Dygraph.updateOptions({
+      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
+    });
   }
 }
