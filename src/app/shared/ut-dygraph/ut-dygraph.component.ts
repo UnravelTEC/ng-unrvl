@@ -11,7 +11,6 @@ import {
 } from '@angular/core';
 
 import Dygraph from 'dygraphs';
-import * as FileSaver from 'file-saver';
 
 import cloneDeep from 'lodash-es/cloneDeep';
 
@@ -138,7 +137,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   constructor(
     private utFetchdataService: UtFetchdataService,
     private localStorage: LocalStorageService,
-    private h: HelperFunctionsService,
+    private h: HelperFunctionsService
   ) {}
 
   constructQueryEndpoint(
@@ -1371,67 +1370,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     });
   }
 
-  returnDataRange(indata, from: Date, to: Date) {
-    if (!indata.length || !from || !to) {
-      console.error('returnDataRange: empty input', indata, from, to);
-      return [];
-    }
-
-    function isbetweenDate(target: Date, lower: Date, upper: Date) {
-      return (
-        (lower.valueOf() <= target.valueOf() &&
-          upper.valueOf() > target.valueOf()) ||
-        upper.valueOf() === target.valueOf()
-      );
-    }
-
-    console.log('slicing from', from, 'to', to, 'in', indata);
-    let startindex;
-    if (from.valueOf() < indata[0][0].valueOf()) {
-      startindex = 0;
-    }
-    let endindex;
-    if (to.valueOf() > indata[indata.length - 1][0].valueOf()) {
-      endindex = indata.length - 1;
-    }
-
-    for (let i = 0; i < indata.length - 1; i++) {
-      const elementDate = indata[i][0];
-      const nextElement = indata[i + 1][0];
-      if (startindex === undefined) {
-        // if(i === 0) {
-        //   console.log(elementDate.valueOf(), from.valueOf())
-        // }
-        if (isbetweenDate(from, elementDate, nextElement)) {
-          startindex = i;
-          continue;
-        }
-      }
-      if (endindex === undefined) {
-        if (isbetweenDate(to, elementDate, nextElement)) {
-          endindex = i;
-          break;
-        }
-      }
-    }
-    if (!startindex) {
-      console.error('startindex not found');
-      return [];
-    }
-    if (!endindex) {
-      endindex = indata.length;
-    }
-    const outdata = indata.slice(startindex, endindex + 1);
-
-    console.log('dataslice from', startindex, 'to', endindex);
-
-    return outdata;
-  }
-
   exportCSV(data?) {
     const labels = this.dyGraphOptions['labels'];
     if (!data) {
-      data = this.returnDataRange(
+      data = this.h.returnDataRange(
         this.displayedData,
         this.fromZoom,
         this.toZoom
@@ -1441,7 +1383,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   datePickerChanged($event) {
-    const newDate = $event['value']
+    const newDate = $event['value'];
     console.log(newDate);
   }
 }
