@@ -1039,7 +1039,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       for (let c = 1; c < nrColumns; c++) {
         const column = resortedPData[c];
         if (!column || column.length === 0) {
-          console.log('oldestsearch: column empty');
+          // console.log('oldestsearch: column empty');
           continue;
         } else {
           stillWorking = true;
