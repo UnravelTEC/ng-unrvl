@@ -106,6 +106,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public dataBeginTime: Date;
   public dataEndTime: Date;
   public currentXrange: number;
+  public currentXrangeText: string;
   public average: number;
 
   public noData = false;
@@ -817,6 +818,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     if (this.updateOnNewData) {
       this.updateDateWindow();
+      this.setCurrentXrange();
       this.Dygraph.updateOptions(
         {
           dateWindow: this.dyGraphOptions['dateWindow']
@@ -864,6 +866,25 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.currentXrange =
       (this.toZoom.valueOf() - this.fromZoom.valueOf()) / 1000;
     console.log('currentXrange', this.currentXrange);
+
+    const currentMS = Math.round((this.currentXrange % 1) * 1000);
+    const textMS = currentMS ? String(currentMS) + 'ms' : '';
+    const currentSeconds = Math.floor(this.currentXrange);
+    const displayedSeconds = currentSeconds % 60;
+    const textSeconds = displayedSeconds ? String(displayedSeconds) + 's ' : '';
+
+    const currentMinutes = Math.floor(currentSeconds / 60);
+    const displayedMinutes = currentMinutes % 60;
+    const textMinutes = displayedMinutes ? String(displayedMinutes) + 'm ' : '';
+
+    const currentHours = Math.floor(currentMinutes / 60);
+    const displayedHours = currentHours % 24;
+    const textHours = displayedHours ? String(displayedHours) + 'h ' : '';
+
+    const currentDays = Math.floor(currentHours / 24);
+    const textDays = currentDays ? String(currentDays) + 'd ' : '';
+
+    this.currentXrangeText = textDays + textHours + textMinutes + textSeconds + textMS;
 
     return this.currentXrange;
   }

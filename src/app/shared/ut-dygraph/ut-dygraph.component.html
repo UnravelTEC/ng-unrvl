@@ -94,7 +94,7 @@ style.padding-bottom="20vh"-->
       </div>
 
       <form class="subbox">
-        <h5>Display Range: {{ currentXrange }}s</h5>
+        <h5>Display Range: {{ currentXrangeText }}</h5>
         <select
           [(ngModel)]="zoomValue"
           (ngModelChange)="changeRange($event)"
