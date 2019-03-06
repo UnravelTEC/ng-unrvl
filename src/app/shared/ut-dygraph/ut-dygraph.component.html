@@ -82,7 +82,7 @@ style.padding-bottom="20vh"-->
         <div class="time">
           <h5>From:</h5>
           <mat-form-field>
-            <input matInput [matDatepicker]="pickerF" [formControl]="fromFormDate" (dateChange)="fromDatePickerChanged($event)">
+            <input matInput [matDatepicker]="pickerF" [formControl]="fromFormDate" (dateChange)="fromDatePickerChanged($event)" [max]="dataEndTime">
             <mat-datepicker-toggle matSuffix [for]="pickerF"></mat-datepicker-toggle>
             <mat-datepicker #pickerF></mat-datepicker>
           </mat-form-field>
@@ -129,11 +129,11 @@ style.padding-bottom="20vh"-->
         <div class="time">
           <h5>To:</h5>
           <mat-form-field>
-            <input matInput [matDatepicker]="pickerT" [formControl]="toFormDate" (dateChange)="toDatePickerChanged($event)">
+            <input matInput [matDatepicker]="pickerT" [formControl]="toFormDate" (dateChange)="toDatePickerChanged($event)" [max]="dataEndTime" [min]="fromZoom">
             <mat-datepicker-toggle matSuffix [for]="pickerT"></mat-datepicker-toggle>
             <mat-datepicker #pickerT></mat-datepicker>
           </mat-form-field>
-          ><br />
+          <br />
           <span>{{ toZoom | date: 'HH:mm:ss' }}</span>
         </div>
       </div>

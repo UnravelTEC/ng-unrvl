@@ -178,7 +178,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     [this.dataBeginTime, this.dataEndTime] = this.calculateTimeRange(
       this.startTime,
-      this.endTime
+      this.endTime,
+      true
     );
 
     console.log(
@@ -532,7 +533,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.updateLastValueMembers(dataSet);
+    if (validRows) {
+      this.updateLastValueMembers(dataSet);
+      this.dataEndTime = dataSet[dataSet.length - 1][0];
+    }
 
     return true;
   }
@@ -627,15 +631,17 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     yRanges?: Array<Array<number>>
   ) {
     const debugflag = false;
-    this.debugFun('after dygraph zoom callback', debugflag);
-    this.debugFun([typeof minDate, minDate, maxDate, yRanges], debugflag);
+    if (debugflag) {
+      console.log('after dygraph zoom callback');
+      console.log(typeof minDate, minDate, maxDate, yRanges);
+    }
 
     if (this.hasOwnProperty('parent')) {
       const parent = this['parent'];
       // parent.fromZoom = new Date(minDate);
       // parent.toZoom = new Date(maxDate);
     } else {
-      this.debugFun('afterZoom: No parent', debugflag);
+      console.error('afterZoom: No parent');
     }
   }
 
@@ -1221,30 +1227,33 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       console.log('resetZoom: took dateWindow from override');
       return;
     }
-    let dataEndTime: Date;
-    let dataBeginTime: Date;
-    [dataBeginTime, dataEndTime] = this.calculateTimeRange(
+    [this.fromZoom, this.toZoom] = this.calculateTimeRange(
       this.startTime,
       this.endTime
     );
 
     this.Dygraph.updateOptions({
-      dateWindow: [dataBeginTime.valueOf(), dataEndTime.valueOf()]
+      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
     });
 
     this.setCurrentXrange();
+    this.updateFromToPickers();
 
     console.log([
       'resetZoom:',
-      dataBeginTime,
-      dataEndTime,
+      this.fromZoom,
+      this.toZoom,
       this.startTime,
       this.endTime
     ]);
   }
   fullZoom() {
     this.Dygraph.resetZoom();
+    const xRange = this.Dygraph.xAxisRange();
+    this.fromZoom = new Date(xRange[0]);
+    this.toZoom = new Date(xRange[1]);
     this.setCurrentXrange();
+    this.updateFromToPickers();
   }
   zoom(factor: number) {
     this.stopUpdateOnNewData();
@@ -1272,7 +1281,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.updateFromToPickers();
   }
 
-  calculateTimeRange(startTime: string, endTime: string): [Date, Date] {
+  calculateTimeRange(
+    startTime: string,
+    endTime: string,
+    reducePoints = false
+  ): [Date, Date] {
     let startDate: Date;
     let endDate: Date;
 
@@ -1287,15 +1300,17 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       startDate = new Date(startTime);
     }
 
-    const difference = endDate.valueOf() - startDate.valueOf();
-    if (difference / this.fetchFromServerIntervalMS > this.maxPointsToFetch) {
-      console.log(
-        'more than ' + this.maxPointsToFetch + ' points requested, reducing'
-      );
-      const maxStartDateValue =
-        endDate.valueOf() -
-        this.fetchFromServerIntervalMS * this.maxPointsToFetch;
-      startDate = new Date(maxStartDateValue);
+    if (reducePoints) {
+      const difference = endDate.valueOf() - startDate.valueOf();
+      if (difference / this.fetchFromServerIntervalMS > this.maxPointsToFetch) {
+        console.log(
+          'more than ' + this.maxPointsToFetch + ' points requested, reducing'
+        );
+        const maxStartDateValue =
+          endDate.valueOf() -
+          this.fetchFromServerIntervalMS * this.maxPointsToFetch;
+        startDate = new Date(maxStartDateValue);
+      }
     }
 
     return [startDate, endDate];
@@ -1311,6 +1326,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const seconds = this.zoomValue * this.zoomMultiplicator;
     startDate = new Date(endDate.valueOf() - seconds * 1000);
 
+    this.fromZoom = startDate;
+    this.toZoom = endDate;
+    this.setCurrentXrange();
+    this.updateFromToPickers();
     this.Dygraph.updateOptions({
       dateWindow: [startDate.valueOf(), endDate.valueOf()]
     });
@@ -1343,6 +1362,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.stopUpdateOnNewData();
     }
     this.fromZoom = toSetDate;
+    this.setCurrentXrange();
     this.Dygraph.updateOptions({
       dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
     });
@@ -1361,6 +1381,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     toSetDate.setMilliseconds(this.toZoom.getMilliseconds());
 
     this.toZoom = toSetDate;
+    this.stopUpdateOnNewData();
+    this.setCurrentXrange();
     this.Dygraph.updateOptions({
       dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
     });
