@@ -10,7 +10,7 @@
       exact-ticks="true"
       minor-ticks="0"
       major-ticks="[0,400,800,1500,2500,5000]"
-          highlights='[ {"from": 0, "to": 400, "color": "green"},
+      highlights='[ {"from": 0, "to": 400, "color": "green"},
                     {"from": 400, "to": 800, "color": "greenyellow"},
                     {"from": 800, "to": 1500, "color": "yellow"},
                     {"from": 1500, "to": 2500, "color": "orange"},
@@ -19,24 +19,26 @@
       [attr.value]="graph['lastValue']"
     ></radial-gauge>
   </div>
-  <div id="co2dygraph" style="margin-left:-1.3em;">
-    <app-ut-dygraph
-      queryString='gas_ppm{gas="CO2",sensor="SCD30"}'
-      [fetchFromServerIntervalMS]="step"
-      [dataBaseQueryStepMS]="step"
-      [dataSeriesLabels]="dataSeriesLabels"
-      YLabel=""
-      [style]="graphstyle"
-      [startTime]="startTime"
-      [extraDyGraphConfig]="extraDyGraphConfig"
-      options="false"
-      #graph
-    ></app-ut-dygraph>
-    <!-- serverHostName=""
+  <div id="co2dygraph">
+    <div id="margincontainer" style="margin-left:-1.3em;">
+      <app-ut-dygraph
+        queryString='gas_ppm{gas="CO2",sensor="SCD30"}'
+        [fetchFromServerIntervalMS]="step"
+        [dataBaseQueryStepMS]="step"
+        [dataSeriesLabels]="dataSeriesLabels"
+        YLabel=""
+        [style]="graphstyle"
+        [startTime]="startTime"
+        [extraDyGraphConfig]="extraDyGraphConfig"
+        options="false"
+        #graph
+      ></app-ut-dygraph>
+      <!-- serverHostName=""
       YLabel="CO₂ (ppm)"
     serverPort="80"
     serverPath="prometheus/api/v1/" -->
+    </div>
   </div>
-
-
+  <a href="../CO2-graph" style="display:block; z-index: 100;" class="graphlink">
+  </a>
 </div>
