@@ -1,0 +1,45 @@
+<div class="graphapp">
+  <span class="value">
+    CO2:
+    <span class="{{
+      (graph['lastValue'] < 1000) ? 'green' :
+      ((graph['lastValue'] < 2000) ? 'yellow' : 'red')
+     }} ">
+      {{
+        graph['lastValue']  | number: '1.1-1'
+      }}</span
+    >&#8239;ppm
+  </span>
+  <div id="co2dygraph">
+    <app-ut-dygraph
+      queryString='gas_ppm{gas="CO2"}'
+      [fetchFromServerIntervalMS]="step"
+      [dataBaseQueryStepMS]="step"
+      [dataSeriesLabels]="dataSeriesLabels"
+      YLabel="CO₂ (ppm)"
+      [style]="graphstyle"
+      [startTime]="startTime"
+      [extraDyGraphConfig]="extraDyGraphConfig"
+      #graph
+    ></app-ut-dygraph>
+    <!-- serverHostName=""
+    serverPort="80"
+    serverPath="prometheus/api/v1/" -->
+  </div>
+  <form>
+    <label for="startTime">Time Range: </label>
+    <input
+      type="text"
+      id="startTime"
+      [(ngModel)]="startTime"
+      name="startTime"
+    />
+    <button (click)="adjustTime('5m', 2000)">5m</button>
+    <button (click)="adjustTime('30m', 2000)">30m</button>
+    <button (click)="adjustTime('1h', 2000)">1h</button>
+    <button (click)="adjustTime('6h', 2000)">6h</button>
+    <button (click)="adjustTime('1d', 10000)">24h</button>
+    <button (click)="adjustTime('7d', 70000)">7d</button> Range:
+    {{ startTime }}, Step: {{ step }}ms
+  </form>
+</div>
