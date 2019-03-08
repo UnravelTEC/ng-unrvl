@@ -1,9 +1,8 @@
-
 h4 {
   margin: 1em;
 }
 
-.gaugecontainer {
+.gaugecontainer, #co2dygraph {
   margin: 0.1em auto 0.1em auto;
   width: 400px;
 }
@@ -20,15 +19,7 @@ span.value {
 .value {
   position: absolute;
   bottom: 1rem;
-  left:5vh;
-  right: 5vh;
-
-}
-
-form {
-  position: absolute;
-  bottom: 1rem;
-  left:5vh;
+  left: 5vh;
   right: 5vh;
 }
 

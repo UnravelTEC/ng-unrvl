@@ -19,13 +19,13 @@
       [attr.value]="graph['lastValue']"
     ></radial-gauge>
   </div>
-  <div id="co2dygraph">
+  <div id="co2dygraph" style="margin-left:-1.3em;">
     <app-ut-dygraph
       queryString='gas_ppm{gas="CO2",sensor="SCD30"}'
       [fetchFromServerIntervalMS]="step"
       [dataBaseQueryStepMS]="step"
       [dataSeriesLabels]="dataSeriesLabels"
-      YLabel="CO₂ (ppm)"
+      YLabel=""
       [style]="graphstyle"
       [startTime]="startTime"
       [extraDyGraphConfig]="extraDyGraphConfig"
@@ -33,6 +33,7 @@
       #graph
     ></app-ut-dygraph>
     <!-- serverHostName=""
+      YLabel="CO₂ (ppm)"
     serverPort="80"
     serverPath="prometheus/api/v1/" -->
   </div>

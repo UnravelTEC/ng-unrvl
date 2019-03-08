@@ -12,15 +12,20 @@ export class Co2Component implements OnInit, OnDestroy {
   step = 2000;
 
   extraDyGraphConfig = {
-    strokeWidth: 3.0
+    strokeWidth: 2.0,
+    width: '420', // - margin-left
+    height: '200'
   };
 
-  graphstyle = {
+  graphstyleo = {
     position: 'absolute',
     top: '430px',
     bottom: '3rem',
     left: '10vw',
     right: '10vw'
+  };
+  graphstyle = {
+    position: 'relative'
   };
   dataSeriesLabels = ['SCD 30'];
   startTime = '15m';
