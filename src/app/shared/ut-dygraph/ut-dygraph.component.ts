@@ -65,6 +65,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   @Input()
   debug = 'false';
   @Input()
+  options = true;
+  @Input()
   annotations: Array<any>; // would need definition of Dygraphs Annotation
   @Input()
   extraDyGraphConfig: Object;

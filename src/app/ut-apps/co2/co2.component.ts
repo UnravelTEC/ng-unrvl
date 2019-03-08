@@ -17,10 +17,10 @@ export class Co2Component implements OnInit, OnDestroy {
 
   graphstyle = {
     position: 'absolute',
-    top: '4em',
+    top: '430px',
     bottom: '3rem',
-    left: '1vw',
-    right: '1vw'
+    left: '10vw',
+    right: '10vw'
   };
   dataSeriesLabels = ['SCD 30'];
   startTime = '15m';

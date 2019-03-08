@@ -3,7 +3,9 @@ h4 {
   margin: 1em;
 }
 
-#co2dygraph {
+.gaugecontainer {
+  margin: 0.1em auto 0.1em auto;
+  width: 400px;
 }
 
 .graphapp {
@@ -13,6 +15,14 @@ h4 {
 
 span.value {
   font-size: 3em;
+}
+
+.value {
+  position: absolute;
+  bottom: 1rem;
+  left:5vh;
+  right: 5vh;
+
 }
 
 form {
