@@ -1,0 +1,42 @@
+<div class="graphapp">
+  <div class="gaugecontainer">
+    <radial-gauge
+      width="400"
+      height="400"
+      units="ppm"
+      title="CO₂"
+      min-value="0"
+      max-value="5000"
+      exact-ticks="true"
+      minor-ticks="0"
+      major-ticks="[0,400,800,1500,2500,5000]"
+          highlights='[ {"from": 0, "to": 400, "color": "green"},
+                    {"from": 400, "to": 800, "color": "greenyellow"},
+                    {"from": 800, "to": 1500, "color": "yellow"},
+                    {"from": 1500, "to": 2500, "color": "orange"},
+                    {"from": 2500, "to": 5000, "color": "red"}
+     ]'
+      [attr.value]="graph['lastValue']"
+    ></radial-gauge>
+  </div>
+  <div id="co2dygraph" style="margin-left:-1.3em;">
+    <app-ut-dygraph
+      queryString='gas_ppm{gas="CO2",sensor="SCD30"}'
+      [fetchFromServerIntervalMS]="step"
+      [dataBaseQueryStepMS]="step"
+      [dataSeriesLabels]="dataSeriesLabels"
+      YLabel=""
+      [style]="graphstyle"
+      [startTime]="startTime"
+      [extraDyGraphConfig]="extraDyGraphConfig"
+      options="false"
+      #graph
+    ></app-ut-dygraph>
+    <!-- serverHostName=""
+      YLabel="CO₂ (ppm)"
+    serverPort="80"
+    serverPath="prometheus/api/v1/" -->
+  </div>
+
+
+</div>

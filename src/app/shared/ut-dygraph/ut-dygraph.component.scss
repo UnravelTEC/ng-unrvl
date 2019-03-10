@@ -15,6 +15,7 @@
     margin: 1em;
     border: 1px solid blue;
     padding: 1em;
+    background:white;
   }
 
   .nodata {
@@ -94,6 +95,22 @@
             }
             small {
                 font-size: 0.7em;
+            }
+            button {
+              background: none;
+              min-width: unset;
+              border-radius: unset;
+              padding: unset;
+              border: unset;
+            }
+            mat-form-field {
+              width: 7em;
+              // background: greenyellow;
+              height: 1.5em;;
+            }
+            .mat-form-field-infix {
+              border-top: 0;
+              padding: 0;
             }
         }
       }

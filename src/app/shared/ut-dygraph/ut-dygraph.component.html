@@ -16,10 +16,10 @@ style.padding-bottom="20vh"-->
     class="info nodata"
     [style.position]="style.position"
     [style.top]="style.top"
-    [style.bottom]="style.bottom"
     [style.left]="style.left"
-    [style.right]="style.right"
   >
+    <!-- [style.bottom]="style.bottom" -->
+    <!-- [style.right]="style.right" -->
     No data to display.
   </div>
 
@@ -28,9 +28,7 @@ style.padding-bottom="20vh"-->
     class="info waiting"
     [style.position]="style.position"
     [style.top]="style.top"
-    [style.bottom]="style.bottom"
     [style.left]="style.left"
-    [style.right]="style.right"
   >
     Waiting for data...
   </div>
@@ -48,6 +46,7 @@ style.padding-bottom="20vh"-->
   </div>
 
   <div
+    *ngIf="options == true"
     class="optionsarea"
     [style.position]="style.position"
     [style.bottom]="style.bottom"
@@ -83,14 +82,20 @@ style.padding-bottom="20vh"-->
       <div class="subbox">
         <div class="time">
           <h5>From:</h5>
-          <small>{{ fromZoom | date: 'yyyy-MM-dd' }}</small
-          ><br />
+          <mat-form-field>
+            <input matInput [matDatepicker]="pickerF" [formControl]="fromFormDate" (dateChange)="fromDatePickerChanged($event)" [max]="dataEndTime">
+            <mat-datepicker-toggle matSuffix [for]="pickerF"></mat-datepicker-toggle>
+            <mat-datepicker #pickerF></mat-datepicker>
+          </mat-form-field>
+          <!-- <small>{{ fromZoom | date: 'yyyy-MM-dd' }}</small> -->
+          <br />
+
           <span>{{ fromZoom | date: 'HH:mm:ss' }}</span>
         </div>
       </div>
 
       <form class="subbox">
-        <h5>Display Range: {{ currentXrange }}s </h5>
+        <h5>Display Range: {{ currentXrangeText }}</h5>
         <select
           [(ngModel)]="zoomValue"
           (ngModelChange)="changeRange($event)"
@@ -124,14 +129,18 @@ style.padding-bottom="20vh"-->
       <div class="subbox">
         <div class="time">
           <h5>To:</h5>
-          <small>{{ toZoom | date: 'yyyy-MM-dd' }}</small
-          ><br />
+          <mat-form-field>
+            <input matInput [matDatepicker]="pickerT" [formControl]="toFormDate" (dateChange)="toDatePickerChanged($event)" [max]="dataEndTime" [min]="fromZoom">
+            <mat-datepicker-toggle matSuffix [for]="pickerT"></mat-datepicker-toggle>
+            <mat-datepicker #pickerT></mat-datepicker>
+          </mat-form-field>
+          <br />
           <span>{{ toZoom | date: 'HH:mm:ss' }}</span>
         </div>
       </div>
 
       <form class="subbox">
-          <h5>Pan / Jump</h5>
+        <h5>Pan / Jump</h5>
         <button (click)="pan('back')">&lt;</button>
         <select
           [(ngModel)]="panAmount"
@@ -152,7 +161,6 @@ style.padding-bottom="20vh"-->
         <button (click)="zoom(2)">-</button>
         <button (click)="resetZoom()">Reset</button>
         <button (click)="fullZoom()">All</button>
-
       </form>
       <form class="subbox">
         <h5>Export</h5>

@@ -7,7 +7,6 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
   styleUrls: ['./adc.component.scss']
 })
 export class AdcComponent implements OnInit {
-
   graphstyle = {
     position: 'absolute',
     top: '4em',
@@ -19,10 +18,9 @@ export class AdcComponent implements OnInit {
   startTime = '5m';
 
   constructor(private globalSettings: GlobalSettingsService) {
-    this.globalSettings.emitChange({ appName: 'ADC' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+    // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+    this.globalSettings.emitChange({ appName: 'ADC' });
   }
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

@@ -29,7 +29,8 @@ export class RHTComponent implements OnInit {
   startTime = '1h';
 
   constructor(private globalSettings: GlobalSettingsService) {
-    this.globalSettings.emitChange({ appName: 'rH / T' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+     // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+    this.globalSettings.emitChange({ appName: 'rH / T' });
   }
 
   ngOnInit() {}

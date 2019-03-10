@@ -7,7 +7,7 @@ import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
   templateUrl: './noir.component.html',
   styleUrls: ['./noir.component.scss']
 })
-export class NoirComponent implements OnInit {
+export class NoirComponent implements OnInit, OnDestroy {
   ledstatus = 'off';
   cameraRunning = false;
 
@@ -23,7 +23,8 @@ export class NoirComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.globalSettings.getAPIEndpoint()) { // FIXME check if noir php scripts are here or return "camera ok"
+    if (this.globalSettings.getAPIEndpoint()) {
+      // FIXME check if noir php scripts are here or return "camera ok"
       this.start();
       this.globalSettings.emitChange({ footer: false });
     } else {

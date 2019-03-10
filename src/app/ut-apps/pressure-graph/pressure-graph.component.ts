@@ -20,7 +20,8 @@ export class PressureGraphComponent implements OnInit {
   startTime = '3h';
 
   constructor(private globalSettings: GlobalSettingsService) {
-    this.globalSettings.emitChange({ appName: 'Atmospheric Pressure' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+     // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+    this.globalSettings.emitChange({ appName: 'Atmospheric Pressure' });
   }
 
   ngOnInit() {}

@@ -19,7 +19,8 @@ export class LoudnessComponent implements OnInit {
   startTime = '5m';
 
   constructor(private globalSettings: GlobalSettingsService) {
-    this.globalSettings.emitChange({ appName: 'Loudness' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+     // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+    this.globalSettings.emitChange({ appName: 'Loudness' });
   }
 
   ngOnInit() {}

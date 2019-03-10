@@ -1,6 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule, Title } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule, Routes } from '@angular/router';
 
 
@@ -34,6 +35,10 @@ const appRoutes: Routes = [
   },
   {
     path: 'Apps/CO2',
+    loadChildren: './ut-apps/co2/co2.module#Co2Module'
+  },
+  {
+    path: 'Apps/CO2-graph',
     loadChildren: './ut-apps/co2-graph/co2-graph.module#Co2GraphModule'
   },
   {
@@ -100,6 +105,7 @@ const appRoutes: Routes = [
   declarations: [AppComponent, TopBarComponent],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     HttpClientModule,
     CoreModule.forRoot(),
     RouterModule.forRoot(

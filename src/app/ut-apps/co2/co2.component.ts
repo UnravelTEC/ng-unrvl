@@ -3,24 +3,29 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
 import { LocalStorageService } from '../../core/local-storage.service';
 
 @Component({
-  selector: 'app-co2-graph',
-  templateUrl: './co2-graph.component.html',
-  styleUrls: ['./co2-graph.component.css']
+  selector: 'app-co2',
+  templateUrl: './co2.component.html',
+  styleUrls: ['./co2.component.css']
 })
-export class Co2GraphComponent implements OnInit, OnDestroy {
-  public title = 'CO₂ Graph';
+export class Co2Component implements OnInit, OnDestroy {
+  public title = 'CO₂';
   step = 2000;
 
   extraDyGraphConfig = {
-    strokeWidth: 3.0
+    strokeWidth: 2.0,
+    width: '420', // - margin-left
+    height: '200'
   };
 
-  graphstyle = {
+  graphstyleo = {
     position: 'absolute',
-    top: '4em',
+    top: '430px',
     bottom: '3rem',
-    left: '1vw',
-    right: '1vw'
+    left: '10vw',
+    right: '10vw'
+  };
+  graphstyle = {
+    position: 'relative'
   };
   dataSeriesLabels = ['SCD 30'];
   startTime = '15m';

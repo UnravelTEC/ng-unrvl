@@ -27,7 +27,8 @@ export class IaqComponent implements OnInit {
     private utFetchdataService: UtFetchdataService,
     private globalSettings: GlobalSettingsService
   ) {
-    this.globalSettings.emitChange({ appName: 'iAQ' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+    // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+    this.globalSettings.emitChange({ appName: 'iAQ' });
   }
 
   ngOnInit() {

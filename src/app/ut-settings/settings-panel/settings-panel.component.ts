@@ -19,7 +19,7 @@ export class SettingsPanelComponent implements OnInit {
       settings: {
         serverHostName: {
           fieldName: 'Server hostname/ip',
-          fieldValue: '' //'scpexploratory02.tugraz.at'
+          fieldValue: '' // 'scpexploratory02.tugraz.at'
         },
         prometheusPort: { fieldName: 'Prometheus port', fieldValue: '' }, // 9090
         prometheusPath: {
@@ -64,7 +64,8 @@ export class SettingsPanelComponent implements OnInit {
     public globalSettingsService: GlobalSettingsService,
     private utHTTP: UtFetchdataService
   ) {
-    this.globalSettingsService.emitChange({ appName: 'Settings' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+    // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+    this.globalSettingsService.emitChange({ appName: 'Settings' });
   }
 
   ngOnInit() {

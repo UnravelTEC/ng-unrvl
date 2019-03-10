@@ -9,7 +9,8 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
 })
 export class DashboardComponent implements OnInit {
   constructor(private globalSettings: GlobalSettingsService) {
-    this.globalSettings.emitChange({ appName: 'Dashboard' }); // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+    // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
+    this.globalSettings.emitChange({ appName: 'Dashboard' });
   }
 
   ngOnInit() {}
