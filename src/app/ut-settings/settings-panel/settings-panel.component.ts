@@ -19,7 +19,7 @@ export class SettingsPanelComponent implements OnInit {
       settings: {
         serverHostName: {
           fieldName: 'Server hostname/ip',
-          fieldValue: '' // 'scpexploratory02.tugraz.at'
+          fieldValue: ''
         },
         prometheusPort: { fieldName: 'Prometheus port', fieldValue: '' }, // 9090
         prometheusPath: {
