@@ -9,8 +9,8 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
 export class AdcComponent implements OnInit {
   graphstyle = {
     position: 'absolute',
-    top: '4em',
-    bottom: '3rem',
+    top: '1vh',
+    bottom: '1vh',
     left: '1vw',
     right: '1vw'
   };

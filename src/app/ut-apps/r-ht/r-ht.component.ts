@@ -19,7 +19,7 @@ export class RHTComponent implements OnInit {
   graphstyleH = {
     position: 'absolute',
     top: '50%',
-    bottom: '3rem',
+    bottom: '0.5rem',
     left: '1vw',
     right: '1vw'
   };
