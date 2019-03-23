@@ -7,6 +7,11 @@ h4 {
   width: 400px;
 }
 
+#co2dygraph {
+  transform: translateX(-20px);
+  text-align: right;
+}
+
 .graphapp {
   /* background: blue; */
   padding: 5px;

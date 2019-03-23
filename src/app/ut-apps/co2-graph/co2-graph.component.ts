@@ -9,7 +9,7 @@ import { LocalStorageService } from '../../core/local-storage.service';
 })
 export class Co2GraphComponent implements OnInit, OnDestroy {
   public title = 'CO₂ Graph';
-  step = 2000;
+  step = 1000;
 
   extraDyGraphConfig = {
     strokeWidth: 3.0
@@ -18,7 +18,7 @@ export class Co2GraphComponent implements OnInit, OnDestroy {
   graphstyle = {
     position: 'absolute',
     top: '4em',
-    bottom: '3rem',
+    bottom: '1vh',
     left: '1vw',
     right: '1vw'
   };

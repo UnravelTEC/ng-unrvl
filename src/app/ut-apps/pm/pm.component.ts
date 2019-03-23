@@ -14,7 +14,7 @@ export class PmComponent implements OnInit {
   graphstyle = {
     position: 'absolute',
     top: '1vh',
-    bottom: '3rem',
+    bottom: '1vh',
     left: '1vw',
     right: '1vw'
   };

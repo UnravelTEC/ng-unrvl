@@ -12,17 +12,5 @@
     runningAvgSeconds="5"
     #graph
   ></app-ut-dygraph>
-  <!-- [extraDyGraphConfig]="extraDyGraphConfig"
-    serverHostName=""
-  serverPort="80"
-  serverPath="prometheus/api/v1/" -->
-  <form class="time">
-    <button (click)="adjustTime('5m', 2000)">5m</button>
-    <button (click)="adjustTime('30m', 2000)">30m</button>
-    <button (click)="adjustTime('1h', 2000)">1h</button>
-    <button (click)="adjustTime('6h', 2000)">6h</button>
-    <button (click)="adjustTime('1d', 10000)">24h</button>
-    <button (click)="adjustTime('7d', 70000)">7d</button>
-    Range: {{ startTime }}, Step: {{ step }}ms
-  </form>
+
 </div>
