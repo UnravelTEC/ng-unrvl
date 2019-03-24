@@ -22,6 +22,8 @@ export class AppComponent implements OnInit {
 
   public cursor = 'auto';
 
+  public hostName = 'ng-unrvl';
+
   public constructor(
     private http: HttpClient,
     private titleService: Title,
@@ -52,6 +54,10 @@ export class AppComponent implements OnInit {
           this.cursor = 'auto';
         }
       }
+      if (obj && obj.hasOwnProperty('hostname')) {
+        this.hostName = obj['hostname'];
+        this.setTitle();
+      }
     });
 
     this.globalSettings.ngOnInit();
@@ -62,12 +68,16 @@ export class AppComponent implements OnInit {
     }
   }
 
-  public setTitle(newTitle: string) {
+  public setTitle(newTitle?: string) {
+    if (!newTitle) {
+      newTitle = this.hostName + ': ' + this.appName;
+    }
     this.titleService.setTitle(newTitle);
   }
 
   public setAppName(newAppName: string) {
     this.appName = newAppName;
+    this.setTitle();
   }
 
   public toggleFullScreen(newState?: boolean) {
