@@ -1,3 +1,14 @@
-<p>
-  temperatures works!
-</p>
+
+<div id="tempdygraph">
+  <!-- queryString="pressure_hPa or avg(pressure_hPa)" -->
+<app-ut-dygraph
+  queryString="temperature_degC or cpu_temperature_degC"
+  [fetchFromServerIntervalMS]="fetchFromServerIntervalMS"
+  dataBaseQueryStepMS="1000"
+  [dataSeriesLabels]="dataSeriesLabels"
+  YLabel="Temperature (°C)"
+  [style]="graphstyle"
+  [startTime]="startTime"
+  #graph
+></app-ut-dygraph>
+</div>
