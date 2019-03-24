@@ -82,6 +82,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/power/power.module#PowerModule'
   },
   {
+    path: 'Apps/Temperatures',
+    loadChildren: './ut-apps/temperatures/temperatures.module#TemperaturesModule'
+  },
+  {
     path: 'Apps/Dygraph-Playground',
     loadChildren: './ut-apps/dygraph-dev/dygraph-dev.module#DygraphDevModule'
   },
