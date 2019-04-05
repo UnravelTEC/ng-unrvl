@@ -56,6 +56,7 @@ export class SettingsPanelComponent implements OnInit {
 
   public prometheusPath = '';
   public oldIFPath = '';
+  public uv4lPath = '';
 
   public API = '';
 
@@ -82,6 +83,7 @@ export class SettingsPanelComponent implements OnInit {
 
     if (this.API) {
       this.oldIFPath = this.API.replace(/api\/$/, '') + 'old/';
+      this.uv4lPath = this.API.replace(/\/api\/$/, '') + ':8080';
     }
     const globalPrometheusPath = this.globalSettingsService.getPrometheusEndpoint();
     if (globalPrometheusPath) {
