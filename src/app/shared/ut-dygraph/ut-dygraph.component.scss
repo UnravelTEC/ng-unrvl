@@ -30,12 +30,15 @@
 
   .dygraph-legend {
     /* background: rgba(123, 123, 252, 0.993); */
-    min-width: 100%;
     padding: 5px;
-    text-align: right;
+    text-align: left;
     background: transparent;
     text-shadow: 1px 1px white, -1px 1px white, 1px -1px white, -1px -1px white,
       2px 2px white, -2px 2px white, 2px -2px white, -2px -2px white;
+    position: absolute !important;
+    top: 0.5em !important;
+    left: 4em !important;
+    min-width: 25%;
   }
   .dygraph-legend > span.highlight {
     border: 1px solid black;
