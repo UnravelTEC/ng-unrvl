@@ -15,7 +15,7 @@
     margin: 1em;
     border: 1px solid blue;
     padding: 1em;
-    background:white;
+    background: white;
   }
 
   .nodata {
@@ -36,6 +36,11 @@
     background: transparent;
     text-shadow: 1px 1px white, -1px 1px white, 1px -1px white, -1px -1px white,
       2px 2px white, -2px 2px white, 2px -2px white, -2px -2px white;
+  }
+  .dygraph-legend > span.highlight {
+    border: 1px solid black;
+    background: rgb(197, 197, 197);
+    text-shadow: none;
   }
 
   div.optionsarea {
@@ -64,7 +69,7 @@
         display: inline-block;
         padding: 0.2em;
         * {
-            margin:0 0.25ch;
+          margin: 0 0.25ch;
         }
         h5 {
           margin: 0;
@@ -80,38 +85,38 @@
           height: 2.2em;
         }
         button {
-            border:0;
-            border-radius: 0.5em;
-            background:#5cb85c;
-            padding:0.5em;
-            cursor: pointer;
-            min-width: 2.25em;
+          border: 0;
+          border-radius: 0.5em;
+          background: #5cb85c;
+          padding: 0.5em;
+          cursor: pointer;
+          min-width: 2.25em;
         }
 
         .time {
-            h5 {
-                display: inline-block;
-                margin-right: 1em;
-            }
-            small {
-                font-size: 0.7em;
-            }
-            button {
-              background: none;
-              min-width: unset;
-              border-radius: unset;
-              padding: unset;
-              border: unset;
-            }
-            mat-form-field {
-              width: 7em;
-              // background: greenyellow;
-              height: 1.5em;;
-            }
-            .mat-form-field-infix {
-              border-top: 0;
-              padding: 0;
-            }
+          h5 {
+            display: inline-block;
+            margin-right: 1em;
+          }
+          small {
+            font-size: 0.7em;
+          }
+          button {
+            background: none;
+            min-width: unset;
+            border-radius: unset;
+            padding: unset;
+            border: unset;
+          }
+          mat-form-field {
+            width: 7em;
+            // background: greenyellow;
+            height: 1.5em;
+          }
+          .mat-form-field-infix {
+            border-top: 0;
+            padding: 0;
+          }
         }
       }
     }

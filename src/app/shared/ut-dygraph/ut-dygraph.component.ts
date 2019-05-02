@@ -91,6 +91,12 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     connectSeparatedPoints: false,
     pointSize: 4,
     hideOverlayOnMouseOut: true,
+    highlightSeriesOpts: {
+      strokeWidth: 3,
+      strokeBorderWidth: 1,
+      highlightCircleSize: 5
+    },
+    labelsSeparateLines: true,
     legend: <any>'always' // also 'never' possible
   };
 
