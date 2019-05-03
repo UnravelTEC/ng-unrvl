@@ -91,6 +91,12 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     connectSeparatedPoints: false,
     pointSize: 4,
     hideOverlayOnMouseOut: true,
+    highlightSeriesOpts: {
+      strokeWidth: 3,
+      strokeBorderWidth: 1,
+      highlightCircleSize: 5
+    },
+    labelsSeparateLines: true,
     legend: <any>'always' // also 'never' possible
   };
 
@@ -556,15 +562,17 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       let sum = 0;
       for (let i = 1; i < lastrow.length; i++) {
         const element = lastrow[i];
-        if (element === NaN || element === undefined || element === null) {
+        if (isNaN(element) || element === undefined || element === null) {
           continue;
         }
         if (element === Infinity || element === -Infinity) {
           return;
         }
+
         nrValidElements++;
         sum += element;
       }
+
       if (nrValidElements) {
         this.lastValue = sum / nrValidElements;
       }
@@ -886,7 +894,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const currentDays = Math.floor(currentHours / 24);
     const textDays = currentDays ? String(currentDays) + 'd ' : '';
 
-    this.currentXrangeText = textDays + textHours + textMinutes + textSeconds + textMS;
+    this.currentXrangeText =
+      textDays + textHours + textMinutes + textSeconds + textMS;
 
     return this.currentXrange;
   }

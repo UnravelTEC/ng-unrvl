@@ -10,7 +10,7 @@ export class LoudnessComponent implements OnInit {
   graphstyle = {
     position: 'absolute',
     top: '1vh',
-    bottom: '3em',
+    bottom: '1vh',
     left: '1vw',
     right: '1vw'
   };

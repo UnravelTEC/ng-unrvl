@@ -99,6 +99,9 @@
       href="{{ oldIFPath }}"
       >Old Interface</a
     >
+    <a *ngIf="uv4lPath" href="{{ uv4lPath }}">
+      UV4L Admin Interface
+    </a>
     <a *ngIf="globalSettingsService.server.prometheus" href="{{ prometheusPath }}"
       >Prometheus Admin Interface</a
     >

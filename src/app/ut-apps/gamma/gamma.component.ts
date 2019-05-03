@@ -18,7 +18,7 @@ export class GammaComponent implements OnInit {
   graphstyle = {
     position: 'absolute',
     top: '4em',
-    bottom: '3rem',
+    bottom: '1vh',
     left: '1vw',
     right: '1vw'
   };

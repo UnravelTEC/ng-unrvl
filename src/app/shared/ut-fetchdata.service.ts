@@ -18,7 +18,7 @@ export class UtFetchdataService {
     'http://belinda.cgv.tugraz.at:9090/api/v1/query?query=co2{location="FuzzyLab",sensor="scd30"}';
   Config = {};
 
-  queryEndPoint = 'http://belinda.cgv.tugraz.at:9090/api/v1/';
+  queryEndPoint = 'https://scpunraveltec2.tugraz.at:443/api/v1/';
   queryDefaultStep = 1000; // ms
 
   getHTTPData(url: string) {

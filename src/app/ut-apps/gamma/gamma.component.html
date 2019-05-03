@@ -22,34 +22,4 @@ queryString='avg(avg_over_time(sensor_radiation_Sv[12h]))'
     #graph
   ></app-ut-dygraph>
 
-  <form>
-    <label for="startTime">Time Range: </label>
-    <input
-      type="text"
-      id="startTime"
-      [(ngModel)]="startTime"
-      name="startTime"
-    />
-    <button (click)="save()">save</button>
-    <button (click)="adjustTime('5m', 10000)">5m</button>
-    <button (click)="adjustTime('30m', 10000)">30m</button>
-    <button (click)="adjustTime('1h', 10000)">1h</button>
-    <button (click)="adjustTime('6h', 10000)">6h</button>
-    <button (click)="adjustTime('1d', 10000)">24h</button>
-    <button (click)="adjustTime('7d', 70000)">7d</button>
-    <button (click)="adjustTime('28d', 280000)">28d</button>
-    <button (click)="adjustTime('1y', 3360000)">1y</button>Step: {{ step / 1000 }}s
-
-    <!-- <label for="runningAvgSeconds"> -->
-      Running Average (s)
-    <!-- </label> -->
-    ({{ runningAvgSeconds }})
-    <input
-      type="text"
-      id="runningAvgSeconds"
-      [(ngModel)]="runningAvgSeconds"
-      name="runningAvgSeconds"
-      style="width:5em;"
-    />
-  </form>
   </div>

@@ -62,6 +62,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/voc/voc.module#VocModule'
   },
   {
+    path: 'Apps/voc-raw',
+    loadChildren: './ut-apps/voc-raw/voc.module#VocModule'
+  },
+  {
     path: 'Apps/loudness',
     loadChildren: './ut-apps/loudness/loudness.module#LoudnessModule'
   },
@@ -76,6 +80,10 @@ const appRoutes: Routes = [
   {
     path: 'Apps/Power',
     loadChildren: './ut-apps/power/power.module#PowerModule'
+  },
+  {
+    path: 'Apps/Temperatures',
+    loadChildren: './ut-apps/temperatures/temperatures.module#TemperaturesModule'
   },
   {
     path: 'Apps/Dygraph-Playground',

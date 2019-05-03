@@ -7,11 +7,9 @@ h4 {
   width: 400px;
 }
 
-.graphlink {
-  width: 100%;
-  display: block;
+#co2dygraph {
+  transform: translateX(-20px);
   text-align: right;
-  /* margin-top: -1em; */
 }
 
 .graphapp {
