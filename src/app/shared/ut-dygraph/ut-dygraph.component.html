@@ -166,6 +166,18 @@ style.padding-bottom="20vh"-->
         <h5>Export</h5>
         <button (click)="exportCSV()">CSV</button>
       </form>
+      <form class="subbox">
+        <h5>Running Average</h5>
+        <label for="runningAvgSeconds">interval:</label>
+        <input
+          type="text"
+          id="runningAvgSeconds"
+          name="runningAvgSeconds"
+          [(ngModel)]="runningAvgSeconds"
+          style="width:2em"
+        />
+        <span class="unit">s</span>
+      </form>
     </div>
   </div>
 
