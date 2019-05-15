@@ -26,6 +26,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-dashboard/ut-dashboard.module#UtDashboardModule'
   },
   {
+    path: 'Apps/vif',
+    loadChildren: './ut-apps/vif/vif.module#VifModule'
+  },
+  {
     path: 'Apps/IAQ',
     loadChildren: './ut-apps/iaq/iaq.module#IaqModule'
   },

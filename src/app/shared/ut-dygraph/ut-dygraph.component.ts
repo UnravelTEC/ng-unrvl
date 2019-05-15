@@ -131,6 +131,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
   public htmlID: string;
 
+  public exportUTC = true;
+
   private overrideDateWindow = [];
   private requestsUnderway = 0; // don't flood the server if it is not fast enough
   private oldRequestsRunning = 0;
@@ -1376,7 +1378,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         this.toZoom
       );
     }
-    this.h.exportCSV(data, labels);
+    this.h.exportCSV(data, labels, this.exportUTC);
   }
 
   fromDatePickerChanged($event) {

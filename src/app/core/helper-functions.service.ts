@@ -175,10 +175,11 @@ export class HelperFunctionsService {
     let labelString = '';
     let firstDone = false;
     for (let key in lObj) {
-      if (key === '__name__') {
-        continue;
-      }
       const value = lObj[key];
+      if (key === '__name__') {
+      //   continue;
+        key = '';
+      }
       if (key === 'model' && value === 'adc') {
         continue;
       }
@@ -202,10 +203,13 @@ export class HelperFunctionsService {
   }
 
 
-  exportCSV(data, labels) {
+  exportCSV(data, labels, utc = true) {
     // header
     const separator = '\t';
     const linebreak = '\n';
+    const dummyDate = new Date();
+    const utcOffsetSeconds = utc ? 0 : dummyDate.getTimezoneOffset() * 60;
+    console.log("utc-offset:", utcOffsetSeconds);
 
     let header = '';
     if (labels.length === 0 || data.length === 0) {
@@ -230,7 +234,7 @@ export class HelperFunctionsService {
           csvbody += separator;
         }
         if (column === 0) {
-          csvbody += (element.valueOf() / 1000).toPrecision(14);
+          csvbody += ((element.valueOf() / 1000) + utcOffsetSeconds).toPrecision(14);
         } else {
           csvbody += String(element);
         }

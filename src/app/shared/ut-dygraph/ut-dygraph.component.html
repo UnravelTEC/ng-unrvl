@@ -83,8 +83,17 @@ style.padding-bottom="20vh"-->
         <div class="time">
           <h5>From:</h5>
           <mat-form-field>
-            <input matInput [matDatepicker]="pickerF" [formControl]="fromFormDate" (dateChange)="fromDatePickerChanged($event)" [max]="dataEndTime">
-            <mat-datepicker-toggle matSuffix [for]="pickerF"></mat-datepicker-toggle>
+            <input
+              matInput
+              [matDatepicker]="pickerF"
+              [formControl]="fromFormDate"
+              (dateChange)="fromDatePickerChanged($event)"
+              [max]="dataEndTime"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="pickerF"
+            ></mat-datepicker-toggle>
             <mat-datepicker #pickerF></mat-datepicker>
           </mat-form-field>
           <!-- <small>{{ fromZoom | date: 'yyyy-MM-dd' }}</small> -->
@@ -130,8 +139,18 @@ style.padding-bottom="20vh"-->
         <div class="time">
           <h5>To:</h5>
           <mat-form-field>
-            <input matInput [matDatepicker]="pickerT" [formControl]="toFormDate" (dateChange)="toDatePickerChanged($event)" [max]="dataEndTime" [min]="fromZoom">
-            <mat-datepicker-toggle matSuffix [for]="pickerT"></mat-datepicker-toggle>
+            <input
+              matInput
+              [matDatepicker]="pickerT"
+              [formControl]="toFormDate"
+              (dateChange)="toDatePickerChanged($event)"
+              [max]="dataEndTime"
+              [min]="fromZoom"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="pickerT"
+            ></mat-datepicker-toggle>
             <mat-datepicker #pickerT></mat-datepicker>
           </mat-form-field>
           <br />
@@ -165,6 +184,10 @@ style.padding-bottom="20vh"-->
       <form class="subbox">
         <h5>Export</h5>
         <button (click)="exportCSV()">CSV</button>
+        <label for="UTC"
+          >UTC
+          <input type="checkbox" name="UTC" id="UTC" [(ngModel)]="exportUTC" />
+        </label>
       </form>
       <form class="subbox">
         <h5>Running Average</h5>
