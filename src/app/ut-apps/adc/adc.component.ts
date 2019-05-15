@@ -17,6 +17,10 @@ export class AdcComponent implements OnInit {
   dataSeriesLabels = ['ADS1*15'];
   startTime = '5m';
 
+  extraDyGraphConfig = {
+    logscale: true
+  };
+
   constructor(private globalSettings: GlobalSettingsService) {
     // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
     this.globalSettings.emitChange({ appName: 'ADC' });
