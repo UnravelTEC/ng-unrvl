@@ -12,7 +12,8 @@ export class Co2GraphComponent implements OnInit, OnDestroy {
   step = 1000;
 
   extraDyGraphConfig = {
-    strokeWidth: 3.0
+    strokeWidth: 3.0,
+    logscale: true
   };
 
   graphstyle = {
