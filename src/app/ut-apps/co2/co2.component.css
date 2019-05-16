@@ -2,7 +2,7 @@ h4 {
   margin: 1em;
 }
 
-.gaugecontainer, #co2dygraph {
+.gaugecontainer, #co2dygraph  {
   margin: 0.1em auto 0.1em auto;
   width: 400px;
 }

@@ -174,11 +174,20 @@ export class HelperFunctionsService {
   createLabelString(lObj: Object): string {
     let labelString = '';
     let firstDone = false;
-    for (const key in lObj) {
+    for (let key in lObj) {
       if (key === '__name__') {
         continue;
       }
       const value = lObj[key];
+      if (key === 'model' && value === 'adc') {
+        continue;
+      }
+      if (key === 'channel') {
+        key = 'ch';
+      }
+      if (key === 'interval') {
+        key = 'i';
+      }
       if (firstDone) {
         labelString += ', ';
       } else {

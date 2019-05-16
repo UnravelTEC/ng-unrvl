@@ -14,7 +14,8 @@ export class Co2Component implements OnInit, OnDestroy {
   extraDyGraphConfig = {
     strokeWidth: 2.0,
     width: '420', // - margin-left
-    height: '200'
+    height: '200',
+    legend: 'never'
   };
 
   graphstyleo = {

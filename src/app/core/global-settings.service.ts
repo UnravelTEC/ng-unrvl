@@ -16,7 +16,7 @@ export class GlobalSettingsService implements OnInit {
   public defaultPrometheusPath = '/prometheus/api/v1/';
   public defaultPrometheusPort = undefined; // '9090'; // later switch to default port
   private defaultAPIPath = '/api/';
-  private fallbackEndpoint = 'https://scpexploratory02.tugraz.at';
+  private fallbackEndpoint = 'https://scpunraveltec2.tugraz.at';
   private fallbackPrometheusEndpoint =
     this.fallbackEndpoint + this.defaultPrometheusPath;
   private fallbackAPI = this.fallbackEndpoint + 'api/';
