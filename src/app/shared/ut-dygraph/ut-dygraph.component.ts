@@ -78,6 +78,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   @Output()
   returnRunningAvg = new EventEmitter<number>();
 
+  public yRange = [null, null];
+
   dyGraphOptions = {
     // http://dygraphs.com/options.html
     drawCallback: this.afterDrawCallback,
@@ -97,6 +99,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       highlightCircleSize: 5
     },
     labelsSeparateLines: true,
+    valueRange: this.yRange,
     legend: <any>'always' // also 'never' possible
   };
 
