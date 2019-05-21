@@ -89,7 +89,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     title: '',
     animatedZooms: true,
     connectSeparatedPoints: false,
-    pointSize: 1,
+    pointSize: 1, // radius
     hideOverlayOnMouseOut: true,
     highlightSeriesOpts: {
       strokeWidth: 3,
