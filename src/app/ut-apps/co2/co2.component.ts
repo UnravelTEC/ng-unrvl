@@ -13,6 +13,10 @@ export class Co2Component implements OnInit, OnDestroy {
 
   extraDyGraphConfig = {
     strokeWidth: 2.0,
+    pointSize: 1,
+    highlightSeriesOpts: {strokeWidth: 2,
+      strokeBorderWidth: 2,
+      highlightCircleSize: 2},
     width: '420', // - margin-left
     height: '200',
     legend: 'never'
