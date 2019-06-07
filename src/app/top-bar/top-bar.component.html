@@ -6,7 +6,7 @@
   <em class=appname>{{ appName }}</em>
   <span class="spacer">&nbsp;</span>
   <!-- <a routerLink="/Store" routerLinkActive="active">Store</a> -->
-  <em class="date">{{ currentTime | date: 'yyyy-MM-dd H:mm' }}</em>
+  <em class="date">{{ currentTime | date: 'yyyy-MM-dd HH:mm' }}</em>
   <a class="batt" *ngIf="gss.server.type == 'Tricorder'" routerLink="/Apps/Power" routerLinkActive="active">Bat: 100%</a>
   <a routerLink="/Settings" routerLinkActive="active">Settings</a>&nbsp;&nbsp;
 </nav>
