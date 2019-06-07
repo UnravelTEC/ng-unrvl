@@ -198,6 +198,7 @@ export class GlobalSettingsService implements OnInit {
             this.getScreen(this.server.api);
 
             // emit every 5s a check for prometheus
+            this.checkForPrometheus(firstURL);
           },
           error => {
             console.log('no UTapi running on', firstURL);
