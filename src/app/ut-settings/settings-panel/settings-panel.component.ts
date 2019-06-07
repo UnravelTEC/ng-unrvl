@@ -188,7 +188,8 @@ export class SettingsPanelComponent implements OnInit {
   constructor(
     private localStorage: LocalStorageService,
     public globalSettingsService: GlobalSettingsService,
-    private utHTTP: UtFetchdataService
+    private utHTTP: UtFetchdataService,
+    private h: HelperFunctionsService
   ) {
     // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
     this.globalSettingsService.emitChange({ appName: 'Settings' });
@@ -228,9 +229,20 @@ export class SettingsPanelComponent implements OnInit {
   loadEndpoint() {
     if (!this.endpointValue) {
       alert('select an Endpoint');
+      return;
     }
     const loadedSettings = this.settingsArray[this.endpointValue];
     console.log(loadedSettings);
+    console.log(loadedSettings.server.settings.serverHostName.fieldValue);
+    const serverUrl = this.h.getDeep(loadedSettings, [
+      'server',
+      'settings',
+      'serverHostName',
+      'fieldValue'
+    ]);
+    if (serverUrl == '$baseurl') {
+      loadedSettings.server.settings.serverHostName.fieldValue = this.h.getBaseURL();
+    }
 
     this.globalSettingsUnsaved = loadedSettings;
 
