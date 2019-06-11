@@ -2,7 +2,9 @@
 
 Angular Frontend to visualize data - primarly from Prometheus database as sensor data endpoint.
 
-# building
+![](CO2-startpage.png)
+
+# Building
 
 ```
 npm install
@@ -10,4 +12,14 @@ npm install
 npm run build.prod
 ```
 
-the built project can now be found in `dist/Web`
+The built project can now be found in `dist/Web`.
+
+# Developing
+
+To application for development:
+
+```
+ng serve
+```
+
+Access it via http://localhost:4200

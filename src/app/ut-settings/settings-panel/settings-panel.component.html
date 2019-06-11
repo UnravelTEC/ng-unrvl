@@ -37,6 +37,19 @@
       <li>Database: {{ globalSettingsService.server.prometheus }}</li>
       <li>API: {{ globalSettingsService.server.api }}</li>
     </ul>
+    <div>
+      <mat-form-field>
+        <mat-label>Endpoints</mat-label>
+        <mat-select [(ngModel)]="endpointValue" name="Endpoints">
+          <mat-option *ngFor="let setting of (settingsArray | keyvalue)" [value]="setting.key">
+            {{setting.value.server.settings.serverName.fieldValue}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button type="submit" class="btn btn-success" (click)="loadEndpoint()">
+        Load
+      </button>
+    </div>
 
     <section *ngFor="let entry of (settingsSection.value.settings | keyvalue)">
       <div class="fields">

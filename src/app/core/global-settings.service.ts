@@ -182,59 +182,67 @@ export class GlobalSettingsService implements OnInit {
         'from LocalStorage'
       );
     } else {
+      // see if an API i there
       const firstURL = this.h.getBaseURL();
-      const prometheusTestQuery = 'query?query=scrape_samples_scraped';
-      console.log(
-        'No settings in LocalStorage, try our webendpoint',
-        firstURL + this.defaultPrometheusPath + prometheusTestQuery
-      );
+      console.log('No settings in LocalStorage, try our webendpoint', firstURL);
 
       this.http
-        .get(firstURL + this.defaultPrometheusPath + prometheusTestQuery)
+        .get(firstURL + this.defaultAPIPath + 'system/hostname.php')
         .subscribe(
           (data: Object) => {
-            this.checkPrometheusTestResponse(
-              data,
-              firstURL,
-              this.defaultPrometheusPath
-            );
+            this.server.api = firstURL + this.defaultAPIPath;
+
+            this.setHostName(data);
+
+            // set screen
+            this.getScreen(this.server.api);
+
+            // emit every 5s a check for prometheus
+            this.checkForPrometheus(firstURL);
           },
           error => {
-            console.log(
-              'no prometheus found on ',
-              firstURL,
-              ', fallback:',
-              this.fallbackEndpoint
-            );
-            this.http
-              .get(this.fallbackPrometheusEndpoint + prometheusTestQuery)
-              .subscribe(
-                (data: Object) => {
-                  this.checkPrometheusTestResponse(
-                    data,
-                    this.fallbackEndpoint,
-                    this.defaultPrometheusPath
-                  );
-                },
-                error2 => {
-                  console.log('no prometheus found on', this.fallbackEndpoint);
-                  this.server.prometheus = '';
-                  this.server.baseurl = undefined;
-                }
-              );
+            console.log('no UTapi running on', firstURL);
+            console.log(error);
+            this.server.api = false;
+            this.hostName = 'unknown';
+            this.emitChange({ hostname: this.hostName });
+
+            //TODO set fallback!
           }
         );
     }
+  }
+
+  checkForPrometheus(baseurl) {
+    const prometheusTestQuery = 'query?query=scrape_samples_scraped';
+    this.http
+      .get(baseurl + this.defaultPrometheusPath + prometheusTestQuery)
+      .subscribe(
+        (data: Object) => {
+          this.checkPrometheusTestResponse(
+            data,
+            baseurl,
+            this.defaultPrometheusPath
+          );
+        },
+        error => {
+          console.log('no prometheus yet there', baseurl, ', 5s to next try.');
+          setTimeout(() => {
+            this.checkForPrometheus(baseurl);
+          }, 5 * 1000);
+        }
+      );
   }
 
   checkPrometheusTestResponse(data: Object, endpoint: string, endpath: string) {
     if (data['status'] && data['status'] === 'success') {
       this.server.baseurl = endpoint;
       this.server.prometheus = endpoint + endpath;
-      this.server.api = endpoint + this.defaultAPIPath;
-      this.fetchHostName(this.server.api);
-      this.getCPUinfo(this.server.api);
-      this.getScreen(this.server.api);
+      //this.server.api = endpoint + this.defaultAPIPath;
+      //this.fetchHostName(this.server.api);
+      //this.getCPUinfo(this.server.api);
+      this.emitChange({ Prometheus: this.server.prometheus });
+
       console.log('SUCCESS: prometheus found on endpoint', endpoint);
     } else {
       console.error('FAILURE: prometheus on endpoint not ready', endpoint);
@@ -290,7 +298,7 @@ export class GlobalSettingsService implements OnInit {
     this.http.get(server + 'system/hostname.php').subscribe(
       (data: Object) => this.setHostName(data),
       error => {
-        console.log('no UTapi running on');
+        console.log('no UTapi running on', server);
         console.log(error);
         this.server.api = false;
         this.hostName = 'unknown';
