@@ -175,10 +175,11 @@ export class HelperFunctionsService {
     let labelString = '';
     let firstDone = false;
     for (let key in lObj) {
+      const value = lObj[key];
       if (key === '__name__') {
+        labelString += value + ': ';
         continue;
       }
-      const value = lObj[key];
       if (key === 'model' && value === 'adc') {
         continue;
       }
@@ -200,7 +201,6 @@ export class HelperFunctionsService {
     }
     return labelString;
   }
-
 
   exportCSV(data, labels) {
     // header
