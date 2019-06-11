@@ -91,6 +91,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/sensors/scd30/scd30.module#Scd30Module'
   },
   {
+    path: 'Apps/Sensors/SPS30',
+    loadChildren: './ut-apps/sensors/sps30/sps30.module#Sps30Module'
+  },
+  {
     path: 'Apps/Temperatures',
     loadChildren: './ut-apps/temperatures/temperatures.module#TemperaturesModule'
   },

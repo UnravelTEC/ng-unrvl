@@ -1,0 +1,25 @@
+table {
+  position: absolute;
+  right: 0.3em;
+  width: 9.6em;
+}
+
+#ugvalues {
+  top: 2em;
+  bottom: 70%;
+}
+
+#pvalues {
+  top: 30%;
+  bottom: 35%;
+}
+
+#psvalues {
+  top: 75%;
+  bottom: 0.5rem;
+}
+
+td > div {
+  display: flex;
+  flex-direction: column;
+}
