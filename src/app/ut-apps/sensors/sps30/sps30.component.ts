@@ -8,7 +8,7 @@ import { GlobalSettingsService } from 'app/core/global-settings.service';
 })
 export class Sps30Component implements OnInit {
   public title = 'Sensirion SPS30';
-  step = 2000;
+  step = 1000;
 
   extraDyGraphConfig = {
     strokeWidth: 2.0 //,
