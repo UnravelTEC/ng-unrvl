@@ -9,10 +9,11 @@ import { LocalStorageService } from '../../core/local-storage.service';
 })
 export class Co2GraphComponent implements OnInit, OnDestroy {
   public title = 'CO₂ Graph';
-  step = 1000;
+  step = 2000;
 
   extraDyGraphConfig = {
-    strokeWidth: 3.0
+    strokeWidth: 3.0 //,
+    // logscale: true
   };
 
   graphstyle = {

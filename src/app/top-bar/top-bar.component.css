@@ -1,33 +1,45 @@
 nav {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    align-items: center;
-    width: 100vw;
-    background: rgb(49,86,105);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 100vw;
+  background: rgb(49, 86, 105);
 }
 nav > * {
-    display: inline-block;
-    background: rgb(49,86,105);
-    padding:0.5em 0.3em;
-    margin: 0.1em;
-    color: rgb(255, 255, 255);
-    text-decoration: none;
+  display: inline-block;
+  background: rgb(49, 86, 105);
+  padding: 0.6em 0.3em;
+  margin: 0;
+  color: rgb(255, 255, 255);
+  text-decoration: none;
+  height:1.3em;
 }
 nav > .spacer {
-    flex-grow: 1;
+  flex-grow: 1;
 }
 
 nav em {
-    font-style: normal;
-    color: rgb(180, 180, 180)
+  font-style: normal;
+  color: rgb(180, 180, 180);
 }
 
 nav a:hover {
-    background:rgb(201, 201, 207);
+  background: rgb(201, 201, 207);
 }
 
 nav em.appname {
-    color: rgb(255, 255, 255);
+  color: rgb(255, 255, 255);
+}
+
+nav > a.icon {
+    padding-right: 0.5em;
+    padding-left: 0.5em;
+}
+nav > a > .material-icons {
+  vertical-align: middle;
+  margin:0;
+  height: 1.4em;
+  transform: translateY(-0.1em);
 }

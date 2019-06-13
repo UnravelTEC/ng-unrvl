@@ -53,9 +53,24 @@ style.padding-bottom="20vh"-->
     [style.right]="style.right"
     [style.left]="style.left"
   >
-    <button (click)="toggleOptions()" class="toggleOptions">&#9881;</button>
+    <button (click)="toggleOptions()" class="toggleOptions">
+      <mat-icon>settings</mat-icon>
+    </button>
 
     <div *ngIf="optionsOpen == true" class="options">
+      <form class="subbox">
+        <h5>Data Resolution</h5>
+        <label for="dataBaseQueryStepMS">f:</label>
+        <input
+          type="text"
+          id="dataBaseQueryStepMS"
+          name="dataBaseQueryStepMS"
+          [(ngModel)]="dataBaseQueryStepMS"
+          style="width:4em"
+        />
+        <span class="unit">ms</span>
+      </form>
+
       <form class="subbox">
         <h5>Fetching</h5>
         <label for="fetchFromServerIntervalMS">interval:</label>
@@ -83,8 +98,17 @@ style.padding-bottom="20vh"-->
         <div class="time">
           <h5>From:</h5>
           <mat-form-field>
-            <input matInput [matDatepicker]="pickerF" [formControl]="fromFormDate" (dateChange)="fromDatePickerChanged($event)" [max]="dataEndTime">
-            <mat-datepicker-toggle matSuffix [for]="pickerF"></mat-datepicker-toggle>
+            <input
+              matInput
+              [matDatepicker]="pickerF"
+              [formControl]="fromFormDate"
+              (dateChange)="fromDatePickerChanged($event)"
+              [max]="dataEndTime"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="pickerF"
+            ></mat-datepicker-toggle>
             <mat-datepicker #pickerF></mat-datepicker>
           </mat-form-field>
           <!-- <small>{{ fromZoom | date: 'yyyy-MM-dd' }}</small> -->
@@ -130,8 +154,18 @@ style.padding-bottom="20vh"-->
         <div class="time">
           <h5>To:</h5>
           <mat-form-field>
-            <input matInput [matDatepicker]="pickerT" [formControl]="toFormDate" (dateChange)="toDatePickerChanged($event)" [max]="dataEndTime" [min]="fromZoom">
-            <mat-datepicker-toggle matSuffix [for]="pickerT"></mat-datepicker-toggle>
+            <input
+              matInput
+              [matDatepicker]="pickerT"
+              [formControl]="toFormDate"
+              (dateChange)="toDatePickerChanged($event)"
+              [max]="dataEndTime"
+              [min]="fromZoom"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="pickerT"
+            ></mat-datepicker-toggle>
             <mat-datepicker #pickerT></mat-datepicker>
           </mat-form-field>
           <br />
@@ -165,6 +199,18 @@ style.padding-bottom="20vh"-->
       <form class="subbox">
         <h5>Export</h5>
         <button (click)="exportCSV()">CSV</button>
+      </form>
+      <form class="subbox">
+        <h5>Running Average</h5>
+        <label for="runningAvgSeconds">interval:</label>
+        <input
+          type="text"
+          id="runningAvgSeconds"
+          name="runningAvgSeconds"
+          [(ngModel)]="runningAvgSeconds"
+          style="width:2em"
+        />
+        <span class="unit">s</span>
       </form>
     </div>
   </div>

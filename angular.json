@@ -25,7 +25,8 @@
             ],
             "styles": [
               "src/styles.css",
-              "node_modules/dygraphs/dist/dygraph.min.css"
+              "node_modules/dygraphs/dist/dygraph.min.css",
+              "node_modules/material-design-icons/iconfont/material-icons.css"
             ],
             "scripts": [
               "node_modules/dygraphs/dist/dygraph.min.js"

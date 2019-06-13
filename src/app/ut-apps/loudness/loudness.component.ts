@@ -14,6 +14,9 @@ export class LoudnessComponent implements OnInit {
     left: '1vw',
     right: '1vw'
   };
+  extraDyGraphConfig = {
+    logscale: true
+  };
 
   dataSeriesLabels = ['Loudness'];
   startTime = '5m';

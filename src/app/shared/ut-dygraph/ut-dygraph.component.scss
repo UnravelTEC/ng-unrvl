@@ -15,7 +15,7 @@
     margin: 1em;
     border: 1px solid blue;
     padding: 1em;
-    background:white;
+    background: white;
   }
 
   .nodata {
@@ -30,19 +30,27 @@
 
   .dygraph-legend {
     /* background: rgba(123, 123, 252, 0.993); */
-    min-width: 100%;
     padding: 5px;
-    text-align: right;
+    text-align: left;
     background: transparent;
     text-shadow: 1px 1px white, -1px 1px white, 1px -1px white, -1px -1px white,
       2px 2px white, -2px 2px white, 2px -2px white, -2px -2px white;
+    position: absolute !important;
+    top: 0.5em !important;
+    left: 4em !important;
+    min-width: 25%;
+  }
+  .dygraph-legend > span.highlight {
+    border: 1px solid black;
+    background: rgb(197, 197, 197);
+    text-shadow: none;
   }
 
   div.optionsarea {
     transform: translateY(-3rem);
     button.toggleOptions {
-      height: 4rem;
-      width: 4rem;
+      height: 3rem;
+      width: 3rem;
       border-radius: 0.5rem;
       font-size: 3rem;
       background: transparent;
@@ -51,6 +59,9 @@
       display: block;
       margin-left: 4.5rem;
       margin-right: auto;
+      * {
+        transform: translateY(-0.7rem);
+      }
     }
     button.toggleOptions:hover {
       background-color: gray;
@@ -59,12 +70,17 @@
       margin-top: 0.3rem;
       margin-left: 4.5rem;
       background: rgba(128, 128, 128, 0.719);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
       .subbox {
         border: 1px solid black;
         display: inline-block;
         padding: 0.2em;
+        margin-bottom: 0.3rem;
+        height: 3rem;
         * {
-            margin:0 0.25ch;
+          margin: 0 0.25ch;
         }
         h5 {
           margin: 0;
@@ -80,38 +96,37 @@
           height: 2.2em;
         }
         button {
-            border:0;
-            border-radius: 0.5em;
-            background:#5cb85c;
-            padding:0.5em;
-            cursor: pointer;
-            min-width: 2.25em;
+          border: 0;
+          border-radius: 0.5em;
+          background: #5cb85c;
+          padding: 0.5em;
+          cursor: pointer;
+          min-width: 2.25em;
         }
-
         .time {
-            h5 {
-                display: inline-block;
-                margin-right: 1em;
-            }
-            small {
-                font-size: 0.7em;
-            }
-            button {
-              background: none;
-              min-width: unset;
-              border-radius: unset;
-              padding: unset;
-              border: unset;
-            }
-            mat-form-field {
-              width: 7em;
-              // background: greenyellow;
-              height: 1.5em;;
-            }
-            .mat-form-field-infix {
-              border-top: 0;
-              padding: 0;
-            }
+          h5 {
+            display: inline-block;
+            margin-right: 1em;
+          }
+          small {
+            font-size: 0.7em;
+          }
+          button {
+            background: none;
+            min-width: unset;
+            border-radius: unset;
+            padding: unset;
+            border: unset;
+          }
+          mat-form-field {
+            width: 7em;
+            // background: greenyellow;
+            height: 1.5em;
+          }
+          .mat-form-field-infix {
+            border-top: 0;
+            padding: 0;
+          }
         }
       }
     }

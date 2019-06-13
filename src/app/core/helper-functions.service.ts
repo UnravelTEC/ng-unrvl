@@ -174,11 +174,21 @@ export class HelperFunctionsService {
   createLabelString(lObj: Object): string {
     let labelString = '';
     let firstDone = false;
-    for (const key in lObj) {
+    for (let key in lObj) {
+      const value = lObj[key];
       if (key === '__name__') {
+        labelString += value + ': ';
         continue;
       }
-      const value = lObj[key];
+      if (key === 'model' && value === 'adc') {
+        continue;
+      }
+      if (key === 'channel') {
+        key = 'ch';
+      }
+      if (key === 'interval') {
+        key = 'i';
+      }
       if (firstDone) {
         labelString += ', ';
       } else {
@@ -191,7 +201,6 @@ export class HelperFunctionsService {
     }
     return labelString;
   }
-
 
   exportCSV(data, labels) {
     // header

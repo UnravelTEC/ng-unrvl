@@ -2,6 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatIconModule } from '@angular/material/icon';
 import { RouterModule, Routes } from '@angular/router';
 
 
@@ -82,6 +83,18 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/power/power.module#PowerModule'
   },
   {
+    path: 'Apps/Sensors',
+    loadChildren: './ut-apps/sensors/sensors.module#SensorsModule'
+  },
+  {
+    path: 'Apps/Sensors/SCD30',
+    loadChildren: './ut-apps/sensors/scd30/scd30.module#Scd30Module'
+  },
+  {
+    path: 'Apps/Sensors/SPS30',
+    loadChildren: './ut-apps/sensors/sps30/sps30.module#Sps30Module'
+  },
+  {
     path: 'Apps/Temperatures',
     loadChildren: './ut-apps/temperatures/temperatures.module#TemperaturesModule'
   },
@@ -110,6 +123,7 @@ const appRoutes: Routes = [
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    MatIconModule,
     HttpClientModule,
     CoreModule.forRoot(),
     RouterModule.forRoot(
