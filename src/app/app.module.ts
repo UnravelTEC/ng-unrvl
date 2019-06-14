@@ -23,6 +23,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-settings/ut-settings.module#UtSettingsModule'
   },
   {
+    path: 'Settings/Services',
+    loadChildren: './ut-settings/services/services.module#ServicesModule'
+  },
+  {
     path: 'Dashboard',
     loadChildren: './ut-dashboard/ut-dashboard.module#UtDashboardModule'
   },

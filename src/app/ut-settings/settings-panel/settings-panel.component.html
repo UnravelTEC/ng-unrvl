@@ -25,6 +25,11 @@
     <button (click)="reboot()">Reboot</button>
   </section>
 
+  <section>
+      <a routerLink="/Settings/Services" routerLinkActive="active">System Services</a>
+  </section>
+
+
   <section *ngFor="let settingsSection of (globalSettingsUnsaved | keyvalue)">
     <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
     <ul
