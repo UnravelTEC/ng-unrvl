@@ -1,3 +1,22 @@
-<p>
-  services works!
-</p>
+<h2>
+  System services
+</h2>
+
+<table>
+  <tr>
+    <th>
+      Name
+    </th>
+    <th>Description</th>
+    <th>Installed</th>
+    <th>Start on Boot</th>
+    <th>Currently Running</th>
+  </tr>
+  <tr *ngFor="let service of services">
+    <td>{{ service['name'] }}</td>
+    <td>{{ service['description'] }}</td>
+    <td>{{ service['installed'] ? 'Yes' : 'No' }}</td>
+    <td>{{ service['onboot'] ? 'Yes' : 'No' }}</td>
+    <td>{{ service['running'] ? 'Yes' : 'No' }}</td>
+  </tr>
+</table>
