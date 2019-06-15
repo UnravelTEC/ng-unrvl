@@ -17,6 +17,8 @@
     <td>{{ service['description'] }}</td>
     <td>{{ service['installed'] ? 'Yes' : 'No' }}</td>
     <td>{{ service['onboot'] ? 'Yes' : 'No' }}</td>
-    <td>{{ service['running'] ? 'Yes' : 'No' }}</td>
+    <td>{{ service['running'] ? 'Yes' : 'No' }}
+      <button type="submit" (click)="stopService( service['name'] )">Stop</button>
+    </td>
   </tr>
 </table>

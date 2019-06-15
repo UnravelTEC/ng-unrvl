@@ -33,4 +33,32 @@ export class ServicesComponent implements OnInit {
       this.services = data['services'];
     }
   }
+
+  startService(service: String) {
+    console.log('starting', service);
+    this.sendCmd(service,'start');
+  }
+  stopService(service: String) {
+    console.log('stopping', service);
+    this.sendCmd(service,'stop');
+  }
+
+  sendCmd(service: String, cmd: String) {
+    this.utHTTP
+      .getHTTPData(
+        this.globalSettings.getAPIEndpoint() +
+          'system/service.php?cmd='+cmd+'&service=' +
+          service
+      )
+      .subscribe((data: Object) => this.checkSuccessOfCommand(data));
+  }
+
+  checkSuccessOfCommand(data: Object) {
+    console.log('success:', data);
+    if (!data['success']) {
+      alert('last command unsuccessful');
+    } else {
+      this.getServices();
+    }
+  }
 }
