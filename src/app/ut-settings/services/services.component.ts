@@ -28,7 +28,7 @@ export class ServicesComponent implements OnInit {
       .subscribe((data: Object) => this.acceptServices(data));
   }
   acceptServices(data: Object) {
-    console.log('services:', data);
+    // console.log('services:', data);
     if (data && data['services']) {
       this.services = data['services'];
     }
@@ -36,18 +36,28 @@ export class ServicesComponent implements OnInit {
 
   startService(service: String) {
     console.log('starting', service);
-    this.sendCmd(service,'start');
+    this.sendCmd(service, 'start');
   }
   stopService(service: String) {
     console.log('stopping', service);
-    this.sendCmd(service,'stop');
+    this.sendCmd(service, 'stop');
+  }
+  enableService(service: String) {
+    console.log('enabling', service);
+    this.sendCmd(service, 'enable');
+  }
+  disableService(service: String) {
+    console.log('disabling', service);
+    this.sendCmd(service, 'disable');
   }
 
   sendCmd(service: String, cmd: String) {
     this.utHTTP
       .getHTTPData(
         this.globalSettings.getAPIEndpoint() +
-          'system/service.php?cmd='+cmd+'&service=' +
+          'system/service.php?cmd=' +
+          cmd +
+          '&service=' +
           service
       )
       .subscribe((data: Object) => this.checkSuccessOfCommand(data));

@@ -15,10 +15,46 @@
   <tr *ngFor="let service of services">
     <td>{{ service['name'] }}</td>
     <td>{{ service['description'] }}</td>
-    <td>{{ service['installed'] ? 'Yes' : 'No' }}</td>
-    <td>{{ service['onboot'] ? 'Yes' : 'No' }}</td>
-    <td>{{ service['running'] ? 'Yes' : 'No' }}
-      <button type="submit" (click)="stopService( service['name'] )">Stop</button>
+    <td>
+      <span>{{ service['installed'] ? 'Yes' : 'No' }}</span>
+    </td>
+    <td>
+      <span *ngIf="service['installed']"
+        >{{ service['onboot'] ? 'Yes' : 'No' }}
+        <button
+          *ngIf="service['onboot']"
+          type="submit"
+          (click)="disableService(service['name'])"
+        >
+          Disable
+        </button>
+        <button
+          *ngIf="!service['onboot']"
+          type="submit"
+          (click)="enableService(service['name'])"
+        >
+          Enable
+        </button>
+      </span>
+    </td>
+    <td>
+      <span *ngIf="service['installed']">
+        {{ service['running'] ? 'Yes' : 'No' }}
+        <button
+          *ngIf="service['running']"
+          type="submit"
+          (click)="stopService(service['name'])"
+        >
+        <mat-icon>pause_circle_outline</mat-icon>
+        </button>
+        <button
+          *ngIf="!service['running']"
+          type="submit"
+          (click)="startService(service['name'])"
+        >
+        <mat-icon>play_circle_outline</mat-icon>
+        </button>
+      </span>
     </td>
   </tr>
 </table>

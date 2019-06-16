@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 
 import { ServicesRoutingModule } from './services-routing.module';
 import { ServicesComponent } from './services.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   imports: [
     CommonModule,
-    ServicesRoutingModule
+    ServicesRoutingModule,
+    MatIconModule
   ],
   declarations: [ServicesComponent]
 })
