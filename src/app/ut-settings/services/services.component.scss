@@ -6,11 +6,16 @@ table {
         border: 1px solid black;
         padding: 0.3em;
     }
+    .status {
+        display: inline-block;
+        min-width: 2em;
+    }
     button {
         border: 0;
         padding: 0.2em;
         background:gray;
         border-radius: 0.5em;
+        cursor: pointer;
         .material-icons {
             transform: translateY(0.15em);
             margin:-0.165em 0;
