@@ -30,6 +30,7 @@
           *ngIf="service['onboot']"
           type="submit"
           (click)="disableService(service['name'])"
+          title="Disable Service"
         >
         <mat-icon>highlight_off</mat-icon>
         </button>
@@ -37,6 +38,7 @@
           *ngIf="!service['onboot']"
           type="submit"
           (click)="enableService(service['name'])"
+          title="Enable Service"
         >
         <mat-icon>slideshow</mat-icon>
         </button>
@@ -49,6 +51,7 @@
           *ngIf="service['running']"
           type="submit"
           (click)="stopService(service['name'])"
+          title="Stop Service"
         >
           <mat-icon>pause_circle_outline</mat-icon>
         </button>
@@ -56,6 +59,7 @@
           *ngIf="!service['running']"
           type="submit"
           (click)="startService(service['name'])"
+          title="Start Service"
         >
           <mat-icon>play_circle_outline</mat-icon>
         </button>
