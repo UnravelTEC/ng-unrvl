@@ -9,6 +9,8 @@ import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 })
 export class ServicesComponent implements OnInit {
   services = [];
+  loading = true;
+  loadingText = 'Initializing...';
 
   constructor(
     private utHTTP: UtFetchdataService,
@@ -26,12 +28,14 @@ export class ServicesComponent implements OnInit {
     this.utHTTP
       .getHTTPData(this.globalSettings.getAPIEndpoint() + 'system/services.php')
       .subscribe((data: Object) => this.acceptServices(data));
+    this.loadingText = 'Loading...';
   }
   acceptServices(data: Object) {
     // console.log('services:', data);
     if (data && data['services']) {
       this.services = data['services'];
     }
+    this.loading = false;
   }
 
   startService(service: String) {
