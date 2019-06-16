@@ -31,27 +31,47 @@ export class ServicesComponent implements OnInit {
     this.loadingText = 'Loading...';
   }
   acceptServices(data: Object) {
-    // console.log('services:', data);
+    console.log('services:', data);
     if (data && data['services']) {
       this.services = data['services'];
     }
     this.loading = false;
   }
 
-  startService(service: String) {
+  startService(service: string) {
     console.log('starting', service);
+    this.services.forEach(serviceItem => {
+      if(serviceItem['name'] == service) {
+        serviceItem['running'] = undefined;
+      }
+    });
     this.sendCmd(service, 'start');
   }
-  stopService(service: String) {
+  stopService(service: string) {
     console.log('stopping', service);
+    this.services.forEach(serviceItem => {
+      if(serviceItem['name'] == service) {
+        serviceItem['running'] = undefined;
+      }
+    });
     this.sendCmd(service, 'stop');
   }
-  enableService(service: String) {
+  enableService(service: string) {
     console.log('enabling', service);
+    this.services.forEach(serviceItem => {
+      if(serviceItem['name'] == service) {
+        serviceItem['onboot'] = undefined;
+      }
+    });
     this.sendCmd(service, 'enable');
   }
-  disableService(service: String) {
+  disableService(service: string) {
     console.log('disabling', service);
+    this.services.forEach(serviceItem => {
+      if(serviceItem['name'] == service) {
+        serviceItem['onboot'] = undefined;
+      }
+    });
     this.sendCmd(service, 'disable');
   }
 

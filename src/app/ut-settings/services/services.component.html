@@ -32,37 +32,49 @@
           (click)="disableService(service['name'])"
           title="Disable Service"
         >
-        <mat-icon>highlight_off</mat-icon>
+          <mat-icon>highlight_off</mat-icon>
         </button>
         <button
-          *ngIf="!service['onboot']"
+          *ngIf="service['onboot'] === false"
           type="submit"
           (click)="enableService(service['name'])"
           title="Enable Service"
         >
-        <mat-icon>slideshow</mat-icon>
+          <mat-icon>slideshow</mat-icon>
+        </button>
+        <button *ngIf="service['onboot'] === undefined">
+          <mat-icon>access_time</mat-icon>
         </button>
       </span>
     </td>
     <td style="text-align: center">
       <span *ngIf="service['installed']">
-        <span class="status">{{ service['running'] ? 'Yes' : 'No' }}</span>
-        <button
-          *ngIf="service['running']"
-          type="submit"
-          (click)="stopService(service['name'])"
-          title="Stop Service"
-        >
-          <mat-icon>pause_circle_outline</mat-icon>
-        </button>
-        <button
-          *ngIf="!service['running']"
-          type="submit"
-          (click)="startService(service['name'])"
-          title="Start Service"
-        >
-          <mat-icon>play_circle_outline</mat-icon>
-        </button>
+        <span *ngIf="service['running']"
+          ><span class="status">Yes</span>
+          <button
+            type="submit"
+            (click)="stopService(service['name'])"
+            title="Stop Service"
+          >
+            <mat-icon>pause_circle_outline</mat-icon>
+          </button>
+        </span>
+        <span *ngIf="service['running'] === false">
+            <span class="status">No</span>
+          <button
+            type="submit"
+            (click)="startService(service['name'])"
+            title="Start Service"
+          >
+            <mat-icon>play_circle_outline</mat-icon>
+          </button>
+        </span>
+        <span *ngIf="service['running'] === undefined">
+            <span class="status">...</span>
+          <button>
+            <mat-icon>access_time</mat-icon>
+          </button>
+        </span>
       </span>
     </td>
   </tr>
