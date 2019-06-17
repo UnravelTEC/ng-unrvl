@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 
+/* this is nearly a 1:1 copy of sensor services - maybe put code into own service? */
+
+
 @Component({
   selector: 'app-services',
   templateUrl: './services.component.html',
@@ -16,7 +19,7 @@ export class ServicesComponent implements OnInit {
     private utHTTP: UtFetchdataService,
     private globalSettings: GlobalSettingsService
   ) {
-    this.globalSettings.emitChange({ appName: 'services' });
+    this.globalSettings.emitChange({ appName: 'System Services' });
   }
   ngOnInit() {
     if (this.globalSettings.getAPIEndpoint()) {
