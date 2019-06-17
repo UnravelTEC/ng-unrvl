@@ -10,6 +10,18 @@
     <th>Currently Running</th>
   </tr>
 
+  <tbody *ngIf="! services.length">
+    <tr *ngFor="let service of implemented_sensors">
+      <td>
+        <a
+          routerLink="{{ service.toUpperCase() }}/"
+          routerLinkActive="active"
+          >{{ service }}</a
+        >
+      </td>
+    </tr>
+  </tbody>
+
   <tr *ngFor="let service of services">
     <td>
       <a
@@ -23,7 +35,7 @@
       </span>
     </td>
     <td>{{ service['description'] }}</td>
-    <td style="text-align: center" class="{{service['onboot']}}">
+    <td style="text-align: center" class="{{ service['onboot'] }}">
       <span class="status">
         {{ service['onboot'] ? 'Yes' : 'No' }}
       </span>
@@ -47,7 +59,7 @@
         <mat-icon>access_time</mat-icon>
       </button>
     </td>
-    <td style="text-align: center" class="{{service['running']}}">
+    <td style="text-align: center" class="{{ service['running'] }}">
       <span *ngIf="service['running']"
         ><span class="status">Yes</span>
         <button
