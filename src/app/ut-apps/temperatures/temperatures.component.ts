@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { GlobalSettingsService } from 'app/core/global-settings.service';
+import { GlobalSettingsService } from '../../core/global-settings.service';
 
 @Component({
   selector: 'app-temperatures',
