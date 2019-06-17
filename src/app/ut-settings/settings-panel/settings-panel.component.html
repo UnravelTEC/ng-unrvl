@@ -25,7 +25,7 @@
     <button (click)="reboot()">Reboot</button>
   </section>
 
-  <section>
+  <section *ngIf="globalSettingsService.server.type == 'Tricorder'">
       <a routerLink="/Settings/Services" routerLinkActive="active">System Services</a>
   </section>
 
