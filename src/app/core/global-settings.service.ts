@@ -197,6 +197,9 @@ export class GlobalSettingsService implements OnInit {
             // set screen
             this.getScreen(this.server.api);
 
+            // check if on Raspi
+            this.getCPUinfo(this.server.api);
+
             // emit every 5s a check for prometheus
             this.checkForPrometheus(firstURL);
           },
