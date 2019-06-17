@@ -14,6 +14,8 @@ export class SensorsComponent implements OnInit {
   loading = true;
   loadingText = 'Initializing...';
 
+  implemented_sensors = ['sps30', 'scd30', 'ds18b20'];
+
   constructor(
     private globalSettings: GlobalSettingsService,
     private utHTTP: UtFetchdataService
@@ -40,6 +42,9 @@ export class SensorsComponent implements OnInit {
         item.UpperCaseName = item.name.toUpperCase();
         if (item['sensor']) {
           console.log(item);
+          if(this.implemented_sensors.indexOf(item.name) !== -1) {
+            item.implemented = true;
+          }
           this.services.push(item);
         }
       });

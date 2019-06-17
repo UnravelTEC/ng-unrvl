@@ -13,10 +13,14 @@
   <tr *ngFor="let service of services">
     <td>
       <a
+        *ngIf="service['implemented']"
         routerLink="{{ service['UpperCaseName'] }}/"
         routerLinkActive="active"
         >{{ service['name'] }}</a
       >
+      <span *ngIf="!service['implemented']">
+        {{ service['name'] }}
+      </span>
     </td>
     <td>{{ service['description'] }}</td>
     <td style="text-align: center">
