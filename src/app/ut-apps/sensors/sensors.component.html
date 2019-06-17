@@ -23,7 +23,7 @@
       </span>
     </td>
     <td>{{ service['description'] }}</td>
-    <td style="text-align: center">
+    <td style="text-align: center" class="{{service['onboot']}}">
       <span class="status">
         {{ service['onboot'] ? 'Yes' : 'No' }}
       </span>
@@ -47,7 +47,7 @@
         <mat-icon>access_time</mat-icon>
       </button>
     </td>
-    <td style="text-align: center">
+    <td style="text-align: center" class="{{service['running']}}">
       <span *ngIf="service['running']"
         ><span class="status">Yes</span>
         <button
