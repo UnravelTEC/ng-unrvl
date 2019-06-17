@@ -13,6 +13,8 @@ export class TemperaturesComponent implements OnInit {
 
   fetchFromServerIntervalMS = 1000;
 
+  labelBlackList = ['__name__', 'job'];
+
   graphstyle = {
     position: 'absolute',
     top: '1vh',

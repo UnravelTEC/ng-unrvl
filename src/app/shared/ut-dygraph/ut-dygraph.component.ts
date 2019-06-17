@@ -72,6 +72,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   extraDyGraphConfig: Object;
   @Input()
   multiplicateFactors = [1];
+  @Input()
+  labelBlackList: string[];
 
   @Input()
   calculateRunningAvgFrom: Date;
@@ -279,7 +281,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     let dataThere = false;
     for (let seriesNr = 0; seriesNr < promData.length; seriesNr++) {
       const series = promData[seriesNr];
-      const newLabelString = this.h.createLabelString(series['metric']);
+      const newLabelString = this.h.createLabelString(series['metric'], this.labelBlackList);
       newLabels.push(newLabelString);
 
       if (series['values'].length) {

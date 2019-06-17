@@ -171,11 +171,24 @@ export class HelperFunctionsService {
     return outdata;
   }
 
-  createLabelString(lObj: Object): string {
+  createLabelString(lObj: Object, blackListLabels: string[] = []): string {
     let labelString = '';
     let firstDone = false;
     for (let key in lObj) {
       const value = lObj[key];
+
+      let isInBlackList = false;
+      if(blackListLabels) {
+        blackListLabels.forEach(item => {
+          if(key == item) {
+            isInBlackList = true;
+          }
+        });
+      }
+      if(isInBlackList) {
+        continue;
+      }
+
       if (key === '__name__') {
         labelString += value + ': ';
         continue;
@@ -189,6 +202,9 @@ export class HelperFunctionsService {
       if (key === 'interval') {
         key = 'i';
       }
+
+
+
       if (firstDone) {
         labelString += ', ';
       } else {

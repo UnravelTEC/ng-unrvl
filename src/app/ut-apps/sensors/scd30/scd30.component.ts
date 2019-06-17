@@ -15,6 +15,9 @@ export class Scd30Component implements OnInit {
     // logscale: true
   };
 
+  labelBlackList = ['sensor', '__name__', 'gas'];
+  labelBlackListHT = ['sensor'];
+
   graphstyleCO2 = {
     position: 'absolute',
     top: '3em',
