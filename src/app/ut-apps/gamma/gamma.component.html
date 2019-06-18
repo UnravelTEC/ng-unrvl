@@ -14,6 +14,7 @@ queryString='avg(avg_over_time(sensor_radiation_Sv[12h]))'
     [fetchFromServerIntervalMS]="step"
     [dataBaseQueryStepMS]="step"
     [dataSeriesLabels]="dataSeriesLabels"
+    [labelBlackList]="labelBlackList"
     YLabel="Gamma Radiation (nSv)"
     [style]="graphstyle"
     [startTime]="startTime"

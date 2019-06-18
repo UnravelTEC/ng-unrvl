@@ -1,6 +1,6 @@
 <div class="graphapp">
   <span class="value">
-    CO2:
+    CO₂:
     <span class="{{
       (graph['lastValue'] < 1000) ? 'green' :
       ((graph['lastValue'] < 2000) ? 'yellow' : 'red')
@@ -16,6 +16,7 @@
       [fetchFromServerIntervalMS]="step"
       [dataBaseQueryStepMS]="step"
       [dataSeriesLabels]="dataSeriesLabels"
+      [labelBlackList]="labelBlackList"
       YLabel="CO₂ (ppm)"
       [style]="graphstyle"
       [startTime]="startTime"

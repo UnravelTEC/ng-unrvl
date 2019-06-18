@@ -53,9 +53,24 @@ style.padding-bottom="20vh"-->
     [style.right]="style.right"
     [style.left]="style.left"
   >
-    <button (click)="toggleOptions()" class="toggleOptions">&#9881;</button>
+    <button (click)="toggleOptions()" class="toggleOptions">
+      <mat-icon>settings</mat-icon>
+    </button>
 
     <div *ngIf="optionsOpen == true" class="options">
+      <form class="subbox">
+        <h5>Data Resolution</h5>
+        <label for="dataBaseQueryStepMS">f:</label>
+        <input
+          type="text"
+          id="dataBaseQueryStepMS"
+          name="dataBaseQueryStepMS"
+          [(ngModel)]="dataBaseQueryStepMS"
+          style="width:4em"
+        />
+        <span class="unit">ms</span>
+      </form>
+
       <form class="subbox">
         <h5>Fetching</h5>
         <label for="fetchFromServerIntervalMS">interval:</label>

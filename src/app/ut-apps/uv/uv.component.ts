@@ -17,6 +17,8 @@ export class UvComponent implements OnInit {
 
   startTime = '3m';
 
+  labelBlackList = ['sensor', 'interval'];
+
   constructor(private globalSettings: GlobalSettingsService) {
     // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
     this.globalSettings.emitChange({ appName: 'UV radiation' });

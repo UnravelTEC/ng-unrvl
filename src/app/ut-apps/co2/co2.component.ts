@@ -9,10 +9,14 @@ import { LocalStorageService } from '../../core/local-storage.service';
 })
 export class Co2Component implements OnInit, OnDestroy {
   public title = 'CO₂';
-  step = 1000;
+  step = 2000;
 
   extraDyGraphConfig = {
     strokeWidth: 2.0,
+    pointSize: 1,
+    highlightSeriesOpts: {strokeWidth: 2,
+      strokeBorderWidth: 2,
+      highlightCircleSize: 2},
     width: '420', // - margin-left
     height: '200',
     legend: 'never'
@@ -39,14 +43,6 @@ export class Co2Component implements OnInit, OnDestroy {
     this.globalSettings.emitChange({ appName: this.title });
   }
   ngOnInit() {
-    const lsStep = this.localStorage.get('pm.step');
-    if (lsStep) {
-      this.step = lsStep;
-    }
-    const lsStartTime = this.localStorage.get('co2.start');
-    if (lsStartTime) {
-      this.startTime = lsStartTime;
-    }
   }
   ngOnDestroy() {
     console.log('CO2-App destroyed');

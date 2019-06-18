@@ -72,6 +72,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   extraDyGraphConfig: Object;
   @Input()
   multiplicateFactors = [1];
+  @Input()
+  labelBlackList: string[];
 
   @Input()
   calculateRunningAvgFrom: Date;
@@ -91,7 +93,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     title: '',
     animatedZooms: true,
     connectSeparatedPoints: false,
-    pointSize: 4,
+    pointSize: 1, // radius
     hideOverlayOnMouseOut: true,
     highlightSeriesOpts: {
       strokeWidth: 3,
@@ -284,7 +286,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     let dataThere = false;
     for (let seriesNr = 0; seriesNr < promData.length; seriesNr++) {
       const series = promData[seriesNr];
-      const newLabelString = this.h.createLabelString(series['metric']);
+      const newLabelString = this.h.createLabelString(series['metric'], this.labelBlackList);
       newLabels.push(newLabelString);
 
       if (series['values'].length) {
@@ -554,6 +556,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     return true;
   }
+
   updateLastValueMembers(dataset) {
     if (
       Array.isArray(dataset) &&
@@ -634,6 +637,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
     this.checkAndFetchOldData();
   }
+
   clickCallback(e, x, points) {
     console.log('clickCallback');
     if (this.hasOwnProperty('parent')) {
@@ -641,6 +645,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       parent.stopUpdateOnNewData();
     }
   }
+
   afterZoomCallback(
     minDate: number,
     maxDate: number,
@@ -706,6 +711,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       } else {
         g['modified'] = g['modified'] + 1;
         if (g['modified'] < 10) {
+          console.log('afterDraw: redraw with dw');
+
           g.updateOptions({ dateWindow: dw });
           if (debugflag) {
             console.log('reset dateWindow');
@@ -748,7 +755,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const earliestDataDate = this.displayedData.length
       ? this.displayedData[0][0]
       : new Date().valueOf();
-    console.log('from:', from, 'earliest', earliestDataDate);
+    //console.log('from:', from, 'earliest', earliestDataDate);
 
     if (from < this.dataBeginTime.valueOf()) {
       this.fetchOldData(this.fromZoom, this.dataBeginTime);
@@ -827,7 +834,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     this.updateDataSet(displayedData);
 
-    if (this.runningAvgSeconds) {
+    if (this.runningAvgSeconds != this.Dygraph.rollPeriod() ) {
+      console.log('adj roll');
       this.Dygraph.adjustRoll(this.runningAvgSeconds);
     }
 
@@ -870,7 +878,20 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.returnRunningAvg.emit(avg);
     }
 
-    this.Dygraph.updateOptions({ file: this.displayedData }, false); // redraw only once at the end
+    let update = true;
+    /* console.log('DFT', this.dataBeginTime);
+    console.log('frZ', this.fromZoom);
+    console.log('DET', this.dataEndTime);
+    console.log('toZ', this.toZoom); */
+
+     if (
+      this.dataEndTime.valueOf() >= this.toZoom.valueOf() &&
+      this.dataBeginTime.valueOf() <= this.fromZoom.valueOf()
+    ) {
+      console.log('dont update');
+      update = false;
+    }
+    this.Dygraph.updateOptions({ file: this.displayedData }, !update);
   }
 
   setCurrentXrange() {
@@ -880,7 +901,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
     this.currentXrange =
       (this.toZoom.valueOf() - this.fromZoom.valueOf()) / 1000;
-    console.log('currentXrange', this.currentXrange);
+    // console.log('currentXrange', this.currentXrange);
 
     const currentMS = Math.round((this.currentXrange % 1) * 1000);
     const textMS = currentMS ? String(currentMS) + 'ms' : '';
@@ -974,6 +995,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         this.handleUpdatedData(displayedData)
       );
   }
+
   fetchOldData(from: Date, to: Date) {
     console.log('fetchOldData: from', from, 'to', to);
 

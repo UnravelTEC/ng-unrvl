@@ -25,6 +25,11 @@
     <button (click)="reboot()">Reboot</button>
   </section>
 
+  <section *ngIf="globalSettingsService.server.type == 'Tricorder'">
+      <a routerLink="/Settings/Services" routerLinkActive="active">System Services</a>
+  </section>
+
+
   <section *ngFor="let settingsSection of (globalSettingsUnsaved | keyvalue)">
     <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
     <ul
@@ -37,6 +42,19 @@
       <li>Database: {{ globalSettingsService.server.prometheus }}</li>
       <li>API: {{ globalSettingsService.server.api }}</li>
     </ul>
+    <div>
+      <mat-form-field>
+        <mat-label>Endpoints</mat-label>
+        <mat-select [(ngModel)]="endpointValue" name="Endpoints">
+          <mat-option *ngFor="let setting of (settingsArray | keyvalue)" [value]="setting.key">
+            {{setting.value.server.settings.serverName.fieldValue}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button type="submit" class="btn btn-success" (click)="loadEndpoint()">
+        Load
+      </button>
+    </div>
 
     <section *ngFor="let entry of (settingsSection.value.settings | keyvalue)">
       <div class="fields">

@@ -9,14 +9,14 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
 })
 export class DygraphDevComponent implements OnInit {
   serverHostName = '';
-  queryString = 'temperature_degC';
-  dataBaseQueryStepMS = 2000;
+  queryString = 'system_load';
+  dataBaseQueryStepMS = 5000;
   startTime = '30m';
   endTime = 'now';
   serverPort = '';
   serverPath = 'prometheus/api/v1/';
   runningAvgSeconds = 0;
-  fetchFromServerIntervalMS = 2000;
+  fetchFromServerIntervalMS = 5000;
 
   style = {
     position: 'absolute',
