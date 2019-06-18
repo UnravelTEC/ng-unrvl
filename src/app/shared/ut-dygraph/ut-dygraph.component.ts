@@ -80,6 +80,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   @Output()
   returnRunningAvg = new EventEmitter<number>();
 
+  public yRange = [null, null];
+
   dyGraphOptions = {
     // http://dygraphs.com/options.html
     drawCallback: this.afterDrawCallback,
@@ -99,6 +101,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       highlightCircleSize: 5
     },
     labelsSeparateLines: true,
+    valueRange: this.yRange,
     legend: <any>'always' // also 'never' possible
   };
 
@@ -132,6 +135,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public zoomMultiplicator = 60;
 
   public htmlID: string;
+
+  public exportUTC = true;
 
   private overrideDateWindow = [];
   private requestsUnderway = 0; // don't flood the server if it is not fast enough
@@ -1398,7 +1403,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         this.toZoom
       );
     }
-    this.h.exportCSV(data, labels);
+    this.h.exportCSV(data, labels, this.exportUTC);
   }
 
   fromDatePickerChanged($event) {
