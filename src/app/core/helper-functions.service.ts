@@ -178,14 +178,14 @@ export class HelperFunctionsService {
       const value = lObj[key];
 
       let isInBlackList = false;
-      if(blackListLabels) {
+      if (blackListLabels) {
         blackListLabels.forEach(item => {
-          if(key == item) {
+          if (key == item) {
             isInBlackList = true;
           }
         });
       }
-      if(isInBlackList) {
+      if (isInBlackList) {
         continue;
       }
 
@@ -203,8 +203,6 @@ export class HelperFunctionsService {
         key = 'i';
       }
 
-
-
       if (firstDone) {
         labelString += ', ';
       } else {
@@ -218,14 +216,12 @@ export class HelperFunctionsService {
     return labelString;
   }
 
-
   exportCSV(data, labels, utc = true) {
     // header
     const separator = '\t';
     const linebreak = '\n';
     const dummyDate = new Date();
-    const utcOffsetSeconds = utc ? 0 : dummyDate.getTimezoneOffset() * 60;
-    console.log("utc-offset:", utcOffsetSeconds);
+    console.log('utc:', utc);
 
     let header = '';
     if (labels.length === 0 || data.length === 0) {
@@ -238,6 +234,17 @@ export class HelperFunctionsService {
         header += separator;
       }
       header += element.replace(/,/g, ';');
+      if (i === 0) {
+        header +=
+          separator +
+          'Date (' +
+          (utc
+            ? 'UTC'
+            : new Date()
+                .toLocaleTimeString('en-us', { timeZoneName: 'short' })
+                .split(' ')[2]) +
+          ')';
+      }
     }
     header += linebreak;
 
@@ -250,7 +257,9 @@ export class HelperFunctionsService {
           csvbody += separator;
         }
         if (column === 0) {
-          csvbody += ((element.valueOf() / 1000) + utcOffsetSeconds).toPrecision(14);
+          csvbody += element.valueOf() / 1000;
+          csvbody +=
+            separator + (utc ? element.toUTCString() : element.toString());
         } else {
           csvbody += String(element);
         }
