@@ -7,10 +7,10 @@
         >{{ (currentBrightness / 255) * 100 | number: '1.0-0' }}&#8239;%</span
       >
     </h2>
-    <app-display-brighness
+    <app-display-brightness
       (brightnessEvent)="setNewBN($event)"
       #bn
-    ></app-display-brighness>
+    ></app-display-brightness>
   </section>
 
   <section *ngIf="globalSettingsService.client.type !== 'local'">
