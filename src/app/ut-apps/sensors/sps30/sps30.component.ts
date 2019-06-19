@@ -36,7 +36,9 @@ export class Sps30Component implements OnInit {
     left: '1vw',
     right: '10em'
   };
+
   dataSeriesLabels = ['SPS30'];
+  labelBlackList = ['__name__', 'interval', 'sensor'];
   startTime = '15m';
 
   constructor(private globalSettings: GlobalSettingsService) {
