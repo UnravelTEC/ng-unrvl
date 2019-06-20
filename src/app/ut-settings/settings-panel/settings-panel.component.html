@@ -26,11 +26,15 @@
   </section>
 
   <section *ngIf="globalSettingsService.server.type == 'Tricorder'">
+    <h2>Wifi Settings</h2>
+    <app-wifi-settings></app-wifi-settings>
+    <hr />
+
     <h2>System Services</h2>
     <a routerLink="/Settings/Services" routerLinkActive="active"
       >System Services</a
     >
-    <hr>
+    <hr />
 
     <h2>System Time</h2>
     <app-system-time></app-system-time>
