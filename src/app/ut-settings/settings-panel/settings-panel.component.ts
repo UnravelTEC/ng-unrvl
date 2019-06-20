@@ -105,7 +105,7 @@ export class SettingsPanelComponent implements OnInit {
             fieldName: 'Server hostname/ip',
             fieldValue: 'localhost'
           },
-          prometheusPort: { fieldName: 'Prometheus port', fieldValue: '8ß' }, // 9090
+          prometheusPort: { fieldName: 'Prometheus port', fieldValue: '80' }, // 9090
           prometheusPath: {
             fieldName: 'Prometheus database API path',
             fieldValue: 'prometheus/api/v1/'

@@ -209,8 +209,6 @@ export class GlobalSettingsService implements OnInit {
             this.server.api = false;
             this.hostName = 'unknown';
             this.emitChange({ hostname: this.hostName });
-
-            //TODO set fallback!
           }
         );
     }
