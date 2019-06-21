@@ -72,11 +72,15 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   extraDyGraphConfig: Object;
   @Input()
   multiplicateFactors = [1];
+  @Input()
+  labelBlackList: string[];
 
   @Input()
   calculateRunningAvgFrom: Date;
   @Output()
   returnRunningAvg = new EventEmitter<number>();
+
+  public yRange = [null, null];
 
   dyGraphOptions = {
     // http://dygraphs.com/options.html
@@ -97,6 +101,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       highlightCircleSize: 5
     },
     labelsSeparateLines: true,
+    valueRange: this.yRange,
     legend: <any>'always' // also 'never' possible
   };
 
@@ -130,6 +135,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public zoomMultiplicator = 60;
 
   public htmlID: string;
+
+  public exportUTC = true;
 
   private overrideDateWindow = [];
   private requestsUnderway = 0; // don't flood the server if it is not fast enough
@@ -279,7 +286,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     let dataThere = false;
     for (let seriesNr = 0; seriesNr < promData.length; seriesNr++) {
       const series = promData[seriesNr];
-      const newLabelString = this.h.createLabelString(series['metric']);
+      const newLabelString = this.h.createLabelString(series['metric'], this.labelBlackList);
       newLabels.push(newLabelString);
 
       if (series['values'].length) {
@@ -1396,7 +1403,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         this.toZoom
       );
     }
-    this.h.exportCSV(data, labels);
+    this.h.exportCSV(data, labels, this.exportUTC);
   }
 
   fromDatePickerChanged($event) {

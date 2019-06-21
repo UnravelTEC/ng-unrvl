@@ -199,6 +199,10 @@ style.padding-bottom="20vh"-->
       <form class="subbox">
         <h5>Export</h5>
         <button (click)="exportCSV()">CSV</button>
+        <label for="UTC"
+          >UTC
+          <input type="checkbox" name="UTC" id="UTC" [(ngModel)]="exportUTC" />
+        </label>
       </form>
       <form class="subbox">
         <h5>Running Average</h5>

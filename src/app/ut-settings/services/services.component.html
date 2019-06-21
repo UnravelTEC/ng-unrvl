@@ -21,7 +21,7 @@
     <td style="text-align: center">
       <span>{{ service['installed'] ? 'Yes' : 'No' }}</span>
     </td>
-    <td style="text-align: center">
+    <td style="text-align: center" class="{{service['onboot']}}">
       <span *ngIf="service['installed']">
         <span class="status">
           {{ service['onboot'] ? 'Yes' : 'No' }}
@@ -47,7 +47,7 @@
         </button>
       </span>
     </td>
-    <td style="text-align: center">
+    <td style="text-align: center"  class="{{service['running']}}">
       <span *ngIf="service['installed']">
         <span *ngIf="service['running']"
           ><span class="status">Yes</span>

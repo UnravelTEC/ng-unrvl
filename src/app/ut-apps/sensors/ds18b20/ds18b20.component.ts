@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { GlobalSettingsService } from '../../core/global-settings.service';
+import { GlobalSettingsService } from '../../../core/global-settings.service';
 
 @Component({
-  selector: 'app-temperatures',
-  templateUrl: './temperatures.component.html',
-  styleUrls: ['./temperatures.component.scss']
+  selector: 'app-ds18b20',
+  templateUrl: './ds18b20.component.html',
+  styleUrls: ['./ds18b20.component.scss']
 })
-export class TemperaturesComponent implements OnInit {
+export class Ds18b20Component implements OnInit {
   constructor(private globalSettings: GlobalSettingsService) {
-    this.globalSettings.emitChange({ appName: 'Temperatures Overview' });
+    this.globalSettings.emitChange({ appName: 'DS18B20' });
   }
+
+  ngOnInit() {}
 
   fetchFromServerIntervalMS = 1000;
 
@@ -17,13 +19,11 @@ export class TemperaturesComponent implements OnInit {
 
   graphstyle = {
     position: 'absolute',
-    top: '1vh',
+    top: '3.5em',
     bottom: '1vh',
     left: '1vw',
     right: '1vw'
   };
   dataSeriesLabels = ['Temperature'];
   startTime = '15m';
-
-  ngOnInit() {}
 }

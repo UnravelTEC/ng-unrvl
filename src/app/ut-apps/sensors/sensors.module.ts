@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 
 import { SensorsRoutingModule } from './sensors-routing.module';
 import { SensorsComponent } from './sensors.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   imports: [
     CommonModule,
-    SensorsRoutingModule
+    SensorsRoutingModule,
+    MatIconModule
   ],
   declarations: [SensorsComponent]
 })
