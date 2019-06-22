@@ -89,6 +89,13 @@ style.padding-bottom="20vh"-->
       </form>
 
       <form class="subbox">
+        <h5>Reset Data</h5>
+        <button (click)="resetData()">
+            <mat-icon>delete_forever</mat-icon>
+        </button>
+      </form>
+
+      <form class="subbox">
         <h5>Autopan:</h5>
         <button (click)="toggleAutoPan()">
           {{ updateOnNewData ? 'disable' : 'enable' }}

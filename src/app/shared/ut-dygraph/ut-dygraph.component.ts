@@ -1000,6 +1000,17 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       );
   }
 
+  resetData() {
+    this.stopUpdate();
+    while(this.displayedData.length) {
+      this.displayedData.pop() // fastest way to clear array
+    }
+    this.dataBeginTime = this.toZoom;
+    this.dataEndTime = this.toZoom;
+
+    this.Dygraph.updateOptions({ file: this.displayedData });
+  }
+
   fetchOldData(from: Date, to: Date) {
     console.log('fetchOldData: from', from, 'to', to);
 
