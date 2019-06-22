@@ -83,7 +83,8 @@ style.padding-bottom="20vh"-->
         />
         <span class="unit">ms</span>
         <button (click)="toggleFetching()" [class]="running">
-          {{ running ? 'Stop' : 'Start' }}
+          <mat-icon *ngIf="running">pause_circle_outline</mat-icon>
+          <mat-icon *ngIf="! running">play_circle_outline</mat-icon>
         </button>
       </form>
 

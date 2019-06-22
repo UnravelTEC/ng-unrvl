@@ -102,6 +102,12 @@
           padding: 0.5em;
           cursor: pointer;
           min-width: 2.25em;
+          .mat-icon {
+            margin:0;
+            margin-bottom: -10px;
+            margin-top:-10px;
+            transform: translateY(6px);
+          }
         }
         .time {
           h5 {
