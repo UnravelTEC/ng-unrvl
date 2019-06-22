@@ -746,6 +746,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   checkAndFetchOldData() {
+    if(!this.running) {
+      console.log('not running, dont checkAndFetchOldData');
+      return;
+    }
     // if (!this.displayedData.length) {
     //   this.noData = true;
     //   return;
