@@ -147,6 +147,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
   private maxPointsToFetch = 1000; // 10500; // Prometheus allows 11k max
 
+  public graphWidthPx = 0;
+  public maxNativeInterval = 0;
+
   Dygraph: Dygraph;
 
   intervalSubscription: Subscription;
@@ -286,7 +289,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     let dataThere = false;
     for (let seriesNr = 0; seriesNr < promData.length; seriesNr++) {
       const series = promData[seriesNr];
-      const newLabelString = this.h.createLabelString(series['metric'], this.labelBlackList);
+      const newLabelString = this.h.createLabelString(
+        series['metric'],
+        this.labelBlackList
+      );
       newLabels.push(newLabelString);
 
       if (series['values'].length) {
@@ -723,6 +729,29 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (parent && parent.hasOwnProperty('graphWidthPx')) {
+      const area = g.getArea();
+      if(parent['graphWidthPx'] === area.w) {
+        return;
+      }
+      parent['graphWidthPx'] = area.w;
+      console.log('new graph width:', area.w);
+
+      const from = parent['fromZoom'];
+      const to = parent['toZoom'];
+      const deltaTimeMS = (to.valueOf() - from.valueOf()) // / 1000;
+
+      const neededInterval = 0;
+
+      const maxFetchFrequency = parent['fetchFromServerIntervalMS'];
+      const maxDBqueryStep = parent['dataBaseQueryStepMS'];
+
+      const dataPointsInRange = deltaTimeMS / maxDBqueryStep;
+
+      parent['maxNativeInterval'] = dataPointsInRange;
+      // console.log(parent['graphWidthPx']);
+    }
+
     if (
       parent &&
       parent.hasOwnProperty('fromZoom') &&
@@ -746,7 +775,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   checkAndFetchOldData() {
-    if(!this.running) {
+    if (!this.running) {
       console.log('not running, dont checkAndFetchOldData');
       return;
     }
@@ -838,7 +867,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     this.updateDataSet(displayedData);
 
-    if (this.runningAvgSeconds != this.Dygraph.rollPeriod() ) {
+    if (this.runningAvgSeconds != this.Dygraph.rollPeriod()) {
       console.log('adj roll');
       this.Dygraph.adjustRoll(this.runningAvgSeconds);
     }
@@ -888,7 +917,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     console.log('DET', this.dataEndTime);
     console.log('toZ', this.toZoom); */
 
-     if (
+    if (
       this.dataEndTime.valueOf() >= this.toZoom.valueOf() &&
       this.dataBeginTime.valueOf() <= this.fromZoom.valueOf()
     ) {
@@ -1002,8 +1031,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
   resetData() {
     this.stopUpdate();
-    while(this.displayedData.length) {
-      this.displayedData.pop() // fastest way to clear array
+    while (this.displayedData.length) {
+      this.displayedData.pop(); // fastest way to clear array
     }
     this.dataBeginTime = this.toZoom;
     this.dataEndTime = this.toZoom;
