@@ -60,20 +60,29 @@ style.padding-bottom="20vh"-->
     <div *ngIf="optionsOpen == true" class="options">
       <form class="subbox">
         <h5>Data Resolution</h5>
-        <label for="dataBaseQueryStepMS">f:</label>
-        <input
-          type="text"
-          id="dataBaseQueryStepMS"
-          name="dataBaseQueryStepMS"
-          [(ngModel)]="dataBaseQueryStepMS"
-          style="width:4em"
-        />
+        <mat-radio-group aria-label="Select an option"
+          ><mat-radio-button value="native" id="native"
+            >Native: f {{ maxNativeInterval }}s</mat-radio-button
+          ><br />
+          <mat-radio-button value="manual" id="manual"
+            >Manual:
+          </mat-radio-button>
+          <label for="dataBaseQueryStepMS">f:</label>
+          <input
+            type="text"
+            id="dataBaseQueryStepMS"
+            name="dataBaseQueryStepMS"
+            [(ngModel)]="dataBaseQueryStepMS"
+            style="width:4em"
+          />
+        </mat-radio-group>
+
         <span class="unit">ms</span>
       </form>
 
       <form class="subbox">
-        <h5>Fetching</h5>
-        <label for="fetchFromServerIntervalMS">interval:</label>
+        <h5>Fetching interval</h5>
+        <label for="fetchFromServerIntervalMS"></label>
         <input
           type="text"
           id="fetchFromServerIntervalMS"
@@ -84,19 +93,19 @@ style.padding-bottom="20vh"-->
         <span class="unit">ms</span>
         <button (click)="toggleFetching()" [class]="running">
           <mat-icon *ngIf="running">pause_circle_outline</mat-icon>
-          <mat-icon *ngIf="! running">play_circle_outline</mat-icon>
+          <mat-icon *ngIf="!running">play_circle_outline</mat-icon>
         </button>
       </form>
 
       <form class="subbox">
         <h5>Reset Data</h5>
         <button (click)="resetData()">
-            <mat-icon>delete_forever</mat-icon>
+          <mat-icon>delete_forever</mat-icon>
         </button>
       </form>
 
       <form class="subbox">
-        <h5>Autopan:</h5>
+        <h5>Autopan</h5>
         <button (click)="toggleAutoPan()">
           {{ updateOnNewData ? 'disable' : 'enable' }}
         </button>
@@ -224,6 +233,14 @@ style.padding-bottom="20vh"-->
         />
         <span class="unit">s</span>
       </form>
+      <div class="subbox">
+        <h5>Statistics</h5>
+        <small>
+        dataset length: {{ displayedData.length }}<br />
+        last value: {{ lastValue }}<br />
+        average: {{ average }}
+      </small>
+      </div>
     </div>
   </div>
 
