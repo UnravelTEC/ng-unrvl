@@ -46,29 +46,33 @@
     text-shadow: none;
   }
 
-  div.optionsarea {
+  button.toggleOptions {
     transform: translateY(-3rem);
-    button.toggleOptions {
-      height: 3rem;
-      width: 3rem;
-      border-radius: 0.5rem;
-      font-size: 3rem;
-      background: transparent;
-      cursor: pointer;
-      border: 1px solid gray;
-      display: block;
-      margin-left: 4.5rem;
-      margin-right: auto;
-      * {
-        transform: translateY(-0.7rem);
-      }
+    height: 3rem;
+    width: 3rem;
+    border-radius: 0.5rem;
+    font-size: 3rem;
+    background: transparent;
+    cursor: pointer;
+    border: 1px solid gray;
+    display: block;
+    margin-left: 4.5rem;
+    margin-right: auto;
+    * {
+      transform: translateY(-0.7rem);
     }
-    button.toggleOptions:hover {
-      background-color: gray;
-    }
+  }
+  button.toggleOptions:hover {
+    background-color: gray;
+  }
+
+  div.optionsarea {
+    margin-right: 8rem;
+    transform: translate(8rem,-2.7rem);
     div.options {
       margin-top: 0.3rem;
-      margin-left: 4.5rem;
+      padding-left: 0.15rem;
+      padding-right: 0.15rem;
       background: rgba(128, 128, 128, 0.719);
       display: flex;
       flex-wrap: wrap;
@@ -77,7 +81,8 @@
         border: 1px solid black;
         display: inline-block;
         padding: 0.2em;
-        margin-bottom: 0.3rem;
+        margin-bottom: 0.15rem;
+        margin-top: 0.15rem;
         height: 3rem;
         > * {
           margin: 0 0.25ch;

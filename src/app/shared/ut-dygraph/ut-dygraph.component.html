@@ -45,17 +45,24 @@ style.padding-bottom="20vh"-->
     {{ error }}
   </div>
 
-  <div
-    *ngIf="options == true"
-    class="optionsarea"
+  <button
+    (click)="toggleOptions()"
+    class="toggleOptions"
     [style.position]="style.position"
     [style.bottom]="style.bottom"
     [style.left]="style.left"
   >
-    <button (click)="toggleOptions()" class="toggleOptions">
-      <mat-icon>settings</mat-icon>
-    </button>
+    <mat-icon>settings</mat-icon>
+  </button>
 
+  <div
+    *ngIf="options == true"
+    class="optionsarea"
+    [style.position]="style.position"
+    [style.right]="style.right"
+    [style.left]="style.left"
+    [style.bottom]="style.bottom"
+  >
     <div *ngIf="optionsOpen == true" class="options">
       <form class="subbox">
         <h5>Data Resolution</h5>
@@ -222,7 +229,7 @@ style.padding-bottom="20vh"-->
       </form>
       <form class="subbox">
         <h5>Running Average</h5>
-        <label for="runningAvgSeconds">interval:</label>
+        <label for="runningAvgSeconds"></label>
         <input
           type="text"
           id="runningAvgSeconds"
@@ -235,10 +242,10 @@ style.padding-bottom="20vh"-->
       <div class="subbox">
         <h5>Statistics</h5>
         <small>
-        dataset length: {{ displayedData.length }}<br />
-        last value: {{ lastValue }}<br />
-        average: {{ average }}
-      </small>
+          dataset length: {{ displayedData.length }}<br />
+          last value: {{ lastValue }}<br />
+          average: {{ average }}
+        </small>
       </div>
     </div>
   </div>
