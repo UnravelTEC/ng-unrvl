@@ -46,6 +46,7 @@ style.padding-bottom="20vh"-->
   </div>
 
   <button
+    *ngIf="options == true"
     (click)="toggleOptions()"
     class="toggleOptions"
     [style.position]="style.position"
@@ -56,14 +57,14 @@ style.padding-bottom="20vh"-->
   </button>
 
   <div
-    *ngIf="options == true"
+    *ngIf="options == true && optionsOpen == true"
     class="optionsarea"
     [style.position]="style.position"
     [style.right]="style.right"
     [style.left]="style.left"
     [style.bottom]="style.bottom"
   >
-    <div *ngIf="optionsOpen == true" class="options">
+    <div class="options">
       <form class="subbox">
         <h5>Data Resolution</h5>
         <mat-radio-group aria-label="Select an option"
