@@ -13,7 +13,7 @@ export class SystemTimeComponent implements OnInit {
   browserDate = new Date();
 
   constructor(
-    private gss: GlobalSettingsService,
+    public gss: GlobalSettingsService,
     private utHTTP: UtFetchdataService
   ) {}
 
