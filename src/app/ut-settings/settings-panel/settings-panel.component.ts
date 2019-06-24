@@ -14,7 +14,7 @@ export class SettingsPanelComponent implements OnInit {
     server: {
       // settingsSection
       settingAttributes: {
-        title: 'Server Settings'
+        title: 'Backend Settings'
       },
       settings: {
         serverName: {
@@ -55,7 +55,7 @@ export class SettingsPanelComponent implements OnInit {
       server: {
         // settingsSection
         settingAttributes: {
-          title: 'Server Settings'
+          title: 'Backend Settings'
         },
         settings: {
           serverName: {
@@ -94,7 +94,7 @@ export class SettingsPanelComponent implements OnInit {
       server: {
         // settingsSection
         settingAttributes: {
-          title: 'Server Settings'
+          title: 'Backend Settings'
         },
         settings: {
           serverName: {
@@ -133,7 +133,7 @@ export class SettingsPanelComponent implements OnInit {
       server: {
         // settingsSection
         settingAttributes: {
-          title: 'Server Settings'
+          title: 'Backend Settings'
         },
         settings: {
           serverName: {

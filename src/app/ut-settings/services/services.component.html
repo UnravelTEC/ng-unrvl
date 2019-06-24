@@ -16,12 +16,20 @@
     <td colspan="5">{{ loadingText }}</td>
   </tr>
   <tr *ngFor="let service of services">
-    <td>{{ service['name'] }}</td>
+    <td>
+      <a
+        *ngIf="service['sensor']"
+        routerLink="{{ '/Apps/Sensors/' + service['name'].toUpperCase() }}"
+        routerLinkActive="active"
+        >{{ service['name'] }}</a
+      >
+      <span *ngIf="!service['sensor']">{{ service['name'] }}</span>
+    </td>
     <td>{{ service['description'] }}</td>
     <td style="text-align: center">
       <span>{{ service['installed'] ? 'Yes' : 'No' }}</span>
     </td>
-    <td style="text-align: center" class="{{service['onboot']}}">
+    <td style="text-align: center" class="{{ service['onboot'] }}">
       <span *ngIf="service['installed']">
         <span class="status">
           {{ service['onboot'] ? 'Yes' : 'No' }}
@@ -47,7 +55,7 @@
         </button>
       </span>
     </td>
-    <td style="text-align: center"  class="{{service['running']}}">
+    <td style="text-align: center" class="{{ service['running'] }}">
       <span *ngIf="service['installed']">
         <span *ngIf="service['running']"
           ><span class="status">Yes</span>
@@ -60,7 +68,7 @@
           </button>
         </span>
         <span *ngIf="service['running'] === false">
-            <span class="status">No</span>
+          <span class="status">No</span>
           <button
             type="submit"
             (click)="startService(service['name'])"
@@ -70,7 +78,7 @@
           </button>
         </span>
         <span *ngIf="service['running'] === undefined">
-            <span class="status">...</span>
+          <span class="status">...</span>
           <button>
             <mat-icon>access_time</mat-icon>
           </button>
