@@ -2,7 +2,7 @@
   queryString='temperature_degC{sensor="BME280"}'
   [fetchFromServerIntervalMS]="step"
   [dataBaseQueryStepMS]="step"
-  [dataSeriesLabels]="dataSeriesLabelsT"
+  [dataSeriesLabels]="dataSeriesLabels_T"
   [labelBlackList]="labelBlackList"
   YLabel="temperature (°C)"
   [style]="graphstyle_T"
@@ -16,7 +16,7 @@
   queryString='humidity_rel_percent{sensor="BME280"}'
   [fetchFromServerIntervalMS]="step"
   [dataBaseQueryStepMS]="step"
-  [dataSeriesLabels]="dataSeriesLabelsH"
+  [dataSeriesLabels]="dataSeriesLabels_H"
   [labelBlackList]="labelBlackList"
   YLabel="relative Humidity (%)"
   [style]="graphstyle_H"
@@ -30,7 +30,7 @@
   queryString='pressure_hPa{sensor="BME280"}'
   [fetchFromServerIntervalMS]="step"
   [dataBaseQueryStepMS]="step"
-  [dataSeriesLabels]="dataSeriesLabelsP"
+  [dataSeriesLabels]="dataSeriesLabels_P"
   [labelBlackList]="labelBlackList"
   YLabel="Atmospheric Pressure (hPa)"
   [style]="graphstyle_P"

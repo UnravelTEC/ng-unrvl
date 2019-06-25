@@ -30,7 +30,9 @@ export class Bme280Component implements OnInit {
     right: '10em'
   };
 
-  dataSeriesLabelsP = ['SPS30'];
+  dataSeriesLabels_T = ['BME280'];
+  dataSeriesLabels_H = ['BME280'];
+  dataSeriesLabels_P = ['BME280'];
   extraDyGraphConfig_T = { colors: [ 'red']};
   extraDyGraphConfig_H = { colors: [ 'blue']};
   extraDyGraphConfig_P = { colors: [ 'green']};
