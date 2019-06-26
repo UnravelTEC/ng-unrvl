@@ -17,21 +17,21 @@ export class Sps30Component implements OnInit {
 
   graphstyle_ugpm3 = {
     position: 'absolute',
-    top: '3em',
-    bottom: '70%',
+    top: '0',
+    bottom: '66%',
     left: '1vw',
     right: '10em'
   };
   graphstyle_ppcm3 = {
     position: 'absolute',
-    top: '30%',
-    bottom: '35%',
+    top: '33%',
+    bottom: '33%',
     left: '1vw',
     right: '10em'
   };
   graphstyle_typpartsize = {
     position: 'absolute',
-    top: '65%',
+    top: '66%',
     bottom: '0.5rem',
     left: '1vw',
     right: '10em'
