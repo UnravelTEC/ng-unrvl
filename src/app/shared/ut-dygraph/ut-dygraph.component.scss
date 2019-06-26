@@ -28,6 +28,15 @@
     border-color: red;
   }
 
+  .date {
+    margin-left: 3.6rem;
+    font-size: 0.8em;
+  }
+  .lastTime {
+    margin-right: 1rem;
+    font-size: 0.8em;
+  }
+
   .dygraph-legend {
     /* background: rgba(123, 123, 252, 0.993); */
     padding: 5px;
@@ -46,29 +55,34 @@
     text-shadow: none;
   }
 
-  div.optionsarea {
+  button.toggleOptions {
     transform: translateY(-3rem);
-    button.toggleOptions {
-      height: 3rem;
-      width: 3rem;
-      border-radius: 0.5rem;
-      font-size: 3rem;
-      background: transparent;
-      cursor: pointer;
-      border: 1px solid gray;
-      display: block;
-      margin-left: 4.5rem;
-      margin-right: auto;
-      * {
-        transform: translateY(-0.7rem);
-      }
+    height: 3rem;
+    width: 3rem;
+    border-radius: 0.5rem;
+    font-size: 3rem;
+    background: transparent;
+    cursor: pointer;
+    border: 1px solid gray;
+    display: block;
+    margin-left: 4.5rem;
+    margin-right: auto;
+    * {
+      transform: translateY(-0.7rem);
     }
-    button.toggleOptions:hover {
-      background-color: gray;
-    }
+  }
+  button.toggleOptions:hover {
+    background-color: gray;
+  }
+
+  div.optionsarea {
+    margin-right: 8rem;
+    max-height: 50%; // not yet perfect, only works if screen is not too small / bottem left of graph is not too far top right.
+    transform: translate(8rem, -2.7rem);
+    overflow: auto;
     div.options {
-      margin-top: 0.3rem;
-      margin-left: 4.5rem;
+      padding-left: 0.15rem;
+      padding-right: 0.15rem;
       background: rgba(128, 128, 128, 0.719);
       display: flex;
       flex-wrap: wrap;
@@ -77,9 +91,10 @@
         border: 1px solid black;
         display: inline-block;
         padding: 0.2em;
-        margin-bottom: 0.3rem;
+        margin-bottom: 0.15rem;
+        margin-top: 0.15rem;
         height: 3rem;
-        * {
+        > * {
           margin: 0 0.25ch;
         }
         h5 {
@@ -102,6 +117,12 @@
           padding: 0.5em;
           cursor: pointer;
           min-width: 2.25em;
+          .mat-icon {
+            margin: 0;
+            margin-bottom: -10px;
+            margin-top: -10px;
+            transform: translateY(6px);
+          }
         }
         .time {
           h5 {
