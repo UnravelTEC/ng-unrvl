@@ -235,6 +235,7 @@ export class GlobalSettingsService implements OnInit {
         },
         error => {
           console.log('no prometheus yet there', baseurl + path + prometheusTestQuery, ', 5s to next try.');
+          this.server.databaseStatus = 'down';
           setTimeout(() => {
             this.checkForPrometheus(baseurl, path);
           }, 5 * 1000);
