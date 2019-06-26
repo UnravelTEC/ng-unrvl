@@ -10,6 +10,14 @@ style.padding-bottom="20vh"-->
     [style.left]="style.left"
     [style.right]="style.right"
   ></div>
+  <div
+    class="date"
+    [style.position]="style.position"
+    [style.bottom]="style.bottom"
+    [style.left]="style.left"
+  >
+    {{ fromZoom | date: shortdate }}
+  </div>
 
   <div
     *ngIf="noData == true"
@@ -249,6 +257,19 @@ style.padding-bottom="20vh"-->
         </small>
       </div>
     </div>
+  </div>
+
+  <div
+    class="lastTime"
+    [style.position]="style.position"
+    [style.bottom]="style.bottom"
+    [style.right]="style.right"
+  >
+    Last data:
+    <span *ngIf="displayedData.length">
+      {{ displayedData[displayedData.length - 1][0] | date: 'HH:mm:ss' }}</span
+    >
+    <span *ngIf="!displayedData.length">-</span>
   </div>
 
   <!-- "debug == 'true' ? style.bottom - 6em : style.bottom -->
