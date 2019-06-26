@@ -144,6 +144,8 @@ export class GlobalSettingsService implements OnInit {
 
       this.server.prometheus = protAndHost + prometheusPort + prometheusPath;
 
+      this.checkForPrometheus(protAndHost + prometheusPort, prometheusPath);
+
       let apiPath = this.h.getDeep(localStoredServer, [
         'apiPath',
         'fieldValue'
@@ -204,7 +206,7 @@ export class GlobalSettingsService implements OnInit {
             this.getCPUinfo(this.server.api);
 
             // emit every 5s a check for prometheus
-            this.checkForPrometheus(firstURL);
+            this.checkForPrometheus(firstURL, this.defaultPrometheusPath);
           },
           error => {
             console.log('no UTapi running on', firstURL);
@@ -219,22 +221,22 @@ export class GlobalSettingsService implements OnInit {
     }
   }
 
-  checkForPrometheus(baseurl) {
+  checkForPrometheus(baseurl, path) {
     const prometheusTestQuery = 'query?query=scrape_samples_scraped';
     this.http
-      .get(baseurl + this.defaultPrometheusPath + prometheusTestQuery)
+      .get(baseurl + path + prometheusTestQuery)
       .subscribe(
         (data: Object) => {
           this.checkPrometheusTestResponse(
             data,
             baseurl,
-            this.defaultPrometheusPath
+            path
           );
         },
         error => {
-          console.log('no prometheus yet there', baseurl, ', 5s to next try.');
+          console.log('no prometheus yet there', baseurl + path + prometheusTestQuery, ', 5s to next try.');
           setTimeout(() => {
-            this.checkForPrometheus(baseurl);
+            this.checkForPrometheus(baseurl, path);
           }, 5 * 1000);
         }
       );
@@ -245,9 +247,6 @@ export class GlobalSettingsService implements OnInit {
       this.server.baseurl = endpoint;
       this.server.prometheus = endpoint + endpath;
       this.server.databaseStatus = 'up';
-      //this.server.api = endpoint + this.defaultAPIPath;
-      //this.fetchHostName(this.server.api);
-      //this.getCPUinfo(this.server.api);
       this.emitChange({ Prometheus: this.server.prometheus });
 
       console.log('SUCCESS: prometheus found on endpoint', endpoint);
