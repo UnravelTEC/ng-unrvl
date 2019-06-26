@@ -4,14 +4,20 @@
       Hardware clock:
     </td>
     <td>{{ hwDate }}</td>
-    <td>Difference: {{ hwDate && (browserDate.valueOf() - hwDate.valueOf())/1000 }} s </td>
+    <td *ngIf="gss.client.type !== 'local'">
+      Difference:
+      {{ hwDate && (browserDate.valueOf() - hwDate.valueOf()) / 1000 }} s
+    </td>
   </tr>
   <tr>
     <td>Software clock:</td>
     <td>{{ swDate }}</td>
-    <td>Difference: {{ swDate && (browserDate.valueOf() - swDate.valueOf())/1000 }} s</td>
+    <td *ngIf="gss.client.type !== 'local'">
+      Difference:
+      {{ swDate && (browserDate.valueOf() - swDate.valueOf()) / 1000 }} s
+    </td>
   </tr>
-  <tr>
+  <tr *ngIf="gss.client.type !== 'local'">
     <td>Browser time:</td>
     <td>
       {{ browserDate }}
@@ -20,4 +26,6 @@
   </tr>
 </table>
 
-<button (click)="getDates()" class="icon"><mat-icon>autorenew</mat-icon></button>
+<button (click)="getDates()" class="icon">
+  <mat-icon>autorenew</mat-icon>
+</button>
