@@ -19,6 +19,7 @@ export class PmComponent implements OnInit {
     right: '1vw'
   };
   dataSeriesLabels = ['PM (µg/m³)'];
+  labelBlackList = ['__name__', 'interval'];
   startTime = '15m';
 
   constructor(

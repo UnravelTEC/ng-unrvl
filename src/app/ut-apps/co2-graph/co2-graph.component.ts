@@ -15,6 +15,7 @@ export class Co2GraphComponent implements OnInit, OnDestroy {
     strokeWidth: 3.0 //,
     // logscale: true
   };
+  labelBlackList = ['__name__', 'gas'];
 
   graphstyle = {
     position: 'absolute',

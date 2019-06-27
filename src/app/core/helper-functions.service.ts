@@ -171,14 +171,28 @@ export class HelperFunctionsService {
     return outdata;
   }
 
-  createLabelString(lObj: Object): string {
+  createLabelString(lObj: Object, blackListLabels: string[] = []): string {
     let labelString = '';
     let firstDone = false;
     for (let key in lObj) {
-      if (key === '__name__') {
+      const value = lObj[key];
+
+      let isInBlackList = false;
+      if (blackListLabels) {
+        blackListLabels.forEach(item => {
+          if (key == item) {
+            isInBlackList = true;
+          }
+        });
+      }
+      if (isInBlackList) {
         continue;
       }
-      const value = lObj[key];
+
+      if (key === '__name__') {
+        labelString += value + ': ';
+        continue;
+      }
       if (key === 'model' && value === 'adc') {
         continue;
       }
@@ -188,6 +202,7 @@ export class HelperFunctionsService {
       if (key === 'interval') {
         key = 'i';
       }
+
       if (firstDone) {
         labelString += ', ';
       } else {
@@ -201,11 +216,12 @@ export class HelperFunctionsService {
     return labelString;
   }
 
-
-  exportCSV(data, labels) {
+  exportCSV(data, labels, utc = true) {
     // header
     const separator = '\t';
     const linebreak = '\n';
+    const dummyDate = new Date();
+    console.log('utc:', utc);
 
     let header = '';
     if (labels.length === 0 || data.length === 0) {
@@ -218,6 +234,17 @@ export class HelperFunctionsService {
         header += separator;
       }
       header += element.replace(/,/g, ';');
+      if (i === 0) {
+        header +=
+          separator +
+          'Date (' +
+          (utc
+            ? 'UTC'
+            : new Date()
+                .toLocaleTimeString('en-us', { timeZoneName: 'short' })
+                .split(' ')[2]) +
+          ')';
+      }
     }
     header += linebreak;
 
@@ -230,7 +257,9 @@ export class HelperFunctionsService {
           csvbody += separator;
         }
         if (column === 0) {
-          csvbody += (element.valueOf() / 1000).toPrecision(14);
+          csvbody += element.valueOf() / 1000;
+          csvbody +=
+            separator + (utc ? element.toUTCString() : element.toString());
         } else {
           csvbody += String(element);
         }

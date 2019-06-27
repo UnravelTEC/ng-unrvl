@@ -19,6 +19,8 @@ export class PressureGraphComponent implements OnInit {
   dataSeriesLabels = ['Pressure'];
   startTime = '3h';
 
+  labelBlackList = ['__name__', 'job'];
+
   constructor(private globalSettings: GlobalSettingsService) {
      // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
     this.globalSettings.emitChange({ appName: 'Atmospheric Pressure' });

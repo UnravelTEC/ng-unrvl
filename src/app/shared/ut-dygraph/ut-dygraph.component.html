@@ -10,6 +10,14 @@ style.padding-bottom="20vh"-->
     [style.left]="style.left"
     [style.right]="style.right"
   ></div>
+  <div
+    class="date"
+    [style.position]="style.position"
+    [style.bottom]="style.bottom"
+    [style.left]="style.left"
+  >
+    {{ fromZoom | date: 'shortDate' }}
+  </div>
 
   <div
     *ngIf="noData == true"
@@ -45,20 +53,51 @@ style.padding-bottom="20vh"-->
     {{ error }}
   </div>
 
-  <div
+  <button
     *ngIf="options == true"
-    class="optionsarea"
+    (click)="toggleOptions()"
+    class="toggleOptions"
     [style.position]="style.position"
     [style.bottom]="style.bottom"
-    [style.right]="style.right"
     [style.left]="style.left"
   >
-    <button (click)="toggleOptions()" class="toggleOptions">&#9881;</button>
+    <mat-icon>settings</mat-icon>
+  </button>
 
-    <div *ngIf="optionsOpen == true" class="options">
+  <div
+    *ngIf="options == true && optionsOpen == true"
+    class="optionsarea"
+    [style.position]="style.position"
+    [style.right]="style.right"
+    [style.left]="style.left"
+    [style.bottom]="style.bottom"
+  >
+    <div class="options">
       <form class="subbox">
-        <h5>Fetching</h5>
-        <label for="fetchFromServerIntervalMS">interval:</label>
+        <h5>Data Resolution</h5>
+        <mat-radio-group aria-label="Select an option"
+          ><mat-radio-button value="native" id="native"
+            >Native: f {{ maxNativeInterval }}s</mat-radio-button
+          ><br />
+          <mat-radio-button value="manual" id="manual"
+            >Manual:
+          </mat-radio-button>
+          <label for="dataBaseQueryStepMS">f:</label>
+          <input
+            type="text"
+            id="dataBaseQueryStepMS"
+            name="dataBaseQueryStepMS"
+            [(ngModel)]="dataBaseQueryStepMS"
+            style="width:4em"
+          />
+        </mat-radio-group>
+
+        <span class="unit">ms</span>
+      </form>
+
+      <form class="subbox">
+        <h5>Fetching interval</h5>
+        <label for="fetchFromServerIntervalMS"></label>
         <input
           type="text"
           id="fetchFromServerIntervalMS"
@@ -68,12 +107,20 @@ style.padding-bottom="20vh"-->
         />
         <span class="unit">ms</span>
         <button (click)="toggleFetching()" [class]="running">
-          {{ running ? 'Stop' : 'Start' }}
+          <mat-icon *ngIf="running">pause_circle_outline</mat-icon>
+          <mat-icon *ngIf="!running">play_circle_outline</mat-icon>
         </button>
       </form>
 
       <form class="subbox">
-        <h5>Autopan:</h5>
+        <h5>Reset Data</h5>
+        <button (click)="resetData()">
+          <mat-icon>delete_forever</mat-icon>
+        </button>
+      </form>
+
+      <form class="subbox">
+        <h5>Autopan</h5>
         <button (click)="toggleAutoPan()">
           {{ updateOnNewData ? 'disable' : 'enable' }}
         </button>
@@ -83,8 +130,17 @@ style.padding-bottom="20vh"-->
         <div class="time">
           <h5>From:</h5>
           <mat-form-field>
-            <input matInput [matDatepicker]="pickerF" [formControl]="fromFormDate" (dateChange)="fromDatePickerChanged($event)" [max]="dataEndTime">
-            <mat-datepicker-toggle matSuffix [for]="pickerF"></mat-datepicker-toggle>
+            <input
+              matInput
+              [matDatepicker]="pickerF"
+              [formControl]="fromFormDate"
+              (dateChange)="fromDatePickerChanged($event)"
+              [max]="dataEndTime"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="pickerF"
+            ></mat-datepicker-toggle>
             <mat-datepicker #pickerF></mat-datepicker>
           </mat-form-field>
           <!-- <small>{{ fromZoom | date: 'yyyy-MM-dd' }}</small> -->
@@ -130,8 +186,18 @@ style.padding-bottom="20vh"-->
         <div class="time">
           <h5>To:</h5>
           <mat-form-field>
-            <input matInput [matDatepicker]="pickerT" [formControl]="toFormDate" (dateChange)="toDatePickerChanged($event)" [max]="dataEndTime" [min]="fromZoom">
-            <mat-datepicker-toggle matSuffix [for]="pickerT"></mat-datepicker-toggle>
+            <input
+              matInput
+              [matDatepicker]="pickerT"
+              [formControl]="toFormDate"
+              (dateChange)="toDatePickerChanged($event)"
+              [max]="dataEndTime"
+              [min]="fromZoom"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="pickerT"
+            ></mat-datepicker-toggle>
             <mat-datepicker #pickerT></mat-datepicker>
           </mat-form-field>
           <br />
@@ -165,10 +231,14 @@ style.padding-bottom="20vh"-->
       <form class="subbox">
         <h5>Export</h5>
         <button (click)="exportCSV()">CSV</button>
+        <label for="UTC"
+          >UTC
+          <input type="checkbox" name="UTC" id="UTC" [(ngModel)]="exportUTC" />
+        </label>
       </form>
       <form class="subbox">
         <h5>Running Average</h5>
-        <label for="runningAvgSeconds">interval:</label>
+        <label for="runningAvgSeconds"></label>
         <input
           type="text"
           id="runningAvgSeconds"
@@ -178,7 +248,29 @@ style.padding-bottom="20vh"-->
         />
         <span class="unit">s</span>
       </form>
+      <div class="subbox">
+        <h5>Statistics</h5>
+        <small>
+          dataset length: {{ displayedData.length }}<br />
+          last value: {{ lastValue }}<br />
+          average: {{ average }}
+        </small>
+      </div>
     </div>
+  </div>
+
+  <div
+    class="lastTime"
+    *ngIf="optionsOpen == true"
+    [style.position]="style.position"
+    [style.bottom]="style.bottom"
+    [style.right]="style.right"
+  >
+    Last data:
+    <span *ngIf="displayedData.length">
+      {{ displayedData[displayedData.length - 1][0] | date: 'HH:mm:ss' }}</span
+    >
+    <span *ngIf="!displayedData.length">-</span>
   </div>
 
   <!-- "debug == 'true' ? style.bottom - 6em : style.bottom -->

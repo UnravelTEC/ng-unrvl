@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { GlobalSettingsService } from 'app/core/global-settings.service';
+import { GlobalSettingsService } from '../../core/global-settings.service';
 
 @Component({
   selector: 'app-temperatures',
@@ -12,6 +12,8 @@ export class TemperaturesComponent implements OnInit {
   }
 
   fetchFromServerIntervalMS = 1000;
+
+  labelBlackList = ['__name__', 'job'];
 
   graphstyle = {
     position: 'absolute',

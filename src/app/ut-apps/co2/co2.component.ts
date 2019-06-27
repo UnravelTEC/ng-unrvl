@@ -43,14 +43,6 @@ export class Co2Component implements OnInit, OnDestroy {
     this.globalSettings.emitChange({ appName: this.title });
   }
   ngOnInit() {
-    const lsStep = this.localStorage.get('pm.step');
-    if (lsStep) {
-      this.step = lsStep;
-    }
-    const lsStartTime = this.localStorage.get('co2.start');
-    if (lsStartTime) {
-      this.startTime = lsStartTime;
-    }
   }
   ngOnDestroy() {
     console.log('CO2-App destroyed');

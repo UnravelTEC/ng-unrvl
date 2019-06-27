@@ -24,6 +24,8 @@ export class RHTComponent implements OnInit {
     right: '1vw'
   };
 
+  labelBlackList = ['__name__', 'job'];
+
   dataSeriesLabelsT = ['Temperature'];
   dataSeriesLabelsH = ['rel. Humidity'];
   startTime = '1h';

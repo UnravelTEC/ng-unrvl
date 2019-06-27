@@ -23,6 +23,8 @@ export class GammaComponent implements OnInit {
     right: '1vw'
   };
 
+  labelBlackList = ['__name__', 'job'];
+
   constructor(
     private globalSettings: GlobalSettingsService,
     private h: HelperFunctionsService,

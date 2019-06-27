@@ -14,37 +14,162 @@ export class SettingsPanelComponent implements OnInit {
     server: {
       // settingsSection
       settingAttributes: {
-        title: 'Server Settings'
+        title: 'Backend Settings'
       },
       settings: {
+        serverName: {
+          fieldName: 'Endpoint Name',
+          fieldValue: ''
+        },
         serverHostName: {
           fieldName: 'Server hostname/ip',
           fieldValue: ''
         },
-        prometheusPort: { fieldName: 'Prometheus port', fieldValue: '' }, // 9090
+        prometheusPort: { fieldName: 'Prometheus port', fieldValue: '80' }, // 9090
         prometheusPath: {
           fieldName: 'Prometheus database API path',
           fieldValue: 'prometheus/api/v1/'
         },
         prometheusProtocol: {
           fieldName: 'Prometheus Protocol',
-          fieldValue: ''
+          fieldValue: 'http'
         },
         apiPort: {
           fieldName: 'API port',
-          fieldValue: ''
+          fieldValue: '80'
         },
         apiPath: {
           fieldName: 'API path',
-          fieldValue: '' // 'api/'
+          fieldValue: 'api/'
         },
         apiProtocol: {
           fieldName: 'API protocol',
-          fieldValue: ''
+          fieldValue: 'http'
         }
       }
     }
   };
+
+  settingsArray = {
+    newton: {
+      server: {
+        // settingsSection
+        settingAttributes: {
+          title: 'Backend Settings'
+        },
+        settings: {
+          serverName: {
+            fieldName: 'Endpoint Name',
+            fieldValue: 'UnravelTEC Demo Server'
+          },
+          serverHostName: {
+            fieldName: 'Server hostname/ip',
+            fieldValue: 'scpunraveltec2.tugraz.at'
+          },
+          prometheusPort: { fieldName: 'Prometheus port', fieldValue: '443' }, // 9090
+          prometheusPath: {
+            fieldName: 'Prometheus database API path',
+            fieldValue: 'prometheus/api/v1/'
+          },
+          prometheusProtocol: {
+            fieldName: 'Prometheus Protocol',
+            fieldValue: 'https'
+          },
+          apiPort: {
+            fieldName: 'API port',
+            fieldValue: '443'
+          },
+          apiPath: {
+            fieldName: 'API path',
+            fieldValue: 'api/'
+          },
+          apiProtocol: {
+            fieldName: 'API protocol',
+            fieldValue: 'https'
+          }
+        }
+      }
+    },
+    localhost: {
+      server: {
+        // settingsSection
+        settingAttributes: {
+          title: 'Backend Settings'
+        },
+        settings: {
+          serverName: {
+            fieldName: 'Endpoint Name',
+            fieldValue: 'LocalHost'
+          },
+          serverHostName: {
+            fieldName: 'Server hostname/ip',
+            fieldValue: 'localhost'
+          },
+          prometheusPort: { fieldName: 'Prometheus port', fieldValue: '8ß' }, // 9090
+          prometheusPath: {
+            fieldName: 'Prometheus database API path',
+            fieldValue: 'prometheus/api/v1/'
+          },
+          prometheusProtocol: {
+            fieldName: 'Prometheus Protocol',
+            fieldValue: 'http'
+          },
+          apiPort: {
+            fieldName: 'API port',
+            fieldValue: '80'
+          },
+          apiPath: {
+            fieldName: 'API path',
+            fieldValue: 'api/'
+          },
+          apiProtocol: {
+            fieldName: 'API protocol',
+            fieldValue: 'http'
+          }
+        }
+      }
+    },
+    default: {
+      server: {
+        // settingsSection
+        settingAttributes: {
+          title: 'Backend Settings'
+        },
+        settings: {
+          serverName: {
+            fieldName: 'Endpoint Name',
+            fieldValue: 'Default Host connection'
+          },
+          serverHostName: {
+            fieldName: 'Server hostname/ip',
+            fieldValue: '$baseurl'
+          },
+          prometheusPort: { fieldName: 'Prometheus port', fieldValue: '80' }, // 9090
+          prometheusPath: {
+            fieldName: 'Prometheus database API path',
+            fieldValue: 'prometheus/api/v1/'
+          },
+          prometheusProtocol: {
+            fieldName: 'Prometheus Protocol',
+            fieldValue: 'http'
+          },
+          apiPort: {
+            fieldName: 'API port',
+            fieldValue: '80'
+          },
+          apiPath: {
+            fieldName: 'API path',
+            fieldValue: 'api/'
+          },
+          apiProtocol: {
+            fieldName: 'API protocol',
+            fieldValue: 'http'
+          }
+        }
+      }
+    }
+  };
+  endpointValue = undefined;
 
   globalSettings = {};
   localStoredSettings = false;
@@ -63,7 +188,8 @@ export class SettingsPanelComponent implements OnInit {
   constructor(
     private localStorage: LocalStorageService,
     public globalSettingsService: GlobalSettingsService,
-    private utHTTP: UtFetchdataService
+    private utHTTP: UtFetchdataService,
+    private h: HelperFunctionsService
   ) {
     // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
     this.globalSettingsService.emitChange({ appName: 'Settings' });
@@ -98,6 +224,35 @@ export class SettingsPanelComponent implements OnInit {
       this.globalSettingsUnsaved = this.localStorage.get('globalSettings');
       this.localStoredSettings = true;
     }
+  }
+
+  loadEndpoint() {
+    if (!this.endpointValue) {
+      alert('select an Endpoint');
+      return;
+    }
+    const loadedSettings = this.settingsArray[this.endpointValue];
+    console.log(loadedSettings);
+    console.log(loadedSettings.server.settings.serverHostName.fieldValue);
+    const serverUrl = this.h.getDeep(loadedSettings, [
+      'server',
+      'settings',
+      'serverHostName',
+      'fieldValue'
+    ]);
+    if (serverUrl == '$baseurl') {
+      loadedSettings.server.settings.serverHostName.fieldValue = this.h.getBaseURL();
+    }
+
+    this.globalSettingsUnsaved = loadedSettings;
+
+    this.localStorage.set('globalSettings', this.globalSettingsUnsaved);
+    this.globalSettings = JSON.parse(
+      JSON.stringify(this.globalSettingsUnsaved)
+    );
+
+    this.globalSettingsService.reloadSettings();
+    this.localStoredSettings = true;
   }
 
   save() {

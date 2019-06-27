@@ -21,6 +21,8 @@ export class LoudnessComponent implements OnInit {
   dataSeriesLabels = ['Loudness'];
   startTime = '5m';
 
+  labelBlackList = ['__name__', 'job'];
+
   constructor(private globalSettings: GlobalSettingsService) {
      // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
     this.globalSettings.emitChange({ appName: 'Loudness' });

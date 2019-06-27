@@ -1,12 +1,33 @@
 <nav *ngIf="hide == false">
-  <a routerLink="/Dashboard" routerLinkActive="active">Dashboard</a>
+  <a routerLink="/Dashboard" routerLinkActive="active" class="icon"
+    ><mat-icon>home</mat-icon></a
+  >
   <!-- <em class=search>Search</em> -->
   <!-- <em class=wifi>Wifi</em> -->
-  <em class=hostname>{{ hostName }}</em>:
-  <em class=appname>{{ appName }}</em>
+  <em class="hostname">{{ hostName }}</em
+  >:
+  <em class="appname">{{ appName }}</em>
   <span class="spacer">&nbsp;</span>
   <!-- <a routerLink="/Store" routerLinkActive="active">Store</a> -->
-  <em class="date">{{ currentTime | date: 'yyyy-MM-dd H:mm' }}</em>
-  <a class="batt" *ngIf="gss.server.type == 'Tricorder'" routerLink="/Apps/Power" routerLinkActive="active">Bat: 100%</a>
-  <a routerLink="/Settings" routerLinkActive="active">Settings</a>&nbsp;&nbsp;
+  <em class="date">{{ currentTime | date: 'yyyy-MM-dd HH:mm' }}</em>
+
+  <em id="db">
+    <span
+      class="{{ gss.server.databaseStatus }}"
+      title="Database status: {{ gss.server.databaseStatus }}"
+    >
+      <mat-icon>router</mat-icon>
+    </span></em
+  >
+  <a
+    class="batt"
+    *ngIf="gss.server.type == 'Tricorder'"
+    routerLink="/Apps/Power"
+    routerLinkActive="active"
+    class="icon"
+    ><mat-icon>power</mat-icon></a
+  >
+  <a routerLink="/Settings" routerLinkActive="active" class="icon"
+    ><mat-icon>settings</mat-icon></a
+  >
 </nav>

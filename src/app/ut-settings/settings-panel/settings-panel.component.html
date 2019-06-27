@@ -7,10 +7,10 @@
         >{{ (currentBrightness / 255) * 100 | number: '1.0-0' }}&#8239;%</span
       >
     </h2>
-    <app-display-brighness
+    <app-display-brightness
       (brightnessEvent)="setNewBN($event)"
       #bn
-    ></app-display-brighness>
+    ></app-display-brightness>
   </section>
 
   <section *ngIf="globalSettingsService.client.type !== 'local'">
@@ -25,7 +25,18 @@
     <button (click)="reboot()">Reboot</button>
   </section>
 
-  <section *ngFor="let settingsSection of (globalSettingsUnsaved | keyvalue)">
+  <section *ngIf="globalSettingsService.server.type == 'Tricorder'">
+    <h2>System Services</h2>
+    <a routerLink="/Settings/Services" routerLinkActive="active"
+      >System Services</a
+    >
+    <hr>
+
+    <h2>System Time</h2>
+    <app-system-time></app-system-time>
+  </section>
+
+  <section *ngFor="let settingsSection of globalSettingsUnsaved | keyvalue">
     <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
     <ul
       *ngIf="settingsSection.value.settingAttributes.title == 'Server Settings'"
@@ -37,8 +48,24 @@
       <li>Database: {{ globalSettingsService.server.prometheus }}</li>
       <li>API: {{ globalSettingsService.server.api }}</li>
     </ul>
+    <div>
+      <mat-form-field>
+        <mat-label>Endpoints</mat-label>
+        <mat-select [(ngModel)]="endpointValue" name="Endpoints">
+          <mat-option
+            *ngFor="let setting of settingsArray | keyvalue"
+            [value]="setting.key"
+          >
+            {{ setting.value.server.settings.serverName.fieldValue }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button type="submit" class="btn btn-success" (click)="loadEndpoint()">
+        Load
+      </button>
+    </div>
 
-    <section *ngFor="let entry of (settingsSection.value.settings | keyvalue)">
+    <section *ngFor="let entry of settingsSection.value.settings | keyvalue">
       <div class="fields">
         <label for="{{ settingsSection.key }}-{{ entry.key }}"
           >{{ entry.value.fieldName }}:
@@ -76,7 +103,12 @@
         <button type="submit" class="btn btn-success" (click)="save()">
           Save Settings
         </button>
-        <button type="submit" class="btn btn-success" (click)="load()" [disabled]="!localStoredSettings">
+        <button
+          type="submit"
+          class="btn btn-success"
+          (click)="load()"
+          [disabled]="!localStoredSettings"
+        >
           Load Settings
         </button>
         <button type="submit" class="btn btn-success" (click)="reset()">
@@ -93,7 +125,7 @@
     </section>
   </section>
 
-  <section id="links">
+  <section id="links" class="center">
     <a
       *ngIf="globalSettingsService.server.type == 'Tricorder'"
       href="{{ oldIFPath }}"
@@ -102,7 +134,9 @@
     <a *ngIf="uv4lPath" href="{{ uv4lPath }}">
       UV4L Admin Interface
     </a>
-    <a *ngIf="globalSettingsService.server.prometheus" href="{{ prometheusPath }}"
+    <a
+      *ngIf="globalSettingsService.server.prometheus"
+      href="{{ prometheusPath }}"
       >Prometheus Admin Interface</a
     >
     <!-- Small Bug: correct Prometheus IF link not displayed on initial load -->
