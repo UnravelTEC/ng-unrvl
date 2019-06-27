@@ -14,7 +14,7 @@ nav > * {
   margin: 0;
   color: rgb(255, 255, 255);
   text-decoration: none;
-  height:1.3em;
+  height: 1.3em;
 }
 nav > .spacer {
   flex-grow: 1;
@@ -23,6 +23,19 @@ nav > .spacer {
 nav em {
   font-style: normal;
   color: rgb(180, 180, 180);
+}
+
+#db .unkown {
+  color: gray;
+}
+#db .up {
+  color: white;
+}
+#db .down {
+  color: red;
+}
+#db .waiting {
+  color: yellow;
 }
 
 nav a:hover {
@@ -34,12 +47,12 @@ nav em.appname {
 }
 
 nav > a.icon {
-    padding-right: 0.5em;
-    padding-left: 0.5em;
+  padding-right: 0.5em;
+  padding-left: 0.5em;
 }
-nav > a > .material-icons {
+nav  .material-icons {
   vertical-align: middle;
-  margin:0;
+  margin: 0;
   height: 1.4em;
-  transform: translateY(-0.1em);
+  transform: translateY(-0.2em);
 }
