@@ -90,8 +90,8 @@ export class SettingsPanelComponent implements OnInit {
         }
       }
     },
-
-    default: { // includes localhost
+    default: {
+      // includes localhost
       server: {
         // settingsSection
         settingAttributes: {
