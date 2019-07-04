@@ -221,6 +221,7 @@ style.padding-bottom="20vh"-->
         </select>
         <button (click)="pan('forward')">&gt;</button>
       </form>
+
       <form class="subbox">
         <h5 title="on click, load/save should open">Zoom</h5>
         <button (click)="zoom(0.5)">+</button>
@@ -228,6 +229,7 @@ style.padding-bottom="20vh"-->
         <button (click)="resetZoom()">Reset</button>
         <button (click)="fullZoom()">All</button>
       </form>
+
       <form class="subbox">
         <h5>Export</h5>
         <button (click)="exportCSV()">CSV</button>
@@ -236,6 +238,18 @@ style.padding-bottom="20vh"-->
           <input type="checkbox" name="UTC" id="UTC" [(ngModel)]="exportUTC" />
         </label>
       </form>
+
+      <form class="subbox">
+        <h5>Y linearity</h5>
+        <label for="log">Logarithmic</label>
+        <input
+          type="checkbox"
+          name="logarithmic"
+          id="log"
+          [(ngModel)]="dyGraphOptions.logscale"
+        />
+      </form>
+
       <form class="subbox">
         <h5>Running Average</h5>
         <label for="runningAvgSeconds"></label>
@@ -248,13 +262,19 @@ style.padding-bottom="20vh"-->
         />
         <span class="unit">s</span>
       </form>
-      <div class="subbox">
-        <h5>Statistics</h5>
-        <small>
-          dataset length: {{ displayedData.length }}<br />
-          last value: {{ lastValue }}<br />
-          average: {{ average }}
-        </small>
+
+      <div class="subbox" [style.width]="stats ? '100%' : ''">
+        <div style="float: left;">
+          <h5>Statistics</h5>
+          <button (click)="toggleStats()">+</button>
+        </div>
+        <div *ngIf="stats">
+          <small>
+            dataset length: {{ displayedData.length }}<br />
+            last value: {{ lastValue | number: '1.0-3' }}<br />
+            average: {{ average | number: '1.0-3' }}
+          </small>
+        </div>
       </div>
     </div>
   </div>
@@ -272,40 +292,4 @@ style.padding-bottom="20vh"-->
     >
     <span *ngIf="!displayedData.length">-</span>
   </div>
-
-  <!-- "debug == 'true' ? style.bottom - 6em : style.bottom -->
-  <!-- <button (click)="fetchNewData()">Update!</button> -->
-  <ul
-    class="debug"
-    *ngIf="debug == 'true'"
-    [style.position]="style.position"
-    [style.bottom]="style.bottom"
-  >
-    <li>Average: {{ average }}</li>
-    <li *ngIf="displayedData && displayedData.length > 0">
-      From {{ displayedData[0][0] | date: 'yyyy-MM-dd HH:mm:ss (z)' }}
-    </li>
-    <li *ngIf="displayedData && displayedData.length > 0">
-      To
-      {{
-        displayedData[displayedData.length - 1][0]
-          | date: 'yyyy-MM-dd HH:mm:ss (z)'
-      }}
-      , every {{ fetchFromServerIntervalMS }}ms, on server every
-      {{ dataBaseQueryStepMS }}ms
-    </li>
-    <li>
-      # Datapoints: {{ displayedData.length }}, running avg of
-      {{ runningAvgSeconds }}s, From {{ startTime }} to {{ endTime }}.
-    </li>
-    <li *ngIf="displayedData && displayedData.length > 0">
-      Last Value:
-      {{ lastValue | number: '1.0-1' }}
-    </li>
-    <li *ngIf="annotations && annotations.length > 0">
-      Annotations: {{ annotations[0]['series'] }} "{{
-        annotations[0]['shortText']
-      }}" @ {{ annotations[0]['x'] | date: 'yyyy-MM-dd HH:mm:ss (z)' }}
-    </li>
-  </ul>
 </div>

@@ -95,6 +95,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     title: '',
     animatedZooms: true,
     connectSeparatedPoints: false,
+    logscale: false,
     pointSize: 1, // radius
     hideOverlayOnMouseOut: true,
     highlightSeriesOpts: {
@@ -154,6 +155,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
   public graphWidthPx = 0;
   public maxNativeInterval = 0;
+
+  public stats = false;
 
   Dygraph: Dygraph;
 
@@ -1548,4 +1551,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
     });
   }
+  toggleStats() {
+    this.stats = !this.stats;
+  }
 }
+
