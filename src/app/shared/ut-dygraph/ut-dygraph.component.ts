@@ -871,7 +871,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       ]);
     }
     const nr_series = targetArray[0].length;
-    for (let series_i = 1; series_i <= nr_series -1; series_i++) {
+    for (let series_i = 1; series_i <= nr_series - 1; series_i++) {
       sum = 0;
       for (let i = upper; i < datalen; i++) {
         const value = targetArray[i][series_i];
@@ -1483,6 +1483,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
     this.setCurrentXrange();
     this.updateFromToPickers();
+  }
+  updateYlogscale() {
+    this.Dygraph.updateOptions({
+      logscale: this.dyGraphOptions.logscale
+    });
   }
 
   calculateTimeRange(

@@ -247,6 +247,7 @@ style.padding-bottom="20vh"-->
           name="logarithmic"
           id="log"
           [(ngModel)]="dyGraphOptions.logscale"
+          (change)="updateYlogscale()"
         />
       </form>
 
