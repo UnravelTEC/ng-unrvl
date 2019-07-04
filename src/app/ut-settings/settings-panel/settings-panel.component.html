@@ -30,7 +30,7 @@
     <a routerLink="/Settings/Services" routerLinkActive="active"
       >System Services</a
     >
-    <hr>
+    <hr />
 
     <h2>System Time</h2>
     <app-system-time></app-system-time>
@@ -38,16 +38,6 @@
 
   <section *ngFor="let settingsSection of globalSettingsUnsaved | keyvalue">
     <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
-    <ul
-      *ngIf="settingsSection.value.settingAttributes.title == 'Server Settings'"
-    >
-      <li>
-        Current Server ({{ globalSettingsService.server.type }}):
-        {{ globalSettingsService.server.baseurl }}
-      </li>
-      <li>Database: {{ globalSettingsService.server.prometheus }}</li>
-      <li>API: {{ globalSettingsService.server.api }}</li>
-    </ul>
     <div>
       <mat-form-field>
         <mat-label>Endpoints</mat-label>
@@ -63,6 +53,19 @@
       <button type="submit" class="btn btn-success" (click)="loadEndpoint()">
         Load
       </button>
+      <ul
+        *ngIf="
+          settingsSection.value.settingAttributes.title == 'Backend Settings'
+        "
+      >
+        <li>
+          Current Backend: ({{ globalSettingsService.server.type }}):
+          {{ globalSettingsService.server.baseurl }}
+        </li>
+        <li>Database: {{ globalSettingsService.server.prometheus }}</li>
+        <li>API: {{ globalSettingsService.server.api }}</li>
+      </ul>
+      <hr>
     </div>
 
     <section *ngFor="let entry of settingsSection.value.settings | keyvalue">

@@ -88,11 +88,13 @@ export class GlobalSettingsService implements OnInit {
   // 3. fallback to Newton
 
   // following use cases:
-  // developing on localhost:4200 with ng
-  // - default: connect to Newton
-  // - connect to other tricorders on demand
-  // connected to a Tricorder
-  // using public Webif on Newton:
+  // • developing on localhost:4200 with ng
+  //   - default: connect to Newton
+  //   - connect to other tricorders on demand
+  // • connected to a Tricorder
+  //   - via webif
+  //   - on local screen (localhost)
+  // • using public Webif on Newton:
   // - default: stay on newton
   // - try out switching to another server
   reloadSettings() {
