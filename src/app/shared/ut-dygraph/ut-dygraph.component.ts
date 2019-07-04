@@ -887,7 +887,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
           max = value;
         }
       }
-      console.log(sum);
+      // console.log(sum);
 
       this.averages[series_i - 1] = sum / (datalen - upper);
       this.min = min;
