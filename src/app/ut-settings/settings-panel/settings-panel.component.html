@@ -38,25 +38,30 @@
 
   <section *ngFor="let settingsSection of globalSettingsUnsaved | keyvalue">
     <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
-    <div>
-      <mat-form-field>
-        <mat-label>Endpoints</mat-label>
-        <mat-select [(ngModel)]="endpointValue" name="Endpoints">
-          <mat-option
-            *ngFor="let setting of settingsArray | keyvalue"
-            [value]="setting.key"
-          >
-            {{ setting.value.server.settings.serverName.fieldValue }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <button type="submit" class="btn btn-success" (click)="loadEndpoint()">
-        Load
-      </button>
+    <div
+      *ngIf="
+        settingsSection.value.settingAttributes.title == 'Backend Settings'
+      " style="display: flex;
+      flex-wrap: wrap;"
+    >
+      <div style="margin-right:2em;">
+        <mat-form-field>
+          <mat-label>Endpoints</mat-label>
+          <mat-select [(ngModel)]="endpointValue" name="Endpoints">
+            <mat-option
+              *ngFor="let setting of settingsArray | keyvalue"
+              [value]="setting.key"
+            >
+              {{ setting.value.server.settings.serverName.fieldValue }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button type="submit" class="btn btn-success" (click)="loadEndpoint()">
+          Load
+        </button>
+      </div>
 
-      <table *ngIf="
-      settingsSection.value.settingAttributes.title == 'Backend Settings'
-    " class="th_right">
+      <table class="th_right">
         <tr>
           <th>Backend Type:</th>
           <td>{{ globalSettingsService.server.type }}</td>
@@ -74,7 +79,6 @@
           <td>
             {{ globalSettingsService.server.prometheus }}
           </td>
-
         </tr>
         <tr>
           <th>API:</th>
@@ -82,7 +86,7 @@
         </tr>
       </table>
 
-      <hr>
+
     </div>
 
     <section *ngFor="let entry of settingsSection.value.settings | keyvalue">
