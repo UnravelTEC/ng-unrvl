@@ -53,18 +53,35 @@
       <button type="submit" class="btn btn-success" (click)="loadEndpoint()">
         Load
       </button>
-      <ul
-        *ngIf="
-          settingsSection.value.settingAttributes.title == 'Backend Settings'
-        "
-      >
-        <li>
-          Current Backend: ({{ globalSettingsService.server.type }}):
-          {{ globalSettingsService.server.baseurl }}
-        </li>
-        <li>Database: {{ globalSettingsService.server.prometheus }}</li>
-        <li>API: {{ globalSettingsService.server.api }}</li>
-      </ul>
+
+      <table *ngIf="
+      settingsSection.value.settingAttributes.title == 'Backend Settings'
+    " class="th_right">
+        <tr>
+          <th>Backend Type:</th>
+          <td>{{ globalSettingsService.server.type }}</td>
+        </tr>
+        <tr>
+          <th>
+            URL:
+          </th>
+          <td>{{ globalSettingsService.server.baseurl }}</td>
+        </tr>
+        <tr>
+          <th>
+            Database:
+          </th>
+          <td>
+            {{ globalSettingsService.server.prometheus }}
+          </td>
+
+        </tr>
+        <tr>
+          <th>API:</th>
+          <td>{{ globalSettingsService.server.api }}</td>
+        </tr>
+      </table>
+
       <hr>
     </div>
 
