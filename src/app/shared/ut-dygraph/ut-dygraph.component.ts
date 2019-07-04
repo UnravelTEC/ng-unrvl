@@ -124,6 +124,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public currentXrange: number;
   public currentXrangeText: string;
   public average: number;
+  public averages: number[] = [];
+  public min = Infinity;
+  public max = -Infinity;
 
   public noData = false;
   public waiting = true;
@@ -851,6 +854,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     // console.log('ut-dy.c: calculateAverage');
     // console.log(from);
     let sum = 0,
+      min = Infinity,
+      max = -Infinity,
       upper = 0,
       lower;
     if (from) {
@@ -865,10 +870,35 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         targetArray[datalen - 1][0]
       ]);
     }
-    for (let i = upper; i < datalen; i++) {
-      sum += targetArray[i][1];
+    const nr_series = targetArray[0].length;
+    for (let series_i = 1; series_i <= nr_series -1; series_i++) {
+      sum = 0;
+      for (let i = upper; i < datalen; i++) {
+        const value = targetArray[i][series_i];
+        if (isNaN(value)) {
+          // console.log(i, series_i);
+          continue;
+        }
+        sum += value;
+        if (value < min) {
+          min = value;
+        }
+        if (value > max) {
+          max = value;
+        }
+      }
+      console.log(sum);
+
+      this.averages[series_i - 1] = sum / (datalen - upper);
+      this.min = min;
+      this.max = max;
     }
-    const avg = sum / (datalen - upper);
+    sum = 0;
+    for (let i = 0; i < this.averages.length; i++) {
+      sum += this.averages[i];
+    }
+
+    const avg = sum / this.averages.length;
     //    console.log([avg, datalen - upper]);
     return avg;
   }
@@ -882,9 +912,14 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const now = new Date()
-    if(this.lastReset) { // .valueOf() + this.resetTimeout < now.valueOf() ) {
-      console.log('last reset less than ', this.resetTimeout / 1000, 's, discarding data');
+    const now = new Date();
+    if (this.lastReset) {
+      // .valueOf() + this.resetTimeout < now.valueOf() ) {
+      console.log(
+        'last reset less than ',
+        this.resetTimeout / 1000,
+        's, discarding data'
+      );
       return;
     }
 
@@ -927,9 +962,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.adjustAnnotationsXtoMS(inViewAnnos);
       this.Dygraph.setAnnotations(inViewAnnos, true);
     }
-    if (this.debug === 'true') {
-      this.average = this.calculateAverage();
-    }
+    // if (this.debug === 'true') {
+    this.average = this.calculateAverage();
+    // }
     if (this.calculateRunningAvgFrom) {
       const avg = this.calculateAverage(
         this.calculateRunningAvgFrom,
@@ -1156,9 +1191,14 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.oldRequestsRunning--;
     this.oldFetchRunning = {};
     this.unHighLightFetchRegion();
-    const now = new Date()
-    if(this.lastReset) { // .valueOf() + this.resetTimeout < now.valueOf() ) {
-      console.log('last reset less than ', this.resetTimeout / 1000, 's, discarding data');
+    const now = new Date();
+    if (this.lastReset) {
+      // .valueOf() + this.resetTimeout < now.valueOf() ) {
+      console.log(
+        'last reset less than ',
+        this.resetTimeout / 1000,
+        's, discarding data'
+      );
       return;
     }
 
@@ -1555,4 +1595,3 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.stats = !this.stats;
   }
 }
-

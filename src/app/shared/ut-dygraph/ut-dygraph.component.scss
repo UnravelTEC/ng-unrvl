@@ -149,6 +149,19 @@
             padding: 0;
           }
         }
+        .stats {
+          display: flex;
+          flex-wrap: wrap;
+          small {
+            display: inline-block;
+            margin-left: 1em;
+          }
+          span {
+            display: inline-block;
+            min-width: 7em;
+          }
+        }
+
       }
     }
   }

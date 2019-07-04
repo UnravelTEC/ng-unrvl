@@ -73,7 +73,7 @@ style.padding-bottom="20vh"-->
     [style.bottom]="style.bottom"
   >
     <div class="options">
-      <form class="subbox">
+      <!-- <form class="subbox">
         <h5>Data Resolution</h5>
         <mat-radio-group aria-label="Select an option"
           ><mat-radio-button value="native" id="native"
@@ -93,7 +93,7 @@ style.padding-bottom="20vh"-->
         </mat-radio-group>
 
         <span class="unit">ms</span>
-      </form>
+      </form> -->
 
       <form class="subbox">
         <h5>Fetching interval</h5>
@@ -263,19 +263,23 @@ style.padding-bottom="20vh"-->
         <span class="unit">s</span>
       </form>
 
-      <div class="subbox" [style.width]="stats ? '100%' : ''">
+      <form class="subbox" [style.width]="stats ? '100%' : ''">
         <div style="float: left;">
           <h5>Statistics</h5>
           <button (click)="toggleStats()">+</button>
         </div>
-        <div *ngIf="stats">
+        <div *ngIf="stats" class="stats">
           <small>
-            dataset length: {{ displayedData.length }}<br />
-            last value: {{ lastValue | number: '1.0-3' }}<br />
-            average: {{ average | number: '1.0-3' }}
+            <span>dataset length:</span> {{ displayedData.length }}<br />
+            <span>last value:</span> {{ lastValue | number: '1.0-3' }}<br />
+            <span>average:</span> {{ average | number: '1.0-3' }}
+          </small>
+          <small>
+            <span>max:</span> {{ max | number: '1.0-3' }}<br />
+            <span>min:</span> {{ lastValue | number: '1.0-3' }}<br />
           </small>
         </div>
-      </div>
+      </form>
     </div>
   </div>
 
