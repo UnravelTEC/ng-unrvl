@@ -30,7 +30,7 @@
     <a routerLink="/Settings/Services" routerLinkActive="active"
       >System Services</a
     >
-    <hr>
+    <hr />
 
     <h2>System Time</h2>
     <app-system-time></app-system-time>
@@ -38,31 +38,55 @@
 
   <section *ngFor="let settingsSection of globalSettingsUnsaved | keyvalue">
     <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
-    <ul
-      *ngIf="settingsSection.value.settingAttributes.title == 'Server Settings'"
+    <div
+      *ngIf="
+        settingsSection.value.settingAttributes.title == 'Backend Settings'
+      " style="display: flex;
+      flex-wrap: wrap;"
     >
-      <li>
-        Current Server ({{ globalSettingsService.server.type }}):
-        {{ globalSettingsService.server.baseurl }}
-      </li>
-      <li>Database: {{ globalSettingsService.server.prometheus }}</li>
-      <li>API: {{ globalSettingsService.server.api }}</li>
-    </ul>
-    <div>
-      <mat-form-field>
-        <mat-label>Endpoints</mat-label>
-        <mat-select [(ngModel)]="endpointValue" name="Endpoints">
-          <mat-option
-            *ngFor="let setting of settingsArray | keyvalue"
-            [value]="setting.key"
-          >
-            {{ setting.value.server.settings.serverName.fieldValue }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <button type="submit" class="btn btn-success" (click)="loadEndpoint()">
-        Load
-      </button>
+      <div style="margin-right:2em;">
+        <mat-form-field>
+          <mat-label>Endpoints</mat-label>
+          <mat-select [(ngModel)]="endpointValue" name="Endpoints">
+            <mat-option
+              *ngFor="let setting of settingsArray | keyvalue"
+              [value]="setting.key"
+            >
+              {{ setting.value.server.settings.serverName.fieldValue }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button type="submit" class="btn btn-success" (click)="loadEndpoint()">
+          Load
+        </button>
+      </div>
+
+      <table class="th_right">
+        <tr>
+          <th>Backend Type:</th>
+          <td>{{ globalSettingsService.server.type }}</td>
+        </tr>
+        <tr>
+          <th>
+            URL:
+          </th>
+          <td>{{ globalSettingsService.server.baseurl }}</td>
+        </tr>
+        <tr>
+          <th>
+            Database:
+          </th>
+          <td>
+            {{ globalSettingsService.server.prometheus }}
+          </td>
+        </tr>
+        <tr>
+          <th>API:</th>
+          <td>{{ globalSettingsService.server.api }}</td>
+        </tr>
+      </table>
+
+
     </div>
 
     <section *ngFor="let entry of settingsSection.value.settings | keyvalue">

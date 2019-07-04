@@ -5,7 +5,6 @@ import { Subject } from 'rxjs';
 import { HelperFunctionsService } from './helper-functions.service';
 import { LocalStorageService } from './local-storage.service';
 import { HttpClient } from '@angular/common/http';
-import { e } from '@angular/core/src/render3';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +13,7 @@ export class GlobalSettingsService implements OnInit {
   private hostName = 'uninitialized';
 
   public defaultPrometheusPath = '/prometheus/api/v1/';
-  public defaultPrometheusPort = undefined; // '9090'; // later switch to default port
+  public defaultPrometheusPort = undefined; // '80'; // later switch to default port
   private defaultAPIPath = '/api/';
   private fallbackEndpoint = 'https://scpunraveltec2.tugraz.at';
   private fallbackPrometheusEndpoint =
@@ -79,6 +78,8 @@ export class GlobalSettingsService implements OnInit {
     this.reloadSettings();
   }
 
+  // we do not need to handle localhost in a special case - covered by $baseurl
+
   // order - what is the criteria a server must met?
   // prometheus running? - yes
   // api running? - maybe
@@ -87,11 +88,13 @@ export class GlobalSettingsService implements OnInit {
   // 3. fallback to Newton
 
   // following use cases:
-  // developing on localhost:4200 with ng
-  // - default: connect to Newton
-  // - connect to other tricorders on demand
-  // connected to a Tricorder
-  // using public Webif on Newton:
+  // • developing on localhost:4200 with ng
+  //   - default: connect to Newton
+  //   - connect to other tricorders on demand
+  // • connected to a Tricorder
+  //   - via webif
+  //   - on local screen (localhost)
+  // • using public Webif on Newton:
   // - default: stay on newton
   // - try out switching to another server
   reloadSettings() {
@@ -251,6 +254,8 @@ export class GlobalSettingsService implements OnInit {
       this.emitChange({ Prometheus: this.server.prometheus });
 
       console.log('SUCCESS: prometheus found on endpoint', endpoint);
+
+      this.checkIfTricorder()
     } else {
       console.error('FAILURE: prometheus on endpoint not ready', endpoint);
     }
