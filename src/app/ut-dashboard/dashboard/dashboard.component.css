@@ -1,6 +1,7 @@
 div#panel {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-around;
 }
 #panel > a {
   text-align: center;
