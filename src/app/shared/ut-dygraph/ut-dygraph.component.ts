@@ -1489,6 +1489,17 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       logscale: this.dyGraphOptions.logscale
     });
   }
+  toggleLegend() {
+    if (this.dyGraphOptions.legend == 'always') {
+      this.dyGraphOptions.legend = 'never';
+    } else {
+      this.dyGraphOptions.legend = 'always';
+    }
+
+    this.Dygraph.updateOptions({
+      legend: this.dyGraphOptions.legend
+    });
+  }
 
   calculateTimeRange(
     startTime: string,
