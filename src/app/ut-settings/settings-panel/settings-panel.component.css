@@ -13,7 +13,7 @@ h1 {
     text-align: center;
     margin: 1rem;
 }
-h2 {margin: 0}
+h2 {margin: 0 0 1rem 0}
 
 section section {
     border: 1px solid gray;
@@ -73,4 +73,8 @@ button {
 button:disabled {
     background-color: gray;
     cursor: default;
+}
+
+table.th_right th {
+    text-align: right;
 }

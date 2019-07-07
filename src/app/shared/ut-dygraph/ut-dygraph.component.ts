@@ -53,6 +53,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   @Input()
   dataBaseQueryStepMS = 1000; // query step on server
   @Input()
+  downloadFullResolution = false; // set to false to reduce Database query step to max. of screen res.
+  @Input()
   fetchFromServerIntervalMS = 1000; // set 0 for no update - but can be changed later - default 1000ms.
   @Input()
   serverHostName: string; // optional, get it from globalSettings instead
@@ -141,11 +143,17 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   private overrideDateWindow = [];
   private requestsUnderway = 0; // don't flood the server if it is not fast enough
   private oldRequestsRunning = 0;
+  private lastReset: Date;
+  private resetTimeout = 10000; //milliseconds
   public oldFetchRunning = {}; //      {start: Date, end: Date }
 
   private queryEndPoint: string;
 
   private maxPointsToFetch = 1000; // 10500; // Prometheus allows 11k max
+  public fetchFromServerIntervalReducedMS = this.dataBaseQueryStepMS; //reduced if screen res too low (calculated later)
+
+  public graphWidthPx = 0;
+  public maxNativeInterval = 0;
 
   Dygraph: Dygraph;
 
@@ -286,7 +294,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     let dataThere = false;
     for (let seriesNr = 0; seriesNr < promData.length; seriesNr++) {
       const series = promData[seriesNr];
-      const newLabelString = this.h.createLabelString(series['metric'], this.labelBlackList);
+      const newLabelString = this.h.createLabelString(
+        series['metric'],
+        this.labelBlackList
+      );
       newLabels.push(newLabelString);
 
       if (series['values'].length) {
@@ -651,7 +662,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     maxDate: number,
     yRanges?: Array<Array<number>>
   ) {
-    const debugflag = false;
+    const debugflag = true;
     if (debugflag) {
       console.log('after dygraph zoom callback');
       console.log(typeof minDate, minDate, maxDate, yRanges);
@@ -723,6 +734,40 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (parent && parent.hasOwnProperty('graphWidthPx')) {
+      const area = g.getArea();
+      const graphWidthPx = area.w;
+      if (parent['graphWidthPx'] !== graphWidthPx) {
+        parent['graphWidthPx'] = graphWidthPx;
+        console.log('new graph width:', graphWidthPx);
+
+        const from = parent['fromZoom'];
+        const to = parent['toZoom'];
+        const deltaTimeMS = to.valueOf() - from.valueOf(); // / 1000;
+
+        const neededInterval = 0;
+
+        const maxFetchFrequency = parent['fetchFromServerIntervalMS'];
+        const maxDBqueryStep = parent['dataBaseQueryStepMS'];
+
+        const dataPointsInRange = deltaTimeMS / maxDBqueryStep;
+        const minDatapointsPerPx = Math.floor(dataPointsInRange / graphWidthPx);
+
+        if (minDatapointsPerPx >= 2) {
+          parent['fetchFromServerIntervalReducedMS'] = Math.floor(
+            parent['dataBaseQueryStepMS'] * minDatapointsPerPx
+          );
+        }
+
+        // should affect download of?
+        // only historical data
+        // fetching new data
+
+        parent['maxNativeInterval'] = minDatapointsPerPx;
+        // console.log(parent['graphWidthPx']);
+      }
+    }
+
     if (
       parent &&
       parent.hasOwnProperty('fromZoom') &&
@@ -746,6 +791,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   checkAndFetchOldData() {
+    if (!this.running) {
+      console.log('not running, dont checkAndFetchOldData');
+      return;
+    }
     // if (!this.displayedData.length) {
     //   this.noData = true;
     //   return;
@@ -763,6 +812,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   startUpdate() {
+    this.lastReset = undefined;
     // if (1 == 1) return;
     this.intervalSubscription = interval(
       this.fetchFromServerIntervalMS
@@ -822,9 +872,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
   handleUpdatedData(displayedData: Object) {
     this.requestsUnderway--;
-    if (!this.utFetchdataService.checkPrometheusDataValidity(displayedData)) {
-      return;
-    }
 
     if (!this.Dygraph) {
       console.error('Dygraph not there, unsubscribing');
@@ -832,9 +879,19 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const now = new Date()
+    if(this.lastReset) { // .valueOf() + this.resetTimeout < now.valueOf() ) {
+      console.log('last reset less than ', this.resetTimeout / 1000, 's, discarding data');
+      return;
+    }
+
+    if (!this.utFetchdataService.checkPrometheusDataValidity(displayedData)) {
+      return;
+    }
+
     this.updateDataSet(displayedData);
 
-    if (this.runningAvgSeconds != this.Dygraph.rollPeriod() ) {
+    if (this.runningAvgSeconds != this.Dygraph.rollPeriod()) {
       console.log('adj roll');
       this.Dygraph.adjustRoll(this.runningAvgSeconds);
     }
@@ -879,17 +936,19 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
 
     let update = true;
-    /* console.log('DFT', this.dataBeginTime);
-    console.log('frZ', this.fromZoom);
-    console.log('DET', this.dataEndTime);
-    console.log('toZ', this.toZoom); */
+    // console.log('DFT', this.dataBeginTime);
+    // console.log('frZ', this.fromZoom);
+    // console.log('DET', this.dataEndTime);
+    // console.log('toZ', this.toZoom);
 
-     if (
-      this.dataEndTime.valueOf() >= this.toZoom.valueOf() &&
-      this.dataBeginTime.valueOf() <= this.fromZoom.valueOf()
+    if (
+      this.dataEndTime.valueOf() >= this.toZoom.valueOf() // &&
+      // this.dataBeginTime.valueOf() <= this.fromZoom.valueOf()
     ) {
       console.log('dont update');
       update = false;
+    } else {
+      //console.log('graph update');
     }
     this.Dygraph.updateOptions({ file: this.displayedData }, !update);
   }
@@ -978,11 +1037,26 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       ? this.displayedData[this.displayedData.length - 1][0]
       : undefined;
     if (!startDate) {
-      console.log(startDate);
-      console.error('error in fetchNewData: no previous data found');
+      // no data here, maybe has been deleted
+
+      console.log('fetchNewData: no previous data found');
       this.requestsUnderway--;
+
+      this.utFetchdataService
+        .getRange(
+          this.queryString,
+          this.fromZoom,
+          this.toZoom,
+          this.getQueryStep(),
+          this.queryEndPoint
+        )
+        .subscribe(
+          (displayedData: Object) => this.handleInitialData(displayedData),
+          error => this.handlePrometheusErrors(error)
+        );
       return;
     }
+
     this.utFetchdataService
       .getRange(
         this.queryString,
@@ -994,6 +1068,26 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       .subscribe((displayedData: Object) =>
         this.handleUpdatedData(displayedData)
       );
+  }
+
+  resetData() {
+    this.lastReset = new Date();
+    this.stopUpdate();
+    this.stopUpdateOnNewData();
+    while (this.displayedData.length) {
+      this.displayedData.pop(); // fastest way to clear array
+    }
+    this.dataBeginTime = this.toZoom;
+    this.dataEndTime = this.toZoom;
+
+    this.Dygraph.updateOptions({ file: this.displayedData });
+  }
+
+  getQueryStep() {
+    const dataBaseQueryStepMS = this.downloadFullResolution
+      ? this.dataBaseQueryStepMS
+      : this.fetchFromServerIntervalReducedMS;
+    return dataBaseQueryStepMS;
   }
 
   fetchOldData(from: Date, to: Date) {
@@ -1012,8 +1106,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const fromNum = from.valueOf();
     let toNum = to.valueOf();
 
+    const dataBaseQueryStepMS = this.getQueryStep();
+
     if (toNum >= earliestDataDate) {
-      toNum = earliestDataDate - this.dataBaseQueryStepMS;
+      toNum = earliestDataDate - dataBaseQueryStepMS;
     }
 
     if (fromNum === toNum) {
@@ -1027,14 +1123,13 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     // correct from date to fetch maximum points allowed
     const difference = toNum - fromNum;
-    if (difference / this.fetchFromServerIntervalMS > this.maxPointsToFetch) {
+    if (difference / dataBaseQueryStepMS > this.maxPointsToFetch) {
       console.log(
         'more than ' +
           this.maxPointsToFetch +
           ' points requested on refetch old, reducing'
       );
-      const maxFromValue =
-        toNum - this.fetchFromServerIntervalMS * this.maxPointsToFetch;
+      const maxFromValue = toNum - dataBaseQueryStepMS * this.maxPointsToFetch;
       from = new Date(maxFromValue);
     }
     // request data
@@ -1047,7 +1142,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         this.queryString,
         from,
         to,
-        this.dataBaseQueryStepMS,
+        dataBaseQueryStepMS,
         this.queryEndPoint
       )
       .subscribe((data: Object) => this.handleOldRequestedData(data));
@@ -1058,6 +1153,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.oldRequestsRunning--;
     this.oldFetchRunning = {};
     this.unHighLightFetchRegion();
+    const now = new Date()
+    if(this.lastReset) { // .valueOf() + this.resetTimeout < now.valueOf() ) {
+      console.log('last reset less than ', this.resetTimeout / 1000, 's, discarding data');
+      return;
+    }
 
     this.checkAndFetchOldData();
     if (!this.utFetchdataService.checkPrometheusDataValidity(oldData)) {
@@ -1078,7 +1178,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const labels = this.dyGraphOptions['labels']; // content: another array => call by ref
     const nrColumns = labels.length;
 
-    const gap = Number(this.dataBaseQueryStepMS);
+    const dataBaseQueryStepMS = this.getQueryStep();
+    const gap = Number(dataBaseQueryStepMS);
     const maxGap = gap * 1.1;
     let validRows = 0;
     // add row after row
@@ -1254,6 +1355,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     } else {
       this.startUpdate();
       this.running = true;
+      this.checkAndFetchOldData();
     }
   }
   toggleAutoPan() {

@@ -5,7 +5,6 @@ import { Subject } from 'rxjs';
 import { HelperFunctionsService } from './helper-functions.service';
 import { LocalStorageService } from './local-storage.service';
 import { HttpClient } from '@angular/common/http';
-import { e } from '@angular/core/src/render3';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +13,7 @@ export class GlobalSettingsService implements OnInit {
   private hostName = 'uninitialized';
 
   public defaultPrometheusPath = '/prometheus/api/v1/';
-  public defaultPrometheusPort = undefined; // '9090'; // later switch to default port
+  public defaultPrometheusPort = undefined; // '80'; // later switch to default port
   private defaultAPIPath = '/api/';
   private fallbackEndpoint = 'https://scpunraveltec2.tugraz.at';
   private fallbackPrometheusEndpoint =
@@ -31,6 +30,7 @@ export class GlobalSettingsService implements OnInit {
     cpus: 0,
     sensors: [],
     prometheus: undefined, // String
+    databaseStatus: 'unknown', // db status: up, down, unknown, waiting
     api: undefined
   };
   public client = {
@@ -57,10 +57,12 @@ export class GlobalSettingsService implements OnInit {
       let check = false;
       (function(a) {
         if (
-          /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test( // tslint:disable-line
+          /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(
+            // tslint:disable-line
             a
           ) ||
-          /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test( // tslint:disable-line
+          /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(
+            // tslint:disable-line
             a.substr(0, 4)
           )
         ) {
@@ -76,6 +78,8 @@ export class GlobalSettingsService implements OnInit {
     this.reloadSettings();
   }
 
+  // we do not need to handle localhost in a special case - covered by $baseurl
+
   // order - what is the criteria a server must met?
   // prometheus running? - yes
   // api running? - maybe
@@ -84,11 +88,13 @@ export class GlobalSettingsService implements OnInit {
   // 3. fallback to Newton
 
   // following use cases:
-  // developing on localhost:4200 with ng
-  // - default: connect to Newton
-  // - connect to other tricorders on demand
-  // connected to a Tricorder
-  // using public Webif on Newton:
+  // • developing on localhost:4200 with ng
+  //   - default: connect to Newton
+  //   - connect to other tricorders on demand
+  // • connected to a Tricorder
+  //   - via webif
+  //   - on local screen (localhost)
+  // • using public Webif on Newton:
   // - default: stay on newton
   // - try out switching to another server
   reloadSettings() {
@@ -140,6 +146,8 @@ export class GlobalSettingsService implements OnInit {
         : prometheusProtocol + servername;
 
       this.server.prometheus = protAndHost + prometheusPort + prometheusPath;
+
+      this.checkForPrometheus(protAndHost + prometheusPort, prometheusPath);
 
       let apiPath = this.h.getDeep(localStoredServer, [
         'apiPath',
@@ -201,7 +209,7 @@ export class GlobalSettingsService implements OnInit {
             this.getCPUinfo(this.server.api);
 
             // emit every 5s a check for prometheus
-            this.checkForPrometheus(firstURL);
+            this.checkForPrometheus(firstURL, this.defaultPrometheusPath);
           },
           error => {
             console.log('no UTapi running on', firstURL);
@@ -216,22 +224,23 @@ export class GlobalSettingsService implements OnInit {
     }
   }
 
-  checkForPrometheus(baseurl) {
+  checkForPrometheus(baseurl, path) {
     const prometheusTestQuery = 'query?query=scrape_samples_scraped';
     this.http
-      .get(baseurl + this.defaultPrometheusPath + prometheusTestQuery)
+      .get(baseurl + path + prometheusTestQuery)
       .subscribe(
         (data: Object) => {
           this.checkPrometheusTestResponse(
             data,
             baseurl,
-            this.defaultPrometheusPath
+            path
           );
         },
         error => {
-          console.log('no prometheus yet there', baseurl, ', 5s to next try.');
+          console.log('no prometheus yet there', baseurl + path + prometheusTestQuery, ', 5s to next try.');
+          this.server.databaseStatus = 'down';
           setTimeout(() => {
-            this.checkForPrometheus(baseurl);
+            this.checkForPrometheus(baseurl, path);
           }, 5 * 1000);
         }
       );
@@ -241,12 +250,12 @@ export class GlobalSettingsService implements OnInit {
     if (data['status'] && data['status'] === 'success') {
       this.server.baseurl = endpoint;
       this.server.prometheus = endpoint + endpath;
-      //this.server.api = endpoint + this.defaultAPIPath;
-      //this.fetchHostName(this.server.api);
-      //this.getCPUinfo(this.server.api);
+      this.server.databaseStatus = 'up';
       this.emitChange({ Prometheus: this.server.prometheus });
 
       console.log('SUCCESS: prometheus found on endpoint', endpoint);
+
+      this.checkIfTricorder()
     } else {
       console.error('FAILURE: prometheus on endpoint not ready', endpoint);
     }

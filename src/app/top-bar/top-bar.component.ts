@@ -41,7 +41,7 @@ export class TopBarComponent implements OnInit {
     );
 
     this.intervalSubscription = interval(60000).subscribe(counter => {
-      this.currentTime = new Date();
+      this.currentTime = new Date(); //todo get from backend!
     });
   }
 

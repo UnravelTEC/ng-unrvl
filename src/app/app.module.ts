@@ -107,6 +107,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/sensors/ds18b20/ds18b20.module#Ds18b20Module'
   },
   {
+    path: 'Apps/Sensors/BME280',
+    loadChildren: './ut-apps/sensors/bme280/bme280.module#Bme280Module'
+  },
+  {
     path: 'Apps/Temperatures',
     loadChildren: './ut-apps/temperatures/temperatures.module#TemperaturesModule'
   },

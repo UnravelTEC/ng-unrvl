@@ -5,9 +5,9 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
 import { GlobalSettingsService } from '../../../core/global-settings.service';
 
 @Component({
-  selector: 'app-display-brighness',
-  templateUrl: './display-brighness.component.html',
-  styleUrls: ['./display-brighness.component.scss']
+  selector: 'app-display-brightness',
+  templateUrl: './display-brightness.component.html',
+  styleUrls: ['./display-brightness.component.scss']
 })
 export class DisplayBrighnessComponent implements OnInit {
   @Output()
@@ -39,10 +39,10 @@ export class DisplayBrighnessComponent implements OnInit {
     // alert('get bn called');
     this.utHTTP
       .getHTTPData(this.gss.getAPIEndpoint() + 'screen/getBrightness.php')
-      .subscribe((data: Object) => this.acceptBrighness(data));
+      .subscribe((data: Object) => this.acceptBrightness(data));
   }
 
-  acceptBrighness(data: Object) {
+  acceptBrightness(data: Object) {
     console.log('retval vom getbn:', data);
     if (data && data['brightness']) {
       this.currentBrightness = data['brightness'];

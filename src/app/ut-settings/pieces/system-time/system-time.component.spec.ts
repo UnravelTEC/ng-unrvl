@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DisplayBrighnessComponent } from './display-brighness.component';
+import { SystemTimeComponent } from './system-time.component';
 
-describe('DisplayBrighnessComponent', () => {
-  let component: DisplayBrighnessComponent;
-  let fixture: ComponentFixture<DisplayBrighnessComponent>;
+describe('SystemTimeComponent', () => {
+  let component: SystemTimeComponent;
+  let fixture: ComponentFixture<SystemTimeComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DisplayBrighnessComponent ]
+      declarations: [ SystemTimeComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DisplayBrighnessComponent);
+    fixture = TestBed.createComponent(SystemTimeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
