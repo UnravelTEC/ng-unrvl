@@ -1,6 +1,8 @@
 <div id="co2dygraph">
+  <!-- queryString='gas_ppm{gas="CO2",sensor="SCD30"} or gas_ppm{gas="VOC"} or gas_ohm or temperature_degC{sensor="BME680"} or voltage_V or humidity_rel_percent{sensor="BME680"} or pressure_hPa' -->
+
   <app-ut-dygraph
-    queryString='gas_ppm{gas="CO2",sensor="SCD30"} or gas_ppm{gas="VOC"} or gas_ohm or temperature_degC{sensor="BME680"} or voltage_V or humidity_rel_percent{sensor="BME680"} or pressure_hPa'
+    queryString='{__name__=~"humidity_rel_percent|temperature_degC|gas_ohm|gas_ppm|voltage_V|pressure_hPa"}'
     [fetchFromServerIntervalMS]="step"
     [dataBaseQueryStepMS]="step"
     [style]="graphstyle"
