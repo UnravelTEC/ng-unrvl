@@ -264,6 +264,22 @@ style.padding-bottom="20vh"-->
         <span class="unit">s</span>
       </form>
 
+      <form class="subbox">
+        <h5>Legend</h5>
+        <button
+          (click)="toggleLegend()"
+          *ngIf="dyGraphOptions.legend == 'always'"
+        >
+          Off
+        </button>
+        <button
+          (click)="toggleLegend()"
+          *ngIf="dyGraphOptions.legend != 'always'"
+        >
+          On
+        </button>
+      </form>
+
       <form class="subbox" [style.width]="stats ? '100%' : ''">
         <div style="float: left;">
           <h5>Statistics</h5>
