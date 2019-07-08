@@ -17,15 +17,16 @@
   ></app-ut-dygraph>
 
   <div id="rHdygraph">
-      <app-ut-dygraph
-        queryString='{__name__=~"humidity_rel_percent|temperature_degC",sensor="SCD30"}'
-        [fetchFromServerIntervalMS]="step"
-        [dataBaseQueryStepMS]="step"
-        [dataSeriesLabels]="dataSeriesLabelsTH"
-        [labelBlackList]="labelBlackListHT"
-        YLabel="Temperature (°C), relative Humidity (%)"
-        [style]="graphstyleTH"
-        [startTime]="startTime"
-        #rH
-      ></app-ut-dygraph>
+    <app-ut-dygraph
+      queryString='{__name__=~"humidity_rel_percent|temperature_degC",sensor="SCD30"}'
+      [fetchFromServerIntervalMS]="step"
+      [dataBaseQueryStepMS]="step"
+      [dataSeriesLabels]="dataSeriesLabelsTH"
+      [labelBlackList]="labelBlackListHT"
+      YLabel="Temperature (°C), relative Humidity (%)"
+      [style]="graphstyleTH"
+      [startTime]="startTime"
+      #rH
+    ></app-ut-dygraph>
+  </div>
 </div>

@@ -31,7 +31,7 @@ export class GammaComponent implements OnInit {
     private localStorage: LocalStorageService
   ) {
      // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
-    this.globalSettings.emitChange({ appName: 'Gamma Radiation' });
+    this.globalSettings.emitChange({ appName: 'Radioactivity Demo' });
   }
 
   ngOnInit() {
