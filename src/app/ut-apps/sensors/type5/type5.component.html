@@ -1,0 +1,31 @@
+<p>
+  type5 works!
+</p>
+<div id="dygraphs">
+  <app-ut-dygraph
+    queryString='radiation_Svph{sensor="TYPE5"}'
+    [fetchFromServerIntervalMS]="step"
+    [dataBaseQueryStepMS]="step"
+    [dataSeriesLabels]="dataSeriesLabelsSvph"
+    [labelBlackList]="labelBlackList"
+    YLabel="Radiation (nSv&thinsp;/&thinsp;h)"
+    multiplicateFactors="1000000000"
+    [style]="graphstyleTop"
+    [startTime]="startTime"
+    [extraDyGraphConfig]="extraDyGraphConfig"
+    #svph
+  ></app-ut-dygraph>
+
+  <app-ut-dygraph
+    queryString='type5_raycount'
+    [fetchFromServerIntervalMS]="step"
+    [dataBaseQueryStepMS]="step"
+    [dataSeriesLabels]="dataSeriesLabelsCount"
+    [labelBlackList]="labelBlackList"
+    YLabel="Ray Count"
+    [style]="graphstyleBottom"
+    [startTime]="startTime"
+    [extraDyGraphConfig]="extraDyGraphConfig"
+    #rH
+  ></app-ut-dygraph>
+</div>
