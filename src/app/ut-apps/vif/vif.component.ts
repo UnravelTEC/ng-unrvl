@@ -18,7 +18,7 @@ export class VifComponent implements OnInit {
   graphstyle = {
     position: 'absolute',
     top: '1vh',
-    bottom: '3rem',
+    bottom: '6rem',
     left: '1vw',
     right: '1vw'
   };
