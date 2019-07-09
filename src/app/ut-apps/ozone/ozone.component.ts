@@ -21,6 +21,7 @@ export class OzoneComponent implements OnInit {
   };
   startTime = '15m';
   labelBlackList = ['__name__', 'gas'];
+  dataSeriesLabels = ['DGS-O3968-042'];
 
   multiplicateFactors = [1000];
 

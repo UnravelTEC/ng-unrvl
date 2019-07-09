@@ -7,11 +7,15 @@ import { GlobalSettingsService } from '../../../core/global-settings.service';
   styleUrls: ['./type5.component.scss']
 })
 export class Type5Component implements OnInit {
-
   step = 1000;
-  dataSeriesLabelsSvph = ['Type 5']
+  dataSeriesLabelsSvph = ['Type 5'];
+  dataSeriesLabelsCount = this.dataSeriesLabelsSvph;
   startTime = '5h';
   multiplicateFactors = [1000000000];
+  extraDyGraphConfig = {
+    strokeWidth: 2.0
+  };
+  labelBlackList = ['__name__'];
 
   graphstyleTop = {
     position: 'absolute',
