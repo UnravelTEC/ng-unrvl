@@ -295,6 +295,19 @@ style.padding-bottom="20vh"-->
             <span>max:</span> {{ max | number: '1.0-3' }}<br />
             <span>min:</span> {{ min | number: '1.0-3' }}<br />
           </small>
+          <table>
+            <tr>
+              <th *ngFor="let label of dyGraphOptions['labels']">
+                {{ label === "Date" ? "Averages" : label }}
+              </th>
+            </tr>
+            <tr>
+              <td>
+                Whole Dataset:
+              </td>
+              <td *ngFor="let mean of averages">{{mean | number: '1.0-2' }}</td>
+            </tr>
+          </table>
         </div>
       </form>
     </div>

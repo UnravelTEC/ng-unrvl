@@ -160,8 +160,25 @@
             display: inline-block;
             min-width: 7em;
           }
-        }
+          table {
+            margin-left: 1em;
+            font-size: 0.8em;
+            border-collapse: collapse;
+            th,
+            td {
+              border-left: 1px solid black;
+              padding: 0 0.3em;
+            }
+            th:first-child, td:first-child {
+              border-left:0;
+            }
 
+            th {
+              text-align: left;
+              border-bottom: 1px solid black;
+            }
+          }
+        }
       }
     }
   }
