@@ -47,6 +47,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/co2-graph/co2-graph.module#Co2GraphModule'
   },
   {
+    path: 'Apps/Ozone',
+    loadChildren: './ut-apps/ozone/ozone.module#OzoneModule'
+  },
+  {
     path: 'Apps/rHT',
     loadChildren: './ut-apps/r-ht/r-ht.module#RHTModule'
   },

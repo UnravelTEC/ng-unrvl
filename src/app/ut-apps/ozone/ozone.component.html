@@ -1,0 +1,35 @@
+<div class="graphapp">
+  <span class="value">
+    O₃:
+    <span
+      class="{{
+        graph['lastValue'] < 1000
+          ? 'green'
+          : graph['lastValue'] < 2000
+          ? 'yellow'
+          : 'red'
+      }} "
+    >
+      {{ graph['lastValue'] | number: '1.0-4' }}</span
+    >&#8239;ppb
+  </span>
+  <div id="o3dygraph">
+    <app-ut-dygraph
+      queryString='gas_ppm{gas="O3"}'
+      [fetchFromServerIntervalMS]="step"
+      [dataBaseQueryStepMS]="step"
+      [dataSeriesLabels]="dataSeriesLabels"
+      [labelBlackList]="labelBlackList"
+      [multiplicateFactors]="multiplicateFactors"
+      YLabel="O₃ (ppb)"
+      [style]="graphstyle"
+      [startTime]="startTime"
+      [extraDyGraphConfig]="extraDyGraphConfig"
+      #graph
+    ></app-ut-dygraph>
+  </div>
+</div>
+<em style="position: absolute; bottom: 0.3em; left: 0.5em;"
+  >Note: SPEC sensors 110-406 Ozone sensor has a 1:1 cross-sensitivity to NO₂ -
+  the value measured can either be O₃ or NO₂!</em
+>
