@@ -115,6 +115,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/sensors/type5/type5.module#Type5Module'
   },
   {
+    path: 'Apps/Sensors/MPU9250',
+    loadChildren: './ut-apps/sensors/mpu9250/mpu9250.module#Mpu9250Module'
+  },
+  {
     path: 'Apps/Temperatures',
     loadChildren: './ut-apps/temperatures/temperatures.module#TemperaturesModule'
   },
