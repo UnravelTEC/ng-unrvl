@@ -10,6 +10,8 @@ export class Type5Component implements OnInit {
 
   step = 1000;
   dataSeriesLabelsSvph = ['Type 5']
+  startTime = '5h';
+  multiplicateFactors = [1000000000];
 
   graphstyleTop = {
     position: 'absolute',

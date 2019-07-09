@@ -1,6 +1,6 @@
-<p>
-  type5 works!
-</p>
+<h2>
+  Radiation (avg): {{ svph.average | number: '1.1-1'}} nS&thinsp;/&thinsp;h
+</h2>
 <div id="dygraphs">
   <app-ut-dygraph
     queryString='radiation_Svph{sensor="TYPE5"}'
@@ -9,7 +9,7 @@
     [dataSeriesLabels]="dataSeriesLabelsSvph"
     [labelBlackList]="labelBlackList"
     YLabel="Radiation (nSv&thinsp;/&thinsp;h)"
-    multiplicateFactors="1000000000"
+    [multiplicateFactors]="multiplicateFactors"
     [style]="graphstyleTop"
     [startTime]="startTime"
     [extraDyGraphConfig]="extraDyGraphConfig"
@@ -26,6 +26,6 @@
     [style]="graphstyleBottom"
     [startTime]="startTime"
     [extraDyGraphConfig]="extraDyGraphConfig"
-    #rH
+    #rc
   ></app-ut-dygraph>
 </div>
