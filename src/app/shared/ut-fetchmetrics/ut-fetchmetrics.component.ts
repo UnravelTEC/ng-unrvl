@@ -55,8 +55,8 @@ export class UtFetchmetricsComponent implements OnInit {
       const metricname = line.match(/[^{ ]+/)[0];
       const valueArray = line.match(/[^}]+/g);
       const value = valueArray[valueArray.length-1];
-      console.log('metric: ', metricname);
-      console.log('value: ', value);
+      // console.log('metric: ', metricname);
+      // console.log('value: ', value);
       this.metrics[metricname] = { 'value': value };
     }
     console.log(this.metrics);
