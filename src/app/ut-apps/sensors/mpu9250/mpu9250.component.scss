@@ -8,9 +8,23 @@ table {
     position: absolute;
     right: 0.3em;
     width: 9.6em;
+    margin:auto 0;
+    th[colspan] {
+        padding-top: 0.8em;
+    }
   }
 
   #accvalues {
-    top: 2em;
+    top: 0;
     bottom: 66%;
+  }
+  #gyrovalues {
+
+
+    top: 33%;
+    bottom: 33%;
+  }
+  #magvalues {
+    top: 66%;
+    bottom: 3em;
   }

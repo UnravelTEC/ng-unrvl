@@ -31,8 +31,7 @@
       </td>
     </tr>
     <tr>
-      <th>Absolute</th>
-      <th>gravity</th>
+      <th colspan="2">Absolute gravity</th>
     </tr>
     <tr>
       <td>
@@ -53,8 +52,7 @@
             acc.lastValues[1] * acc.lastValues[1] +
               acc.lastValues[2] * acc.lastValues[2] +
               acc.lastValues[3] * acc.lastValues[3]
-          ) * 9.81
-            | number: '1.0-3'
+          ) * 9.81 | number: '1.0-3'
         }}
       </td>
       <td>m/s²</td>
@@ -62,19 +60,55 @@
   </table>
 
   <app-ut-dygraph
-    queryString="rotation"
+    queryString="rotation_dps"
     [fetchFromServerIntervalMS]="step"
     [dataBaseQueryStepMS]="step"
     [dataSeriesLabels]="dataSeriesLabels"
     [labelBlackList]="labelBlackList"
-    YLabel="Rotation / Gyroscope"
+    YLabel="Rotation / Gyroscope (°/s)"
     [style]="graphstyle_gyro"
     [startTime]="startTime"
     [extraDyGraphConfig]="extraDyGraphConfig"
     #gyro
   ></app-ut-dygraph>
+  <table *ngIf="gyro.lastValues && gyro.lastValues.length" id="gyrovalues">
+    <tr>
+      <th>Axis</th>
+      <th>Value (°/s)</th>
+    </tr>
+    <tr>
+      <td>
+        <div>
+          <div *ngFor="let sensor of gyro.columnLabels">{{ sensor.axis }}</div>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div *ngFor="let value of gyro.lastValues">
+            <span *ngIf="value < 10000000">{{ value | number: '1.0-3' }}</span>
+          </div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th colspan="2">Absolute Rotation</th>
+    </tr>
+    <tr>
+      <td>
+        {{
+          math.sqrt(
+            gyro.lastValues[1] * gyro.lastValues[1] +
+              gyro.lastValues[2] * gyro.lastValues[2] +
+              gyro.lastValues[3] * gyro.lastValues[3]
+          ) | number: '1.0-3'
+        }}
+      </td>
+      <td>°/s</td>
+    </tr>
+  </table>
+
   <app-ut-dygraph
-    queryString="magnetic_field"
+    queryString="magnetic_field_uT"
     [fetchFromServerIntervalMS]="step"
     [dataBaseQueryStepMS]="step"
     [dataSeriesLabels]="dataSeriesLabels"
@@ -85,6 +119,41 @@
     [extraDyGraphConfig]="extraDyGraphConfig"
     #mag
   ></app-ut-dygraph>
+  <table *ngIf="mag.lastValues && mag.lastValues.length" id="magvalues">
+    <tr>
+      <th>Axis</th>
+      <th>Value (µT)</th>
+    </tr>
+    <tr>
+      <td>
+        <div>
+          <div *ngFor="let sensor of mag.columnLabels">{{ sensor.axis }}</div>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div *ngFor="let value of mag.lastValues">
+            <span *ngIf="value < 10000000">{{ value | number: '1.0-3' }}</span>
+          </div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th colspan="2">Absolute mag. Field</th>
+    </tr>
+    <tr>
+      <td>
+        {{
+          math.sqrt(
+            mag.lastValues[1] * mag.lastValues[1] +
+              mag.lastValues[2] * mag.lastValues[2] +
+              mag.lastValues[3] * mag.lastValues[3]
+          ) | number: '1.0-2'
+        }}
+      </td>
+      <td>µT</td>
+    </tr>
+  </table>
 
   <app-ut-fetchmetrics #f></app-ut-fetchmetrics>
   <div id="temp">
