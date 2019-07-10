@@ -335,13 +335,13 @@ export class GlobalSettingsService implements OnInit {
 
   checkIfTricorder() {
     if (
-      this.server.architecture === undefined ||
-      this.server.prometheus === undefined
+      this.server.architecture === undefined // ||
+      // this.server.prometheus === undefined
     ) {
       console.log('not enough information to check if I am on a Tricorder');
       return;
     }
-    if (this.server.architecture.startsWith('arm') && this.server.prometheus) {
+    if (this.server.architecture.startsWith('arm') ) { // && this.server.prometheus) {
       this.server.type = 'Tricorder';
     } else {
       this.server.type = 'PublicServer';
