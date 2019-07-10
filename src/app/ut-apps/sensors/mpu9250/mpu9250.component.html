@@ -11,7 +11,7 @@
     [extraDyGraphConfig]="extraDyGraphConfig"
     #acc
   ></app-ut-dygraph>
-  <table *ngIf="acc.lastValues && acc.lastValues.length" id="accvalues">
+  <table *ngIf="acc.lastValues && acc.lastValues.length" id="accvalues" class="side">
     <tr>
       <th>Axis</th>
       <th>Value (g)</th>
@@ -25,7 +25,7 @@
       <td>
         <div>
           <div *ngFor="let value of acc.lastValues">
-            <span *ngIf="value < 10000000">{{ value | number: '1.0-3' }}</span>
+            <span *ngIf="value < 10000000">{{ value | number: '1.3-3' }}</span>
           </div>
         </div>
       </td>
@@ -40,10 +40,10 @@
             acc.lastValues[1] * acc.lastValues[1] +
               acc.lastValues[2] * acc.lastValues[2] +
               acc.lastValues[3] * acc.lastValues[3]
-          ) | number: '1.0-3'
+          ) | number: '1.3-3'
         }}
       </td>
-      <td>g</td>
+      <td class="unit">g</td>
     </tr>
     <tr>
       <td>
@@ -52,10 +52,10 @@
             acc.lastValues[1] * acc.lastValues[1] +
               acc.lastValues[2] * acc.lastValues[2] +
               acc.lastValues[3] * acc.lastValues[3]
-          ) * 9.81 | number: '1.0-3'
+          ) * 9.81 | number: '1.3-3'
         }}
       </td>
-      <td>m/s²</td>
+      <td class="unit">m/s²</td>
     </tr>
   </table>
 
@@ -65,13 +65,13 @@
     [dataBaseQueryStepMS]="step"
     [dataSeriesLabels]="dataSeriesLabels"
     [labelBlackList]="labelBlackList"
-    YLabel="Rotation / Gyroscope (°/s)"
+    YLabel="Rotation (°/s)"
     [style]="graphstyle_gyro"
     [startTime]="startTime"
     [extraDyGraphConfig]="extraDyGraphConfig"
     #gyro
   ></app-ut-dygraph>
-  <table *ngIf="gyro.lastValues && gyro.lastValues.length" id="gyrovalues">
+  <table *ngIf="gyro.lastValues && gyro.lastValues.length" id="gyrovalues" class="side">
     <tr>
       <th>Axis</th>
       <th>Value (°/s)</th>
@@ -85,13 +85,13 @@
       <td>
         <div>
           <div *ngFor="let value of gyro.lastValues">
-            <span *ngIf="value < 10000000">{{ value | number: '1.0-3' }}</span>
+            <span *ngIf="value < 10000000">{{ value | number: '1.1-1' }}</span>
           </div>
         </div>
       </td>
     </tr>
     <tr>
-      <th colspan="2">Absolute Rotation</th>
+      <th colspan="2">Absolute rotation</th>
     </tr>
     <tr>
       <td>
@@ -100,10 +100,10 @@
             gyro.lastValues[1] * gyro.lastValues[1] +
               gyro.lastValues[2] * gyro.lastValues[2] +
               gyro.lastValues[3] * gyro.lastValues[3]
-          ) | number: '1.0-3'
+          ) | number: '1.1-1'
         }}
       </td>
-      <td>°/s</td>
+      <td class="unit">°/s</td>
     </tr>
   </table>
 
@@ -119,7 +119,7 @@
     [extraDyGraphConfig]="extraDyGraphConfig"
     #mag
   ></app-ut-dygraph>
-  <table *ngIf="mag.lastValues && mag.lastValues.length" id="magvalues">
+  <table *ngIf="mag.lastValues && mag.lastValues.length" id="magvalues" class="side">
     <tr>
       <th>Axis</th>
       <th>Value (µT)</th>
@@ -133,13 +133,13 @@
       <td>
         <div>
           <div *ngFor="let value of mag.lastValues">
-            <span *ngIf="value < 10000000">{{ value | number: '1.0-3' }}</span>
+            <span *ngIf="value < 10000000">{{ value | number: '1.3-3' }}</span>
           </div>
         </div>
       </td>
     </tr>
     <tr>
-      <th colspan="2">Absolute mag. Field</th>
+      <th colspan="2">Abs. magn. field</th>
     </tr>
     <tr>
       <td>
@@ -148,10 +148,10 @@
             mag.lastValues[1] * mag.lastValues[1] +
               mag.lastValues[2] * mag.lastValues[2] +
               mag.lastValues[3] * mag.lastValues[3]
-          ) | number: '1.0-2'
+          ) | number: '1.2-2'
         }}
       </td>
-      <td>µT</td>
+      <td class="unit">µT</td>
     </tr>
   </table>
 
@@ -160,7 +160,7 @@
     Temp:
     {{
       f.metrics['temperature_degC'] && f.metrics.temperature_degC.value
-        | number: '1.1-3'
+        | number: '1.1-1'
     }}&thinsp;°C
   </div>
 </div>

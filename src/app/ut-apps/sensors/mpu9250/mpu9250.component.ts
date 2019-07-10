@@ -9,7 +9,7 @@ import { GlobalSettingsService } from '../../../core/global-settings.service';
 export class Mpu9250Component implements OnInit {
   math = Math; //needed in html
 
-  step = 100;
+  step = 200;
 
   extraDyGraphConfig = {
     strokeWidth: 1.5 //,
