@@ -8,7 +8,7 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
 })
 export class AirqComponent implements OnInit {
   stepCO2 = 2000;
-  stepPM = 1000;
+  step = 1000;
   startTime = '15m';
 
   extraDyGraphConfigCO2 = {
