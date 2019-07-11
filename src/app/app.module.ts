@@ -43,6 +43,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/co2/co2.module#Co2Module'
   },
   {
+    path: 'Apps/Airquality',
+    loadChildren: './ut-apps/airq/airq.module#AirqModule'
+  },
+  {
     path: 'Apps/CO2-graph',
     loadChildren: './ut-apps/co2-graph/co2-graph.module#Co2GraphModule'
   },
