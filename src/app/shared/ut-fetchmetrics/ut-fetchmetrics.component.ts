@@ -43,23 +43,44 @@ export class UtFetchmetricsComponent implements OnInit {
     this.fetchResult();
   }
   fetchResult() {
-    this.http.get(this.fetchUrl, {responseType: 'text'}).subscribe((data: String) => this.handleResult(data), data => this.handleError(data));
+    this.http
+      .get(this.fetchUrl, { responseType: 'text' })
+      .subscribe(
+        (data: String) => this.handleResult(data),
+        data => this.handleError(data)
+      );
   }
 
   handleResult(data: String) {
     //console.log(data);
-    this.metrics = {}
+    this.metrics = {};
     let arrayOfLines = data.match(/[^\r\n]+/g);
-    for (let i = 0; i < arrayOfLines.length; i++) {
-      const line = arrayOfLines[i];
-      const metricname = line.match(/[^{ ]+/)[0];
-      const valueArray = line.match(/[^}]+/g);
-      const value = valueArray[valueArray.length-1];
-      // console.log('metric: ', metricname);
-      // console.log('value: ', value);
-      this.metrics[metricname] = { 'value': value };
+    if (!arrayOfLines) {
+      console.error('data error, empty.', data);
+    } else {
+      for (let i = 0; i < arrayOfLines.length; i++) {
+        const line = arrayOfLines[i];
+        const metricname = line.match(/[^{ ]+/)[0];
+        const valueArray = line.match(/[^}]+/g);
+        const value = valueArray[valueArray.length - 1];
+
+        // console.log('metric: ', metricname, value);
+
+        if (this.sensorname) {
+          const sensorArray = line.match(/sensor="(.*?)"/);
+          const sensor =
+            sensorArray && sensorArray.length ? sensorArray[0] : 'unknown';
+          if (sensor === 'sensor="' + this.sensorname.toUpperCase() + '"') {
+            // console.log('sensor: ', sensor);
+            // console.log('value: ', value);
+            this.metrics[metricname] = { value: value };
+          }
+        } else {
+          this.metrics[metricname] = { value: value };
+        }
+      }
+      // console.log(this.metrics);
     }
-    console.log(this.metrics);
     setTimeout(() => {
       this.fetchResult();
     }, this.interval * 1000);
