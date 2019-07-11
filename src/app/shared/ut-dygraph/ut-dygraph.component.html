@@ -15,6 +15,7 @@ style.padding-bottom="20vh"-->
     [style.position]="style.position"
     [style.bottom]="style.bottom"
     [style.left]="style.left"
+    *ngIf="showDate == true"
   >
     {{ fromZoom | date: 'shortDate' }}
   </div>

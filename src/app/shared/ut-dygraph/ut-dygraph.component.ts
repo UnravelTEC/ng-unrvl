@@ -76,6 +76,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   multiplicateFactors = [1];
   @Input()
   labelBlackList: string[];
+  @Input()
+  showDate = true;
 
   @Input()
   calculateRunningAvgFrom: Date;
