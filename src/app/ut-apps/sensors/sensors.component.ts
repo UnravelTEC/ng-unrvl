@@ -11,10 +11,11 @@ import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 })
 export class SensorsComponent implements OnInit {
   services = [];
+  i2cDevices = {};
   loading = true;
   loadingText = 'Initializing...';
 
-  implemented_sensors = ['sps30', 'scd30', 'ds18b20','bme280','type5'];
+  implemented_sensors = ['sps30', 'scd30', 'ds18b20', 'bme280', 'type5'];
 
   constructor(
     private globalSettings: GlobalSettingsService,
@@ -26,6 +27,7 @@ export class SensorsComponent implements OnInit {
   ngOnInit() {
     if (this.globalSettings.getAPIEndpoint()) {
       this.getServices();
+      this.getI2C()
     }
   }
 
@@ -42,7 +44,7 @@ export class SensorsComponent implements OnInit {
         item.UpperCaseName = item.name.toUpperCase();
         if (item['sensor']) {
           console.log(item);
-          if(this.implemented_sensors.indexOf(item.name) !== -1) {
+          if (this.implemented_sensors.indexOf(item.name) !== -1) {
             item.implemented = true;
           }
           this.services.push(item);
@@ -108,6 +110,18 @@ export class SensorsComponent implements OnInit {
       alert('last command unsuccessful');
     } else {
       this.getServices();
+    }
+  }
+
+  getI2C() {
+    this.utHTTP
+      .getHTTPData(this.globalSettings.getAPIEndpoint() + 'system/i2c.php')
+      .subscribe((data: Object) => this.acceptI2C(data));
+  }
+  acceptI2C(data) {
+    console.log('services:', data);
+    if (data && data['result']) {
+      this.i2cDevices = data['result'];
     }
   }
 }
