@@ -40,6 +40,7 @@ export class SensorsComponent implements OnInit {
   acceptServices(data: Object) {
     console.log('services:', data);
     if (data && data['services']) {
+      this.services = [];
       data['services'].forEach(item => {
         item.UpperCaseName = item.name.toUpperCase();
         if (item['sensor']) {
