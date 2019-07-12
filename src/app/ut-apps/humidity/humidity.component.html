@@ -1,0 +1,109 @@
+<!--
+   spalten:
+ 40% inside
+ 20% between
+ 40% outside
+ -->
+<div id="hbody">
+  <table id="outer">
+    <tr>
+      <td id="inside">
+        <h3>Inside</h3>
+        <table>
+          <tr>
+            <th>Temperature</th>
+            <th>Relative Humidity</th>
+            <th>Absolute Humidity</th>
+            <th>Dew Point</th>
+          </tr>
+          <tr>
+            <td>{{ T['lastValue'] | number: '1.0-2' }}&thinsp;°C</td>
+            <td>{{ rH['lastValue'] | number: '1.0-2' }}&thinsp;%</td>
+            <td>
+              {{
+                absHumidity(T['lastValue'], rH['lastValue']) | number: '1.0-2'
+              }}&thinsp;g/m³
+            </td>
+            <td>
+              {{
+                dewPoint(T['lastValue'], rH['lastValue']) | number: '1.0-2'
+              }}&thinsp;°C
+            </td>
+          </tr>
+        </table>
+
+        <app-ut-dygraph
+          queryString='humidity_rel_percent{sensor="SCD30"}'
+          [fetchFromServerIntervalMS]="step"
+          [dataBaseQueryStepMS]="step"
+          YLabel="rH (%)"
+          XLabel=""
+          [style]="graphstylerH"
+          [startTime]="startTime"
+          [extraDyGraphConfig]="extraDyGraphConfigCO2"
+          options="false"
+          showDate="false"
+          #rH
+        ></app-ut-dygraph>
+        <app-ut-dygraph
+          queryString='temperature_degC{sensor="SCD30"}'
+          [fetchFromServerIntervalMS]="step"
+          [dataBaseQueryStepMS]="step"
+          YLabel="T (°C)"
+          XLabel=""
+          [style]="graphstyleT"
+          [startTime]="startTime"
+          [extraDyGraphConfig]="extraDyGraphConfigCO2"
+          options="false"
+          showDate="false"
+          #T
+        ></app-ut-dygraph>
+      </td>
+      <td id="between"><h3>between</h3></td>
+      <td id="outside">
+        <h3>Outside</h3>
+        <form #graphForm="ngForm">
+          <table>
+            <tr>
+              <th>Temperature</th>
+              <th>Relative Humidity</th>
+              <th>Absolute Humidity</th>
+              <th>Dew Point</th>
+            </tr>
+            <tr>
+              <td>
+                <input
+                  type="text"
+                  id="outsideT"
+                  [ngModel]="outsideT"
+                  (ngModelChange)="updateT($event)"
+                  name="outsideT"
+                />
+                °C
+              </td>
+              <td>
+                <input
+                  type="text"
+                  id="outsideRH"
+                  [ngModel]="outsideRH"
+                  (ngModelChange)="updateRH($event)"
+                  name="outsideRH"
+                />
+                %
+              </td>
+              <td>
+                {{
+                  absHumidity(outsideT, outsideRH) | number: '1.0-2'
+                }}&thinsp;g/m³
+              </td>
+
+              <td>
+                {{ dewPoint(outsideT, outsideRH) | number: '1.0-2' }}&thinsp;°C
+              </td>
+            </tr>
+          </table>
+        </form>
+      </td>
+    </tr>
+  </table>
+</div>

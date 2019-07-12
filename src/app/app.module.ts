@@ -35,6 +35,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/iaq/iaq.module#IaqModule'
   },
   {
+    path: 'Apps/Humidity',
+    loadChildren: './ut-apps/humidity/humidity.module#HumidityModule'
+  },
+  {
     path: 'Apps/ADC',
     loadChildren: './ut-apps/adc/adc.module#AdcModule'
   },
