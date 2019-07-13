@@ -39,6 +39,8 @@ export class HumidityComponent implements OnInit {
 
   outsideT: number;
   outsideRH: number;
+  outsideAH: number;
+  outsideTD: number;
   temperatureOffset = '0';
   temperatureOffsetNumber: number;
   private variablesToSave = ['outsideT', 'outsideRH', 'temperatureOffset'];
@@ -68,6 +70,8 @@ export class HumidityComponent implements OnInit {
 
     this.dewPointTemp = 0;
     this.absoluteHumidity = 0;
+    this.outsideAH = this.absHumidity(this.outsideT, this.outsideRH);
+    this.outsideTD = this.dewPoint(this.outsideT, this.outsideRH);
   }
   isString(x) {
     return Object.prototype.toString.call(x) === '[object String]';
@@ -116,7 +120,7 @@ export class HumidityComponent implements OnInit {
     this.absoluteHumidity = aH;
     return aH; // g/m³
   }
-  relHumidity(argT, argAH) {
+  relHumidity(argT, argAH, argTD = this.dewPointTemp) {
     const T = isString(argT) ? Number(argT) : argT;
     const aH = isString(argAH) ? Number(argAH) : argAH;
 
@@ -130,8 +134,7 @@ export class HumidityComponent implements OnInit {
     }
 
     const SDD = 6.1078 * Math.pow(10, (a * T) / (b + T)); // Sättigungsdampfdruck in hPa
-    const SDDDP =
-      6.1078 * Math.pow(10, (a * this.dewPointTemp) / (b + this.dewPointTemp));
+    const SDDDP = 6.1078 * Math.pow(10, (a * argTD) / (b + argTD));
     const rH = (100 * SDDDP) / SDD;
     return rH;
   }
@@ -142,10 +145,14 @@ export class HumidityComponent implements OnInit {
   }
   updateRH(RH) {
     this.outsideRH = RH;
+    this.outsideAH = this.absHumidity(this.outsideT, this.outsideRH);
+    this.outsideTD = this.dewPoint(this.outsideT, this.outsideRH);
     this.save();
   }
   updateT(T) {
     this.outsideT = T;
+    this.outsideAH = this.absHumidity(this.outsideT, this.outsideRH);
+    this.outsideTD = this.dewPoint(this.outsideT, this.outsideRH);
     this.save();
   }
   updateTO(T) {

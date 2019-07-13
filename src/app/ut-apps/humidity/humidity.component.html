@@ -50,7 +50,9 @@
                 (ngModelChange)="updateTO($event)"
                 name="temperatureOffset"
               />&#8239;°<br />
-              {{ T['lastValue'] + temperatureOffsetNumber | number: '1.0-2' }}&#8239;°C
+              {{
+                T['lastValue'] + temperatureOffsetNumber | number: '1.0-2'
+              }}&#8239;°C
             </td>
             <td>
               {{
@@ -94,7 +96,19 @@
           #T
         ></app-ut-dygraph>
       </td>
-      <td id="between"><h3>between</h3></td>
+      <td id="between">
+        <h3>between</h3>
+        <h4>
+          &lt;=
+          <div>
+            {{
+              relHumidity(T['lastValue'] + temperatureOffsetNumber, outsideAH, outsideTD)
+                | number: '1.0-2'
+            }}&#8239;%
+          </div>
+        </h4>
+      </td>
+
       <td id="outside">
         <h3>Outside</h3>
         <form #graphForm="ngForm">
@@ -125,13 +139,11 @@
                 />&#8239;%
               </td>
               <td>
-                {{
-                  absHumidity(outsideT, outsideRH) | number: '1.0-2'
-                }}&#8239;g&#8202;/&#8202;m³
+                {{ outsideAH | number: '1.0-2' }}&#8239;g&#8202;/&#8202;m³
               </td>
 
               <td>
-                {{ dewPoint(outsideT, outsideRH) | number: '1.0-2' }}&#8239;°C
+                {{ outsideTD | number: '1.0-2' }}&#8239;°C
               </td>
             </tr>
           </table>
