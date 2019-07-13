@@ -26,6 +26,17 @@ export class HumidityComponent implements OnInit {
     right: '0px'
   };
 
+  extraDyGraphConfig = {
+    pointSize: 1,
+    highlightSeriesOpts: {
+      strokeWidth: 1,
+      strokeBorderWidth: 1,
+      highlightCircleSize: 1
+    },
+    // legend: 'never'
+  };
+  labelBlackList = ['__name__','interval'];
+
   outsideT: number;
   outsideRH: number;
   private variablesToSave = ['outsideT', 'outsideRH'];
@@ -50,7 +61,7 @@ export class HumidityComponent implements OnInit {
     if (!this.outsideRH) this.outsideRH = 50;
   }
   isString(x) {
-    return Object.prototype.toString.call(x) === "[object String]"
+    return Object.prototype.toString.call(x) === '[object String]';
   }
 
   dewPoint(argT, argRH, P = 972) {

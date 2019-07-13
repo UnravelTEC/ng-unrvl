@@ -4,6 +4,11 @@
  20% between
  40% outside
  -->
+ <!--
+ &#8202; - hair space
+ &#8239; - thin nbsp
+ &thinsp;
+ &nbsp; -->
 <div id="hbody">
   <table id="outer">
     <tr>
@@ -17,17 +22,17 @@
             <th>Dew Point</th>
           </tr>
           <tr>
-            <td>{{ T['lastValue'] | number: '1.0-2' }}&thinsp;°C</td>
-            <td>{{ rH['lastValue'] | number: '1.0-2' }}&thinsp;%</td>
+            <td>{{ T['lastValue'] | number: '1.0-2' }}&#8239;°C</td>
+            <td>{{ rH['lastValue'] | number: '1.0-2' }}&#8239;%</td>
             <td>
               {{
                 absHumidity(T['lastValue'], rH['lastValue']) | number: '1.0-2'
-              }}&thinsp;g/m³
+              }}&#8239;g&#8202;/&#8202;m³
             </td>
             <td>
               {{
                 dewPoint(T['lastValue'], rH['lastValue']) | number: '1.0-2'
-              }}&thinsp;°C
+              }}&#8239;°C
             </td>
           </tr>
         </table>
@@ -40,7 +45,8 @@
           XLabel=""
           [style]="graphstylerH"
           [startTime]="startTime"
-          [extraDyGraphConfig]="extraDyGraphConfigCO2"
+          [extraDyGraphConfig]="extraDyGraphConfig"
+          [labelBlackList]="labelBlackList"
           options="false"
           showDate="false"
           #rH
@@ -53,7 +59,8 @@
           XLabel=""
           [style]="graphstyleT"
           [startTime]="startTime"
-          [extraDyGraphConfig]="extraDyGraphConfigCO2"
+          [extraDyGraphConfig]="extraDyGraphConfig"
+          [labelBlackList]="labelBlackList"
           options="false"
           showDate="false"
           #T
@@ -78,8 +85,7 @@
                   [ngModel]="outsideT"
                   (ngModelChange)="updateT($event)"
                   name="outsideT"
-                />
-                °C
+                />&#8239;°C
               </td>
               <td>
                 <input
@@ -88,17 +94,16 @@
                   [ngModel]="outsideRH"
                   (ngModelChange)="updateRH($event)"
                   name="outsideRH"
-                />
-                %
+                />&#8239;%
               </td>
               <td>
                 {{
                   absHumidity(outsideT, outsideRH) | number: '1.0-2'
-                }}&thinsp;g/m³
+                }}&#8239;g&#8202;/&#8202;m³
               </td>
 
               <td>
-                {{ dewPoint(outsideT, outsideRH) | number: '1.0-2' }}&thinsp;°C
+                {{ dewPoint(outsideT, outsideRH) | number: '1.0-2' }}&#8239;°C
               </td>
             </tr>
           </table>

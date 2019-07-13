@@ -1,41 +1,50 @@
 #hbody {
-    position: absolute;
-    top: 0.1vh;
-    bottom: 0.1vh;
-    left: 0.1vw;
-    right: 0.1vw;
-    border: 1px solid green;
+  position: absolute;
+  top: 0.1vh;
+  bottom: 0.1vh;
+  left: 0.1vw;
+  right: 0.1vw;
+  border: 1px solid green;
 }
 
 table {
-    border-collapse: collapse;
-    margin: 0;
+  border-collapse: collapse;
+  margin: 0;
 }
 
 table#outer {
+  width: 100%;
+  height: 100%;
 
-    width: 100%;
-    height: 100%;
-
-    h3 {
-        text-align: center;
+  h3 {
+    text-align: center;
+  }
+  td {
+    border: 1px solid gray;
+    position: relative;
+    vertical-align: top;
+  }
+  table {
+    th {
+      font-weight: normal;
+      padding-bottom: 0.5em;
     }
     td {
-        border: 1px solid gray;
-        position: relative;
-        vertical-align: top;
+      border: 0;
     }
-    td#inside {
-        width: 40%;
-
+  }
+  td#inside {
+    width: 40%;
+  }
+  td#between {
+    width: 20%;
+  }
+  td#outside {
+    width: 40%;
+    input {
+      width: 2.4em;
+      text-align: right;
+      padding-right: 0.3em;
     }
-    td#between {
-        width: 20%;
-    }
-    td#outside {
-        width: 40%;
-        input {
-            width: 3.5em;
-        }
-    }
+  }
 }
