@@ -25,12 +25,14 @@ table#outer {
     vertical-align: top;
   }
   table {
+    width: 100%;
     th {
       font-weight: normal;
       padding-bottom: 0.5em;
     }
     td {
       border: 0;
+      text-align: center;
     }
   }
   td#inside {
