@@ -23,6 +23,11 @@ table#outer {
     border: 1px solid gray;
     position: relative;
     vertical-align: top;
+    input {
+      width: 2.4em;
+      text-align: right;
+      padding-right: 0.3em;
+    }
   }
   table {
     width: 100%;
@@ -43,10 +48,5 @@ table#outer {
   }
   td#outside {
     width: 40%;
-    input {
-      width: 2.4em;
-      text-align: right;
-      padding-right: 0.3em;
-    }
   }
 }

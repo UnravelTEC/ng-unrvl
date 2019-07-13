@@ -4,7 +4,7 @@
  20% between
  40% outside
  -->
- <!--
+<!--
  &#8202; - hair space
  &#8239; - thin nbsp
  &thinsp;
@@ -34,6 +34,34 @@
                 dewPoint(T['lastValue'], rH['lastValue']) | number: '1.0-2'
               }}&#8239;°C
             </td>
+          </tr>
+          <tr>
+            <th>Temp. Offset.</th>
+            <th>Corr. Humidity</th>
+            <th></th>
+            <th></th>
+          </tr>
+          <tr>
+            <td>
+              <input
+                type="text"
+                id="temperatureOffset"
+                [ngModel]="temperatureOffset"
+                (ngModelChange)="updateTO($event)"
+                name="temperatureOffset"
+              />&#8239;°<br />
+              {{ T['lastValue'] + temperatureOffsetNumber | number: '1.0-2' }}&#8239;°C
+            </td>
+            <td>
+              {{
+                relHumidity(
+                  T['lastValue'] + temperatureOffsetNumber,
+                  absoluteHumidity
+                ) | number: '1.0-2'
+              }}&#8239;%
+            </td>
+            <td></td>
+            <td></td>
           </tr>
         </table>
 

@@ -32,14 +32,18 @@ export class HumidityComponent implements OnInit {
       strokeWidth: 1,
       strokeBorderWidth: 1,
       highlightCircleSize: 1
-    },
+    }
     // legend: 'never'
   };
-  labelBlackList = ['__name__','interval'];
+  labelBlackList = ['__name__', 'interval'];
 
   outsideT: number;
   outsideRH: number;
-  private variablesToSave = ['outsideT', 'outsideRH'];
+  temperatureOffset = '0';
+  temperatureOffsetNumber: number;
+  private variablesToSave = ['outsideT', 'outsideRH', 'temperatureOffset'];
+  public dewPointTemp;
+  public absoluteHumidity;
 
   constructor(
     private globalSettings: GlobalSettingsService,
@@ -59,6 +63,11 @@ export class HumidityComponent implements OnInit {
     });
     if (!this.outsideT) this.outsideT = 10;
     if (!this.outsideRH) this.outsideRH = 50;
+    if (!this.temperatureOffsetNumber)
+      this.temperatureOffsetNumber = Number(this.temperatureOffset);
+
+    this.dewPointTemp = 0;
+    this.absoluteHumidity = 0;
   }
   isString(x) {
     return Object.prototype.toString.call(x) === '[object String]';
@@ -78,6 +87,7 @@ export class HumidityComponent implements OnInit {
 
     const y_m = Math.log((rH / 100) * Math.exp((b - T / d) * (T / (c + T))));
     const T_dp = (c * y_m) / (b - y_m);
+    this.dewPointTemp = T_dp;
     return T_dp;
   }
   absHumidity(argT, argRH) {
@@ -103,7 +113,27 @@ export class HumidityComponent implements OnInit {
 
     //=  10^5 * mw/R* * DD(r,T)/TK; AF(TD,TK) = 10^5 * mw/R* * SDD(TD)/TK
     // console.log('result:', aH);
+    this.absoluteHumidity = aH;
     return aH; // g/m³
+  }
+  relHumidity(argT, argAH) {
+    const T = isString(argT) ? Number(argT) : argT;
+    const aH = isString(argAH) ? Number(argAH) : argAH;
+
+    let a: number, b: number;
+    if (T >= 0) {
+      a = 7.5;
+      b = 237.3;
+    } else {
+      a = 7.6;
+      b = 240.7;
+    }
+
+    const SDD = 6.1078 * Math.pow(10, (a * T) / (b + T)); // Sättigungsdampfdruck in hPa
+    const SDDDP =
+      6.1078 * Math.pow(10, (a * this.dewPointTemp) / (b + this.dewPointTemp));
+    const rH = (100 * SDDDP) / SDD;
+    return rH;
   }
   save() {
     this.variablesToSave.forEach(elementName => {
@@ -116,6 +146,11 @@ export class HumidityComponent implements OnInit {
   }
   updateT(T) {
     this.outsideT = T;
+    this.save();
+  }
+  updateTO(T) {
+    this.temperatureOffset = T;
+    this.temperatureOffsetNumber = Number(T);
     this.save();
   }
 }
