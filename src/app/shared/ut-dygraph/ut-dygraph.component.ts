@@ -51,6 +51,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   @Input()
   startTime = '15m'; // prefix m for min, s for seconds, h for hours, d for days
   @Input()
+  maxRetentionTime = 3; // how long the data is hold in Browser RAM - times the "startTime"
+  // - only enforced on fetchnewdata - and only cuts as much as is fetched new.
+  public manuallyPanned = false;
+  public initialDataLength = Infinity;
+  @Input()
   dataBaseQueryStepMS = 1000; // query step on server
   @Input()
   downloadFullResolution = false; // set to false to reduce Database query step to max. of screen res.
@@ -610,6 +615,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     console.log('handleInitialData: received Data:', cloneDeep(receivedData));
 
     this.updateDataSet(receivedData);
+    this.initialDataLength = this.displayedData.length;
 
     this.average = this.calculateAverage();
 
@@ -792,6 +798,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         parent.toZoom = new Date(to);
         parent.fromFormDate = new FormControl(parent.fromZoom);
         parent.toFormDate = new FormControl(parent.toZoom);
+        parent.manuallyPanned = true;
         parent.checkAndFetchOldData();
         parent.stopUpdateOnNewData();
       }
@@ -929,8 +936,16 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const oldlength = this.displayedData.length;
     this.updateDataSet(displayedData);
-
+    if (!this.manuallyPanned) {
+      const maxDataLength = this.initialDataLength * this.maxRetentionTime;
+      const newlength = this.displayedData.length;
+      if (newlength > maxDataLength) {
+        this.displayedData.splice(0, newlength - oldlength);
+        this.dataBeginTime = this.displayedData[0][0];
+      }
+    }
     if (this.runningAvgSeconds != this.Dygraph.rollPeriod()) {
       console.log('adj roll');
       this.Dygraph.adjustRoll(this.runningAvgSeconds);
@@ -1425,6 +1440,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       dw[1] = new Date(dw[1].valueOf() - panFor + 1);
       this.checkAndFetchOldData();
     }
+    this.manuallyPanned = true;
     this.Dygraph.updateOptions({ dateWindow: dw });
   }
   resetZoom() {
@@ -1459,6 +1475,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.fromZoom = new Date(xRange[0]);
     this.toZoom = new Date(xRange[1]);
     this.setCurrentXrange();
+    this.manuallyPanned = true;
     this.updateFromToPickers();
   }
   zoom(factor: number) {
@@ -1483,6 +1500,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     if (factor > 1) {
       this.checkAndFetchOldData();
     }
+    this.manuallyPanned = true;
     this.setCurrentXrange();
     this.updateFromToPickers();
   }
@@ -1552,6 +1570,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.toZoom = endDate;
     this.setCurrentXrange();
     this.updateFromToPickers();
+    this.manuallyPanned = true;
     this.Dygraph.updateOptions({
       dateWindow: [startDate.valueOf(), endDate.valueOf()]
     });
@@ -1591,6 +1610,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     if (wasRunning) {
       this.startUpdateOnNewData();
     }
+    this.manuallyPanned = true;
     this.checkAndFetchOldData();
   }
   toDatePickerChanged($event) {
@@ -1608,6 +1628,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.Dygraph.updateOptions({
       dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
     });
+    this.manuallyPanned = true;
   }
   toggleStats() {
     this.stats = !this.stats;
