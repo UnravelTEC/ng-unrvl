@@ -36,6 +36,9 @@ export class Mics6814Component implements OnInit {
     left: '1vw',
     right: '10em'
   };
+  dataSeriesLabelRed = ['Reducing'];
+  dataSeriesLabelOx = ['Oxidizing'];
+  dataSeriesLabelAmmo = ['Ammonia'];
 
   constructor(private globalSettings: GlobalSettingsService) {
     this.globalSettings.emitChange({ appName: 'MiCS 6814 Gas Sensor' });
