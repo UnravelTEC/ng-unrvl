@@ -15,7 +15,7 @@ export class SensorsComponent implements OnInit {
   loading = true;
   loadingText = 'Initializing...';
 
-  implemented_sensors = ['sps30', 'scd30', 'ds18b20', 'bme280', 'type5'];
+  implemented_sensors = ['sps30', 'scd30', 'ds18b20', 'bme280', 'type5','mpu9250'];
 
   constructor(
     private globalSettings: GlobalSettingsService,
