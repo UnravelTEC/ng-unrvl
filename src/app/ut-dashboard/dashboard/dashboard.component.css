@@ -1,9 +1,14 @@
-div#panel {
-  display: flex;
+div.panel {
+  /* display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
+  align-content: flex-start; */
 }
-#panel > a {
+.panel > * {
+  margin: 0 auto;
+}
+
+.panel > a {
   text-align: center;
   display: inline-block;
   overflow:hidden;
@@ -18,7 +23,12 @@ div#panel {
   text-decoration: none;
 }
 
-#panel > a[href] {
+.panel > a[href] {
   background: #5991b2;
   color: black;
+}
+
+h2 {
+  margin-left: 2em;
+  margin-bottom: 0.5em;
 }
