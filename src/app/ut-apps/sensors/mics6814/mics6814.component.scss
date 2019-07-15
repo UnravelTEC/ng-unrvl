@@ -1,34 +1,30 @@
 table {
-    position: absolute;
-    right: 0.3em;
+    border-collapse: collapse;
+    margin: 0;
+    padding:0;
+  th {
+    padding-bottom: 1vh;
+  }
+  td.unit {
+    text-align: left;
+  }
+//   border: 1px solid green;
+}
 
-    margin: auto 0;
-    th {
-      padding-bottom: 1vh;
-    }
-    td {
-      text-align: right;
-      padding-right: 3em;
-    }
-    td.unit {
-      text-align: left;
-    }
-    td:first-child {
-      text-align: center;
-      width: 3em;
-      padding-right: 0.3em;
-    }
-  }
+table#side {
+  position: absolute;
+  right: 0;
+  width: 7em;
+  top: 0;
+  bottom: 0;
+  height: 100%;
 
-  #redvalues {
-    top: 0;
-    bottom: 66%;
+//   border: 1px solid red;
+  td {
+    vertical-align: middle;
+    text-align: center;
   }
-  #oxvalues {
-    top: 33%;
-    bottom: 33%;
+  table {
+      margin: auto;
   }
-  #ammovalues {
-    top: 66%;
-    bottom: 2em;
-  }
+}

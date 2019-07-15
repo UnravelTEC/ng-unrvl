@@ -20,21 +20,21 @@ export class Mics6814Component implements OnInit {
     top: '0',
     bottom: '67%',
     left: '1vw',
-    right: '10em'
+    right: '7em'
   };
   graphstyle_ox = {
     position: 'absolute',
     top: '34%',
     bottom: '34%',
     left: '1vw',
-    right: '10em'
+    right: '7em'
   };
   graphstyle_ammo = {
     position: 'absolute',
     top: '66%',
     bottom: '0.5rem',
     left: '1vw',
-    right: '10em'
+    right: '7em'
   };
   dataSeriesLabelRed = ['Reducing'];
   dataSeriesLabelOx = ['Oxidizing'];
