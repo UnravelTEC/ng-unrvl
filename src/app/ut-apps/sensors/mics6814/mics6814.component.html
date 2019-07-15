@@ -1,0 +1,38 @@
+<div id="innerappbody">
+  <app-ut-dygraph
+    queryString='voltage_V{model="adc",sensor="ADS1115",id="0x48",channel="1"}'
+    [fetchFromServerIntervalMS]="step"
+    [dataBaseQueryStepMS]="step"
+    [dataSeriesLabels]="dataSeriesLabels"
+    [labelBlackList]="labelBlackList"
+    YLabel="Reducing / NO₂"
+    [style]="graphstyle_red"
+    [startTime]="startTime"
+    [extraDyGraphConfig]="extraDyGraphConfig"
+    #red
+  ></app-ut-dygraph>
+  <app-ut-dygraph
+    queryString='voltage_V{model="adc",sensor="ADS1115",id="0x48",channel="3"}'
+    [fetchFromServerIntervalMS]="step"
+    [dataBaseQueryStepMS]="step"
+    [dataSeriesLabels]="dataSeriesLabels"
+    [labelBlackList]="labelBlackList"
+    YLabel="Oxidizing / CO"
+    [style]="graphstyle_ox"
+    [startTime]="startTime"
+    [extraDyGraphConfig]="extraDyGraphConfig"
+    #ox
+  ></app-ut-dygraph>
+  <app-ut-dygraph
+    queryString='voltage_V{model="adc",sensor="ADS1115",id="0x48",channel="2"}'
+    [fetchFromServerIntervalMS]="step"
+    [dataBaseQueryStepMS]="step"
+    [dataSeriesLabels]="dataSeriesLabels"
+    [labelBlackList]="labelBlackList"
+    YLabel="Ammonia"
+    [style]="graphstyle_ammo"
+    [startTime]="startTime"
+    [extraDyGraphConfig]="extraDyGraphConfig"
+    #ammo
+  ></app-ut-dygraph>
+</div>
