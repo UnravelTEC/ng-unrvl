@@ -13,6 +13,18 @@
   <table id="outer">
     <tr>
       <td id="inside">
+        <mat-form-field>
+          <mat-label>Sensor</mat-label>
+          <mat-select [(ngModel)]="sensorQuery" name="sensor">
+            <mat-option *ngFor="let sensor of sensors" [value]="sensor.query">
+              {{ sensor.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button type="submit" class="btn btn-success" (click)="selectSensor()">
+          Set
+        </button>
+        <!-- {{ sensorQuery }} -->
         <h3>Inside</h3>
         <table>
           <tr>
@@ -68,7 +80,7 @@
         </table>
 
         <app-ut-dygraph
-          queryString='humidity_rel_percent{sensor="SCD30"}'
+          [queryString]='queryStringHumidity'
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
           YLabel="rH (%)"
@@ -82,7 +94,7 @@
           #rH
         ></app-ut-dygraph>
         <app-ut-dygraph
-          queryString='temperature_degC{sensor="SCD30"}'
+          [queryString]='queryStringTemp'
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
           YLabel="T (°C)"
@@ -99,11 +111,14 @@
       <td id="between">
         <h3>In &lt;= Out</h3>
         <h4>
-
-          <div>rH:
+          <div>
+            rH:
             {{
-              relHumidity(T['lastValue'] + temperatureOffsetNumber, outsideAH, outsideTD)
-                | number: '1.0-2'
+              relHumidity(
+                T['lastValue'] + temperatureOffsetNumber,
+                outsideAH,
+                outsideTD
+              ) | number: '1.0-2'
             }}&#8239;%
           </div>
         </h4>
@@ -142,9 +157,7 @@
                 {{ outsideAH | number: '1.0-2' }}&#8239;g&#8202;/&#8202;m³
               </td>
 
-              <td>
-                {{ outsideTD | number: '1.0-2' }}&#8239;°C
-              </td>
+              <td>{{ outsideTD | number: '1.0-2' }}&#8239;°C</td>
             </tr>
           </table>
         </form>

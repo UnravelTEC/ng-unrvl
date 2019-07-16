@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GlobalSettingsService } from 'app/core/global-settings.service';
 import { LocalStorageService } from 'app/core/local-storage.service';
-import { isString } from 'util';
 
 @Component({
   selector: 'app-humidity',
@@ -9,6 +8,17 @@ import { isString } from 'util';
   styleUrls: ['./humidity.component.scss']
 })
 export class HumidityComponent implements OnInit {
+  sensors = [
+    { name: 'SCD30', query: '{sensor="SCD30"}' },
+    { name: 'BME280 0x76', query: '{sensor="BME280",id="0x76"}' },
+    { name: 'BME280 0x77', query: '{sensor="BME280",id="0x77"}' }
+  ];
+  sensorQuery = '';
+  queryStringHumidityBase = 'humidity_rel_percent';
+  queryStringHumidity = this.queryStringHumidityBase;
+  queryStringTempBase = 'temperature_degC';
+  queryStringTemp = this.queryStringTempBase;
+
   step = 1000;
   startTime = '15m';
   graphstyleT = {
@@ -43,7 +53,14 @@ export class HumidityComponent implements OnInit {
   outsideTD: number;
   temperatureOffset = '0';
   temperatureOffsetNumber: number;
-  private variablesToSave = ['outsideT', 'outsideRH', 'temperatureOffset'];
+  private variablesToSave = [
+    'outsideT',
+    'outsideRH',
+    'temperatureOffset',
+    'queryStringHumidity',
+    'queryStringTemp',
+    'sensorQuery'
+  ];
   public dewPointTemp;
   public absoluteHumidity;
 
@@ -73,13 +90,19 @@ export class HumidityComponent implements OnInit {
     this.outsideAH = this.absHumidity(this.outsideT, this.outsideRH);
     this.outsideTD = this.dewPoint(this.outsideT, this.outsideRH);
   }
+
   isString(x) {
     return Object.prototype.toString.call(x) === '[object String]';
   }
+  selectSensor() {
+    this.queryStringTemp = this.queryStringTempBase + this.sensorQuery;
+    this.queryStringHumidity = this.queryStringHumidityBase + this.sensorQuery;
+    this.save();
+  }
 
   dewPoint(argT, argRH, P = 972) {
-    const T = isString(argT) ? Number(argT) : argT;
-    const rH = isString(argRH) ? Number(argRH) : argRH;
+    const T = this.isString(argT) ? Number(argT) : argT;
+    const rH = this.isString(argRH) ? Number(argRH) : argRH;
 
     // source: https://en.wikipedia.org/wiki/Dew_point#Calculating_the_dew_point
     // todo enhance with constants for different temperature sets
@@ -95,8 +118,8 @@ export class HumidityComponent implements OnInit {
     return T_dp;
   }
   absHumidity(argT, argRH) {
-    const T = isString(argT) ? Number(argT) : argT;
-    const rH = isString(argRH) ? Number(argRH) : argRH;
+    const T = this.isString(argT) ? Number(argT) : argT;
+    const rH = this.isString(argRH) ? Number(argRH) : argRH;
     // console.log('aH(', T, rH, ')');
     // from https://www.wetterochs.de/wetter/feuchte.html
     const T_K = T + 273.15;
@@ -121,8 +144,8 @@ export class HumidityComponent implements OnInit {
     return aH; // g/m³
   }
   relHumidity(argT, argAH, argTD = this.dewPointTemp) {
-    const T = isString(argT) ? Number(argT) : argT;
-    const aH = isString(argAH) ? Number(argAH) : argAH;
+    const T = this.isString(argT) ? Number(argT) : argT;
+    const aH = this.isString(argAH) ? Number(argAH) : argAH;
 
     let a: number, b: number;
     if (T >= 0) {
