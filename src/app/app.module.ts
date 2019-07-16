@@ -39,6 +39,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/humidity/humidity.module#HumidityModule'
   },
   {
+    path: 'Apps/Atmosphere',
+    loadChildren: './ut-apps/atmosphere/atmosphere.module#AtmosphereModule'
+  },
+  {
     path: 'Apps/ADC',
     loadChildren: './ut-apps/adc/adc.module#AdcModule'
   },
