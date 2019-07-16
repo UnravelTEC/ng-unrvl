@@ -44,21 +44,40 @@
     <radial-gauge
       width="200"
       height="200"
-      units="Ohm"
+      units="ppm"
       title="VOCs"
       min-value="0"
-      max-value="1000000"
+      max-value="2.5"
       exact-ticks="true"
       minor-ticks="0"
-      major-ticks="[0,500000,1000000]"
-      highlights='[ {"from": 0, "to": 25, "color": "green"},
-                        {"from": 25, "to": 50, "color": "greenyellow"},
-                        {"from": 50, "to": 100, "color": "yellow"},
-                        {"from": 100, "to": 150, "color": "orange"},
-                        {"from": 150, "to": 250, "color": "red"}
+      major-ticks="[0,0.2,0.6,2,2.5]"
+      highlights='[ {"from": 0, "to": 0.06, "color": "green"},
+                        {"from": 0.06, "to": 0.2, "color": "greenyellow"},
+                        {"from": 0.2, "to": 0.6, "color": "yellow"},
+                        {"from": 0.6, "to": 2, "color": "orange"},
+                        {"from": 2, "to": 2.5, "color": "red"}
          ]'
       [attr.value]="voc['lastValue']"
     ></radial-gauge>
+    <!-- for gas_ohm<div id="gaugeVOC">
+        <radial-gauge
+          width="200"
+          height="200"
+          units="Ohm"
+          title="VOCs"
+          min-value="0"
+          max-value="1000000"
+          exact-ticks="true"
+          minor-ticks="0"
+          major-ticks="[0,500000,1000000]"
+          highlights='[ {"from": 0, "to": 25, "color": "green"},
+                            {"from": 25, "to": 50, "color": "greenyellow"},
+                            {"from": 50, "to": 100, "color": "yellow"},
+                            {"from": 100, "to": 150, "color": "orange"},
+                            {"from": 150, "to": 250, "color": "red"}
+             ]'
+          [attr.value]="voc['lastValue']"
+        ></radial-gauge> -->
   </div>
   <div id="barT">
     <linear-gauge
@@ -110,7 +129,7 @@
 ></app-ut-dygraph>
 
 <app-ut-dygraph
-  queryString="gas_ohm"
+  queryString='gas_ppm{gas="VOC"}'
   [fetchFromServerIntervalMS]="step"
   [dataBaseQueryStepMS]="step"
   YLabel=""
