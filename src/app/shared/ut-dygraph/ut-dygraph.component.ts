@@ -532,6 +532,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
           } else {
             newRow[i] = Number(element[1]);
           }
+          this.updateMinMax(newRow[i]);
           rowValid = true;
           continue;
         }
@@ -608,6 +609,14 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       if (nrValidElements) {
         this.lastValue = sum / nrValidElements;
       }
+    }
+  }
+  updateMinMax(newdata) {
+    if(newdata > this.max) {
+      this.max = newdata
+    }
+    if(newdata < this.min) {
+      this.min = newdata
     }
   }
 
@@ -863,8 +872,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     // console.log('ut-dy.c: calculateAverage');
     // console.log(from);
     let sum = 0,
-      min = Infinity,
-      max = -Infinity,
       upper = 0,
       lower;
     if (from) {
@@ -882,6 +889,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const nr_series = targetArray[0].length;
     for (let series_i = 1; series_i <= nr_series - 1; series_i++) {
       sum = 0;
+      let series_count = 0;
       for (let i = upper; i < datalen; i++) {
         const value = targetArray[i][series_i];
         if (isNaN(value)) {
@@ -889,18 +897,12 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
           continue;
         }
         sum += value;
-        if (value < min) {
-          min = value;
-        }
-        if (value > max) {
-          max = value;
-        }
+        series_count += 1;
       }
       // console.log(sum);
 
-      this.averages[series_i - 1] = sum / (datalen - upper);
-      this.min = min;
-      this.max = max;
+      this.averages[series_i - 1] = sum / (series_count);
+
     }
     sum = 0;
     for (let i = 0; i < this.averages.length; i++) {
@@ -1302,6 +1304,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
               newRow[c] = Number(element[1]);
             }
           }
+          this.updateMinMax(newRow[c]);
           rowValid = true;
           continue;
         }
@@ -1586,6 +1589,14 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       );
     }
     this.h.exportCSV(data, labels, this.exportUTC);
+  }
+  getAverage(time='1m') {
+    const time_s = this.h.parseToSeconds(time)
+    const avg_item_count = time_s / this.dataBaseQueryStepMS * 1000
+
+  }
+  getAverages(time='1m') {
+
   }
 
   fromDatePickerChanged($event) {
