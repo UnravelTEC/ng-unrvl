@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GlobalSettingsService } from 'app/core/global-settings.service';
 import { LocalStorageService } from 'app/core/local-storage.service';
+import { HelperFunctionsService } from 'app/core/helper-functions.service';
 
 @Component({
   selector: 'app-humidity',
@@ -63,10 +64,13 @@ export class HumidityComponent implements OnInit {
   ];
   public dewPointTemp;
   public absoluteHumidity;
+  public correctedHumidity;
+  public humidityAfterVenting;
 
   constructor(
     private globalSettings: GlobalSettingsService,
-    private localStorage: LocalStorageService
+    private localStorage: LocalStorageService,
+    private h: HelperFunctionsService
   ) {
     this.globalSettings.emitChange({ appName: 'Humidity' });
   }
@@ -91,9 +95,6 @@ export class HumidityComponent implements OnInit {
     this.outsideTD = this.dewPoint(this.outsideT, this.outsideRH);
   }
 
-  isString(x) {
-    return Object.prototype.toString.call(x) === '[object String]';
-  }
   selectSensor() {
     this.queryStringTemp = this.queryStringTempBase + this.sensorQuery;
     this.queryStringHumidity = this.queryStringHumidityBase + this.sensorQuery;
@@ -101,8 +102,8 @@ export class HumidityComponent implements OnInit {
   }
 
   dewPoint(argT, argRH, P = 972) {
-    const T = this.isString(argT) ? Number(argT) : argT;
-    const rH = this.isString(argRH) ? Number(argRH) : argRH;
+    const T = this.h.isString(argT) ? Number(argT) : argT;
+    const rH = this.h.isString(argRH) ? Number(argRH) : argRH;
 
     // source: https://en.wikipedia.org/wiki/Dew_point#Calculating_the_dew_point
     // todo enhance with constants for different temperature sets
@@ -118,48 +119,22 @@ export class HumidityComponent implements OnInit {
     return T_dp;
   }
   absHumidity(argT, argRH) {
-    const T = this.isString(argT) ? Number(argT) : argT;
-    const rH = this.isString(argRH) ? Number(argRH) : argRH;
-    // console.log('aH(', T, rH, ')');
-    // from https://www.wetterochs.de/wetter/feuchte.html
-    const T_K = T + 273.15;
-    let a: number, b: number;
-    if (T >= 0) {
-      a = 7.5;
-      b = 237.3;
-    } else {
-      a = 7.6;
-      b = 240.7;
-    }
-    const m_w = 18.016; // kg/kmol Molekulargewicht des Wasserdampfes
-    const R = 8314.3; // J/(kmol*K) (universelle Gaskonstante)
-
-    const SDD = 6.1078 * Math.pow(10, (a * T) / (b + T)); // Sättigungsdampfdruck in hPa
-    const DD = (rH / 100) * SDD; // Dampfdruck in hPa
-    const aH = 100000 * (m_w / R) * (DD / T_K);
-
-    //=  10^5 * mw/R* * DD(r,T)/TK; AF(TD,TK) = 10^5 * mw/R* * SDD(TD)/TK
-    // console.log('result:', aH);
+    const aH = this.h.absHumidity(argT,argRH);
     this.absoluteHumidity = aH;
     return aH; // g/m³
   }
-  relHumidity(argT, argAH, argTD = this.dewPointTemp) {
-    const T = this.isString(argT) ? Number(argT) : argT;
-    const aH = this.isString(argAH) ? Number(argAH) : argAH;
 
-    let a: number, b: number;
-    if (T >= 0) {
-      a = 7.5;
-      b = 237.3;
-    } else {
-      a = 7.6;
-      b = 240.7;
-    }
-
-    const SDD = 6.1078 * Math.pow(10, (a * T) / (b + T)); // Sättigungsdampfdruck in hPa
-    const SDDDP = 6.1078 * Math.pow(10, (a * argTD) / (b + argTD));
-    const rH = (100 * SDDDP) / SDD;
+  relHumidity(argT, argTD = this.dewPointTemp) {
+    const rH = this.h.relHumidity(argT, argTD);
     return rH;
+  }
+  calcCorrRH(temp) {
+    this.correctedHumidity = this.h.relHumidity(temp, this.dewPointTemp);
+    return this.correctedHumidity;
+  }
+  calcHumAfterVent(temp, dewPointTemp) {
+    this.humidityAfterVenting = this.h.relHumidity(temp, dewPointTemp);
+    return this.humidityAfterVenting;
   }
   save() {
     this.variablesToSave.forEach(elementName => {
@@ -182,5 +157,8 @@ export class HumidityComponent implements OnInit {
     this.temperatureOffset = T;
     this.temperatureOffsetNumber = Number(T);
     this.save();
+  }
+  toNum(string_arg) {
+    return Number(string_arg);
   }
 }

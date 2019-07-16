@@ -283,4 +283,65 @@ export class HelperFunctionsService {
       '.csv';
     FileSaver.saveAs(blob, name);
   }
+
+  isString(x) {
+    return Object.prototype.toString.call(x) === '[object String]';
+  }
+
+  relHumidity(argT, argTD ) {
+    const T = this.isString(argT) ? Number(argT) : argT;
+
+    let a: number, b: number;
+    if (T >= 0) {
+      a = 7.5;
+      b = 237.3;
+    } else {
+      a = 7.6;
+      b = 240.7;
+    }
+
+    const SDD = 6.1078 * Math.pow(10, (a * T) / (b + T)); // Sättigungsdampfdruck in hPa
+    const SDDDP = 6.1078 * Math.pow(10, (a * argTD) / (b + argTD));
+    const rH = (100 * SDDDP) / SDD;
+    return rH;
+  }
+  absHumidity(argT, argRH) {
+    const T = this.isString(argT) ? Number(argT) : argT;
+    const rH = this.isString(argRH) ? Number(argRH) : argRH;
+    // console.log('aH(', T, rH, ')');
+    // from https://www.wetterochs.de/wetter/feuchte.html
+    const T_K = T + 273.15;
+    let a: number, b: number;
+    if (T >= 0) {
+      a = 7.5;
+      b = 237.3;
+    } else {
+      a = 7.6;
+      b = 240.7;
+    }
+    const m_w = 18.016; // kg/kmol Molekulargewicht des Wasserdampfes
+    const R = 8314.3; // J/(kmol*K) (universelle Gaskonstante)
+
+    const SDD = 6.1078 * Math.pow(10, (a * T) / (b + T)); // Sättigungsdampfdruck in hPa
+    const DD = (rH / 100) * SDD; // Dampfdruck in hPa
+    return 100000 * (m_w / R) * (DD / T_K);
+
+    //=  10^5 * mw/R* * DD(r,T)/TK; AF(TD,TK) = 10^5 * mw/R* * SDD(TD)/TK
+    // console.log('result:', aH);
+  }
+  dewPoint(argT, argRH, P = 972) {
+    const T = this.isString(argT) ? Number(argT) : argT;
+    const rH = this.isString(argRH) ? Number(argRH) : argRH;
+
+    // source: https://en.wikipedia.org/wiki/Dew_point#Calculating_the_dew_point
+    // todo enhance with constants for different temperature sets
+    let a: number, b: number, c: number, d: number;
+    a = 6.1121; //mbar
+    b = 18.678;
+    c = 257.14; // °C
+    d = 234.5; // °C
+
+    const y_m = Math.log((rH / 100) * Math.exp((b - T / d) * (T / (c + T))));
+    return (c * y_m) / (b - y_m);
+  }
 }
