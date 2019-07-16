@@ -23,14 +23,14 @@ export class Scd30Component implements OnInit {
     top: '3em',
     bottom: '50%',
     left: '1vw',
-    right: '1vw'
+    right: '8em'
   };
   graphstyleTH = {
     position: 'absolute',
     top: '50%',
     bottom: '0.5rem',
     left: '1vw',
-    right: '1vw'
+    right: '8em'
   };
   dataSeriesLabels = ['SCD 30'];
   dataSeriesLabelsTH = ['SCD 30'];
