@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 
@@ -7,7 +7,7 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
   templateUrl: './ut-fetchmetrics.component.html',
   styleUrls: ['./ut-fetchmetrics.component.scss']
 })
-export class UtFetchmetricsComponent implements OnInit {
+export class UtFetchmetricsComponent implements OnInit, OnDestroy {
   constructor(
     private http: HttpClient,
     private globalSettings: GlobalSettingsService
@@ -42,6 +42,11 @@ export class UtFetchmetricsComponent implements OnInit {
 
     this.fetchResult();
   }
+  private Death = false;
+  ngOnDestroy() {
+    this.Death = true;
+    console.log('byebye FetchMetrics');
+  }
   fetchResult() {
     this.http
       .get(this.fetchUrl, { responseType: 'text' })
@@ -57,6 +62,7 @@ export class UtFetchmetricsComponent implements OnInit {
     let arrayOfLines = data.match(/[^\r\n]+/g);
     if (!arrayOfLines) {
       console.error('data error, empty.', data);
+      this.interval = 5;
     } else {
       for (let i = 0; i < arrayOfLines.length; i++) {
         const line = arrayOfLines[i];
@@ -80,10 +86,13 @@ export class UtFetchmetricsComponent implements OnInit {
         }
       }
       // console.log(this.metrics);
+      this.interval = 1;
     }
-    setTimeout(() => {
-      this.fetchResult();
-    }, this.interval * 1000);
+    if (!this.Death) {
+      setTimeout(() => {
+        this.fetchResult();
+      }, this.interval * 1000);
+    }
   }
   handleError(data) {
     console.error(data);
