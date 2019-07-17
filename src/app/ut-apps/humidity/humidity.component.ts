@@ -11,6 +11,8 @@ import { HelperFunctionsService } from 'app/core/helper-functions.service';
 export class HumidityComponent implements OnInit {
   sensors = [
     { name: 'SCD30', query: '{sensor="SCD30"}' },
+    { name: 'BME280 (any)', query: '{sensor="BME280"}' },
+    { name: 'BME680 (any)', query: '{sensor="BME680"}' },
     { name: 'BME280 0x76', query: '{sensor="BME280",id="0x76"}' },
     { name: 'BME280 0x77', query: '{sensor="BME280",id="0x77"}' }
   ];
@@ -102,12 +104,11 @@ export class HumidityComponent implements OnInit {
   }
 
   dewPoint(argT, argRH) {
-
     this.dewPointTemp = this.h.dewPoint(argT, argRH);
     return this.dewPointTemp;
   }
   absHumidity(argT, argRH) {
-    const aH = this.h.absHumidity(argT,argRH);
+    const aH = this.h.absHumidity(argT, argRH);
     this.absoluteHumidity = aH;
     return aH; // g/m³
   }
