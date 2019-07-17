@@ -172,7 +172,15 @@ export class HelperFunctionsService {
   }
 
   createLabelString(lObj: Object, blackListLabels: string[] = []): string {
+    //$sensor@host
     let labelString = '';
+    if (lObj['sensor'] && blackListLabels.indexOf('sensor') === -1) {
+      labelString = lObj['sensor'];
+    }
+    if (lObj['node'] && blackListLabels.indexOf('node') === -1) {
+      labelString += '@' + lObj['node'];
+    }
+
     let firstDone = false;
     for (let key in lObj) {
       const value = lObj[key];
@@ -189,11 +197,10 @@ export class HelperFunctionsService {
         continue;
       }
 
-      if (key === '__name__') {
-        labelString += value + ': ';
+      if (key === 'model' && value === 'adc') {
         continue;
       }
-      if (key === 'model' && value === 'adc') {
+      if (key === 'sensor' || key === 'node' || key === 'job') {
         continue;
       }
       if (key === 'channel') {
@@ -206,7 +213,14 @@ export class HelperFunctionsService {
       if (firstDone) {
         labelString += ', ';
       } else {
+        if (labelString) {
+          labelString += ': ';
+        }
         firstDone = true;
+      }
+      if (key === '__name__') {
+        labelString += value;
+        continue;
       }
       labelString += key + ': ' + value;
     }
@@ -288,7 +302,7 @@ export class HelperFunctionsService {
     return Object.prototype.toString.call(x) === '[object String]';
   }
 
-  relHumidity(argT, argTD ) {
+  relHumidity(argT, argTD) {
     const T = this.isString(argT) ? Number(argT) : argT;
 
     let a: number, b: number;
