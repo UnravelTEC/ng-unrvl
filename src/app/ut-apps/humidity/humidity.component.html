@@ -120,8 +120,11 @@
         <h4>Humidity Difference</h4>
         <div>
           {{
-            humidityAfterVenting - correctedHumidity | number: '1.0-2'
-          }}&#8239;%
+            calcHumAfterVent(
+              T['lastValue'] + temperatureOffsetNumber,
+              outsideTD
+            ) - correctedHumidity | number: '1.0-2'
+           }}&#8239;%<!-- do not use humidityAfterVenting, calculate it new to prevent ng runtime errors -->
         </div>
 
         <h4>New rH:</h4>
