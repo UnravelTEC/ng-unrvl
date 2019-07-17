@@ -62,10 +62,10 @@ export class HumidityComponent implements OnInit {
     'queryStringTemp',
     'sensorQuery'
   ];
-  public dewPointTemp;
-  public absoluteHumidity;
-  public correctedHumidity;
-  public humidityAfterVenting;
+  public dewPointTemp = 0;
+  public absoluteHumidity = 0;
+  public correctedHumidity = 0;
+  public humidityAfterVenting = 0;
 
   constructor(
     private globalSettings: GlobalSettingsService,
@@ -101,22 +101,10 @@ export class HumidityComponent implements OnInit {
     this.save();
   }
 
-  dewPoint(argT, argRH, P = 972) {
-    const T = this.h.isString(argT) ? Number(argT) : argT;
-    const rH = this.h.isString(argRH) ? Number(argRH) : argRH;
+  dewPoint(argT, argRH) {
 
-    // source: https://en.wikipedia.org/wiki/Dew_point#Calculating_the_dew_point
-    // todo enhance with constants for different temperature sets
-    let a: number, b: number, c: number, d: number;
-    a = 6.1121; //mbar
-    b = 18.678;
-    c = 257.14; // °C
-    d = 234.5; // °C
-
-    const y_m = Math.log((rH / 100) * Math.exp((b - T / d) * (T / (c + T))));
-    const T_dp = (c * y_m) / (b - y_m);
-    this.dewPointTemp = T_dp;
-    return T_dp;
+    this.dewPointTemp = this.h.dewPoint(argT, argRH);
+    return this.dewPointTemp;
   }
   absHumidity(argT, argRH) {
     const aH = this.h.absHumidity(argT,argRH);
