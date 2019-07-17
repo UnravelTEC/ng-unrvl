@@ -39,6 +39,13 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     left: undefined,
     right: undefined
   };
+  styleDefault = {
+    position: 'absolute',
+    top: '0px',
+    bottom: '0px',
+    left: '0px',
+    right: '0px'
+  };
 
   @Input()
   YLabel = 'Value (unit)';
@@ -669,6 +676,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     if (this.fetchFromServerIntervalMS > 0) {
       this.startUpdate();
     }
+    this.yRange = this.Dygraph.yAxisRange();
     this.checkAndFetchOldData();
   }
 
@@ -676,7 +684,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     console.log('clickCallback');
     if (this.hasOwnProperty('parent')) {
       const parent = this['parent'];
-      parent.stopUpdateOnNewData();
+      if (parent.options != 'false') {
+        // do only if user has option to enable it again
+        parent.stopUpdateOnNewData();
+      }
     }
   }
 
@@ -693,6 +704,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     if (this.hasOwnProperty('parent')) {
       const parent = this['parent'];
+      console.log(yRanges[0]);
+
+      parent.yRange = yRanges[0];
       // parent.fromZoom = new Date(minDate);
       // parent.toZoom = new Date(maxDate);
     } else {
@@ -722,6 +736,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       return;
     }
     const parent = g['parent'];
+    parent.yRange = g.yAxisRange();
 
     const xrange = g.xAxisRange();
     const dw = g.getOption('dateWindow');
@@ -1591,7 +1606,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
   getAverage(time = '1m', index = 1) {
     let time_s = this.h.parseToSeconds(time);
-    if(!time_s) {
+    if (!time_s) {
       time_s = 60;
     }
     const item_count = Math.ceil((time_s / this.dataBaseQueryStepMS) * 1000);
