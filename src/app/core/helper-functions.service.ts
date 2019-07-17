@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
 import { formatDate } from '@angular/common';
 import * as FileSaver from 'file-saver';
+import { cloneDeep } from 'lodash-es';
 
 @Injectable({
   providedIn: 'root'
@@ -172,22 +173,29 @@ export class HelperFunctionsService {
   }
 
   createLabelString(lObj: Object, blackListLabels: string[] = []): string {
+    const labelBlackList = cloneDeep(blackListLabels);
     //$sensor@host
     let labelString = '';
-    if (lObj['sensor'] && blackListLabels.indexOf('sensor') === -1) {
+    if (lObj['sensor'] && labelBlackList.indexOf('sensor') === -1) {
       labelString = lObj['sensor'];
+      labelBlackList.push('sensor');
     }
-    if (lObj['node'] && blackListLabels.indexOf('node') === -1) {
+    if (lObj['model'] && labelBlackList.indexOf('model') === -1) {
+      labelString = lObj['model'];
+      labelBlackList.push('model')
+    }
+    if (lObj['node'] && labelBlackList.indexOf('node') === -1) {
       labelString += '@' + lObj['node'];
+      labelBlackList.push('node')
     }
 
     let firstDone = false;
     for (let key in lObj) {
-      const value = lObj[key];
+      let value = lObj[key];
 
       let isInBlackList = false;
-      if (blackListLabels) {
-        blackListLabels.forEach(item => {
+      if (labelBlackList) {
+        labelBlackList.forEach(item => {
           if (key == item) {
             isInBlackList = true;
           }
@@ -200,7 +208,7 @@ export class HelperFunctionsService {
       if (key === 'model' && value === 'adc') {
         continue;
       }
-      if (key === 'sensor' || key === 'node' || key === 'job') {
+      if (key === 'job') {
         continue;
       }
       if (key === 'channel') {
@@ -208,6 +216,12 @@ export class HelperFunctionsService {
       }
       if (key === 'interval') {
         key = 'i';
+      }
+      if (value === 'temperature_degC') {
+        value = 'T';
+      }
+      if (value === 'humidity_rel_percent') {
+        value = 'rH';
       }
 
       if (firstDone) {
