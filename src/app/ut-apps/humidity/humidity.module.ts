@@ -5,6 +5,7 @@ import { HumidityRoutingModule } from './humidity-routing.module';
 import { HumidityComponent } from './humidity.component';
 import { UtDygraphModule } from 'app/shared/ut-dygraph/ut-dygraph.module';
 import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
@@ -13,6 +14,7 @@ import { FormsModule } from '@angular/forms';
     HumidityRoutingModule,
     UtDygraphModule,
     MatSelectModule,
+    MatIconModule,
     FormsModule
   ],
   declarations: [HumidityComponent]

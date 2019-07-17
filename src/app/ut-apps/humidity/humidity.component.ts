@@ -9,6 +9,8 @@ import { HelperFunctionsService } from 'app/core/helper-functions.service';
   styleUrls: ['./humidity.component.scss']
 })
 export class HumidityComponent implements OnInit {
+  optionsOpen = false;
+
   sensors = [
     { name: 'SCD30', query: '{sensor="SCD30"}' },
     { name: 'BME280 (any)', query: '{sensor="BME280"}' },
