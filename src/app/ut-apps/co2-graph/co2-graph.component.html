@@ -6,7 +6,7 @@
       ((graph['lastValue'] < 2000) ? 'yellow' : 'red')
      }} ">
       {{
-        graph['lastValue']  | number: '1.1-1'
+        graph.getAverage()  | number: '1.1-1'
       }}</span
     >&#8239;ppm
   </span>

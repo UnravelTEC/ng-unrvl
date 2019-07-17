@@ -68,10 +68,8 @@
             </td>
             <td>
               {{
-                relHumidity(
-                  T['lastValue'] + temperatureOffsetNumber,
-                  absoluteHumidity
-                ) | number: '1.0-2'
+                calcCorrRH(T['lastValue'] + temperatureOffsetNumber)
+                  | number: '1.0-2'
               }}&#8239;%
             </td>
             <td></td>
@@ -80,7 +78,7 @@
         </table>
 
         <app-ut-dygraph
-          [queryString]='queryStringHumidity'
+          [queryString]="queryStringHumidity"
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
           YLabel="rH (%)"
@@ -94,7 +92,7 @@
           #rH
         ></app-ut-dygraph>
         <app-ut-dygraph
-          [queryString]='queryStringTemp'
+          [queryString]="queryStringTemp"
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
           YLabel="T (°C)"
@@ -110,18 +108,34 @@
       </td>
       <td id="between">
         <h3>In &lt;= Out</h3>
-        <h4>
-          <div>
-            rH:
-            {{
-              relHumidity(
-                T['lastValue'] + temperatureOffsetNumber,
-                outsideAH,
-                outsideTD
-              ) | number: '1.0-2'
-            }}&#8239;%
-          </div>
-        </h4>
+
+        <h4>Temp. Difference</h4>
+        <div>
+          {{
+            -(T['lastValue'] + temperatureOffsetNumber - toNum(outsideT))
+              | number: '1.0-2'
+          }}&#8239;°
+        </div>
+
+        <h4>Humidity Difference</h4>
+        <div>
+          {{
+            calcHumAfterVent(
+              T['lastValue'] + temperatureOffsetNumber,
+              outsideTD
+            ) - correctedHumidity | number: '1.0-2'
+           }}&#8239;%<!-- do not use humidityAfterVenting, calculate it new to prevent ng runtime errors -->
+        </div>
+
+        <h4>New rH:</h4>
+        <div>
+          {{
+            calcHumAfterVent(
+              T['lastValue'] + temperatureOffsetNumber,
+              outsideTD
+            ) | number: '1.0-2'
+          }}&#8239;%
+        </div>
       </td>
 
       <td id="outside">

@@ -39,6 +39,13 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     left: undefined,
     right: undefined
   };
+  styleDefault = {
+    position: 'absolute',
+    top: '0px',
+    bottom: '0px',
+    left: '0px',
+    right: '0px'
+  };
 
   @Input()
   YLabel = 'Value (unit)';
@@ -532,6 +539,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
           } else {
             newRow[i] = Number(element[1]);
           }
+          this.updateMinMax(newRow[i]);
           rowValid = true;
           continue;
         }
@@ -610,6 +618,14 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       }
     }
   }
+  updateMinMax(newdata) {
+    if (newdata > this.max) {
+      this.max = newdata;
+    }
+    if (newdata < this.min) {
+      this.min = newdata;
+    }
+  }
 
   handleInitialData(receivedData: Object) {
     console.log('handleInitialData: received Data:', cloneDeep(receivedData));
@@ -660,6 +676,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     if (this.fetchFromServerIntervalMS > 0) {
       this.startUpdate();
     }
+    this.yRange = this.Dygraph.yAxisRange();
     this.checkAndFetchOldData();
   }
 
@@ -667,7 +684,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     console.log('clickCallback');
     if (this.hasOwnProperty('parent')) {
       const parent = this['parent'];
-      parent.stopUpdateOnNewData();
+      if (parent.options != 'false') {
+        // do only if user has option to enable it again
+        parent.stopUpdateOnNewData();
+      }
     }
   }
 
@@ -684,6 +704,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     if (this.hasOwnProperty('parent')) {
       const parent = this['parent'];
+      console.log(yRanges[0]);
+
+      parent.yRange = yRanges[0];
       // parent.fromZoom = new Date(minDate);
       // parent.toZoom = new Date(maxDate);
     } else {
@@ -713,6 +736,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       return;
     }
     const parent = g['parent'];
+    parent.yRange = g.yAxisRange();
 
     const xrange = g.xAxisRange();
     const dw = g.getOption('dateWindow');
@@ -863,8 +887,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     // console.log('ut-dy.c: calculateAverage');
     // console.log(from);
     let sum = 0,
-      min = Infinity,
-      max = -Infinity,
       upper = 0,
       lower;
     if (from) {
@@ -882,6 +904,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const nr_series = targetArray[0].length;
     for (let series_i = 1; series_i <= nr_series - 1; series_i++) {
       sum = 0;
+      let series_count = 0;
       for (let i = upper; i < datalen; i++) {
         const value = targetArray[i][series_i];
         if (isNaN(value)) {
@@ -889,18 +912,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
           continue;
         }
         sum += value;
-        if (value < min) {
-          min = value;
-        }
-        if (value > max) {
-          max = value;
-        }
+        series_count += 1;
       }
       // console.log(sum);
 
-      this.averages[series_i - 1] = sum / (datalen - upper);
-      this.min = min;
-      this.max = max;
+      this.averages[series_i - 1] = sum / series_count;
     }
     sum = 0;
     for (let i = 0; i < this.averages.length; i++) {
@@ -1302,6 +1318,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
               newRow[c] = Number(element[1]);
             }
           }
+          this.updateMinMax(newRow[c]);
           rowValid = true;
           continue;
         }
@@ -1587,6 +1604,27 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
     this.h.exportCSV(data, labels, this.exportUTC);
   }
+  getAverage(time = '1m', index = 1) {
+    let time_s = this.h.parseToSeconds(time);
+    if (!time_s) {
+      time_s = 60;
+    }
+    const item_count = Math.ceil((time_s / this.dataBaseQueryStepMS) * 1000);
+    if (item_count < 1) {
+      console.log('getAvg: no items to average');
+      return;
+    }
+
+    const avgdata = this.displayedData.slice(
+      this.displayedData.length - item_count
+    );
+    let sum = 0;
+    avgdata.forEach(row => {
+      sum += row[index];
+    });
+    return sum / item_count;
+  }
+  getAverages(time = '1m') {}
 
   fromDatePickerChanged($event) {
     const newDate = $event['value'];
