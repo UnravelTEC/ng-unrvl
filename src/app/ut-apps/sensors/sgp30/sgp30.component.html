@@ -1,5 +1,7 @@
 <h2>
   {{ title }}
+  <input type=checkbox id="options" name="options" [(ngModel)]="options">
+
 </h2>
 
 <div id="innerappbody">
@@ -16,7 +18,7 @@
           [style]="graphstyle_co2"
           [startTime]="startTime"
           [extraDyGraphConfig]="extraDyGraphConfig"
-          options="false"
+          [options]="options"
           #eco2
         ></app-ut-dygraph>
       </td>
@@ -31,7 +33,7 @@
           [style]="graphstyle_co2_base"
           [startTime]="startTime"
           [extraDyGraphConfig]="extraDyGraphConfig"
-          options="false"
+          [options]="options"
           #baseco2
         ></app-ut-dygraph>
       </td>
@@ -46,7 +48,7 @@
           [style]="graphstyle_h2_raw"
           [startTime]="startTime"
           [extraDyGraphConfig]="extraDyGraphConfig"
-          options="false"
+          [options]="options"
           #h2raw
         ></app-ut-dygraph>
       </td>
@@ -63,7 +65,7 @@
           [style]="graphstyle_voc"
           [startTime]="startTime"
           [extraDyGraphConfig]="extraDyGraphConfig"
-          options="false"
+          [options]="options"
           #eco2
         ></app-ut-dygraph>
       </td>
@@ -78,7 +80,7 @@
           [style]="graphstyle_voc_base"
           [startTime]="startTime"
           [extraDyGraphConfig]="extraDyGraphConfig"
-          options="false"
+          [options]="options"
           #basevoc
         ></app-ut-dygraph>
       </td>
@@ -93,7 +95,7 @@
           [style]="graphstyle_voc_raw"
           [startTime]="startTime"
           [extraDyGraphConfig]="extraDyGraphConfig"
-          options="false"
+          [options]="options"
           #vocraw
         ></app-ut-dygraph>
       </td>

@@ -22,6 +22,7 @@ export class Sgp30Component implements OnInit {
   graphstyle_voc =  this.graphstyle;
   graphstyle_voc_base =  this.graphstyle;
   graphstyle_voc_raw =  this.graphstyle;
+  options = false;
 
 
   extraDyGraphConfig = {
@@ -35,7 +36,7 @@ export class Sgp30Component implements OnInit {
 
   constructor(private globalSettings: GlobalSettingsService) {
     this.globalSettings.emitChange({
-      appName: this.title;
+      appName: this.title
     });
   }
   ngOnInit() {}
