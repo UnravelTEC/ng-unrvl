@@ -10,22 +10,22 @@ export class Bme280Component implements OnInit {
 
   graphstyle_T = {
     position: 'absolute',
-    top: '3em',
-    bottom: '70%',
+    top: '1%',
+    bottom: '66%',
     left: '1vw',
     right: '10em'
   };
   graphstyle_H = {
     position: 'absolute',
-    top: '30%',
-    bottom: '35%',
+    top: '33%',
+    bottom: '33%',
     left: '1vw',
     right: '10em'
   };
   graphstyle_P = {
     position: 'absolute',
-    top: '65%',
-    bottom: '0.5rem',
+    top: '66%',
+    bottom: '0',
     left: '1vw',
     right: '10em'
   };

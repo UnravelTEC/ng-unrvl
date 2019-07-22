@@ -107,3 +107,14 @@ where QueryString is a member of the components class
 
 ng config schematics.@schematics/angular:component.styleext scss
 
+
+# air quality
+
+co2 - graph
+pm - graph
+VOC - graph
+rH - no graph, only bar
+T - no graph, only bar
+
+O3 - büro, aussen?
+NO2
