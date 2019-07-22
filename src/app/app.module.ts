@@ -115,6 +115,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/sensors/sps30/sps30.module#Sps30Module'
   },
   {
+    path: 'Apps/Sensors/SGP30',
+    loadChildren: './ut-apps/sensors/sgp30/sgp30.module#Sgp30Module'
+  },
+  {
     path: 'Apps/Sensors/DS18B20',
     loadChildren: './ut-apps/sensors/ds18b20/ds18b20.module#Ds18b20Module'
   },
