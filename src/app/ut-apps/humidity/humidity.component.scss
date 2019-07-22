@@ -52,7 +52,7 @@ table#outer {
   }
 }
 
-button {
+button.btn {
   display: inline-block;
   background-color: #5cb85c;
   border-color: #4cae4c;
@@ -69,4 +69,25 @@ button {
   margin: 5px;
   text-decoration: none;
   cursor: pointer;
+}
+
+#serverchooser {
+  position: absolute;
+  top: 3em;
+  right: 0;
+  padding: 0 0.6em;
+  border: 1px solid gray;
+  border-radius: 0.5em;
+  background: rgba(245, 245, 220, 0.993);
+  z-index: 999;
+}
+#optionsButtonLeft {
+  position: absolute;
+  top: 1em;
+  right: 0.5em;
+  border: 1px solid gray;
+  border-radius: 0.5em;
+  padding: 0.1em 0 0 0;
+  height: 2rem;
+  width: 2rem;
 }

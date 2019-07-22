@@ -13,19 +13,30 @@
   <table id="outer">
     <tr>
       <td id="inside">
-        <mat-form-field>
-          <mat-label>Sensor</mat-label>
-          <mat-select [(ngModel)]="sensorQuery" name="sensor">
-            <mat-option *ngFor="let sensor of sensors" [value]="sensor.query">
-              {{ sensor.name }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <button type="submit" class="btn btn-success" (click)="selectSensor()">
-          Set
-        </button>
+        <div id="serverchooser" *ngIf="optionsOpen == true">
+          <mat-form-field>
+            <mat-label>Sensor</mat-label>
+            <mat-select [(ngModel)]="sensorQuery" name="sensor">
+              <mat-option *ngFor="let sensor of sensors" [value]="sensor.query">
+                {{ sensor.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <button
+            type="submit"
+            class="btn btn-success"
+            (click)="selectSensor()"
+          >
+            Set
+          </button>
+        </div>
         <!-- {{ sensorQuery }} -->
         <h3>Inside</h3>
+
+        <button (click)="optionsOpen = !optionsOpen" id="optionsButtonLeft">
+          <mat-icon>menu</mat-icon>
+        </button>
+
         <table>
           <tr>
             <th>Temperature</th>
@@ -124,7 +135,7 @@
               T['lastValue'] + temperatureOffsetNumber,
               outsideTD
             ) - correctedHumidity | number: '1.0-2'
-           }}&#8239;%<!-- do not use humidityAfterVenting, calculate it new to prevent ng runtime errors -->
+          }}&#8239;%<!-- do not use humidityAfterVenting, calculate it new to prevent ng runtime errors -->
         </div>
 
         <h4>New rH:</h4>
