@@ -18,12 +18,13 @@ export class Sgp30Component implements OnInit {
   };
   graphstyle_co2 = this.graphstyle;
   graphstyle_co2_base = this.graphstyle;
-  graphstyle_h2_raw =  this.graphstyle;
-  graphstyle_voc =  this.graphstyle;
-  graphstyle_voc_base =  this.graphstyle;
-  graphstyle_voc_raw =  this.graphstyle;
+  graphstyle_h2_raw = this.graphstyle;
+  graphstyle_voc = this.graphstyle;
+  graphstyle_voc_base = this.graphstyle;
+  graphstyle_voc_raw = this.graphstyle;
   options = false;
 
+  multiplicateFactorsVOC = [1000];
 
   extraDyGraphConfig = {
     strokeWidth: 2.0 //,
@@ -31,8 +32,8 @@ export class Sgp30Component implements OnInit {
   };
 
   dataSeriesLabels = ['SGP30'];
-  labelBlackList = ['__name__', 'interval', 'sensor','featureset','serial'];
-  startTime = '15m';
+  labelBlackList = ['__name__', 'interval', 'sensor', 'featureset', 'serial'];
+  startTime = '1h';
 
   constructor(private globalSettings: GlobalSettingsService) {
     this.globalSettings.emitChange({

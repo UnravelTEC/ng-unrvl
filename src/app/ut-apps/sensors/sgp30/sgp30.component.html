@@ -1,7 +1,6 @@
 <h2>
   {{ title }}
-  <input type=checkbox id="options" name="options" [(ngModel)]="options">
-
+  <input type="checkbox" id="options" name="options" [(ngModel)]="options" />
 </h2>
 
 <div id="innerappbody">
@@ -55,22 +54,23 @@
     </tr>
     <tr>
       <td>
-          <app-ut-dygraph
+        <app-ut-dygraph
           queryString='gas_ppm{sensor="SGP30",gas="VOC"}'
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
           [dataSeriesLabels]="dataSeriesLabels"
           [labelBlackList]="labelBlackList"
-          YLabel="VOC (ppm)"
+          YLabel="VOC (ppb)"
           [style]="graphstyle_voc"
           [startTime]="startTime"
           [extraDyGraphConfig]="extraDyGraphConfig"
           [options]="options"
+          [multiplicateFactors]="multiplicateFactorsVOC"
           #eco2
         ></app-ut-dygraph>
       </td>
       <td>
-          <app-ut-dygraph
+        <app-ut-dygraph
           queryString='baseline{sensor="SGP30",gas="VOC"}'
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
@@ -85,7 +85,7 @@
         ></app-ut-dygraph>
       </td>
       <td>
-          <app-ut-dygraph
+        <app-ut-dygraph
           queryString='sgp30_raw{sensor="SGP30",gas="VOC"}'
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
@@ -101,8 +101,4 @@
       </td>
     </tr>
   </table>
-
-
-
-
 </div>
