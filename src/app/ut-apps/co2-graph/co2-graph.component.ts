@@ -12,10 +12,10 @@ export class Co2GraphComponent implements OnInit, OnDestroy {
   step = 2000;
 
   extraDyGraphConfig = {
-    strokeWidth: 3.0 ,
+    strokeWidth: 1.0,
     logscale: true
   };
-  labelBlackList = ['__name__', 'gas'];
+  labelBlackList = ['__name__', 'gas', 'featureset', 'serial'];
 
   graphstyle = {
     position: 'absolute',
