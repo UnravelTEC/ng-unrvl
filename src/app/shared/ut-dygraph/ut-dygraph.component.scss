@@ -96,6 +96,16 @@
     background: rgb(197, 197, 197);
     text-shadow: none;
   }
+  .series {
+    text-align: right;
+    position: absolute;
+    top: 0;
+    right: 0;
+    h4 {
+      margin: 0;
+      text-align: left;
+    }
+  }
 
   button.toggleOptions {
     position: absolute;

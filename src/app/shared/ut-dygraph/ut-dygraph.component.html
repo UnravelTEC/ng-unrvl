@@ -42,6 +42,27 @@ style.padding-bottom="20vh"-->
       <mat-icon>settings</mat-icon>
     </button>
 
+    <div class="series" *ngIf="options == true && optionsOpen == true">
+      <div *ngFor="let label of dyGraphOptions['labels']; index as i">
+        <h4 *ngIf="label === 'Date'">Series visibility</h4>
+        <label
+          *ngIf="label !== 'Date'"
+          [for]="'series_display_' + label"
+          (click)="updateVisibility()"
+        >
+          {{ label }}
+        </label>
+        <input
+          *ngIf="label !== 'Date'"
+          type="checkbox"
+          [name]="'series_display_' + label"
+          [id]="'series_display_' + label"
+          [(ngModel)]="dyGraphOptions.visibility[i - 1]"
+        />
+        <span></span>
+      </div>
+    </div>
+
     <div *ngIf="options == true && optionsOpen == true" class="optionsarea">
       <div class="options">
         <!-- <form class="subbox">
@@ -302,7 +323,9 @@ style.padding-bottom="20vh"-->
       >
       <span *ngIf="!displayedData.length">-</span>
     </div>
-    <div class="ymin {{ XLabel == '' ? 'noxlabel' : ''}}">{{ yRange[0] | number: '1.0-2' }}</div>
+    <div class="ymin {{ XLabel == '' ? 'noxlabel' : '' }}">
+      {{ yRange[0] | number: '1.0-2' }}
+    </div>
     <div class="ymax">{{ yRange[1] | number: '1.0-2' }}</div>
   </div>
 </div>

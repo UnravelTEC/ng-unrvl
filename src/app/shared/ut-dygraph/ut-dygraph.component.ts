@@ -119,7 +119,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     },
     labelsSeparateLines: true,
     valueRange: this.yRange,
-    legend: <any>'always' // also 'never' possible
+    legend: <any>'always', // also 'never' possible
+    visibility: []
   };
 
   public fromZoom: Date;
@@ -353,6 +354,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         ]);
         console.log('columnlabels now:', cloneDeep(this.columnLabels));
         this.debugFun(['added new label, result:', oldLabels], debugflag);
+        this.dyGraphOptions.visibility.push(true);
       } else {
         resortedPData[oldIndex] = receivedDataset[currentNewLabelString];
       }
@@ -1670,5 +1672,26 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
   toggleStats() {
     this.stats = !this.stats;
+  }
+  updateVisibility() {
+    // wait for ng to update variables
+    setTimeout(() => {
+      console.log('new vis:', this.dyGraphOptions.visibility);
+
+      let everythingHidden = true;
+      this.dyGraphOptions.visibility.forEach(series => {
+        if (series === true) {
+          everythingHidden = false;
+        }
+      });
+      if (everythingHidden) {
+        for (let i = 0; i < this.dyGraphOptions.visibility.length; i++) {
+          this.dyGraphOptions.visibility[i] = true;
+        }
+      }
+      this.Dygraph.updateOptions({
+        visibility: this.dyGraphOptions.visibility
+      });
+    }, 50);
   }
 }
