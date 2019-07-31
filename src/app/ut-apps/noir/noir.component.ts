@@ -15,6 +15,8 @@ export class NoirComponent implements OnInit, OnDestroy {
 
   loading = true;
 
+  lastimage = '';
+
   constructor(
     private globalSettings: GlobalSettingsService,
     private utFetchdataService: UtFetchdataService
@@ -92,6 +94,13 @@ export class NoirComponent implements OnInit, OnDestroy {
       }
     }
   }
+  acceptPhoto(data: Object) {
+    console.log('api retval:', data);
+    if (data.hasOwnProperty('filename')) {
+      this.lastimage =
+        this.globalSettings.getAPIEndpoint() + '../images/' + data['filename'];
+    }
+  }
 
   led(newstat: string) {
     this.utFetchdataService
@@ -103,5 +112,14 @@ export class NoirComponent implements OnInit, OnDestroy {
       .subscribe((data: Object) => this.ack(data));
 
     this.ledstatus = 'pending';
+  }
+  photo() {
+    this.utFetchdataService
+      .getHTTPData(this.globalSettings.getAPIEndpoint() + 'noir/takephoto.php')
+      .subscribe((data: Object) => this.acceptPhoto(data));
+  }
+  closePreview() {
+    this.lastimage = '';
+    this.start();
   }
 }

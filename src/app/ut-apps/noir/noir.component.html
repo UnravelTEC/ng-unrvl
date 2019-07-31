@@ -5,10 +5,18 @@
   <button (click)="led('off')" class="offbtn {{ ledstatus }}">Off</button>
   <button (click)="led('on')" class="onbtn {{ ledstatus }}">On</button>
   <button (click)="led('auto')" class="autobtn {{ ledstatus }}">Auto</button>
+  Take
+  <button (click)="photo()" class="autobtn">Photo</button>
 </div>
 <div class="error" *ngIf="! cameraHere && ! loading">
   No Camera connected.
 </div>
 <div class="loading" *ngIf="loading">
   Loading…
+</div>
+
+<div id="preview" *ngIf="lastimage != ''">
+  image:
+  <img [src]="lastimage" alt="">
+  <button (click)="closePreview()">X</button>
 </div>
