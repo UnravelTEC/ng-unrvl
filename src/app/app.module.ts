@@ -47,6 +47,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/adc/adc.module#AdcModule'
   },
   {
+    path: 'Apps/ADC-Diff',
+    loadChildren: './ut-apps/adc-diff/adc-diff.module#AdcDiffModule'
+  },
+  {
     path: 'Apps/CO2',
     loadChildren: './ut-apps/co2/co2.module#Co2Module'
   },
