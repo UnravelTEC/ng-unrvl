@@ -12,7 +12,7 @@ export class AdcComponent implements OnInit {
     top: '1vh',
     bottom: '1vh',
     left: '1vw',
-    right: '1vw'
+    right: '10rem'
   };
   dataSeriesLabels = ['ADS1*15'];
   startTime = '5m';
