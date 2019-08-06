@@ -15,6 +15,7 @@ export class AdcComponent implements OnInit {
     right: '10rem'
   };
   dataSeriesLabels = ['ADS1*15'];
+  labelBlackList = ['__name__', 'model','sensor','interval']; //'sensor',,'id'
   startTime = '5m';
 
   constructor(private globalSettings: GlobalSettingsService) {

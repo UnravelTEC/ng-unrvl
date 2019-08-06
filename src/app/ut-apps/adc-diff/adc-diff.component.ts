@@ -15,6 +15,7 @@ export class AdcDiffComponent implements OnInit {
     right: '10rem'
   };
   dataSeriesLabels = ['ADS1*15'];
+  labelBlackList = ['__name__', 'model','sensor','interval','id'];
   startTime = '3m';
   multiplicateFactors = [1000,1000];
 
