@@ -1666,6 +1666,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
   toggleStats() {
     this.stats = !this.stats;
+    setTimeout(() => {
+      this.Dygraph.resize();
+    },50);
   }
   updateVisibility() {
     // wait for ng to update variables
