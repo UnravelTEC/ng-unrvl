@@ -9,15 +9,7 @@ style.padding-bottom="20vh"-->
   [style.right]="style.right"
 >
   <div class="mydygraph-component">
-    <div
-      class="graph"
-      id="{{ htmlID }}"
-      [style.position]="styleDefault.position"
-      [style.top]="styleDefault.top"
-      [style.bottom]="styleDefault.bottom"
-      [style.left]="styleDefault.left"
-      [style.right]="styleDefault.right"
-    ></div>
+    <div class="graph" id="{{ htmlID }}"></div>
     <div class="date" *ngIf="showDate == true">
       {{ fromZoom | date: 'shortDate' }}
     </div>
@@ -63,257 +55,6 @@ style.padding-bottom="20vh"-->
       </div>
     </div>
 
-    <div *ngIf="options == true && optionsOpen == true" class="optionsarea">
-      <div class="options">
-        <!-- <form class="subbox">
-        <h5>Data Resolution</h5>
-        <mat-radio-group aria-label="Select an option"
-          ><mat-radio-button value="native" id="native"
-            >Native: f {{ maxNativeInterval }}s</mat-radio-button
-          ><br />
-          <mat-radio-button value="manual" id="manual"
-            >Manual:
-          </mat-radio-button>
-          <label for="dataBaseQueryStepMS">f:</label>
-          <input
-            type="text"
-            id="dataBaseQueryStepMS"
-            name="dataBaseQueryStepMS"
-            [(ngModel)]="dataBaseQueryStepMS"
-            style="width:4em"
-          />
-        </mat-radio-group>
-
-        <span class="unit">ms</span>
-      </form> -->
-
-        <form class="subbox">
-          <h5>Fetching interval</h5>
-          <label for="fetchFromServerIntervalMS"></label>
-          <input
-            type="text"
-            id="fetchFromServerIntervalMS"
-            name="fetchFromServerIntervalMS"
-            [(ngModel)]="fetchFromServerIntervalMS"
-            style="width:4em"
-          />
-          <span class="unit">ms</span>
-          <button (click)="toggleFetching()" [class]="running">
-            <mat-icon *ngIf="running">pause_circle_outline</mat-icon>
-            <mat-icon *ngIf="!running">play_circle_outline</mat-icon>
-          </button>
-        </form>
-
-        <form class="subbox">
-          <h5>Reset Data</h5>
-          <button (click)="resetData()">
-            <mat-icon>delete_forever</mat-icon>
-          </button>
-        </form>
-
-        <form class="subbox">
-          <h5>Autopan</h5>
-          <button (click)="toggleAutoPan()">
-            {{ updateOnNewData ? 'disable' : 'enable' }}
-          </button>
-        </form>
-
-        <div class="subbox">
-          <div class="time">
-            <h5>From:</h5>
-            <mat-form-field>
-              <input
-                matInput
-                [matDatepicker]="pickerF"
-                [formControl]="fromFormDate"
-                (dateChange)="fromDatePickerChanged($event)"
-                [max]="dataEndTime"
-              />
-              <mat-datepicker-toggle
-                matSuffix
-                [for]="pickerF"
-              ></mat-datepicker-toggle>
-              <mat-datepicker #pickerF></mat-datepicker>
-            </mat-form-field>
-            <!-- <small>{{ fromZoom | date: 'yyyy-MM-dd' }}</small> -->
-            <br />
-
-            <span>{{ fromZoom | date: 'HH:mm:ss' }}</span>
-          </div>
-        </div>
-
-        <form class="subbox">
-          <h5>Display Range: {{ currentXrangeText }}</h5>
-          <select
-            [(ngModel)]="zoomValue"
-            (ngModelChange)="changeRange($event)"
-            id="zoomValue"
-            name="zoomValue"
-            style="width:4em"
-          >
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="5" selected="selected">5</option>
-            <option value="10">10</option>
-            <option value="20">20</option>
-            <option value="30">30</option>
-          </select>
-          <select
-            [(ngModel)]="zoomMultiplicator"
-            (ngModelChange)="changeRange($event)"
-            id="zoomMultiplicator"
-            name="zoomMultiplicator"
-            style="width:6em"
-          >
-            <option value="1">sec</option>
-            <option value="60" selected="selected">min</option>
-            <option value="3600">hours</option>
-            <option value="68400">days</option>
-            <option value="2592000">months</option>
-            <option value="31536000">years</option>
-          </select>
-        </form>
-
-        <div class="subbox">
-          <div class="time">
-            <h5>To:</h5>
-            <mat-form-field>
-              <input
-                matInput
-                [matDatepicker]="pickerT"
-                [formControl]="toFormDate"
-                (dateChange)="toDatePickerChanged($event)"
-                [max]="dataEndTime"
-                [min]="fromZoom"
-              />
-              <mat-datepicker-toggle
-                matSuffix
-                [for]="pickerT"
-              ></mat-datepicker-toggle>
-              <mat-datepicker #pickerT></mat-datepicker>
-            </mat-form-field>
-            <br />
-            <span>{{ toZoom | date: 'HH:mm:ss' }}</span>
-          </div>
-        </div>
-
-        <form class="subbox">
-          <h5>Pan / Jump</h5>
-          <button (click)="pan('back')">&lt;</button>
-          <select
-            [(ngModel)]="panAmount"
-            id="panAmount"
-            name="panAmount"
-            style="width:5em"
-          >
-            <option value="0.1">1/10</option>
-            <option value="0.2">1/5</option>
-            <option value="0.5" selected="selected">1/2</option>
-            <option value="1">1</option>
-          </select>
-          <button (click)="pan('forward')">&gt;</button>
-        </form>
-
-        <form class="subbox">
-          <h5 title="on click, load/save should open">Zoom</h5>
-          <button (click)="zoom(0.5)">+</button>
-          <button (click)="zoom(2)">-</button>
-          <button (click)="resetZoom()">Reset</button>
-          <button (click)="fullZoom()">All</button>
-        </form>
-
-        <form class="subbox">
-          <h5>Export</h5>
-          <button (click)="exportCSV()">CSV</button>
-          <label for="UTC"
-            >UTC
-            <input
-              type="checkbox"
-              name="UTC"
-              id="UTC"
-              [(ngModel)]="exportUTC"
-            />
-          </label>
-        </form>
-
-        <form class="subbox">
-          <h5>Y linearity</h5>
-          <label for="log">Logarithmic</label>
-          <input
-            type="checkbox"
-            name="logarithmic"
-            id="log"
-            [(ngModel)]="dyGraphOptions.logscale"
-            (change)="updateYlogscale()"
-          />
-        </form>
-
-        <form class="subbox">
-          <h5>Running Average</h5>
-          <label for="runningAvgSeconds"></label>
-          <input
-            type="text"
-            id="runningAvgSeconds"
-            name="runningAvgSeconds"
-            [(ngModel)]="runningAvgSeconds"
-            style="width:2em"
-          />
-          <span class="unit">s</span>
-        </form>
-
-        <form class="subbox">
-          <h5>Legend</h5>
-          <button
-            (click)="toggleLegend()"
-            *ngIf="dyGraphOptions.legend == 'always'"
-          >
-            Off
-          </button>
-          <button
-            (click)="toggleLegend()"
-            *ngIf="dyGraphOptions.legend != 'always'"
-          >
-            On
-          </button>
-        </form>
-
-        <form class="subbox" [style.width]="stats ? '100%' : ''">
-          <div style="float: left;">
-            <h5>Statistics</h5>
-            <button (click)="toggleStats()">+</button>
-          </div>
-          <div *ngIf="stats" class="stats">
-            <small>
-              <span>dataset length:</span> {{ displayedData.length }}<br />
-              <span>last value:</span> {{ lastValue | number: '1.0-3' }}<br />
-              <span>average:</span> {{ average | number: '1.0-3' }}
-            </small>
-            <small>
-              <span>data start:</span>
-              {{ dataBeginTime | date: 'M/d/yy HH:mm:ss' }}<br />
-              <span>max:</span> {{ max | number: '1.0-3' }}<br />
-              <span>min:</span> {{ min | number: '1.0-3' }}<br />
-            </small>
-            <table>
-              <tr>
-                <th *ngFor="let label of dyGraphOptions['labels']">
-                  {{ label === 'Date' ? 'Averages' : label }}
-                </th>
-              </tr>
-              <tr>
-                <td>
-                  Whole Dataset:
-                </td>
-                <td *ngFor="let mean of averages">
-                  {{ mean | number: '1.0-2' }}
-                </td>
-              </tr>
-            </table>
-          </div>
-        </form>
-      </div>
-    </div>
-
     <div class="lastTime" *ngIf="optionsOpen == true">
       Last data:
       <span *ngIf="displayedData.length">
@@ -327,5 +68,251 @@ style.padding-bottom="20vh"-->
       {{ yRange[0] | number: '1.0-2' }}
     </div>
     <div class="ymax">{{ yRange[1] | number: '1.0-2' }}</div>
+  </div>
+
+  <div *ngIf="options == true && optionsOpen == true" class="optionsarea">
+    <div class="options">
+      <!-- <form class="subbox">
+      <h5>Data Resolution</h5>
+      <mat-radio-group aria-label="Select an option"
+        ><mat-radio-button value="native" id="native"
+          >Native: f {{ maxNativeInterval }}s</mat-radio-button
+        ><br />
+        <mat-radio-button value="manual" id="manual"
+          >Manual:
+        </mat-radio-button>
+        <label for="dataBaseQueryStepMS">f:</label>
+        <input
+          type="text"
+          id="dataBaseQueryStepMS"
+          name="dataBaseQueryStepMS"
+          [(ngModel)]="dataBaseQueryStepMS"
+          style="width:4em"
+        />
+      </mat-radio-group>
+
+      <span class="unit">ms</span>
+    </form> -->
+
+      <form class="subbox">
+        <h5>Fetching interval</h5>
+        <label for="fetchFromServerIntervalMS"></label>
+        <input
+          type="text"
+          id="fetchFromServerIntervalMS"
+          name="fetchFromServerIntervalMS"
+          [(ngModel)]="fetchFromServerIntervalMS"
+          style="width:4em"
+        />
+        <span class="unit">ms</span>
+        <button (click)="toggleFetching()" [class]="running">
+          <mat-icon *ngIf="running">pause_circle_outline</mat-icon>
+          <mat-icon *ngIf="!running">play_circle_outline</mat-icon>
+        </button>
+      </form>
+
+      <form class="subbox">
+        <h5>Reset Data</h5>
+        <button (click)="resetData()">
+          <mat-icon>delete_forever</mat-icon>
+        </button>
+      </form>
+
+      <form class="subbox">
+        <h5>Autopan</h5>
+        <button (click)="toggleAutoPan()">
+          {{ updateOnNewData ? 'disable' : 'enable' }}
+        </button>
+      </form>
+
+      <div class="subbox">
+        <div class="time">
+          <h5>From:</h5>
+          <mat-form-field>
+            <input
+              matInput
+              [matDatepicker]="pickerF"
+              [formControl]="fromFormDate"
+              (dateChange)="fromDatePickerChanged($event)"
+              [max]="dataEndTime"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="pickerF"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #pickerF></mat-datepicker>
+          </mat-form-field>
+          <!-- <small>{{ fromZoom | date: 'yyyy-MM-dd' }}</small> -->
+          <br />
+
+          <span>{{ fromZoom | date: 'HH:mm:ss' }}</span>
+        </div>
+      </div>
+
+      <form class="subbox">
+        <h5>Display Range: {{ currentXrangeText }}</h5>
+        <select
+          [(ngModel)]="zoomValue"
+          (ngModelChange)="changeRange($event)"
+          id="zoomValue"
+          name="zoomValue"
+          style="width:4em"
+        >
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="5" selected="selected">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+        </select>
+        <select
+          [(ngModel)]="zoomMultiplicator"
+          (ngModelChange)="changeRange($event)"
+          id="zoomMultiplicator"
+          name="zoomMultiplicator"
+          style="width:6em"
+        >
+          <option value="1">sec</option>
+          <option value="60" selected="selected">min</option>
+          <option value="3600">hours</option>
+          <option value="68400">days</option>
+          <option value="2592000">months</option>
+          <option value="31536000">years</option>
+        </select>
+      </form>
+
+      <div class="subbox">
+        <div class="time">
+          <h5>To:</h5>
+          <mat-form-field>
+            <input
+              matInput
+              [matDatepicker]="pickerT"
+              [formControl]="toFormDate"
+              (dateChange)="toDatePickerChanged($event)"
+              [max]="dataEndTime"
+              [min]="fromZoom"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="pickerT"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #pickerT></mat-datepicker>
+          </mat-form-field>
+          <br />
+          <span>{{ toZoom | date: 'HH:mm:ss' }}</span>
+        </div>
+      </div>
+
+      <form class="subbox">
+        <h5>Pan / Jump</h5>
+        <button (click)="pan('back')">&lt;</button>
+        <select
+          [(ngModel)]="panAmount"
+          id="panAmount"
+          name="panAmount"
+          style="width:5em"
+        >
+          <option value="0.1">1/10</option>
+          <option value="0.2">1/5</option>
+          <option value="0.5" selected="selected">1/2</option>
+          <option value="1">1</option>
+        </select>
+        <button (click)="pan('forward')">&gt;</button>
+      </form>
+
+      <form class="subbox">
+        <h5 title="on click, load/save should open">Zoom</h5>
+        <button (click)="zoom(0.5)">+</button>
+        <button (click)="zoom(2)">-</button>
+        <button (click)="resetZoom()">Reset</button>
+        <button (click)="fullZoom()">All</button>
+      </form>
+
+      <form class="subbox">
+        <h5>Export</h5>
+        <button (click)="exportCSV()">CSV</button>
+        <label for="UTC"
+          >UTC
+          <input type="checkbox" name="UTC" id="UTC" [(ngModel)]="exportUTC" />
+        </label>
+      </form>
+
+      <form class="subbox">
+        <h5>Y linearity</h5>
+        <label for="log">Logarithmic</label>
+        <input
+          type="checkbox"
+          name="logarithmic"
+          id="log"
+          [(ngModel)]="dyGraphOptions.logscale"
+          (change)="updateYlogscale()"
+        />
+      </form>
+
+      <form class="subbox">
+        <h5>Running Average</h5>
+        <label for="runningAvgSeconds"></label>
+        <input
+          type="text"
+          id="runningAvgSeconds"
+          name="runningAvgSeconds"
+          [(ngModel)]="runningAvgSeconds"
+          style="width:2em"
+        />
+        <span class="unit">s</span>
+      </form>
+
+      <form class="subbox">
+        <h5>Legend</h5>
+        <button
+          (click)="toggleLegend()"
+          *ngIf="dyGraphOptions.legend == 'always'"
+        >
+          Off
+        </button>
+        <button
+          (click)="toggleLegend()"
+          *ngIf="dyGraphOptions.legend != 'always'"
+        >
+          On
+        </button>
+      </form>
+
+      <form class="subbox" [style.width]="stats ? '100%' : ''">
+        <div style="float: left;">
+          <h5>Statistics</h5>
+          <button (click)="toggleStats()">+</button>
+        </div>
+        <div *ngIf="stats" class="stats">
+          <small>
+            <span>dataset length:</span> {{ displayedData.length }}<br />
+            <span>last value:</span> {{ lastValue | number: '1.0-3' }}<br />
+            <span>average:</span> {{ average | number: '1.0-3' }}
+          </small>
+          <small>
+            <span>data start:</span>
+            {{ dataBeginTime | date: 'M/d/yy HH:mm:ss' }}<br />
+            <span>max:</span> {{ max | number: '1.0-3' }}<br />
+            <span>min:</span> {{ min | number: '1.0-3' }}<br />
+          </small>
+          <table>
+            <tr>
+              <th *ngFor="let label of dyGraphOptions['labels']">
+                {{ label === 'Date' ? 'Averages' : label }}
+              </th>
+            </tr>
+            <tr>
+              <td>
+                Whole Dataset:
+              </td>
+              <td *ngFor="let mean of averages">
+                {{ mean | number: '1.0-2' }}
+              </td>
+            </tr>
+          </table>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

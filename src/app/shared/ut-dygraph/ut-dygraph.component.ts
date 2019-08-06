@@ -39,13 +39,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     left: undefined,
     right: undefined
   };
-  styleDefault = {
-    position: 'absolute',
-    top: '0px',
-    bottom: '0px',
-    left: '0px',
-    right: '0px'
-  };
 
   @Input()
   YLabel = 'Value (unit)';
@@ -76,8 +69,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   serverPath: string; // optional, get it from globalSettings instead
   @Input()
   runningAvgSeconds = 0;
-  @Input()
-  debug = 'false';
   @Input()
   options = true;
   @Input()
@@ -997,9 +988,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.adjustAnnotationsXtoMS(inViewAnnos);
       this.Dygraph.setAnnotations(inViewAnnos, true);
     }
-    // if (this.debug === 'true') {
+
     this.average = this.calculateAverage();
-    // }
+
     if (this.calculateRunningAvgFrom) {
       const avg = this.calculateAverage(
         this.calculateRunningAvgFrom,
@@ -1426,6 +1417,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
   toggleOptions() {
     this.optionsOpen = !this.optionsOpen;
+    setTimeout(() => {
+      this.Dygraph.resize();
+    },50);
   }
   toggleFetching() {
     if (this.running) {
