@@ -137,9 +137,6 @@
 }
 div.optionsarea {
 
-  // margin-right: 8rem;
-  // max-height: 50%; // not yet perfect, only works if screen is not too small / bottem left of graph is not too far top right.
-  // transform: translate(8rem, -2.7rem);
   overflow: auto;
   div.options {
     padding-left: 0.15rem;
@@ -180,9 +177,9 @@ div.optionsarea {
         min-width: 2.25em;
         .mat-icon {
           margin: 0;
-          // margin-bottom: -10px;
-          // margin-top: -10px;
-          // transform: translateY(6px);
+          margin-bottom: -10px;
+          margin-top: -10px;
+          transform: translateY(6px);
         }
       }
       .time {
