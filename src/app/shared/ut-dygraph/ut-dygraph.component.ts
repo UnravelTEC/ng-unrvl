@@ -130,7 +130,13 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public currentXrange: number;
   public currentXrangeText: string;
   public average: number;
+  public visibleAverage: number;
   public averages: number[] = [];
+  public visibleAverages: number[] = [];
+  public stdDev: number;
+  public visibleStdDev: number;
+  public stdDevs: number[] = [];
+  public visibleStdDevs: number[] = [];
   public min = Infinity;
   public max = -Infinity;
 
@@ -626,7 +632,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.updateDataSet(receivedData);
     this.initialDataLength = this.displayedData.length;
 
-    this.average = this.calculateAverage();
+    this.updateAverages();
 
     this.updateDateWindow();
 
@@ -898,8 +904,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     for (let series_i = 1; series_i <= nr_series - 1; series_i++) {
       sum = 0;
       let series_count = 0;
-      for (let i = upper; i < datalen; i++) {
-        const value = targetArray[i][series_i];
+      for (let time_i = upper; time_i < datalen; time_i++) {
+        const value = targetArray[time_i][series_i];
         if (isNaN(value)) {
           // console.log(i, series_i);
           continue;
@@ -919,6 +925,84 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const avg = sum / this.averages.length;
     //    console.log([avg, datalen - upper]);
     return avg;
+  }
+
+  updateAverages() {
+    // FIXME is very inefficient, as it calculates it new every time - implment sort of running calculation
+    const data = this.displayedData;
+    const datalen = data.length;
+    const nr_series = data[0].length;
+    const visibleFrom = this.fromZoom ? this.fromZoom.valueOf() : 0;
+    const visibleTo = this.toZoom ? this.toZoom.valueOf() : Infinity;
+
+    let sum = 0;
+    let stdDevSum = 0;
+    let visibleStdDevSum = 0;
+    let allValueCount = 0;
+    let allVisibleValueCount = 0;
+    for (let series_i = 1; series_i <= nr_series - 1; series_i++) {
+      sum = 0;
+      let visibleSum = 0;
+      let series_count = 0;
+      let visibleCount = 0;
+      for (let time_i = 0; time_i < datalen; time_i++) {
+        const value = data[time_i][series_i];
+        if (isNaN(value)) {
+          // console.log(i, series_i);
+          continue;
+        }
+        sum += value;
+        series_count += 1;
+        let timestamp = data[time_i][0];
+        if (timestamp >= visibleFrom && timestamp <= visibleTo) {
+          visibleSum += value;
+          visibleCount += 1;
+        }
+      }
+      // console.log(sum);
+
+      let mean = sum / series_count;
+      this.averages[series_i - 1] = mean;
+      let visibleMean = visibleSum / visibleCount;
+      this.visibleAverages[series_i - 1] = visibleMean;
+
+      // and now, the std dev.
+      allValueCount += series_count;
+      allVisibleValueCount += visibleCount;
+      let seriesStdDevSum = 0;
+      let visibleSeriesStdDevSum = 0;
+
+      for (let time_i = 0; time_i < datalen; time_i++) {
+        const value = data[time_i][series_i];
+        if (isNaN(value)) {
+          continue;
+        }
+        let addedValue = Math.pow(value - mean, 2);
+        stdDevSum += addedValue;
+        seriesStdDevSum += addedValue;
+        let timestamp = data[time_i][0];
+        if (timestamp >= visibleFrom && timestamp <= visibleTo) {
+          visibleStdDevSum += addedValue;
+          visibleSeriesStdDevSum += addedValue;
+        }
+      }
+      this.stdDevs[series_i - 1] =  Math.sqrt(seriesStdDevSum / series_count);
+      this.visibleStdDevs[series_i - 1] = Math.sqrt(visibleSeriesStdDevSum / visibleCount);
+    }
+    this.stdDev = Math.sqrt(stdDevSum / allValueCount);
+    this.visibleStdDev = Math.sqrt(visibleStdDevSum / allVisibleValueCount)
+
+    sum = 0;
+    for (let i = 0; i < this.averages.length; i++) {
+      sum += this.averages[i];
+    }
+    this.average = sum / this.averages.length;
+
+    sum = 0;
+    for (let i = 0; i < this.visibleAverages.length; i++) {
+      sum += this.visibleAverages[i];
+    }
+    this.visibleAverage = sum / this.visibleAverages.length;
   }
 
   handleUpdatedData(displayedData: Object) {
@@ -989,7 +1073,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.Dygraph.setAnnotations(inViewAnnos, true);
     }
 
-    this.average = this.calculateAverage();
+    this.updateAverages();
 
     if (this.calculateRunningAvgFrom) {
       const avg = this.calculateAverage(
@@ -1419,7 +1503,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.optionsOpen = !this.optionsOpen;
     setTimeout(() => {
       this.Dygraph.resize();
-    },50);
+    }, 50);
   }
   toggleFetching() {
     if (this.running) {
@@ -1668,7 +1752,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.stats = !this.stats;
     setTimeout(() => {
       this.Dygraph.resize();
-    },50);
+    }, 50);
   }
   updateVisibility() {
     // wait for ng to update variables

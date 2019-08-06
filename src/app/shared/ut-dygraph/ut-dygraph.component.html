@@ -287,19 +287,21 @@ style.padding-bottom="20vh"-->
         <div *ngIf="stats" class="stats">
           <small>
             <span>dataset length:</span> {{ displayedData.length }}<br />
-            <span>last value:</span> {{ lastValue | number: '1.0-3' }}<br />
-            <span>average:</span> {{ average | number: '1.0-3' }}
-          </small>
-          <small>
             <span>data start:</span>
             {{ dataBeginTime | date: 'M/d/yy HH:mm:ss' }}<br />
-            <span>max:</span> {{ max | number: '1.0-3' }}<br />
-            <span>min:</span> {{ min | number: '1.0-3' }}<br />
+          </small>
+          <small>
+            <span>last value:</span> {{ lastValue | number: '1.3-3' }}<br />
+            <span>max:</span> {{ max | number: '1.3-3' }}<br />
+            <span>min:</span> {{ min | number: '1.3-3' }}
           </small>
           <table>
             <tr>
               <th *ngFor="let label of dyGraphOptions['labels']">
                 {{ label === 'Date' ? 'Averages' : label }}
+              </th>
+              <th>
+                All Series
               </th>
             </tr>
             <tr>
@@ -307,7 +309,50 @@ style.padding-bottom="20vh"-->
                 Whole Dataset:
               </td>
               <td *ngFor="let mean of averages">
-                {{ mean | number: '1.0-2' }}
+                {{ mean | number: '1.3-3' }}
+              </td>
+              <td>
+                {{ average | number: '1.3-3' }}
+              </td>
+            </tr>
+            <tr>
+              <td>Visible Dataset:</td>
+              <td *ngFor="let mean of visibleAverages">
+                {{ mean | number: '1.3-3' }}
+              </td>
+              <td>
+                {{ visibleAverage | number: '1.3-3' }}
+              </td>
+            </tr>
+          </table>
+
+          <table>
+            <tr>
+              <th *ngFor="let label of dyGraphOptions['labels']">
+                {{ label === 'Date' ? 'Std. Deviations' : label }}
+              </th>
+              <th>
+                All Series
+              </th>
+            </tr>
+            <tr>
+              <td>
+                Whole Dataset:
+              </td>
+              <td *ngFor="let dev of stdDevs">
+                {{ dev | number: '1.3-3' }}
+              </td>
+              <td>
+                {{ stdDev | number: '1.3-3' }}
+              </td>
+            </tr>
+            <tr>
+              <td>Visible Dataset:</td>
+              <td *ngFor="let dev of visibleStdDevs">
+                {{ dev | number: '1.3-3' }}
+              </td>
+              <td>
+                {{ visibleStdDev | number: '1.3-3' }}
               </td>
             </tr>
           </table>
