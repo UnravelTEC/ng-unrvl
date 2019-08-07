@@ -931,6 +931,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     // FIXME is very inefficient, as it calculates it new every time - implment sort of running calculation
     const data = this.displayedData;
     const datalen = data.length;
+    if(!datalen) {
+      console.log('updateAverages: datalen 0');
+      return;
+    }
     const nr_series = data[0].length;
     const visibleFrom = this.fromZoom ? this.fromZoom.valueOf() : 0;
     const visibleTo = this.toZoom ? this.toZoom.valueOf() : Infinity;
