@@ -58,7 +58,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   @Input()
   dataBaseQueryStepMS = 1000; // query step on server
   @Input()
-  downloadFullResolution = false; // set to false to reduce Database query step to max. of screen res.
+  downloadFullResolution = true; // set to false to reduce Database query step to max. of screen res.
   @Input()
   fetchFromServerIntervalMS = 1000; // set 0 for no update - but can be changed later - default 1000ms.
   @Input()
@@ -706,6 +706,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       console.log(yRanges[0]);
 
       parent.yRange = yRanges[0];
+      parent.updateAverages()
       // parent.fromZoom = new Date(minDate);
       // parent.toZoom = new Date(maxDate);
     } else {
@@ -824,6 +825,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         parent.manuallyPanned = true;
         parent.checkAndFetchOldData();
         parent.stopUpdateOnNewData();
+        parent.updateAverages();
       }
     }
   }
