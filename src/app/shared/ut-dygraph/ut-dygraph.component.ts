@@ -706,7 +706,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       console.log(yRanges[0]);
 
       parent.yRange = yRanges[0];
-      parent.updateAverages()
+      parent.updateAverages();
       // parent.fromZoom = new Date(minDate);
       // parent.toZoom = new Date(maxDate);
     } else {
@@ -933,7 +933,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     // FIXME is very inefficient, as it calculates it new every time - implment sort of running calculation
     const data = this.displayedData;
     const datalen = data.length;
-    if(!datalen) {
+    if (!datalen) {
       console.log('updateAverages: datalen 0');
       return;
     }
@@ -992,11 +992,13 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
           visibleSeriesStdDevSum += addedValue;
         }
       }
-      this.stdDevs[series_i - 1] =  Math.sqrt(seriesStdDevSum / series_count);
-      this.visibleStdDevs[series_i - 1] = Math.sqrt(visibleSeriesStdDevSum / visibleCount);
+      this.stdDevs[series_i - 1] = Math.sqrt(seriesStdDevSum / series_count);
+      this.visibleStdDevs[series_i - 1] = Math.sqrt(
+        visibleSeriesStdDevSum / visibleCount
+      );
     }
     this.stdDev = Math.sqrt(stdDevSum / allValueCount);
-    this.visibleStdDev = Math.sqrt(visibleStdDevSum / allVisibleValueCount)
+    this.visibleStdDev = Math.sqrt(visibleStdDevSum / allVisibleValueCount);
 
     sum = 0;
     for (let i = 0; i < this.averages.length; i++) {
@@ -1508,7 +1510,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   toggleOptions() {
     this.optionsOpen = !this.optionsOpen;
     setTimeout(() => {
-      this.Dygraph.resize();
+      this.Dygraph.resize(undefined, undefined);
     }, 50);
   }
   toggleFetching() {
@@ -1757,7 +1759,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   toggleStats() {
     this.stats = !this.stats;
     setTimeout(() => {
-      this.Dygraph.resize();
+      this.Dygraph.resize(undefined, undefined);
     }, 50);
   }
   updateVisibility() {
