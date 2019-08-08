@@ -279,10 +279,10 @@ style.padding-bottom="20vh"-->
         </button>
       </form>
 
-      <form class="subbox" [style.width]="stats ? '100%' : ''">
+      <form class="subbox" [style.width]="stats ? '100%' : ''" id="stats">
         <div style="float: left;">
           <h5>Statistics</h5>
-          <button (click)="toggleStats()">+</button>
+          <button (click)="toggleStats()">{{ stats ? "-" : "+" }}</button>
         </div>
         <div *ngIf="stats" class="stats">
           <small>
