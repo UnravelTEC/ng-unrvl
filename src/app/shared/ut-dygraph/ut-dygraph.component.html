@@ -112,8 +112,24 @@ style.padding-bottom="20vh"-->
       </form>
 
       <form class="subbox">
-        <h5>Reset Data</h5>
-        <button (click)="resetData()">
+        <h5>Data</h5>
+        <small style="float: left;">
+          #Points: {{
+            !displayedData.length
+              ? 0
+              : displayedData.length * (displayedData[0].length - 1)
+          }}<br />
+          retain &infin;:
+          <label for="retainDataInfinitely">
+            <input
+              type="checkbox"
+              name="retainDataInfinitely"
+              id="retainDataInfinitely"
+              [(ngModel)]="retainDataInfinitely"
+            />
+          </label>
+        </small>
+        <button (click)="resetData()" >
           <mat-icon>delete_forever</mat-icon>
         </button>
       </form>
@@ -252,15 +268,15 @@ style.padding-bottom="20vh"-->
 
       <form class="subbox">
         <h5>Running Average</h5>
-        <label for="runningAvgSeconds"></label>
+        <label for="runningAvgPoints"></label>
         <input
           type="text"
-          id="runningAvgSeconds"
-          name="runningAvgSeconds"
-          [(ngModel)]="runningAvgSeconds"
+          id="runningAvgPoints"
+          name="runningAvgPoints"
+          [(ngModel)]="runningAvgPoints"
           style="width:2em"
         />
-        <span class="unit">s</span>
+        <span class="unit">Points</span>
       </form>
 
       <form class="subbox">
@@ -279,10 +295,10 @@ style.padding-bottom="20vh"-->
         </button>
       </form>
 
-      <form class="subbox" [style.width]="stats ? '100%' : ''">
+      <form class="subbox" [style.width]="stats ? '100%' : ''" id="stats">
         <div style="float: left;">
           <h5>Statistics</h5>
-          <button (click)="toggleStats()">+</button>
+          <button (click)="toggleStats()">{{ stats ? '-' : '+' }}</button>
         </div>
         <div *ngIf="stats" class="stats">
           <small>

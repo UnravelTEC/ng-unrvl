@@ -15,7 +15,7 @@ export class DygraphDevComponent implements OnInit {
   endTime = 'now';
   serverPort = '';
   serverPath = 'prometheus/api/v1/';
-  runningAvgSeconds = 0;
+  runningAvgPoints = 0;
   fetchFromServerIntervalMS = 5000;
 
   style = {
@@ -32,7 +32,7 @@ export class DygraphDevComponent implements OnInit {
     'dataBaseQueryStepMS',
     'startTime',
     'endTime',
-    'runningAvgSeconds',
+    'runningAvgPoints',
     'fetchFromServerIntervalMS'
   ];
 

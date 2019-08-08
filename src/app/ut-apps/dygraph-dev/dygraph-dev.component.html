@@ -9,7 +9,7 @@
       [endTime]="endTime"
       [startTime]="startTime"
       [fetchFromServerIntervalMS]="fetchFromServerIntervalMS"
-      [runningAvgSeconds]="runningAvgSeconds"
+      [runningAvgPoints]="runningAvgPoints"
       debug="true"
     ></app-ut-dygraph>
     <!-- [serverPath]="serverPath" -->
@@ -99,15 +99,15 @@
       />
     </div>
     <div>
-      <label for="runningAvgSeconds">
+      <label for="runningAvgPoints">
         Running Average in Frontend (seconds)
       </label>
-      ({{ runningAvgSeconds }})
+      ({{ runningAvgPoints }})
       <input
         type="text"
-        id="runningAvgSeconds"
-        [(ngModel)]="runningAvgSeconds"
-        name="runningAvgSeconds"
+        id="runningAvgPoints"
+        [(ngModel)]="runningAvgPoints"
+        name="runningAvgPoints"
         style="width:5em;"
       />
     </div>
