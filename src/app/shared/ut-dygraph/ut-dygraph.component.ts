@@ -53,8 +53,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   @Input()
   maxRetentionTime = 3; // how long the data is hold in Browser RAM - times the "startTime"
   // - only enforced on fetchnewdata - and only cuts as much as is fetched new.
-  public manuallyPanned = false;
-  public initialDataLength = Infinity;
+  public retainDataInfinitely = false;
+  public initialDataLength = Infinity; //set on initial Data fetch
   @Input()
   dataBaseQueryStepMS = 1000; // query step on server
   @Input()
@@ -68,7 +68,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   @Input()
   serverPath: string; // optional, get it from globalSettings instead
   @Input()
-  runningAvgSeconds = 0;
+  runningAvgPoints = 0;
   @Input()
   options = true;
   @Input()
@@ -643,8 +643,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.dyGraphOptions
     );
     this.Dygraph['parent'] = this;
-    if (this.runningAvgSeconds) {
-      this.Dygraph.adjustRoll(this.runningAvgSeconds);
+    if (this.runningAvgPoints) {
+      this.Dygraph.adjustRoll(this.runningAvgPoints);
     }
     let usedAnnotations = [];
     if (this.annotations) {
@@ -822,7 +822,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         parent.toZoom = new Date(to);
         parent.fromFormDate = new FormControl(parent.fromZoom);
         parent.toFormDate = new FormControl(parent.toZoom);
-        parent.manuallyPanned = true;
+        parent.retainDataInfinitely = true;
         parent.checkAndFetchOldData();
         parent.stopUpdateOnNewData();
         parent.updateAverages();
@@ -1037,7 +1037,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     const oldlength = this.displayedData.length;
     this.updateDataSet(displayedData);
-    if (!this.manuallyPanned) {
+    if (!this.retainDataInfinitely) {
       const maxDataLength = this.initialDataLength * this.maxRetentionTime;
       const newlength = this.displayedData.length;
       if (newlength > maxDataLength) {
@@ -1045,9 +1045,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
         this.dataBeginTime = this.displayedData[0][0];
       }
     }
-    if (this.runningAvgSeconds != this.Dygraph.rollPeriod()) {
+    if (this.runningAvgPoints != this.Dygraph.rollPeriod()) {
       console.log('adj roll');
-      this.Dygraph.adjustRoll(this.runningAvgSeconds);
+      this.Dygraph.adjustRoll(this.runningAvgPoints);
     }
 
     if (this.updateOnNewData) {
@@ -1543,7 +1543,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       dw[1] = new Date(dw[1].valueOf() - panFor + 1);
       this.checkAndFetchOldData();
     }
-    this.manuallyPanned = true;
+    this.retainDataInfinitely = true;
     this.Dygraph.updateOptions({ dateWindow: dw });
   }
   resetZoom() {
@@ -1578,7 +1578,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.fromZoom = new Date(xRange[0]);
     this.toZoom = new Date(xRange[1]);
     this.setCurrentXrange();
-    this.manuallyPanned = true;
+    this.retainDataInfinitely = true;
     this.updateFromToPickers();
   }
   zoom(factor: number) {
@@ -1603,7 +1603,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     if (factor > 1) {
       this.checkAndFetchOldData();
     }
-    this.manuallyPanned = true;
+    this.retainDataInfinitely = true;
     this.setCurrentXrange();
     this.updateFromToPickers();
   }
@@ -1673,7 +1673,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.toZoom = endDate;
     this.setCurrentXrange();
     this.updateFromToPickers();
-    this.manuallyPanned = true;
+    this.retainDataInfinitely = true;
     this.Dygraph.updateOptions({
       dateWindow: [startDate.valueOf(), endDate.valueOf()]
     });
@@ -1734,7 +1734,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     if (wasRunning) {
       this.startUpdateOnNewData();
     }
-    this.manuallyPanned = true;
+    this.retainDataInfinitely = true;
     this.checkAndFetchOldData();
   }
   toDatePickerChanged($event) {
@@ -1752,7 +1752,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.Dygraph.updateOptions({
       dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
     });
-    this.manuallyPanned = true;
+    this.retainDataInfinitely = true;
   }
   toggleStats() {
     this.stats = !this.stats;
