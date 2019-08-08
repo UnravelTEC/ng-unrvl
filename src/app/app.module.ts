@@ -151,6 +151,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/dygraph-dev/dygraph-dev.module#DygraphDevModule'
   },
   {
+    path: 'Apps/Influx-Test',
+    loadChildren: './ut-apps/influx-test/influx-test.module#InfluxTestModule'
+  },
+  {
     path: 'Apps/Weihnachtsvorlesung',
     loadChildren:
       './ut-apps/weihnachtsvorlesung/weihnachtsvorlesung.module#WeihnachtsvorlesungModule'
