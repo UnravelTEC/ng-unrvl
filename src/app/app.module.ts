@@ -155,6 +155,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/influx-test/influx-test.module#InfluxTestModule'
   },
   {
+    path: 'Apps/Galion',
+    loadChildren: './ut-apps/galion/galion.module#GalionModule'
+  },
+  {
     path: 'Apps/Weihnachtsvorlesung',
     loadChildren:
       './ut-apps/weihnachtsvorlesung/weihnachtsvorlesung.module#WeihnachtsvorlesungModule'

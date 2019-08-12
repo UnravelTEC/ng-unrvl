@@ -1,0 +1,138 @@
+<table>
+  <tr>
+    <th><h2>Galion Testbed</h2></th>
+    <td>
+      <label for="options">Display Options</label
+      ><input
+        type="checkbox"
+        id="options"
+        name="options"
+        [(ngModel)]="options"
+      />
+    </td>
+  </tr>
+</table>
+
+<div id="innerappbody">
+  <table>
+    <tr>
+      <th>BME280 Environmental</th>
+      <th>SCD30 NDIR CO₂</th>
+      <th>SGP30 VOC&#8202;/&#8202;eCO₂</th>
+    </tr>
+    <tr>
+      <td>
+        <app-ut-dygraph
+          queryString="pressure_hPa"
+          [fetchFromServerIntervalMS]="step"
+          [dataBaseQueryStepMS]="step"
+          [dataSeriesLabels]="dataSeriesLabels"
+          [labelBlackList]="labelBlackList"
+          YLabel="Atmospheric Pressure (hPa)"
+          [style]="graphstyle_p"
+          [startTime]="startTime"
+          [extraDyGraphConfig]="extraDyGraphConfig"
+          [options]="options"
+          #hpa
+        ></app-ut-dygraph>
+
+        <app-ut-dygraph
+          queryString='{__name__=~"humidity_rel_percent|temperature_degC",sensor="BME280"}'
+          [fetchFromServerIntervalMS]="step"
+          [dataBaseQueryStepMS]="step"
+          [dataSeriesLabels]="dataSeriesLabels"
+          [labelBlackList]="labelBlackListHT"
+          YLabel="Temperature (°C), relative Humidity (%)"
+          [style]="graphstyle_HT"
+          [startTime]="startTime"
+          [extraDyGraphConfig]="extraDyGraphConfig"
+          [options]="options"
+          #ht
+        ></app-ut-dygraph>
+      </td>
+      <td>
+        <app-ut-dygraph
+          queryString='gas_ppm{sensor="SCD30",gas="CO2"}'
+          [fetchFromServerIntervalMS]="step"
+          [dataBaseQueryStepMS]="step"
+          [dataSeriesLabels]="dataSeriesLabels"
+          [labelBlackList]="labelBlackList"
+          YLabel="NDIR CO₂"
+          [style]="graphstyle_scd30"
+          [startTime]="startTime"
+          [extraDyGraphConfig]="extraDyGraphConfig"
+          [options]="options"
+          #scd30
+        ></app-ut-dygraph>
+      </td>
+      <td>
+        <app-ut-dygraph
+          queryString="sgp30_raw"
+          [fetchFromServerIntervalMS]="step"
+          [dataBaseQueryStepMS]="step"
+          [dataSeriesLabels]="dataSeriesLabels"
+          [labelBlackList]="labelBlackList"
+          YLabel="raw values"
+          [style]="graphstyle_sgp30"
+          [startTime]="startTime"
+          [extraDyGraphConfig]="extraDyGraphConfig"
+          [options]="options"
+          #sgp30
+        ></app-ut-dygraph>
+      </td>
+    </tr>
+    <tr>
+      <th>DGS-O3968-042 O₃&#8202;/&#8202;NO₂</th>
+      <th>Alphasense NO&#8202;/&#8202;NO₂</th>
+      <th>PT1000</th>
+    </tr>
+    <tr>
+      <td>
+        <app-ut-dygraph
+          queryString='gas_ppm{gas="O3"}'
+          [fetchFromServerIntervalMS]="step"
+          [dataBaseQueryStepMS]="step"
+          [dataSeriesLabels]="dataSeriesLabels"
+          [labelBlackList]="labelBlackList"
+          YLabel="O₃ (ppb)"
+          [style]="graphstyle_dgs"
+          [startTime]="startTime"
+          [extraDyGraphConfig]="extraDyGraphConfig"
+          [options]="options"
+          [multiplicateFactors]="multiplicateFactorsVOC"
+          #dgs
+        ></app-ut-dygraph>
+      </td>
+      <td>
+        <app-ut-dygraph
+          queryString='voltage_diff_V{model="adc"}'
+          [fetchFromServerIntervalMS]="step"
+          [dataBaseQueryStepMS]="step"
+          [dataSeriesLabels]="dataSeriesLabels"
+          [labelBlackList]="labelBlackList"
+          YLabel="Voltage Difference (mV)"
+          [style]="graphstyle_adc1"
+          [startTime]="startTime"
+          [extraDyGraphConfig]="extraDyGraphConfig"
+          [options]="options"
+          #adc1
+        ></app-ut-dygraph>
+      </td>
+      <td>
+        <app-ut-dygraph
+          queryString='voltage_V{model="adc",channel="4"}'
+          [fetchFromServerIntervalMS]="step"
+          [dataBaseQueryStepMS]="step"
+          [dataSeriesLabels]="dataSeriesLabels"
+          [labelBlackList]="labelBlackList"
+          YLabel="Voltage (mV)"
+          [style]="graphstyle_adc2"
+          [startTime]="startTime"
+          [extraDyGraphConfig]="extraDyGraphConfig"
+          [options]="options"
+          #adc2
+        ></app-ut-dygraph>
+      </td>
+    </tr>
+  </table>
+</div>
