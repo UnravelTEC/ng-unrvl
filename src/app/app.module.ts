@@ -159,6 +159,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/galion/galion.module#GalionModule'
   },
   {
+    path: 'Apps/System',
+    loadChildren: './ut-apps/system/system.module#SystemModule'
+  },
+  {
     path: 'Apps/Weihnachtsvorlesung',
     loadChildren:
       './ut-apps/weihnachtsvorlesung/weihnachtsvorlesung.module#WeihnachtsvorlesungModule'
