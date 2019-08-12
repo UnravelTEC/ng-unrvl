@@ -811,21 +811,20 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       parent.hasOwnProperty('fromZoom') &&
       parent.hasOwnProperty('toZoom')
     ) {
-      const oldFrom = parent.fromZoom.valueOf();
-      const oldTo = parent.toZoom.valueOf();
-      // const ceilFrom = oldFrom % 1000;
-      // const ceilTo = oldTo % 1000;
-      // console.log('ceils:', ceilFrom, ceilTo, from % 1000, to % 1000);
-      if (oldFrom % 1000 !== from % 1000 || oldTo % 1000 !== to % 1000) {
-        console.log('manual zoom detected');
-        parent.fromZoom = new Date(from);
-        parent.toZoom = new Date(to);
-        parent.fromFormDate = new FormControl(parent.fromZoom);
-        parent.toFormDate = new FormControl(parent.toZoom);
-        parent.retainDataInfinitely = true;
+      const firstDataSet = parent.displayedData[0];
+      // const lastDataSet = parent.displayedData[parent.displayedData.length - 1];
+      const percentXFirst = g.toPercentXCoord(firstDataSet[0]);
+      // const percentXLast = g.toPercentXCoord(lastDataSet[0]);
+
+      parent.fromZoom = new Date(from);
+      parent.toZoom = new Date(to);
+      parent.fromFormDate = new FormControl(parent.fromZoom);
+      parent.toFormDate = new FormControl(parent.toZoom);
+
+      parent.updateAverages();
+
+      if (percentXFirst > 0) {
         parent.checkAndFetchOldData();
-        parent.stopUpdateOnNewData();
-        parent.updateAverages();
       }
     }
   }
@@ -1022,7 +1021,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const now = new Date();
+    // const now = new Date();
     if (this.lastReset) {
       // .valueOf() + this.resetTimeout < now.valueOf() ) {
       console.log(
@@ -1039,12 +1038,13 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     const oldlength = this.displayedData.length;
     this.updateDataSet(displayedData);
+    let newlength = this.displayedData.length;
     if (!this.retainDataInfinitely) {
       const maxDataLength = this.initialDataLength * this.maxRetentionTime;
-      const newlength = this.displayedData.length;
       if (newlength > maxDataLength) {
         this.displayedData.splice(0, newlength - oldlength);
         this.dataBeginTime = this.displayedData[0][0];
+        newlength = this.displayedData.length;
       }
     }
     if (this.runningAvgPoints != this.Dygraph.rollPeriod()) {
@@ -1052,7 +1052,12 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.Dygraph.adjustRoll(this.runningAvgPoints);
     }
 
-    if (this.updateOnNewData) {
+    const percentX = this.Dygraph.toPercentXCoord(
+      this.displayedData[newlength - 1][0]
+    );
+    // console.log('percentX:', percentX);
+
+    if (this.updateOnNewData && percentX < 1 && percentX > 0.9) {
       this.updateDateWindow();
       this.setCurrentXrange();
       this.Dygraph.updateOptions(
@@ -1081,8 +1086,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.Dygraph.setAnnotations(inViewAnnos, true);
     }
 
-    this.updateAverages();
-
     if (this.calculateRunningAvgFrom) {
       const avg = this.calculateAverage(
         this.calculateRunningAvgFrom,
@@ -1103,8 +1106,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     ) {
       console.log('dont update');
       update = false;
+      this.updateAverages();
     } else {
       //console.log('graph update');
+      // afterDrawCallback calls updateAverages
     }
     this.Dygraph.updateOptions({ file: this.displayedData }, !update);
   }
