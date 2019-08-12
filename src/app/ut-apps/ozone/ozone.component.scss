@@ -1,13 +1,21 @@
-span.value {
-  font-size: 3em;
-}
 
-span.red {
+h2 {
+  margin-left: 1em;
+}
+.value.red span {
   color: red;
 }
-span.yellow {
+.value.yellow span {
   color: orange;
 }
-span.green {
+.value.green span {
   color: green;
+}
+
+data {
+  position: absolute;
+  right: 1em;
+  width: 8em;
+  top: auto;
+  bottom: auto;
 }

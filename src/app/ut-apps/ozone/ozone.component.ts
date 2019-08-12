@@ -17,13 +17,16 @@ export class OzoneComponent implements OnInit {
     top: '4em',
     bottom: '2em',
     left: '1vw',
-    right: '1vw'
+    right: '10em'
   };
   startTime = '15m';
   labelBlackList = ['__name__', 'gas'];
   dataSeriesLabels = ['DGS-O3968-042'];
 
   multiplicateFactors = [1000];
+
+  level_warn = 84;
+  level_alert = 112;
 
   constructor(private globalSettings: GlobalSettingsService) {
     this.globalSettings.emitChange({ appName: 'Ozone Level' });
