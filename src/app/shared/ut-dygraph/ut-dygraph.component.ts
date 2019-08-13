@@ -630,7 +630,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     console.log('handleInitialData: received Data:', cloneDeep(receivedData));
 
     this.updateDataSet(receivedData);
-    this.initialDataLength = this.displayedData.length;
 
     this.updateAverages();
 
@@ -671,6 +670,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.noData = true;
       return;
     }
+    this.initialDataLength = this.currentXrange;
 
     if (this.fetchFromServerIntervalMS > 0) {
       this.startUpdate();
@@ -840,9 +840,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     // }
     const from = this.fromZoom.valueOf();
 
-    const earliestDataDate = this.displayedData.length
-      ? this.displayedData[0][0]
-      : new Date().valueOf();
+    // const earliestDataDate = this.displayedData.length
+    //   ? this.displayedData[0][0]
+    //   : new Date().valueOf();
     //console.log('from:', from, 'earliest', earliestDataDate);
 
     if (from < this.dataBeginTime.valueOf()) {
