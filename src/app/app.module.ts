@@ -143,6 +143,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/sensors/mics6814/mics6814.module#Mics6814Module'
   },
   {
+    path: 'Apps/Sensors/TCS34725',
+    loadChildren: './ut-apps/sensors/tcs34725/tcs34725.module#Tcs34725Module'
+  },
+  {
     path: 'Apps/Temperatures',
     loadChildren: './ut-apps/temperatures/temperatures.module#TemperaturesModule'
   },
