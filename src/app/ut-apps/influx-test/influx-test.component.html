@@ -1,3 +1,32 @@
-<p>
-  influx-test works!
-</p>
+<h2>
+  MQTT values:
+</h2>
+
+<table class="outer">
+  <tr *ngFor="let sensor of sensorData | keyvalue">
+    <th>
+      {{ sensor.key }}
+    </th>
+    <td>
+      <table>
+        <tr *ngFor="let metric of sensor.value | keyvalue">
+          <th>
+            {{ metric.key }}
+          </th>
+          <td>
+            <table>
+              <tr *ngFor="let dataset of metric.value | keyvalue">
+                <th>
+                  {{ dataset.key }}
+                </th>
+                <td>
+                  {{ dataset.value.value | number: '1.0-6' }}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
