@@ -1,4 +1,10 @@
-<a class="relcontainer" routerLink="/Apps/Luminosity" routerLinkActive="active">
+<a class="relcontainer {{
+  bn['lastValue'] < 400
+    ? 'red'
+    : bn['lastValue'] < 1000
+    ? 'yellow'
+    : 'green'
+}}" routerLink="/Apps/Luminosity" routerLinkActive="active">
   <div class="tilebox">
     <h2>Brightness</h2>
     <data>
@@ -7,7 +13,7 @@
 
     <div class="bar">
       <linear-gauge
-        width="50"
+        [attr.width]="width / 3.3"
         [attr.height]="height"
         needle-width="10"
         needle-end="100"

@@ -11,6 +11,9 @@ export class BrightnessComponent implements OnInit {
   @Input()
   height = 100;
 
+  @Input()
+  width = 100;
+
   step = 1000;
 
   extraDyGraphConfig = {

@@ -4,15 +4,19 @@
 .relcontainer {
   display: block;
   color: black;
+  background-color: blue;
   position: relative;
-  border: 0px solid blue;
-  background-color: rgba(0, 255, 255, 0.521);
+
   height: 100%;
   width: 100%;
+
   div.tilebox {
     position: absolute;
-    height: 100%;
-    width: 100%;
+    top: 2%;
+    left: 2%;
+    height: 96%;
+    width: 96%;
+    background-color: rgba(255, 255, 255, 0.699);
     h2 {
       font-size: 100%;
     }
@@ -37,7 +41,7 @@
       bottom: 5%;
       right: 20%;
       left: 5%;
-      border: 1px solid black;
+      border: 2px solid rgba(53, 67, 255, 0.384);
     }
     div.graphrel {
       position: relative;
@@ -52,4 +56,14 @@
       right: -5%;
     }
   }
+}
+
+.red {
+  background-color: red;
+}
+.yellow {
+  background-color: orange;
+}
+.green {
+  background-color: green;
 }
