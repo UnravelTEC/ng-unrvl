@@ -19,6 +19,9 @@ export class BrightnessComponent implements OnInit {
     legend: 'never',
     drawGrid: false,
     drawAxis: false,
+    highlightSeriesBackgroundAlpha: 1,
+    highlightCircleSize: 0,
+    highlightSeriesOpts: { strokeBorderWidth: 0, strokeWidth: 2.0 },
     colors: ['blue', 'green', '#FF00FF', 'red', '#FFFF00']
   };
   graphstyle = {

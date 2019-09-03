@@ -1,8 +1,8 @@
-<div class="relcontainer">
+<a class="relcontainer" routerLink="/Apps/Luminosity" routerLinkActive="active">
   <div class="tilebox">
     <h2>Brightness</h2>
     <data>
-      {{ bn.lastValue | number: '1.0-2' }}&nbsp;<em class="unit">lux</em></data
+      {{ bn.lastValue | number: '1.0-0' }}&nbsp;<em class="unit">lux</em></data
     >
 
     <div class="bar">
@@ -37,7 +37,6 @@
       ></linear-gauge>
     </div>
     <div class="graphabs">
-
       <div class="graphrel">
         <app-ut-dygraph
           queryString='radiation_lux{wavelength="visible"}'
@@ -57,4 +56,4 @@
       </div>
     </div>
   </div>
-</div>
+</a>

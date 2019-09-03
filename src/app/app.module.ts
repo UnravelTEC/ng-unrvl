@@ -95,6 +95,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/loudness/loudness.module#LoudnessModule'
   },
   {
+    path: 'Apps/Luminosity',
+    loadChildren: './ut-apps/luminosity/luminosity.module#LuminosityModule'
+  },
+  {
     path: 'Apps/noir',
     loadChildren: './ut-apps/noir/noir.module#NoirModule'
   },
