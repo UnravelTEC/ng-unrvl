@@ -64,10 +64,15 @@ style.padding-bottom="20vh"-->
       >
       <span *ngIf="!displayedData.length">-</span>
     </div>
-    <div class="ymin {{ XLabel == '' ? 'noxlabel' : '' }}">
+    <div
+      class="ymin {{ XLabel == '' ? 'noxlabel' : '' }}"
+      *ngIf="dyGraphOptions['drawAxis'] !== false"
+    >
       {{ yRange[0] | number: '1.0-2' }}
     </div>
-    <div class="ymax">{{ yRange[1] | number: '1.0-2' }}</div>
+    <div class="ymax" *ngIf="dyGraphOptions['drawAxis'] !== false">
+      {{ yRange[1] | number: '1.0-2' }}
+    </div>
   </div>
 
   <div *ngIf="options == true && optionsOpen == true" class="optionsarea">
@@ -114,7 +119,8 @@ style.padding-bottom="20vh"-->
       <form class="subbox">
         <h5>Data</h5>
         <small style="float: left;">
-          #Points: {{
+          #Points:
+          {{
             !displayedData.length
               ? 0
               : displayedData.length * (displayedData[0].length - 1)
@@ -129,7 +135,7 @@ style.padding-bottom="20vh"-->
             />
           </label>
         </small>
-        <button (click)="resetData()" >
+        <button (click)="resetData()">
           <mat-icon>delete_forever</mat-icon>
         </button>
       </form>
