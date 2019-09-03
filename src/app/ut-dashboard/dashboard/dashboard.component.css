@@ -11,7 +11,7 @@ div.panel {
 .panel > a {
   text-align: center;
   display: inline-block;
-  overflow:hidden;
+  overflow: hidden;
   width: 5cm;
   height: 3cm;
   background: #95b4c7;
@@ -31,9 +31,18 @@ div.panel {
 h2 {
   margin-left: 2em;
   margin-bottom: 0.5em;
+  clear: both;
 }
 
-.tilebox * {
-  height: 15vh;
-  width: 15vh;
+.tilebox {
+  margin: 2vh 1vw;
+}
+
+.tilebox > div {
+  display: inline-block;
+  float: left;
+  height: 30vh;
+  width: 30vh;
+  background-color: #2a57706c;
+  margin: 1vw;
 }
