@@ -1,46 +1,30 @@
-<a class="relcontainer {{
-  graph.getAverage('10s') < 400
-    ? 'red'
-    : graph.getAverage('10s') < 1000
-    ? 'yellow'
-    : 'green'
-}}" routerLink="/Apps/Luminosity" routerLinkActive="active">
+<a
+  class="relcontainer {{
+    graph.getAverage() < 400
+      ? 'red'
+      : graph.getAverage() < 1000
+      ? 'yellow'
+      : 'green'
+  }}"
+  routerLink="/Apps/Luminosity"
+  routerLinkActive="active"
+>
   <div class="tilebox">
     <h2>Brightness</h2>
     <data>
-      {{ graph.getAverage() | number: '1.0-0' }}&nbsp;<em class="unit">lux</em></data
+      {{ graph.getAverage() | number: '1.0-0' }}&nbsp;<em class="unit"
+        >lux</em
+      ></data
     >
 
     <div class="bar">
-      <linear-gauge
-        [attr.width]="width / 3.3"
-        [attr.height]="height"
-        needle-width="10"
-        needle-end="100"
-        min-value="0"
-        max-value="3000"
-        borders="false"
-        value-box="false"
-        units=""
-        bar-begin-circle="0"
-        tick-side="right"
-        needle-side="left"
-        number-side="left"
-        title=""
-        minor-ticks="0"
-        bar-progress="false"
-        bar-stroke-width="0"
-        color-needle="blue"
-        color-bar="transparent"
-        color-plate="transparent"
-        color-major-ticks="transparent"
-        color-numbers="transparent"
-        highlights='[ {"from": 0, "to": 400, "color": "red"},
-                    {"from": 400, "to": 1000, "color": "yellow"},
-                    {"from": 1000, "to": 3000, "color": "green"}
-     ]'
-        [attr.value]="graph.getAverage()"
-      ></linear-gauge>
+      <app-ut-bargauge-min
+        [width]="width / 3.3"
+        [height]="height"
+        max="3000"
+        [value]="graph.getAverage()"
+        [highlights]="highlights"
+      ></app-ut-bargauge-min>
     </div>
     <div class="graphabs">
       <div class="graphrel">

@@ -4,14 +4,14 @@ import { CommonModule } from '@angular/common';
 import { BrightnessRoutingModule } from './brightness-routing.module';
 import { BrightnessComponent } from './brightness.component';
 import { UtDygraphModule } from '../../../shared/ut-dygraph/ut-dygraph.module';
-import { GaugesModule } from 'ng-beautiful-gauges';
+import { UtBargaugeMinModule } from '../../../shared/ut-bargauge-min/ut-bargauge-min.module';
 
 @NgModule({
   imports: [
     CommonModule,
     BrightnessRoutingModule,
     UtDygraphModule,
-    GaugesModule
+    UtBargaugeMinModule
   ],
   declarations: [BrightnessComponent],
   exports:[BrightnessComponent]

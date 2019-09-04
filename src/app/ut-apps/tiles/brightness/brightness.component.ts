@@ -14,6 +14,19 @@ export class BrightnessComponent implements OnInit {
   @Input()
   width = 100;
 
+  highlights =
+    '[ {"from": 0, "to": 400, "color": "red"}, \
+     {"from": 400, "to": 1000, "color": "yellow"}, \
+     {"from": 1000, "to": 3000, "color": "green"} \
+    ]';
+  backGroundLevels = [
+    // the color acts for "everything below $value"
+    [0.01, 'white'], // first one not used
+    [400, 'rgba(255, 0, 0, 0.35)'], // green
+    [1000, 'rgba(255, 255, 0, 0.35)'], // yellow
+    [20000, 'rgba(0, 128, 0, 0.678)'] // green
+  ];
+
   constructor() {}
 
   ngOnInit() {}
