@@ -81,6 +81,18 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   labelBlackList: string[];
   @Input()
   showDate = true;
+  @Input()
+  backGroundLevels: Array<[number,string]>;
+
+  private backGroundLevelExample =
+  [
+    // the color acts for "everything below $value"
+    [0.01, 'white'], // first one not used
+    [400, 'rgba(0, 128, 0, 0.5)'], // green
+    [800, 'rgba(255, 255, 0, 0.5)'], // yellow
+    [1200, 'rgba(255, 166, 0, 0.5)'], // orange
+    [20000, 'rgba(255, 0, 0, 0.5)'] // red
+  ];
 
   @Input()
   calculateRunningAvgFrom: Date;
@@ -94,6 +106,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     drawCallback: this.afterDrawCallback,
     zoomCallback: this.afterZoomCallback,
     clickCallback: this.clickCallback,
+    underlayCallback: this.highLightBackgroundLevels,
     // panEdgeFraction: 0.9,
 
     labels: ['Date'], // one element needed for further code.
@@ -1446,7 +1459,41 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     // }
   }
 
+  highLightBackgroundLevels(canvas, area, g) {
+    if (
+      !g['parent'] ||
+      !Array.isArray(g.parent['backGroundLevels']) ||
+      g.parent.backGroundLevels.length < 2
+    ) {
+      console.log('highLightBackgroundLevels: no parent');
+      return;
+    }
+    function highlight_period(y_start, y_end) {
+      const y_min = g.toDomYCoord(y_start);
+      const y_max = g.toDomYCoord(y_end);
+      const area_h = y_max - y_min;
+      // console.log(area.x, y_min, area.w, area_h);
+      canvas.fillRect(area.x, y_min, area.w, area_h);
+    }
+
+    const backGroundLevels = g.parent.backGroundLevels;
+
+    let last_y = backGroundLevels[0][0];
+    for (let i = 1; i < backGroundLevels.length; i++) {
+      const level = backGroundLevels[i];
+      canvas.fillStyle = level[1];
+      // console.log(canvas.fillStyle, last_y, level[0]);
+
+      highlight_period(last_y, level[0]);
+      last_y = level[0];
+    }
+  }
+
   highLightFetchRegionCallBack(canvas, area, g) {
+    if (!g['parent']) {
+      console.log('highLightFetchRegionCallBack: no parent');
+      return;
+    }
     canvas.fillStyle = 'rgba(236, 166, 86, 1.0)';
     function highlight_period(x_start, x_end) {
       const canvas_left_x = g.toDomXCoord(x_start);
@@ -1457,6 +1504,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const highLightRange = g.parent.oldFetchRunning;
     highlight_period(highLightRange.start, highLightRange.end);
     // console.log('underlayCallback called', highLightRange.start, highLightRange.end);
+    g.parent.highLightBackgroundLevels(canvas, area, g);
   }
 
   highLightFetchRegion() {
@@ -1468,7 +1516,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
   unHighLightFetchRegion() {
     if (this.Dygraph) {
-      this.Dygraph.updateOptions({ underlayCallback: undefined });
+      this.Dygraph.updateOptions({
+        underlayCallback: this.highLightBackgroundLevels
+      });
     }
   }
 
@@ -1516,7 +1566,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.optionsOpen = !this.optionsOpen;
     setTimeout(() => {
       this.Dygraph.resize(undefined, undefined);
-    }, 50);
+    }, 150);
   }
   toggleFetching() {
     if (this.running) {
