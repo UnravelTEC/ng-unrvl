@@ -39,24 +39,16 @@
                     {"from": 400, "to": 1000, "color": "yellow"},
                     {"from": 1000, "to": 3000, "color": "green"}
      ]'
-        [attr.value]="bn['lastValue']"
+        [attr.value]="bn.getAverage()"
       ></linear-gauge>
     </div>
     <div class="graphabs">
       <div class="graphrel">
         <app-ut-dygraph
           queryString='radiation_lux{wavelength="visible"}'
-          [fetchFromServerIntervalMS]="step"
-          [dataBaseQueryStepMS]="step"
-          [dataSeriesLabels]="dataSeriesLabels"
-          [labelBlackList]="labelBlackList"
-          YLabel=""
-          XLabel=""
-          [style]="graphstyle"
-          [startTime]="startTime"
-          [extraDyGraphConfig]="extraDyGraphConfig"
-          options="false"
-          showDate="false"
+          dataBaseQueryStepMS="1000"
+          startTime="2m"
+          minimal="true"
           #bn
         ></app-ut-dygraph>
       </div>

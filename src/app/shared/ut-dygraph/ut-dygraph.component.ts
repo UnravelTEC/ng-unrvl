@@ -33,17 +33,17 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
   @Input()
   style = {
-    position: undefined,
-    top: undefined,
-    bottom: undefined,
-    left: undefined,
-    right: undefined
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0
   };
 
   @Input()
   YLabel = 'Value (unit)';
   @Input()
-  XLabel = 'Time';
+  XLabel = undefined;
   @Input()
   dataSeriesLabels: Array<string>;
   @Input()
@@ -60,7 +60,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   @Input()
   downloadFullResolution = true; // set to false to reduce Database query step to max. of screen res.
   @Input()
-  fetchFromServerIntervalMS = 1000; // set 0 for no update - but can be changed later - default 1000ms.
+  fetchFromServerIntervalMS = this.dataBaseQueryStepMS; // set 0 for no update - but can be changed later - default 1000ms.
   @Input()
   serverHostName: string; // optional, get it from globalSettings instead
   @Input()
@@ -75,6 +75,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   annotations: Array<any>; // would need definition of Dygraphs Annotation
   @Input()
   extraDyGraphConfig: Object;
+  @Input()
+  minimal = false;
   @Input()
   multiplicateFactors = [1];
   @Input()
@@ -124,6 +126,16 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     valueRange: this.yRange,
     legend: <any>'always', // also 'never' possible
     visibility: []
+  };
+  private minimalOptions = {
+    strokeWidth: 2.0,
+    logscale: true,
+    legend: 'never',
+    drawGrid: false,
+    drawAxis: false,
+    highlightSeriesBackgroundAlpha: 1,
+    highlightCircleSize: 0,
+    highlightSeriesOpts: { strokeBorderWidth: 0, strokeWidth: 2.0 }
   };
 
   public fromZoom: Date;
@@ -206,10 +218,22 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       path
     );
   }
+  getXLabel() {
+    const xRangeText = this.currentXrangeText
+      ? this.currentXrangeText
+      : this.startTime;
+    return this.XLabel === undefined
+      ? 'Time (' + xRangeText + ')'
+      : this.XLabel;
+  }
+  updateXLabel() {
+    this.dyGraphOptions['xlabel'] = this.getXLabel();
+    if (this.Dygraph) {
+      this.Dygraph.updateOptions({ xlabel: this.dyGraphOptions['xlabel'] });
+    }
+  }
 
   ngOnInit() {
-    this.dyGraphOptions['ylabel'] = this.YLabel;
-    this.dyGraphOptions['xlabel'] = this.XLabel;
     this.dyGraphOptions['underlayCallback'] = this.backGroundLevels
       ? this.highLightBackgroundLevels
       : undefined;
@@ -217,7 +241,14 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     if (!this.dyGraphOptions.labels[1]) {
       this.dyGraphOptions.labels[1] = this.queryString;
     }*/
-
+    if (this.minimal) {
+      this.options = false;
+      this.showDate = false;
+      this.YLabel = '';
+      this.XLabel = '';
+    }
+    this.dyGraphOptions['ylabel'] = this.YLabel;
+    this.updateXLabel();
     this.updateDyGraphOptions();
 
     if (
@@ -268,6 +299,13 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   updateDyGraphOptions() {
+    if (this.minimal) {
+      for (const key in this.minimalOptions) {
+        if (this.minimalOptions.hasOwnProperty(key)) {
+          this.dyGraphOptions[key] = this.minimalOptions[key];
+        }
+      }
+    }
     for (const key in this.extraDyGraphConfig) {
       if (this.extraDyGraphConfig.hasOwnProperty(key)) {
         this.dyGraphOptions[key] = this.extraDyGraphConfig[key];
@@ -642,7 +680,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   handleInitialData(receivedData: Object) {
-    console.log('handleInitialData: received Data:', cloneDeep(receivedData));
+    // console.log('handleInitialData: received Data:', cloneDeep(receivedData));
 
     this.updateDataSet(receivedData);
 
@@ -677,8 +715,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.Dygraph.setAnnotations(inViewAnnos);
     }
 
-    console.log('handleInitialData: dyoptions', this.dyGraphOptions);
-    console.log('handleInitialData: displayedData', this.displayedData);
+    // console.log('handleInitialData: dyoptions', this.dyGraphOptions);
+    // console.log('handleInitialData: displayedData', this.displayedData);
 
     if (this.displayedData.length === 0) {
       console.log('no initial data, do not attempt to update');
@@ -710,7 +748,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     maxDate: number,
     yRanges?: Array<Array<number>>
   ) {
-    const debugflag = true;
+    const debugflag = false;
     if (debugflag) {
       console.log('after dygraph zoom callback');
       console.log(typeof minDate, minDate, maxDate, yRanges);
@@ -724,6 +762,22 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       parent.updateAverages();
       // parent.fromZoom = new Date(minDate);
       // parent.toZoom = new Date(maxDate);
+
+      //reimplementation of parent.updateXLabel();
+      parent.setCurrentXrange();
+      const xRangeText = parent.currentXrangeText
+        ? parent.currentXrangeText
+        : parent.startTime;
+      parent.dyGraphOptions.xlabel =
+        parent.XLabel === undefined
+          ? 'Time (' + xRangeText + ')'
+          : parent.XLabel;
+      // console.log('new xlabel:', parent.dyGraphOptions.xlabel);
+
+      parent.Dygraph.updateOptions(
+        { xlabel: parent.dyGraphOptions.xlabel },
+        true
+      ); //this.upd… gives TS error
     } else {
       console.error('afterZoom: No parent');
     }
@@ -1155,8 +1209,14 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const currentDays = Math.floor(currentHours / 24);
     const textDays = currentDays ? String(currentDays) + 'd ' : '';
 
-    this.currentXrangeText =
-      textDays + textHours + textMinutes + textSeconds + textMS;
+    this.currentXrangeText = (
+      textDays +
+      textHours +
+      textMinutes +
+      textSeconds +
+      textMS
+    ).trim();
+    this.updateXLabel();
 
     return this.currentXrange;
   }
