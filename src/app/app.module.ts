@@ -167,6 +167,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/galion/galion.module#GalionModule'
   },
   {
+    path: 'Apps/IES',
+    loadChildren: './ut-apps/ies/ies.module#IesModule'
+  },
+  {
     path: 'Apps/System',
     loadChildren: './ut-apps/system/system.module#SystemModule'
   },
