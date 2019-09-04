@@ -3,7 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 @Component({
   selector: 'app-tile-brightness',
   templateUrl: './brightness.component.html',
-  styleUrls: ['./brightness.component.scss']
+  styleUrls: ['./brightness.component.scss','../tiles.scss']
 })
 export class BrightnessComponent implements OnInit {
   public value: number;

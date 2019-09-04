@@ -3,7 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 @Component({
   selector: 'app-tile-co2',
   templateUrl: './tile-co2.component.html',
-  styleUrls: ['./tile-co2.component.scss']
+  styleUrls: ['./tile-co2.component.scss','../tiles.scss']
 })
 export class TileCo2Component implements OnInit {
   public value: number;
