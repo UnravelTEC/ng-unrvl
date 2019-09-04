@@ -1,14 +1,14 @@
 <a class="relcontainer {{
-  bn['lastValue'] < 400
+  bn.getAverage() < 400
     ? 'red'
-    : bn['lastValue'] < 1000
+    : bn.getAverage() < 1000
     ? 'yellow'
     : 'green'
 }}" routerLink="/Apps/Luminosity" routerLinkActive="active">
   <div class="tilebox">
     <h2>Brightness</h2>
     <data>
-      {{ bn.lastValue | number: '1.0-0' }}&nbsp;<em class="unit">lux</em></data
+      {{ bn.getAverage() | number: '1.0-0' }}&nbsp;<em class="unit">lux</em></data
     >
 
     <div class="bar">
