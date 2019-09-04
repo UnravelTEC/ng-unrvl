@@ -1,13 +1,18 @@
 <div class="graphapp">
   <span class="value">
     CO₂:
-    <span class="{{
-      (graph['lastValue'] < 1000) ? 'green' :
-      ((graph['lastValue'] < 2000) ? 'yellow' : 'red')
-     }} ">
-      {{
-        graph.getAverage()  | number: '1.1-1'
-      }}</span
+    <span
+      class="{{
+        graph.getAverage() < 1000
+          ? 'green'
+          : (graph.getAverage() < 1500
+          ? 'yellow'
+          : (graph.getAverage() < 2000
+          ? 'orange'
+          : 'red'))
+      }} "
+    >
+      {{ graph.getAverage() | number: '1.1-1' }}</span
     >&#8239;ppm
   </span>
   <div id="co2dygraph">

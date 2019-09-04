@@ -22,8 +22,8 @@ export class Co2GraphComponent implements OnInit, OnDestroy {
     [0.01, 'white'], // first one not used
     [415, 'rgba(0, 128, 0, 0.678)'], // green
     [600,'rgba(0, 128, 0, 0.35)'],
-    [800, 'rgba(255, 255, 0, 0.35)'], // yellow
-    [1200, 'rgba(255, 166, 0, 0.35)'], // orange
+    [1000, 'rgba(255, 255, 0, 0.35)'], // yellow
+    [1500, 'rgba(255, 166, 0, 0.35)'], // orange
     [20000, 'rgba(255, 0, 0, 0.35)'] // red
   ];
 
