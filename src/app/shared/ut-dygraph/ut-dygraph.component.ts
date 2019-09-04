@@ -82,10 +82,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   @Input()
   showDate = true;
   @Input()
-  backGroundLevels: Array<[number,string]>;
+  backGroundLevels: Array<[number, string]>;
 
-  private backGroundLevelExample =
-  [
+  private backGroundLevelExample = [
     // the color acts for "everything below $value"
     [0.01, 'white'], // first one not used
     [400, 'rgba(0, 128, 0, 0.5)'], // green
@@ -106,7 +105,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     drawCallback: this.afterDrawCallback,
     zoomCallback: this.afterZoomCallback,
     clickCallback: this.clickCallback,
-    underlayCallback: this.highLightBackgroundLevels,
+
     // panEdgeFraction: 0.9,
 
     labels: ['Date'], // one element needed for further code.
@@ -211,6 +210,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.dyGraphOptions['ylabel'] = this.YLabel;
     this.dyGraphOptions['xlabel'] = this.XLabel;
+    this.dyGraphOptions['underlayCallback'] = this.backGroundLevels
+      ? this.highLightBackgroundLevels
+      : undefined;
     /*this.dyGraphOptions.labels.push(...this.dataSeriesLabels);
     if (!this.dyGraphOptions.labels[1]) {
       this.dyGraphOptions.labels[1] = this.queryString;
@@ -1504,7 +1506,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     const highLightRange = g.parent.oldFetchRunning;
     highlight_period(highLightRange.start, highLightRange.end);
     // console.log('underlayCallback called', highLightRange.start, highLightRange.end);
-    g.parent.highLightBackgroundLevels(canvas, area, g);
+    if (g.parent['backGroundLevels']) {
+      g.parent.highLightBackgroundLevels(canvas, area, g);
+    }
   }
 
   highLightFetchRegion() {
@@ -1517,7 +1521,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   unHighLightFetchRegion() {
     if (this.Dygraph) {
       this.Dygraph.updateOptions({
-        underlayCallback: this.highLightBackgroundLevels
+        underlayCallback: this.backGroundLevels
+          ? this.highLightBackgroundLevels
+          : undefined
       });
     }
   }
