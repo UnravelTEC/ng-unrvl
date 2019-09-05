@@ -128,7 +128,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     visibility: []
   };
   private minimalOptions = {
-    strokeWidth: 2.0,
+    strokeWidth: 1.5,
     logscale: true,
     legend: 'never',
     drawGrid: false,
