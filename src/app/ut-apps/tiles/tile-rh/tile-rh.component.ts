@@ -3,7 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 @Component({
   selector: 'app-tile-rh',
   templateUrl: './tile-rh.component.html',
-  styleUrls: ['./tile-rh.component.scss', '../tiles.scss']
+  styleUrls: ['../tiles.scss', './tile-rh.component.scss' ]
 })
 export class TileRhComponent implements OnInit {
   public value: number;
