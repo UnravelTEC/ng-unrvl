@@ -20,10 +20,10 @@ export class DygraphDevComponent implements OnInit {
 
   style = {
     position: 'absolute',
-    top: '3rem',
-    bottom: '35vh',
-    left: '5vw',
-    right: '5vw'
+    top: '1vh',
+    bottom: '25vh',
+    left: '0',
+    right: '0'
   };
 
   private variablesToSave = [

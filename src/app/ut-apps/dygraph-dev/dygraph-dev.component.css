@@ -18,7 +18,7 @@ h2 {
 form {
   max-width: 790px;
   margin-top: 65vh;
-  padding-top: 3.5em;
+  /* padding-top: 3.5em; */
 }
 label {
   display: inline-block;
