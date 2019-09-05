@@ -18,7 +18,7 @@ export class TileRadiationComponent implements OnInit {
     '[ {"from": 0, "to": 100, "color": "green"}, \
        {"from": 100, "to": 150, "color": "yellow"}, \
        {"from": 150, "to": 300, "color": "orange"}, \
-       {"from": 300, "to": 3000, "color": "red"} ]';
+       {"from": 300, "to": 350, "color": "red"} ]';
   backGroundLevels = [
     // the color acts for "everything below $value"
     [0.01, 'white'], // first one not used

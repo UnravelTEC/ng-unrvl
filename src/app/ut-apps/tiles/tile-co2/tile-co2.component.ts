@@ -19,7 +19,7 @@ export class TileCo2Component implements OnInit {
        {"from": 415, "to": 600, "color": "rgba(0, 128, 0, 0.7)"}, \
        {"from": 600, "to": 1000, "color": "yellow"}, \
        {"from": 1000, "to": 1500, "color": "orange"}, \
-       {"from": 1500, "to": 3000, "color": "red"} ]';
+       {"from": 1500, "to": 2000, "color": "red"} ]';
   backGroundLevels = [
     // the color acts for "everything below $value"
     [0.01, 'white'], // first one not used
