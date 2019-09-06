@@ -2,6 +2,7 @@
     <linear-gauge
       [attr.width]="width"
       [attr.height]="height"
+      [attr.needle]="needle"
       needle-width="10"
       needle-end="100"
       [attr.min-value]="min"
@@ -15,14 +16,16 @@
       number-side="left"
       title=""
       minor-ticks="0"
-      bar-progress="false"
-      bar-stroke-width="0"
+      [attr.bar-progress]="bar_progress"
+
       color-needle="blue"
       color-bar="transparent"
       color-plate="transparent"
       color-major-ticks="transparent"
       color-numbers="transparent"
       [attr.highlights]='highlights'
+      highlights-width="15"
       [attr.value]="value"
     ></linear-gauge>
+    <!-- bar-stroke-width="0.4" -->
   </div>

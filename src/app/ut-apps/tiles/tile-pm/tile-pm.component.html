@@ -1,40 +1,44 @@
 <a
   class="relcontainer {{
-    graph.getAverage('10s') < 1000
+    pm10 < 50
       ? 'green'
-      : graph.getAverage('10s') < 1500
+      : pm10 < 100
       ? 'yellow'
-      : graph.getAverage('10s') < 2000
+      : pm10 < 200
       ? 'orange'
       : 'red'
   }}"
-  routerLink="/Apps/CO2-graph"
+  routerLink="/Apps/PM"
   routerLinkActive="active"
 >
   <div class="tilebox">
-    <h2>CO₂</h2>
-    <data>
-      {{ graph.getAverage('10s') | number: '1.0-0' }}&nbsp;<em class="unit"
-        >ppm</em
-      ></data
-    >
+    <h2 style="text-align: left">
+      Particulate<br />Matter:
+      {{ pm10 | number: '1.0-0' }}&nbsp;<em class="unit"
+        >µg/m³</em
+      >
+    </h2>
+    <data
+      >a: {{ graph.lastValue }}
+    </data>
+
     <div class="bar">
       <app-ut-bargauge-min
         [width]="width / 3.3"
         [height]="height"
-        max="2000"
-        barstyle="filled"
-        [value]="graph.getAverage('10s')"
+        max="200"
+        [value]="pm10"
         [highlights]="highlights"
       ></app-ut-bargauge-min>
     </div>
     <div class="graphabs">
       <div class="graphrel">
         <app-ut-dygraph
-          queryString='gas_ppm{gas="CO2"}'
-          dataBaseQueryStepMS="2000"
-          startTime="2m"
+          queryString='{__name__=~"particulate_matter_ugpm3|particulate_matter_ppcm3"}'
+          dataBaseQueryStepMS="1000"
+          startTime="5m"
           minimal="true"
+          [extraDyGraphConfig]="extraDyGraphConfig"
           [backGroundLevels]="backGroundLevels"
           #graph
         ></app-ut-dygraph>
