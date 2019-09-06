@@ -6,7 +6,7 @@
   bottom: 0;
   flex-direction: column;
   display: flex;
-//   border: 1px solid blue;
+  // border: 1px solid blue;
   padding: 0;
   margin: 0;
 }
@@ -14,6 +14,7 @@ table {
   height: 100%;
   padding: 0;
   margin: 0;
+  width: 100%;
   border-collapse: collapse;
   td {
     position: relative;
