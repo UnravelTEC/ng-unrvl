@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { colors } from '../../../shared/colors';
 
 @Component({
   selector: 'app-tile-radiation',
@@ -22,11 +23,10 @@ export class TileRadiationComponent implements OnInit {
   backGroundLevels = [
     // the color acts for "everything below $value"
     [0.01, 'white'], // first one not used
-    [415, 'rgba(0, 128, 0, 0.678)'], // green
-    [600, 'rgba(0, 128, 0, 0.35)'], // light green
-    [1000, 'rgba(255, 255, 0, 0.35)'], // yellow
-    [1500, 'rgba(255, 166, 0, 0.35)'], // orange
-    [20000, 'rgba(255, 0, 0, 0.35)'] // red
+    [100, colors.bg.green],
+    [150, colors.bg.yellow],
+    [300, colors.bg.orange],
+    [3500, colors.bg.red]
   ];
 
   constructor() {}

@@ -133,6 +133,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     legend: 'never',
     drawGrid: false,
     drawAxis: false,
+    rightGap: 0,
     highlightSeriesBackgroundAlpha: 1,
     highlightCircleSize: 0,
     highlightSeriesOpts: { strokeBorderWidth: 0, strokeWidth: 1.5 }

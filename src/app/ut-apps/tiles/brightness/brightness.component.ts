@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { colors } from '../../../shared/colors';
 
 @Component({
   selector: 'app-tile-brightness',
@@ -22,9 +23,9 @@ export class BrightnessComponent implements OnInit {
   backGroundLevels = [
     // the color acts for "everything below $value"
     [0.01, 'white'], // first one not used
-    [400, 'rgba(255, 0, 0, 0.35)'], // green
-    [1000, 'rgba(255, 255, 0, 0.35)'], // yellow
-    [20000, 'rgba(0, 128, 0, 0.678)'] // green
+    [400, colors.bg.red],
+    [1000, colors.bg.yellow],
+    [20000, colors.bg.green]
   ];
 
   constructor() {}
