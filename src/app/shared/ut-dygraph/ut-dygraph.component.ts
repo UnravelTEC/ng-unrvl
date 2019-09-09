@@ -246,6 +246,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.showDate = false;
       this.YLabel = '';
       this.XLabel = '';
+      this.maxRetentionTime = 1;
     }
     this.dyGraphOptions['ylabel'] = this.YLabel;
     this.updateXLabel();
@@ -1169,16 +1170,18 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     // console.log('DET', this.dataEndTime);
     // console.log('toZ', this.toZoom);
 
-    if (
-      this.dataEndTime.valueOf() >= this.toZoom.valueOf() // &&
-      // this.dataBeginTime.valueOf() <= this.fromZoom.valueOf()
-    ) {
-      console.log('dont update');
-      update = false;
-      this.updateAverages();
-    } else {
-      //console.log('graph update');
-      // afterDrawCallback calls updateAverages
+    if (!this.minimal) {
+      if (
+        this.dataEndTime.valueOf() >= this.toZoom.valueOf() // &&
+        // this.dataBeginTime.valueOf() <= this.fromZoom.valueOf()
+      ) {
+        console.log('dont update');
+        update = false;
+        this.updateAverages();
+      } else {
+        //console.log('graph update');
+        // afterDrawCallback calls updateAverages
+      }
     }
     this.Dygraph.updateOptions({ file: this.displayedData }, !update);
   }
