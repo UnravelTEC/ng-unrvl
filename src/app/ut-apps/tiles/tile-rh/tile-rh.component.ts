@@ -1,9 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { colors } from '../../../shared/colors';
 
 @Component({
   selector: 'app-tile-rh',
   templateUrl: './tile-rh.component.html',
-  styleUrls: ['../tiles.scss', './tile-rh.component.scss' ]
+  styleUrls: ['../tiles.scss', './tile-rh.component.scss']
 })
 export class TileRhComponent implements OnInit {
   public value: number;
@@ -25,14 +26,14 @@ export class TileRhComponent implements OnInit {
   backGroundLevels = [
     // the color acts for "everything below $value"
     [0.01, 'white'], // first one not used
-    [30, 'rgba(255, 0, 0, 0.35)'], // red
-    [35, 'rgba(255, 166, 0, 0.35)'], // orange
-    [40, 'rgba(255, 255, 0, 0.35)'], // yellow
-    [55, 'rgba(0, 128, 0, 0.678)'], // green
-    [60, 'rgba(255, 255, 0, 0.35)'], // yellow
-    [95, 'rgba(255, 166, 0, 0.35)'], // orange
-    [100, 'rgba(255, 0, 0, 0.35)'] // red
-    // [600, 'rgba(0, 128, 0, 0.35)'], // light green
+    [30, colors.bg.red],
+    [35, colors.bg.orange],
+    [40, colors.bg.yellow],
+    [55, colors.bg.green],
+    [60, colors.bg.yellow],
+    [95, colors.bg.orange],
+    [100, colors.bg.red]
+
   ];
   constructor() {}
 

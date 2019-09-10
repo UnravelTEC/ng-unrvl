@@ -1,6 +1,15 @@
 <h2>
-  Influx values:
+  MQTT values:
 </h2>
+
+<div>
+  Progress:
+  <span *ngIf="status === 'init'">Initializing...</span>
+  <span *ngIf="status === 'connecting'">Connecting...</span>
+  <span *ngIf="status === 'connected'">Connected.</span>
+  <span *ngIf="status === 'failed'">Connection failed.</span>
+  <span *ngIf="status === 'lost'">Connection lost.</span>
+</div>
 
 <table class="outer">
   <tr *ngFor="let sensor of sensorData | keyvalue">

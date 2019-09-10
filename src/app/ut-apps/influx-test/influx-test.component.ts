@@ -9,11 +9,6 @@ import * as Paho from 'paho-mqtt';
   styleUrls: ['./influx-test.component.scss']
 })
 export class InfluxTestComponent implements OnInit {
-  private client;
-  clientID = 'clientID_' + String(Math.random() * 100);
-
-  public mqttMessages = 'empty';
-
   public sensorData = {};
   public sensorDataExample = {
     myBME: {
@@ -59,68 +54,17 @@ export class InfluxTestComponent implements OnInit {
       .getHTTPData(call)
       .subscribe((data: Object) => this.printResult(data));
 
-    this.client = new Paho.Client(
-      this.globalSettings.getHostName() + '.lan',
-      1885,
-      this.clientID
+    console.log('baseurl:', this.globalSettings.server.baseurl);
+    let server = this.globalSettings.server.baseurl.replace(
+      /^http[s]*:\/\//,
+      ''
     );
-    this.client.onConnectionLost = this.onConnectionLost;
-    this.client.onMessageArrived = this.onMessageArrived;
-    document['MQTT_CLIENT'] = this.client;
-    document['MQTT_CLIENT']['father'] = this;
-    console.log('onInit', this.client);
-    this.client.connect({
-      onSuccess: this.onConnect,
-      onFailure: this.onFailure
-    });
+    server = server.replace(/:80$/, '');
+    server = server.replace(/:443$/, '');
+    console.log(server);
   }
 
   printResult(data: Object) {
     console.log(data);
-  }
-
-  onConnect() {
-    console.log('onConnect');
-    console.log(this);
-
-    document['MQTT_CLIENT'].subscribe('+/sensors/#');
-  }
-
-  onMessageArrived(message: Object) {
-    const father = document['MQTT_CLIENT']['father'];
-
-    const arr = message['topic'].split('/');
-    const sensor = arr[2];
-    const metric = arr[3];
-    // console.log('got MQTT message from sensor ', sensor, ' about ', metric);
-    try {
-      const payload = JSON.parse(message['payloadString']);
-      const value = payload['value'];
-      let tags = JSON.parse(message['payloadString']);
-      delete tags['value'];
-      const index = JSON.stringify(tags);
-
-      // console.log(payload);
-      if (!father.sensorData[sensor]) {
-        father.sensorData[sensor] = {};
-      }
-      if(!father.sensorData[sensor][metric]) {
-        father.sensorData[sensor][metric] = {}
-      }
-      father.sensorData[sensor][metric][index] = { value: value, tags: tags };
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  onFailure(message) {
-    console.error('MQTT failure on connect');
-    console.error(message);
-  }
-  onConnectionLost(responseObject) {
-    console.error('onConnectionLost object: ', responseObject);
-    if (responseObject.errorCode !== 0) {
-      console.error('onConnectionLost:', responseObject.errorMessage);
-    }
   }
 }

@@ -163,6 +163,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/influx-test/influx-test.module#InfluxTestModule'
   },
   {
+    path: 'Apps/MQTT-Test',
+    loadChildren: './ut-apps/mqtt/mqtt.module#MqttModule'
+  },
+  {
     path: 'Apps/Galion',
     loadChildren: './ut-apps/galion/galion.module#GalionModule'
   },
