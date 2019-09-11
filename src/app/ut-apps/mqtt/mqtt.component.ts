@@ -10,9 +10,13 @@ import * as Paho from 'paho-mqtt';
 export class MqttComponent implements OnInit, OnDestroy {
   status = 'init'; // | connecting | connected | failed | lost
   private client;
-  clientID = 'clientID_' + String(Math.random() * 100);
+  private clientID = 'clientID_' + String(Math.random() * 100);
+  public topic = '+/sensors/#';
 
-  public mqttMessages = 'empty';
+  public mqttMessages = [
+    { date: new Date(), topic: 'sample topic', payload: 'sample payload' }
+  ];
+  public updateMessages = true;
 
   public sensorData = {};
   public sensorDataExample = {
@@ -56,7 +60,7 @@ export class MqttComponent implements OnInit, OnDestroy {
     this.connect();
   }
   ngOnDestroy() {
-
+    this.client.unsubscribe(this.topic, {})
   }
   connect() {
     this.client.connect({
@@ -68,9 +72,9 @@ export class MqttComponent implements OnInit, OnDestroy {
   onConnect() {
     console.log('onConnect');
     console.log(this);
-
-    document['MQTT_CLIENT'].subscribe('+/sensors/#');
-    document['MQTT_CLIENT']['father'].status = 'connected';
+    const father = document['MQTT_CLIENT']['father'];
+    document['MQTT_CLIENT'].subscribe(father.topic);
+    father.status = 'connected';
   }
 
   onMessageArrived(message: Object) {
@@ -79,6 +83,8 @@ export class MqttComponent implements OnInit, OnDestroy {
     const arr = message['topic'].split('/');
     const sensor = arr[2];
     const metric = arr[3];
+
+    const msg = {};
     // console.log('got MQTT message from sensor ', sensor, ' about ', metric);
     try {
       const payload = JSON.parse(message['payloadString']);
@@ -95,6 +101,21 @@ export class MqttComponent implements OnInit, OnDestroy {
         father.sensorData[sensor][metric] = {};
       }
       father.sensorData[sensor][metric][index] = { value: value, tags: tags };
+
+      if (father.updateMessages) {
+        console.log('msg:', message);
+
+        const msg = {
+          date: new Date(),
+          topic: message['topic'],
+          payload: message['payloadString'],
+          destinationName: message['destinationName'],
+          qos: message['qos'],
+          retained: message['retained']
+        };
+
+        father.mqttMessages.unshift(msg);
+      }
     } catch (err) {
       console.error(err);
     }
