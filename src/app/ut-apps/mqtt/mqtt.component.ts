@@ -16,6 +16,7 @@ export class MqttComponent implements OnInit, OnDestroy {
   public mqttMessages = [
     { date: new Date(), topic: 'sample topic', payload: 'sample payload' }
   ];
+  public maxlen = 10;
   public updateMessages = true;
 
   public sensorData = {};
@@ -84,7 +85,6 @@ export class MqttComponent implements OnInit, OnDestroy {
     const sensor = arr[2];
     const metric = arr[3];
 
-    const msg = {};
     // console.log('got MQTT message from sensor ', sensor, ' about ', metric);
     try {
       const payload = JSON.parse(message['payloadString']);
@@ -103,7 +103,7 @@ export class MqttComponent implements OnInit, OnDestroy {
       father.sensorData[sensor][metric][index] = { value: value, tags: tags };
 
       if (father.updateMessages) {
-        console.log('msg:', message);
+        // console.log('msg:', message);
 
         const msg = {
           date: new Date(),
@@ -115,6 +115,9 @@ export class MqttComponent implements OnInit, OnDestroy {
         };
 
         father.mqttMessages.unshift(msg);
+        if(father.mqttMessages.length > father.maxlen) {
+          father.mqttMessages.pop();
+        }
       }
     } catch (err) {
       console.error(err);

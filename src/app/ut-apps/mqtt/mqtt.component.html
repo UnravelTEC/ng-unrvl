@@ -23,7 +23,7 @@
       <th>Topic</th>
       <th>Qos</th>
       <th>Retained</th>
-      <th>destinationName</th>
+      <!-- <th>destinationName</th> -->
       <th>Payload</th>
     </tr>
     <tr *ngFor="let message of mqttMessages">
@@ -31,7 +31,7 @@
       <td>{{ message.topic }}</td>
       <td>{{ message.qos }}</td>
       <td>{{ message.retained }}</td>
-      <td>{{ message.destinationName }}</td>
+      <!-- <td>{{ message.destinationName }}</td> -->
       <td>{{ message.payload }}</td>
     </tr>
   </table>
