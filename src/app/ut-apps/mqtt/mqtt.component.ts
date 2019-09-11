@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 import * as Paho from 'paho-mqtt';
 
@@ -7,7 +7,7 @@ import * as Paho from 'paho-mqtt';
   templateUrl: './mqtt.component.html',
   styleUrls: ['./mqtt.component.scss']
 })
-export class MqttComponent implements OnInit {
+export class MqttComponent implements OnInit, OnDestroy {
   status = 'init'; // | connecting | connected | failed | lost
   private client;
   clientID = 'clientID_' + String(Math.random() * 100);
@@ -44,13 +44,7 @@ export class MqttComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('baseurl:', this.globalSettings.server.baseurl);
-    let server = this.globalSettings.server.baseurl.replace(
-      /^http[s]*:\/\//,
-      ''
-    );
-    server = server.replace(/:80$/, '');
-    server = server.replace(/:443$/, '');
+    let server = this.globalSettings.server.serverName;
     console.log(server);
 
     this.client = new Paho.Client(server, 1885, this.clientID);
@@ -59,6 +53,12 @@ export class MqttComponent implements OnInit {
     document['MQTT_CLIENT'] = this.client;
     document['MQTT_CLIENT']['father'] = this;
     console.log('onInit', this.client);
+    this.connect();
+  }
+  ngOnDestroy() {
+
+  }
+  connect() {
     this.client.connect({
       onSuccess: this.onConnect,
       onFailure: this.onFailure

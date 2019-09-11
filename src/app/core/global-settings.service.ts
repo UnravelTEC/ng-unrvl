@@ -22,6 +22,7 @@ export class GlobalSettingsService implements OnInit {
 
   public server = {
     baseurl: '',
+    serverName: '', // pure IP or hostname w/o protocol/port
     architecture: undefined,
     type: 'unknown', // Tricorder || PublicServer
     hostname: 'uninitialized',
@@ -113,6 +114,10 @@ export class GlobalSettingsService implements OnInit {
         servername = servername.substr(0, -1);
       }
       this.server.baseurl = servername;
+      servername = servername.replace(/^http[s]*:\/\//, '');
+      servername = servername.replace(/:80$/, '');
+      servername = servername.replace(/:443$/, '');
+      this.server.serverName = servername;
 
       let prometheusPath = this.h.getDeep(localStoredServer, [
         'prometheusPath',
