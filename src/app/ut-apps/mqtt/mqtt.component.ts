@@ -9,6 +9,7 @@ import * as Paho from 'paho-mqtt';
 })
 export class MqttComponent implements OnInit, OnDestroy {
   status = 'init'; // | connecting | connected | failed | lost
+  public disconnects = 0;
   private client;
   private clientID = 'clientID_' + String(Math.random() * 100);
   public topic = '+/sensors/#';
@@ -61,7 +62,7 @@ export class MqttComponent implements OnInit, OnDestroy {
     this.connect();
   }
   ngOnDestroy() {
-    this.client.unsubscribe(this.topic, {})
+    this.client.unsubscribe(this.topic, {});
   }
   connect() {
     this.client.connect({
@@ -90,7 +91,9 @@ export class MqttComponent implements OnInit, OnDestroy {
       const payload = JSON.parse(message['payloadString']);
       const value = payload['value'];
       let tags = JSON.parse(message['payloadString']);
+      const TSString = tags['UTS'];
       delete tags['value'];
+      delete tags['UTS'];
       const index = JSON.stringify(tags);
 
       // console.log(payload);
@@ -105,8 +108,13 @@ export class MqttComponent implements OnInit, OnDestroy {
       if (father.updateMessages) {
         // console.log('msg:', message);
 
+        let valueTimestamp = Number(TSString) * 1000;
+
+        const sentDate =
+          valueTimestamp > 0 ? new Date(valueTimestamp) : new Date();
+
         const msg = {
-          date: new Date(),
+          date: sentDate,
           topic: message['topic'],
           payload: message['payloadString'],
           destinationName: message['destinationName'],
@@ -115,7 +123,7 @@ export class MqttComponent implements OnInit, OnDestroy {
         };
 
         father.mqttMessages.unshift(msg);
-        if(father.mqttMessages.length > father.maxlen) {
+        if (father.mqttMessages.length > father.maxlen) {
           father.mqttMessages.pop();
         }
       }
@@ -130,10 +138,13 @@ export class MqttComponent implements OnInit, OnDestroy {
     document['MQTT_CLIENT']['father'].status = 'failed';
   }
   onConnectionLost(responseObject) {
+    const father = document['MQTT_CLIENT']['father'];
     console.error('onConnectionLost object: ', responseObject);
     if (responseObject.errorCode !== 0) {
       console.error('onConnectionLost:', responseObject.errorMessage);
     }
-    document['MQTT_CLIENT']['father'].status = 'lost';
+    father.status = 'lost';
+    father.disconnects += 1;
+    father.connect();
   }
 }
