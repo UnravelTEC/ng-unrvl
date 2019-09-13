@@ -13,8 +13,10 @@
 >
   <div class="tilebox">
     <h2>CO₂</h2>
-    <data>
-      {{ graph.getAverage('10s') | number: '1.0-0' }}&nbsp;<em class="unit"
+    <data
+      ><span *ngIf="graph['lastValues'].length > 2" class="xbar">X</span
+      >&nbsp;{{ graph.getAverage('10s') | number: '1.0-0' }}&nbsp;<em
+        class="unit"
         >ppm</em
       ></data
     >

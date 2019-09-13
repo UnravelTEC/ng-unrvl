@@ -1,26 +1,19 @@
 <a
   class="relcontainer {{
-    pm10 < 50
-      ? 'green'
-      : pm10 < 100
-      ? 'yellow'
-      : pm10 < 200
-      ? 'orange'
-      : 'red'
+    pm10 < 50 ? 'green' : pm10 < 100 ? 'yellow' : pm10 < 200 ? 'orange' : 'red'
   }}"
   routerLink="/Apps/PM"
   routerLinkActive="active"
 >
   <div class="tilebox">
-    <h2 style="text-align: left">
-      Particulate<br />Matter:
-      {{ pm10 | number: '1.0-0' }}&nbsp;<em class="unit"
-        >µg/m³</em
+    <h2 style="text-align: left; font-size: 0.7em;">
+      Particulate Matter:
+    </h2>
+    <h2>
+      {{ graph.lastValues[2] | number: '1.0-0' }}&nbsp;<em class="unit"
+        >µg/m³ <small>pm10</small></em
       >
     </h2>
-    <data
-      >a: {{ graph.lastValue | number: '1.0-0' }}
-    </data>
 
     <div class="bar">
       <app-ut-bargauge-min

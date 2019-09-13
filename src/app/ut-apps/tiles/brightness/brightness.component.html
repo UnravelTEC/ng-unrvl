@@ -11,8 +11,9 @@
 >
   <div class="tilebox">
     <h2>Brightness</h2>
-    <data>
-      {{ graph['lastValue'] | number: '1.0-0' }}&nbsp;<em class="unit"
+    <data
+      ><span *ngIf="graph['lastValues'].length > 2" class="xbar">X</span
+      >&nbsp;{{ graph['lastValue'] | number: '1.0-0' }}&nbsp;<em class="unit"
         >lux</em
       ></data
     >
