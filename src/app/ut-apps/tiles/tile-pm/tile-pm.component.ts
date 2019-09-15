@@ -49,7 +49,7 @@ export class TilePmComponent implements OnInit {
       // pm10
     ];
 
-    /* in ideal case if they cam in order
+    /* in ideal case if they came in order
     const len = valueArray.length;
     if (len <= 1) {
       return [];
