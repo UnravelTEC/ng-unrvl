@@ -1,7 +1,3 @@
-<h2>
-  MQTT values:
-</h2>
-
 <div>
   Progress:
   <span *ngIf="status === 'init'">Initializing...</span>
@@ -12,12 +8,10 @@
   ({{ disconnects }})
 </div>
 
-<div>
-  Topic: {{ topic }}
-</div>
+<div>Topic: {{ topic }}</div>
 
 <div>
-  <h3>Messages:</h3>
+  <h3>Latest MQTT messages:</h3>
   <table class="messages">
     <tr>
       <th>Time</th>
@@ -36,6 +30,17 @@
       <td>{{ message.payload }}</td>
     </tr>
   </table>
+</div>
+
+<div class="testgraph">
+  <app-ut-dygraph-in
+    [style]="graphstyle"
+    [displayedData]="dygData"
+    [columnLabels]="dygLabels"
+    [changeTrigger]="changeTrigger"
+    #graph
+  >
+  </app-ut-dygraph-in>
 </div>
 
 <h3>Data:</h3>

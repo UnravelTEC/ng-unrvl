@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 import * as Paho from 'paho-mqtt';
 
+import cloneDeep from 'lodash-es/cloneDeep';
+
 @Component({
   selector: 'app-mqtt',
   templateUrl: './mqtt.component.html',
@@ -12,13 +14,20 @@ export class MqttComponent implements OnInit, OnDestroy {
   public disconnects = 0;
   private client;
   private clientID = 'clientID_' + String(Math.random() * 100);
-  public topic = '+/sensors/#';
+  public topic = '+/sensors/SPS30/particulate_matter_typpartsize_um';
 
   public mqttMessages = [
     { date: new Date(), topic: 'sample topic', payload: 'sample payload' }
   ];
-  public maxlen = 10;
+  public maxlen = 3;
   public updateMessages = true;
+
+  public dygData = [
+    [new Date(new Date().valueOf() - 1000), 1],
+    [new Date(), 2]
+  ];
+  public dygLabels = ['Date','particulate_matter_typpartsize_um'];
+  changeTrigger = true;
 
   public sensorData = {};
   public sensorDataExample = {
@@ -45,6 +54,14 @@ export class MqttComponent implements OnInit, OnDestroy {
     }
   };
 
+  graphstyle = {
+    position: 'absolute',
+    top: '0',
+    bottom: '0',
+    left: '0',
+    right: '0'
+  };
+
   constructor(private globalSettings: GlobalSettingsService) {
     this.globalSettings.emitChange({ appName: 'MQTT-test' });
   }
@@ -60,6 +77,8 @@ export class MqttComponent implements OnInit, OnDestroy {
     document['MQTT_CLIENT']['father'] = this;
     console.log('onInit', this.client);
     this.connect();
+
+    // this.dygLabels = ;
   }
   ngOnDestroy() {
     this.client.unsubscribe(this.topic, {});
@@ -105,14 +124,18 @@ export class MqttComponent implements OnInit, OnDestroy {
       }
       father.sensorData[sensor][metric][index] = { value: value, tags: tags };
 
+      let valueTimestamp = Number(TSString) * 1000;
+
+      const sentDate =
+        valueTimestamp > 0 ? new Date(valueTimestamp) : new Date();
+
+      father.dygData.push([sentDate, Number(value)]);
+      // father.graph.updateGraph()
+      father.changeTrigger = ! father.changeTrigger;
+      console.log(cloneDeep(father.dygData));
+
       if (father.updateMessages) {
         // console.log('msg:', message);
-
-        let valueTimestamp = Number(TSString) * 1000;
-
-        const sentDate =
-          valueTimestamp > 0 ? new Date(valueTimestamp) : new Date();
-
         const msg = {
           date: sentDate,
           topic: message['topic'],
