@@ -7,12 +7,15 @@ import { InfluxTestComponent } from './influx-test.component';
 import { UtDygraphModule } from '../../shared/ut-dygraph/ut-dygraph.module';
 import { FormsModule } from '@angular/forms';
 
+import { UtDygraphInModule } from '../../shared/ut-dygraph-in/ut-dygraph-in.module';
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     UtDygraphModule,
-    InfluxTestRoutingModule
+    InfluxTestRoutingModule,
+    UtDygraphInModule
   ],
   declarations: [InfluxTestComponent]
 })

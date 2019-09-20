@@ -2,6 +2,19 @@
   Influx values:
 </h2>
 
+<pre>{{ influxresponse }}</pre>
+
+<div class="testgraph">
+  <app-ut-dygraph-in
+    [displayedData]="dygData"
+    [columnLabels]="dygLabels"
+    [changeTrigger]="changeTrigger"
+    #graph
+  >
+  </app-ut-dygraph-in>
+</div>
+<!-- [style]="graphstyle" -->
+
 <table class="outer">
   <tr *ngFor="let sensor of sensorData | keyvalue">
     <th>
