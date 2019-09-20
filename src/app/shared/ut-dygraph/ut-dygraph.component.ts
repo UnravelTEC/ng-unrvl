@@ -29,7 +29,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   // define on start what doesn't change
   @Input()
   // queryString: string;
-  queryString = 'co2{location="FuzzyLab",sensor="scd30"}';
+  queryString = '';
 
   @Input()
   style = {
