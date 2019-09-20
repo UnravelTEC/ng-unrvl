@@ -40,6 +40,11 @@ export class GlobalSettingsService implements OnInit {
     mobile: false
   };
 
+  // for local javascript client IPs:
+  private RTCPeerConnection =
+    /*window.RTCPeerConnection ||*/ window['webkitRTCPeerConnection'] ||
+    window['mozRTCPeerConnection'];
+
   // Observable string sources
   private emitChangeSource = new Subject<any>();
   // Observable string streams
@@ -77,6 +82,54 @@ export class GlobalSettingsService implements OnInit {
 
   ngOnInit() {
     this.reloadSettings();
+
+    if (this.RTCPeerConnection) {
+      var rtc = new RTCPeerConnection({ iceServers: [] });
+      if (1 || window['mozRTCPeerConnection']) {
+        // FF [and now Chrome!] needs a channel/stream to proceed
+        rtc.createDataChannel('', { reliable: false });
+      }
+
+      rtc.onicecandidate = function(evt) {
+        // convert the candidate to SDP so we can run it through our general parser
+        // see https://twitter.com/lancestout/status/525796175425720320 for details
+        if (evt.candidate) {this.grepSDP('a=' + evt.candidate.candidate)};
+      };
+      rtc.createOffer(
+        function(offerDesc) {
+          this.grepSDP(offerDesc.sdp);
+          rtc.setLocalDescription(offerDesc);
+        },
+        function(e) {
+          console.warn('offer failed', e);
+        }
+      );
+    } else {
+      console.error(
+        'error in getLocalIPs: RTCPeerConnection could not be created'
+      );
+    }
+  }
+
+  grepSDP(sdp) {
+    sdp.split('\r\n').forEach(function(line) {
+      // c.f. http://tools.ietf.org/html/rfc4566#page-39
+      if (~line.indexOf('a=candidate')) {
+        // http://tools.ietf.org/html/rfc4566#section-5.13
+        var parts = line.split(' '), // http://tools.ietf.org/html/rfc5245#section-15.1
+          addr = parts[4],
+          type = parts[7];
+        if (type === 'host') this.updateLocalAddresses(addr);
+      } else if (~line.indexOf('c=')) {
+        // http://tools.ietf.org/html/rfc4566#section-5.7
+        var parts = line.split(' '),
+          addr = parts[2];
+          this.updateLocalAddresses(addr);
+      }
+    });
+  }
+  updateLocalAddresses(addr) {
+
   }
 
   // we do not need to handle localhost in a special case - covered by $baseurl
@@ -231,24 +284,22 @@ export class GlobalSettingsService implements OnInit {
 
   checkForPrometheus(baseurl, path) {
     const prometheusTestQuery = 'query?query=scrape_samples_scraped';
-    this.http
-      .get(baseurl + path + prometheusTestQuery)
-      .subscribe(
-        (data: Object) => {
-          this.checkPrometheusTestResponse(
-            data,
-            baseurl,
-            path
-          );
-        },
-        error => {
-          console.log('no prometheus yet there', baseurl + path + prometheusTestQuery, ', 5s to next try.');
-          this.server.databaseStatus = 'down';
-          setTimeout(() => {
-            this.checkForPrometheus(baseurl, path);
-          }, 5 * 1000);
-        }
-      );
+    this.http.get(baseurl + path + prometheusTestQuery).subscribe(
+      (data: Object) => {
+        this.checkPrometheusTestResponse(data, baseurl, path);
+      },
+      error => {
+        console.log(
+          'no prometheus yet there',
+          baseurl + path + prometheusTestQuery,
+          ', 5s to next try.'
+        );
+        this.server.databaseStatus = 'down';
+        setTimeout(() => {
+          this.checkForPrometheus(baseurl, path);
+        }, 5 * 1000);
+      }
+    );
   }
 
   checkPrometheusTestResponse(data: Object, endpoint: string, endpath: string) {
@@ -260,7 +311,7 @@ export class GlobalSettingsService implements OnInit {
 
       console.log('SUCCESS: prometheus found on endpoint', endpoint);
 
-      this.checkIfTricorder()
+      this.checkIfTricorder();
     } else {
       console.error('FAILURE: prometheus on endpoint not ready', endpoint);
     }
@@ -346,7 +397,8 @@ export class GlobalSettingsService implements OnInit {
       console.log('not enough information to check if I am on a Tricorder');
       return;
     }
-    if (this.server.architecture.startsWith('arm') ) { // && this.server.prometheus) {
+    if (this.server.architecture.startsWith('arm')) {
+      // && this.server.prometheus) {
       this.server.type = 'Tricorder';
     } else {
       this.server.type = 'PublicServer';
