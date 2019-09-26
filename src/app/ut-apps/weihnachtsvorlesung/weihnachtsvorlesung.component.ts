@@ -27,7 +27,6 @@ export class WeihnachtsvorlesungComponent implements OnInit {
   queryString = 'loudness_crapunit'; // 'adc1_c1';
   dataBaseQueryStepMS = 1000;
   timeRange = 60; // 1 min
-  runningAvgSeconds = 0;
   fetchFromServerIntervalMS = 1000;
   dataSeriesNames = ['miclvl'];
   changeTrigger = true;

@@ -4,10 +4,11 @@
   [dataBaseQueryStepMS]="step"
   [dataSeriesLabels]="dataSeriesLabels_T"
   [labelBlackList]="labelBlackList"
-  YLabel="temperature (°C)"
+  YLabel="Temperature (°C)"
   [style]="graphstyle_T"
   [startTime]="startTime"
   [extraDyGraphConfig]="extraDyGraphConfig_T"
+  showDate="false"
   #temp
 ></app-ut-dygraph>
 <data id="Tval">{{ temp.lastValues[1] }} °C</data>
@@ -18,10 +19,11 @@
   [dataBaseQueryStepMS]="step"
   [dataSeriesLabels]="dataSeriesLabels_H"
   [labelBlackList]="labelBlackList"
-  YLabel="relative Humidity (%)"
+  YLabel="rel. Humidity (%)"
   [style]="graphstyle_H"
   [startTime]="startTime"
   [extraDyGraphConfig]="extraDyGraphConfig_H"
+  showDate="false"
   #rH
 ></app-ut-dygraph>
 <data id="Hval">{{ rH.lastValues[1] }} %</data>
@@ -32,7 +34,7 @@
   [dataBaseQueryStepMS]="step"
   [dataSeriesLabels]="dataSeriesLabels_P"
   [labelBlackList]="labelBlackList"
-  YLabel="Atmospheric Pressure (hPa)"
+  YLabel="Pressure (hPa)"
   [style]="graphstyle_P"
   [startTime]="startTime"
   [extraDyGraphConfig]="extraDyGraphConfig_P"

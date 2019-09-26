@@ -1,0 +1,142 @@
+<h1>
+  System Stats
+</h1>
+
+<table>
+  <tr>
+    <th>
+      <h2>System Load</h2>
+    </th>
+  </tr>
+  <tr>
+    <td class="graph">
+      <app-ut-dygraph
+        queryString="system_load"
+        fetchFromServerIntervalMS="3000"
+        dataBaseQueryStepMS="3000"
+        [dataSeriesLabels]="dataSeriesLabels"
+        [labelBlackList]="labelBlackList"
+        YLabel="Load"
+        [style]="graphstyle"
+        [startTime]="startTime"
+        #load
+      ></app-ut-dygraph>
+      <!-- [extraDyGraphConfig]="extraDyGraphConfig" -->
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <th>
+      <h2>Memory Usage</h2>
+    </th>
+  </tr>
+  <tr>
+    <td class="graph">
+      <app-ut-dygraph
+        queryString='{__name__=~"mem_free_B|mem_bufcache_B|mem_used_B"}'
+        fetchFromServerIntervalMS="3000"
+        dataBaseQueryStepMS="3000"
+        [labelBlackList]="labelBlackListMem"
+        YLabel="RAM (MB)"
+        [style]="graphstyle"
+        [startTime]="startTime"
+        [extraDyGraphConfig]="extraDyGraphConfigMem"
+        [multiplicateFactors]="multiplicateFactorsMem"
+        #mem
+      ></app-ut-dygraph>
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <th>
+      <h2>CPU Temperature</h2>
+    </th>
+  </tr>
+  <tr>
+    <td class="graph">
+      <app-ut-dygraph
+        queryString="cpu_temperature_degC"
+        fetchFromServerIntervalMS="1000"
+        dataBaseQueryStepMS="1000"
+        [dataSeriesLabels]="dataSeriesLabels"
+        [labelBlackList]="labelBlackList"
+        YLabel="CPU temperature (°C)"
+        [style]="graphstyle"
+        [startTime]="startTime"
+        #cput
+      ></app-ut-dygraph>
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <th>
+      <h2>CPU Speed</h2>
+    </th>
+  </tr>
+  <tr>
+    <td class="graph">
+      <app-ut-dygraph
+        queryString="cpu_frequency_Hz"
+        fetchFromServerIntervalMS="1000"
+        dataBaseQueryStepMS="1000"
+        [dataSeriesLabels]="dataSeriesLabels"
+        [labelBlackList]="labelBlackList"
+        YLabel="CPU Frequency [MHz]"
+        [style]="graphstyle"
+        [startTime]="startTime"
+        [multiplicateFactors]="multiplicateFactorsCPU"
+        #cpus
+      ></app-ut-dygraph>
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <th>
+      <h2>Fan speed</h2>
+    </th>
+  </tr>
+  <tr>
+    <td class="graph">
+      <app-ut-dygraph
+        queryString='fan_speed_percent'
+        fetchFromServerIntervalMS="5000"
+        dataBaseQueryStepMS="5000"
+        YLabel="Speed (%)"
+        [style]="graphstyle"
+        [startTime]="startTime"
+        #wlan
+      ></app-ut-dygraph>
+      <!-- [labelBlackList]="labelBlackListWLAN" -->
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <th>
+      <h2>Wireless</h2>
+    </th>
+  </tr>
+  <tr>
+    <td class="graph">
+      <app-ut-dygraph
+        queryString='{__name__=~"wlan_link|wlan_level_dBm"}'
+        fetchFromServerIntervalMS="3000"
+        dataBaseQueryStepMS="3000"
+        YLabel="Link Quality, Level (dBm)"
+        [style]="graphstyle"
+        [startTime]="startTime"
+        #wlan
+      ></app-ut-dygraph>
+      <!-- [labelBlackList]="labelBlackListWLAN" -->
+    </td>
+  </tr>
+</table>

@@ -39,16 +39,36 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/iaq/iaq.module#IaqModule'
   },
   {
+    path: 'Apps/Humidity',
+    loadChildren: './ut-apps/humidity/humidity.module#HumidityModule'
+  },
+  {
+    path: 'Apps/Atmosphere',
+    loadChildren: './ut-apps/atmosphere/atmosphere.module#AtmosphereModule'
+  },
+  {
     path: 'Apps/ADC',
     loadChildren: './ut-apps/adc/adc.module#AdcModule'
+  },
+  {
+    path: 'Apps/ADC-Diff',
+    loadChildren: './ut-apps/adc-diff/adc-diff.module#AdcDiffModule'
   },
   {
     path: 'Apps/CO2',
     loadChildren: './ut-apps/co2/co2.module#Co2Module'
   },
   {
+    path: 'Apps/Airquality',
+    loadChildren: './ut-apps/airq/airq.module#AirqModule'
+  },
+  {
     path: 'Apps/CO2-graph',
     loadChildren: './ut-apps/co2-graph/co2-graph.module#Co2GraphModule'
+  },
+  {
+    path: 'Apps/Ozone',
+    loadChildren: './ut-apps/ozone/ozone.module#OzoneModule'
   },
   {
     path: 'Apps/rHT',
@@ -79,6 +99,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/loudness/loudness.module#LoudnessModule'
   },
   {
+    path: 'Apps/Luminosity',
+    loadChildren: './ut-apps/luminosity/luminosity.module#LuminosityModule'
+  },
+  {
     path: 'Apps/noir',
     loadChildren: './ut-apps/noir/noir.module#NoirModule'
   },
@@ -103,6 +127,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/sensors/sps30/sps30.module#Sps30Module'
   },
   {
+    path: 'Apps/Sensors/SGP30',
+    loadChildren: './ut-apps/sensors/sgp30/sgp30.module#Sgp30Module'
+  },
+  {
     path: 'Apps/Sensors/DS18B20',
     loadChildren: './ut-apps/sensors/ds18b20/ds18b20.module#Ds18b20Module'
   },
@@ -111,12 +139,48 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/sensors/bme280/bme280.module#Bme280Module'
   },
   {
+    path: 'Apps/Sensors/TYPE5',
+    loadChildren: './ut-apps/sensors/type5/type5.module#Type5Module'
+  },
+  {
+    path: 'Apps/Sensors/MPU9250',
+    loadChildren: './ut-apps/sensors/mpu9250/mpu9250.module#Mpu9250Module'
+  },
+  {
+    path: 'Apps/Sensors/MICS6814',
+    loadChildren: './ut-apps/sensors/mics6814/mics6814.module#Mics6814Module'
+  },
+  {
+    path: 'Apps/Sensors/TCS34725',
+    loadChildren: './ut-apps/sensors/tcs34725/tcs34725.module#Tcs34725Module'
+  },
+  {
     path: 'Apps/Temperatures',
     loadChildren: './ut-apps/temperatures/temperatures.module#TemperaturesModule'
   },
   {
     path: 'Apps/Dygraph-Playground',
     loadChildren: './ut-apps/dygraph-dev/dygraph-dev.module#DygraphDevModule'
+  },
+  {
+    path: 'Apps/Influx-Test',
+    loadChildren: './ut-apps/influx-test/influx-test.module#InfluxTestModule'
+  },
+  {
+    path: 'Apps/MQTT-Test',
+    loadChildren: './ut-apps/mqtt/mqtt.module#MqttModule'
+  },
+  {
+    path: 'Apps/Galion',
+    loadChildren: './ut-apps/galion/galion.module#GalionModule'
+  },
+  {
+    path: 'Apps/IES',
+    loadChildren: './ut-apps/ies/ies.module#IesModule'
+  },
+  {
+    path: 'Apps/System',
+    loadChildren: './ut-apps/system/system.module#SystemModule'
   },
   {
     path: 'Apps/Weihnachtsvorlesung',

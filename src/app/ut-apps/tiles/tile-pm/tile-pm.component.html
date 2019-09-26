@@ -1,0 +1,41 @@
+<a
+  class="relcontainer {{
+    pm10 < 50 ? 'green' : pm10 < 100 ? 'yellow' : pm10 < 200 ? 'orange' : 'red'
+  }}"
+  routerLink="/Apps/PM"
+  routerLinkActive="active"
+>
+  <div class="tilebox">
+    <h2 style="text-align: left; font-size: 0.7em;">
+      Particulate Matter:
+    </h2>
+    <h2>
+      {{ graph.lastValues[2] | number: '1.0-0' }}&nbsp;<em class="unit"
+        >µg/m³ <small>pm10</small></em
+      >
+    </h2>
+
+    <div class="bar">
+      <app-ut-bargauge-min
+        [width]="width / 3.3"
+        [height]="height"
+        max="200"
+        [value]="pm10"
+        [highlights]="highlights"
+      ></app-ut-bargauge-min>
+    </div>
+    <div class="graphabs">
+      <div class="graphrel">
+        <app-ut-dygraph
+          queryString='{__name__=~"particulate_matter_ugpm3|particulate_matter_ppcm3"}'
+          dataBaseQueryStepMS="1000"
+          startTime="5m"
+          minimal="true"
+          [extraDyGraphConfig]="extraDyGraphConfig"
+          [backGroundLevels]="backGroundLevels"
+          #graph
+        ></app-ut-dygraph>
+      </div>
+    </div>
+  </div>
+</a>

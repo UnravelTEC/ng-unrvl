@@ -37,3 +37,26 @@ button {
   text-decoration: none;
   cursor: pointer;
 }
+
+#preview {
+  position: absolute;
+  top: 3em;
+  bottom: 7em;
+  left: 3em;
+  right: 3em;
+  img {
+    height: 100%;
+    width: 100%;
+    border: 1px solid gray;
+  }
+  button {
+    position: absolute;
+    top: 3em;
+    right: 3em;
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid black;
+    border-radius: 0.5rem;
+    background: #72727265
+  }
+}

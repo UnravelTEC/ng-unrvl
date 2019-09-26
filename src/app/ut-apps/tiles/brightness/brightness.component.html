@@ -1,0 +1,43 @@
+<a
+  class="relcontainer {{
+    graph['lastValue'] < 400
+      ? 'red'
+      : graph['lastValue'] < 1000
+      ? 'yellow'
+      : 'green'
+  }}"
+  routerLink="/Apps/Luminosity"
+  routerLinkActive="active"
+>
+  <div class="tilebox">
+    <h2>Brightness</h2>
+    <data
+      ><span *ngIf="graph['lastValues'].length > 2" class="xbar">X</span
+      >&nbsp;{{ graph['lastValue'] | number: '1.0-0' }}&nbsp;<em class="unit"
+        >lux</em
+      ></data
+    >
+
+    <div class="bar">
+      <app-ut-bargauge-min
+        [width]="width / 3.3"
+        [height]="height"
+        max="3000"
+        [value]="graph['lastValue']"
+        [highlights]="highlights"
+      ></app-ut-bargauge-min>
+    </div>
+    <div class="graphabs">
+      <div class="graphrel">
+        <app-ut-dygraph
+          queryString='radiation_lux{wavelength="visible"}'
+          dataBaseQueryStepMS="1000"
+          startTime="2m"
+          minimal="true"
+          [backGroundLevels]="backGroundLevels"
+          #graph
+        ></app-ut-dygraph>
+      </div>
+    </div>
+  </div>
+</a>

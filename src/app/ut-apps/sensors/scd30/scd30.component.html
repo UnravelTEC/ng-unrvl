@@ -13,8 +13,10 @@
     [style]="graphstyleCO2"
     [startTime]="startTime"
     [extraDyGraphConfig]="extraDyGraphConfig"
-    #graph
+    #co2
   ></app-ut-dygraph>
+  <data id="co2val">
+    <h4>NDIR CO₂</h4>{{ co2.getAverage() | number: '1.0-1' }} ppm</data>
 
   <div id="rHdygraph">
     <app-ut-dygraph
@@ -28,5 +30,10 @@
       [startTime]="startTime"
       #rH
     ></app-ut-dygraph>
+    <data id="rhtval">
+      <h4>SHT31 rH&#8202;/&#8202;T</h4>
+      <p>{{ rH.getAverage('',1) | number: '1.2-2' }} %</p>
+      <p>{{ rH.getAverage('',2) | number: '1.2-2' }} °C</p></data
+    >
   </div>
 </div>

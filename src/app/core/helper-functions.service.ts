@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
 import { formatDate } from '@angular/common';
 import * as FileSaver from 'file-saver';
+import { cloneDeep } from 'lodash-es';
 
 @Injectable({
   providedIn: 'root'
@@ -172,14 +173,29 @@ export class HelperFunctionsService {
   }
 
   createLabelString(lObj: Object, blackListLabels: string[] = []): string {
+    const labelBlackList = cloneDeep(blackListLabels);
+    //$sensor@host
     let labelString = '';
+    if (lObj['sensor'] && labelBlackList.indexOf('sensor') === -1) {
+      labelString = lObj['sensor'];
+      labelBlackList.push('sensor');
+    }
+    if (lObj['model'] && labelBlackList.indexOf('model') === -1) {
+      labelString = lObj['model'];
+      labelBlackList.push('model')
+    }
+    if (lObj['node'] && labelBlackList.indexOf('node') === -1) {
+      labelString += '@' + lObj['node'];
+      labelBlackList.push('node')
+    }
+
     let firstDone = false;
     for (let key in lObj) {
-      const value = lObj[key];
+      let value = lObj[key];
 
       let isInBlackList = false;
-      if (blackListLabels) {
-        blackListLabels.forEach(item => {
+      if (labelBlackList) {
+        labelBlackList.forEach(item => {
           if (key == item) {
             isInBlackList = true;
           }
@@ -189,11 +205,10 @@ export class HelperFunctionsService {
         continue;
       }
 
-      if (key === '__name__') {
-        labelString += value + ': ';
+      if (key === 'model' && value === 'adc') {
         continue;
       }
-      if (key === 'model' && value === 'adc') {
+      if (key === 'job') {
         continue;
       }
       if (key === 'channel') {
@@ -202,11 +217,24 @@ export class HelperFunctionsService {
       if (key === 'interval') {
         key = 'i';
       }
+      if (value === 'temperature_degC') {
+        value = 'T';
+      }
+      if (value === 'humidity_rel_percent') {
+        value = 'rH';
+      }
 
       if (firstDone) {
         labelString += ', ';
       } else {
+        if (labelString) {
+          labelString += ': ';
+        }
         firstDone = true;
+      }
+      if (key === '__name__') {
+        labelString += value;
+        continue;
       }
       labelString += key + ': ' + value;
     }
@@ -282,5 +310,66 @@ export class HelperFunctionsService {
       formatDate(endDate, 'HH.mm.ss', 'en-uk') +
       '.csv';
     FileSaver.saveAs(blob, name);
+  }
+
+  isString(x) {
+    return Object.prototype.toString.call(x) === '[object String]';
+  }
+
+  relHumidity(argT, argTD) {
+    const T = this.isString(argT) ? Number(argT) : argT;
+
+    let a: number, b: number;
+    if (T >= 0) {
+      a = 7.5;
+      b = 237.3;
+    } else {
+      a = 7.6;
+      b = 240.7;
+    }
+
+    const SDD = 6.1078 * Math.pow(10, (a * T) / (b + T)); // Sättigungsdampfdruck in hPa
+    const SDDDP = 6.1078 * Math.pow(10, (a * argTD) / (b + argTD));
+    const rH = (100 * SDDDP) / SDD;
+    return rH;
+  }
+  absHumidity(argT, argRH) {
+    const T = this.isString(argT) ? Number(argT) : argT;
+    const rH = this.isString(argRH) ? Number(argRH) : argRH;
+    // console.log('aH(', T, rH, ')');
+    // from https://www.wetterochs.de/wetter/feuchte.html
+    const T_K = T + 273.15;
+    let a: number, b: number;
+    if (T >= 0) {
+      a = 7.5;
+      b = 237.3;
+    } else {
+      a = 7.6;
+      b = 240.7;
+    }
+    const m_w = 18.016; // kg/kmol Molekulargewicht des Wasserdampfes
+    const R = 8314.3; // J/(kmol*K) (universelle Gaskonstante)
+
+    const SDD = 6.1078 * Math.pow(10, (a * T) / (b + T)); // Sättigungsdampfdruck in hPa
+    const DD = (rH / 100) * SDD; // Dampfdruck in hPa
+    return 100000 * (m_w / R) * (DD / T_K);
+
+    //=  10^5 * mw/R* * DD(r,T)/TK; AF(TD,TK) = 10^5 * mw/R* * SDD(TD)/TK
+    // console.log('result:', aH);
+  }
+  dewPoint(argT, argRH, P = 972) {
+    const T = this.isString(argT) ? Number(argT) : argT;
+    const rH = this.isString(argRH) ? Number(argRH) : argRH;
+
+    // source: https://en.wikipedia.org/wiki/Dew_point#Calculating_the_dew_point
+    // todo enhance with constants for different temperature sets
+    let a: number, b: number, c: number, d: number;
+    a = 6.1121; //mbar
+    b = 18.678;
+    c = 257.14; // °C
+    d = 234.5; // °C
+
+    const y_m = Math.log((rH / 100) * Math.exp((b - T / d) * (T / (c + T))));
+    return (c * y_m) / (b - y_m);
   }
 }
