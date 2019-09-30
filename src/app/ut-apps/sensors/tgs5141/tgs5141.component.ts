@@ -7,7 +7,7 @@ import { GlobalSettingsService } from '../../../core/global-settings.service';
   styleUrls: ['./tgs5141.component.scss']
 })
 export class Tgs5141Component implements OnInit {
-  labelBlackList = ['__name__', 'job'];
+  labelBlackList = ['__name__', 'job', 'interval'];
 
   graphstyle = {
     position: 'absolute',
