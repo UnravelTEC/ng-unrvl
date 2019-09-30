@@ -155,6 +155,14 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/sensors/tgs5141/tgs5141.module#Tgs5141Module'
   },
   {
+    path: 'Apps/Sensors/SGAS',
+    loadChildren: './ut-apps/sensors/sgas/sgas.module#SgasModule'
+  },
+  {
+    path: 'Apps/Sensors/Alphasense-gas',
+    loadChildren: './ut-apps/sensors/galion-alphasense/galion-alphasense.module#GalionAlphasenseModule'
+  },
+  {
     path: 'Apps/Sensors/TCS34725',
     loadChildren: './ut-apps/sensors/tcs34725/tcs34725.module#Tcs34725Module'
   },
@@ -177,6 +185,10 @@ const appRoutes: Routes = [
   {
     path: 'Apps/Galion',
     loadChildren: './ut-apps/galion/galion.module#GalionModule'
+  },
+  {
+    path: 'Apps/Galion-Vif',
+    loadChildren: './ut-apps/galion-vif/galion-vif.module#GalionVifModule'
   },
   {
     path: 'Apps/IES',

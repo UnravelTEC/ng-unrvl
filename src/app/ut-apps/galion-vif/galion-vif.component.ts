@@ -24,7 +24,7 @@ export class GalionVifComponent implements OnInit {
 
   startTime = '15m';
 
-  labelBlackList = ['interval'];
+  labelBlackList = ['interval', 'adc'];
 
   constructor(private globalSettings: GlobalSettingsService) {
     this.globalSettings.emitChange({
