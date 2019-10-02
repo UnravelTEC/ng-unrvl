@@ -35,7 +35,34 @@ export class MqttService {
   public disconnects = 0;
 
   constructor(private globalSettings: GlobalSettingsService) {
+    document['MQTT_CLIENT'] = {};
+    document['MQTT_CLIENT']['father'] = this;
     let server = this.globalSettings.server.serverName;
+    if (server) {
+      this.init();
+    } else {
+      console.log('mqtt: server not ready yet');
+      setTimeout(
+        function() {
+          this.init();
+        }.bind(this),
+        50
+      );
+    }
+  }
+  init() {
+    let server = this.globalSettings.server.serverName;
+    if (!server) {
+      console.log('mqtt: server not ready yet');
+      setTimeout(
+        function() {
+          this.init();
+        }.bind(this),
+        50
+      );
+      return;
+    }
+
     console.log('mqtt server:' + server);
 
     this.client = new Paho.Client(server, 1885, this.clientID);
@@ -120,10 +147,10 @@ export class MqttService {
         father.emitChangeSources[element].next(payLoadObj);
         return;
       }
-      if(element.startsWith('+/')) {
-        const remainingTopic = topic.replace(/^[^/]*\//,'=');
-        const remaingElement = element.replace(/^[+]\//,'=')
-        if(remainingTopic == remaingElement) {
+      if (element.startsWith('+/')) {
+        const remainingTopic = topic.replace(/^[^/]*\//, '=');
+        const remainingElement = element.replace(/^[+]\//, '=');
+        if (remainingTopic == remainingElement) {
           // console.log('match for +/ successful');
           father.emitChangeSources[element].next(payLoadObj);
           return;

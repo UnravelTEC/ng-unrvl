@@ -11,6 +11,12 @@
   <!-- <a routerLink="/Store" routerLinkActive="active">Store</a> -->
   <em class="date">{{ currentTime | date: 'yyyy-MM-dd HH:mm' }}</em>
 
+  <em id="mqtt">
+    <span class="{{ mqtt.status }}" title="MQTT status: {{ mqtt.status }}">
+        <mat-icon>rss_feed</mat-icon>
+    </span>
+  </em>
+
   <em id="db">
     <span
       class="{{ gss.server.databaseStatus }}"
