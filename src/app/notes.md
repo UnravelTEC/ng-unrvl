@@ -118,3 +118,20 @@ T - no graph, only bar
 
 O3 - büro, aussen?
 NO2
+
+# Tiles
+
+module.ts
+  add
+    exports: [TileLoadComponent]
+
+ut-dashboard.module.ts
+  add TileLoadModule to imports
+
+## load-Tile
+
+tile subscribes to mqtt +/system
+gets pushed messages
+updates its load indicator
+
+need mqtt-status in top-bar
