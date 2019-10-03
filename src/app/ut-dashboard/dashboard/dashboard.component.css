@@ -8,6 +8,7 @@ div.panel {
   margin: 0 auto;
 }
 
+
 .panel > a {
   text-align: center;
   display: inline-block;
@@ -36,6 +37,10 @@ h2 {
 
 .tilebox {
   margin: 2vh 1vw;
+}
+
+.tilebox + hr {
+  clear: both;
 }
 
 .tilebox > div {
