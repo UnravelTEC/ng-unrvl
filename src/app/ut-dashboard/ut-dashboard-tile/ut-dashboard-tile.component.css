@@ -9,7 +9,6 @@ a {
   width: 5cm;
   height: 3cm;
   overflow:hidden;
-  background: #5991b2;
   border: 3px #2a5770 solid;
   border-radius: 0.4em;
   color: black;
@@ -17,8 +16,10 @@ a {
   margin: 0.6em;
   text-decoration: none;
 }
+tr:first-child th {font-size: 0.5em}
 
-h3 {
+
+th {
   font-weight: bold;
   text-emphasis: none;
   text-decoration: none;
@@ -26,9 +27,19 @@ h3 {
   margin: 0.3em 0;
 }
 
-div.app-preview {
-  /*  border: 0px solid black;
-  height: 1cm;
-  width: 1cm;
-  margin: 0 0;*/
+.app-preview {
+  width: 5cm;
+  height: 2cm;
+  /* background: rebeccapurple; */
+  vertical-align: middle;
+  text-align: center;
+}
+
+.app-preview img {
+  display: block;
+  max-width:5cm;
+  max-height:2cm;
+  width: auto;
+  height: auto;
+  margin: auto;
 }

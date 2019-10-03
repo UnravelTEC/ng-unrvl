@@ -7,23 +7,19 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class UtDashboardTileComponent implements OnInit {
   @Input()
-  title: string;
+  title = 'new App';
   @Input()
-  icon: string;
+  icon = 'example.png'; // prefix /assets/ added in html
   @Input()
-  path: string;
+  path = '/Apps/empty';
+  @Input()
+  bg = '#5991b2';
 
   constructor() {}
 
-  ngOnInit() {
-    if (!this.title) {
-      this.title = 'new App';
-    }
-    if (!this.icon) {
-      this.icon = '/assets/example.png';
-    }
-    if (!this.path) {
-      this.path = '/Apps/empty';
-    }
+  ngOnInit() {}
+
+  getBg() {
+    return this.bg;
   }
 }
