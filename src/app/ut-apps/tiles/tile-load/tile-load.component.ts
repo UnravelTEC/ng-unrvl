@@ -26,14 +26,16 @@ export class TileLoadComponent implements OnInit {
     this.mqttSubscription$ = this.mqtt.observableTopics$[topic].subscribe((obj: Object) =>
       this.updateLoad(obj)
     );
-
-    // test only
-    this.mqtt.emitChange({ system_load: 42 });
   }
 
   updateLoad(msg: Object) {
     if(msg['system_load']) {
-      this.currentLoad = Number(msg['system_load'])
+      this.currentLoad = msg['system_load']
     }
   }
+
+  dygLabels = ['Date','System Load'];
+  dygData = [] // mit push dranhängen, wo machen wir die maxlen?
+  changeTrigger = false;
+
 }

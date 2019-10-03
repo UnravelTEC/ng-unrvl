@@ -1,8 +1,19 @@
 <a class="relcontainer">
   <table>
     <tr>
-      <td>System load: {{ currentLoad }}</td>
+      <td>System load: {{ currentLoad | number: '1.1-2' }}</td>
+    </tr>
+    <tr>
+      <td style="position: relative">
+          <app-ut-dygraph-in
+          [displayedData]="dygData"
+          [columnLabels]="dygLabels"
+          [changeTrigger]="changeTrigger"
+          minimal="true"
+          #graph
+        >
+        </app-ut-dygraph-in>
+      </td>
     </tr>
   </table>
-
 </a>

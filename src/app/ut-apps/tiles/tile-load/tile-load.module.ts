@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 
 import { TileLoadRoutingModule } from './tile-load-routing.module';
 import { TileLoadComponent } from './tile-load.component';
+import { UtDygraphInModule } from '../../../shared/ut-dygraph-in/ut-dygraph-in.module';
 
 @NgModule({
   imports: [
     CommonModule,
-    TileLoadRoutingModule
+    TileLoadRoutingModule,
+    UtDygraphInModule
   ],
   declarations: [TileLoadComponent],
   exports: [TileLoadComponent]
