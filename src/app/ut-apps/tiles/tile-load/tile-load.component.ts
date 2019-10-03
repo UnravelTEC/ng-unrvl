@@ -38,4 +38,15 @@ export class TileLoadComponent implements OnInit {
   dygData = [] // mit push dranhängen, wo machen wir die maxlen?
   changeTrigger = false;
 
+
+  // MQTT queries
+  // topic, payload-filter, topic-filter
+
+  /* example queries
+    all temperatures
+    all humidity
+    all brightness
+    temperature from one sensor
+    all external temperatures
+  */
 }
