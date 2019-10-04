@@ -18,12 +18,19 @@ export class MqttService {
 
   private emitChangeSources = {};
   public observableTopics$ = {};
-  private waitingTopics = [];
+  private waitingRequests = [];
 
   private client;
   private clientID = 'clientID_' + String(Math.random() * 100);
   public status = 'init'; // | connecting | connected | failed | lost
   public disconnects = 0;
+
+  private sampleRequestObject = {
+    topic: '+/sensors/+/temperature',
+    tagFilters: { key1: 'value1', key2: 'value2' },
+    valueFilters: ['air_degC', 'probe_degC']
+  };
+  private activeRequesters = [];
 
   constructor(private globalSettings: GlobalSettingsService) {
     let server = this.globalSettings.server.serverName;
@@ -39,7 +46,7 @@ export class MqttService {
       );
     }
   }
-  init() {
+  private init() {
     let server = this.globalSettings.server.serverName;
     if (!server) {
       console.log('mqtt: server not ready yet');
@@ -61,7 +68,12 @@ export class MqttService {
     this.connect();
   }
 
-  subscribeTopic(topic: string) {
+  public request(requestObject: Object) {
+    const topic =  requestObject['topic'];
+    if (! topic) {
+      console.error('mqtt.request: no topic ');
+      return -1;
+    }
     this.emitChangeSources[topic] = new Subject<any>();
     this.observableTopics$[topic] = this.emitChangeSources[
       topic
@@ -69,37 +81,39 @@ export class MqttService {
 
     if (this.status === 'connected') {
       this.client.subscribe(topic);
+      this.activeRequesters.push(requestObject);
     } else {
-      console.log('not connected yet, put ' + topic + ' into queue.');
-      this.waitingTopics.push(topic);
+      console.log('not connected yet, put ' + requestObject + ' into queue.');
+      this.waitingRequests.push(requestObject);
     }
   }
-  unsubscribeTopic(topic: String) {
+  public unsubscribeTopic(topic: String) {
     this.client.unsubscribe(topic, {});
   }
 
-  connect() {
+  private connect() {
     this.client.connect({
       onSuccess: () => this.onConnect(),
       onFailure: (obj: Object) => this.onFailure(obj)
     });
     this.status = 'connecting';
   }
-  onConnect() {
+  private onConnect() {
     console.log('onConnect');
     this.status = 'connected';
-    for (let i = 0; i < this.waitingTopics.length; i++) {
-      const topic = this.waitingTopics[i];
-      console.log('subscribing waiting', topic);
-      this.client.subscribe(topic);
+    for (let i = 0; i < this.waitingRequests.length; i++) {
+      const request = this.waitingRequests[i];
+      console.log('subscribing waiting', request);
+      this.client.subscribe(request['topic']);
+      this.activeRequesters.push(request);
     }
   }
-  onFailure(message) {
+  private onFailure(message) {
     console.error('MQTT failure on connect');
     console.error(message);
     this.status = 'failed';
   }
-  onConnectionLost(responseObject) {
+  private onConnectionLost(responseObject) {
     console.error('onConnectionLost object: ', responseObject);
     if (responseObject.errorCode !== 0) {
       console.error('onConnectionLost:', responseObject.errorMessage);
@@ -108,18 +122,13 @@ export class MqttService {
     this.disconnects += 1;
     this.connect();
   }
-  onMessageArrived(message: Object) {
+  private onMessageArrived(message: Object) {
     // console.log(
     //   'topic:' + message['topic'] + ' payload: ' + message['payloadString']
     // );
     const topic = message['topic'];
     const payLoadObj = JSON.parse(message['payloadString']);
 
-    // need to check if there are any wildcard topic listeners?
-    if (this.emitChangeSources[topic]) {
-      this.emitChangeSources[topic].next(payLoadObj);
-      return;
-    }
     const keys = Object.keys(this.emitChangeSources);
     let found = false;
     for (let i = 0; i < keys.length; i++) {
@@ -135,7 +144,7 @@ export class MqttService {
       console.error('no topic subscribers found for', topic);
     }
   }
-  compareTopics(subscribedTopic: string, receivedTopic: string) {
+  public compareTopics(subscribedTopic: string, receivedTopic: string) {
     console.log(subscribedTopic, 'vs', receivedTopic);
 
     if (subscribedTopic === '#') {
