@@ -26,8 +26,6 @@ export class MqttService {
   public disconnects = 0;
 
   constructor(private globalSettings: GlobalSettingsService) {
-    document['MQTT_CLIENT'] = {};
-    document['MQTT_CLIENT']['father'] = this;
     let server = this.globalSettings.server.serverName;
     if (server) {
       this.init();
@@ -57,10 +55,8 @@ export class MqttService {
     console.log('mqtt server:' + server);
 
     this.client = new Paho.Client(server, 1885, this.clientID);
-    this.client.onConnectionLost = this.onConnectionLost;
-    this.client.onMessageArrived = this.onMessageArrived;
-    document['MQTT_CLIENT'] = this.client;
-    document['MQTT_CLIENT']['father'] = this;
+    this.client.onConnectionLost = (obj: Object) => this.onConnectionLost(obj);
+    this.client.onMessageArrived = (obj: Object) => this.onMessageArrived(obj);
     console.log('MQTT client under construction', this.client);
     this.connect();
   }
@@ -84,41 +80,35 @@ export class MqttService {
 
   connect() {
     this.client.connect({
-      onSuccess: this.onConnect,
-      onFailure: this.onFailure
+      onSuccess: () => this.onConnect(),
+      onFailure: (obj: Object) => this.onFailure(obj)
     });
     this.status = 'connecting';
   }
   onConnect() {
     console.log('onConnect');
-    console.log(this);
-    const father = document['MQTT_CLIENT']['father'];
-    // document['MQTT_CLIENT'].subscribe(father.topic);
-    father.status = 'connected';
-    for (let i = 0; i < father.waitingTopics.length; i++) {
-      const topic = father.waitingTopics[i];
+    this.status = 'connected';
+    for (let i = 0; i < this.waitingTopics.length; i++) {
+      const topic = this.waitingTopics[i];
       console.log('subscribing waiting', topic);
-
-      document['MQTT_CLIENT'].subscribe(topic);
+      this.client.subscribe(topic);
     }
   }
   onFailure(message) {
     console.error('MQTT failure on connect');
     console.error(message);
-    document['MQTT_CLIENT']['father'].status = 'failed';
+    this.status = 'failed';
   }
   onConnectionLost(responseObject) {
-    const father = document['MQTT_CLIENT']['father'];
     console.error('onConnectionLost object: ', responseObject);
     if (responseObject.errorCode !== 0) {
       console.error('onConnectionLost:', responseObject.errorMessage);
     }
-    father.status = 'lost';
-    father.disconnects += 1;
-    father.connect();
+    this.status = 'lost';
+    this.disconnects += 1;
+    this.connect();
   }
   onMessageArrived(message: Object) {
-    const father = document['MQTT_CLIENT']['father'];
     // console.log(
     //   'topic:' + message['topic'] + ' payload: ' + message['payloadString']
     // );
@@ -126,28 +116,52 @@ export class MqttService {
     const payLoadObj = JSON.parse(message['payloadString']);
 
     // need to check if there are any wildcard topic listeners?
-    if (father.emitChangeSources[topic]) {
-      father.emitChangeSources[topic].next(payLoadObj);
+    if (this.emitChangeSources[topic]) {
+      this.emitChangeSources[topic].next(payLoadObj);
       return;
     }
-    const keys = Object.keys(father.emitChangeSources);
+    const keys = Object.keys(this.emitChangeSources);
+    let found = false;
     for (let i = 0; i < keys.length; i++) {
       const element = keys[i];
       // console.log('subscriber:', element);
-      if (element === '#') {
-        father.emitChangeSources[element].next(payLoadObj);
-        return;
-      }
-      if (element.startsWith('+/')) {
-        const remainingTopic = topic.replace(/^[^/]*\//, '=');
-        const remainingElement = element.replace(/^[+]\//, '=');
-        if (remainingTopic == remainingElement) {
-          // console.log('match for +/ successful');
-          father.emitChangeSources[element].next(payLoadObj);
-          return;
-        }
+
+      if (this.compareTopics(element, topic)) {
+        this.emitChangeSources[element].next(payLoadObj);
+        found = true;
       }
     }
-    console.error('no topic subscribers found for', topic);
+    if (!found) {
+      console.error('no topic subscribers found for', topic);
+    }
+  }
+  compareTopics(subscribedTopic: string, receivedTopic: string) {
+    console.log(subscribedTopic, 'vs', receivedTopic);
+
+    if (subscribedTopic === '#') {
+      return true;
+    }
+    const subscribedArray = subscribedTopic.split('/');
+    const receivedArray = receivedTopic.split('/');
+    if (receivedArray.length > subscribedArray.length) {
+      console.error('mqtt.compareTopics: unknown situation');
+    }
+    for (let i = 0; i < subscribedArray.length; i++) {
+      const subscribedPart = subscribedArray[i];
+      const receivedPart = receivedArray[i];
+      if (!receivedPart) {
+        console.log('mqtt.compareTopics: received part shorter than subscribe');
+        return false;
+      }
+      if (subscribedPart == '+' || subscribedPart === receivedPart) {
+        continue;
+      }
+
+      // not matched
+      return false;
+    }
+
+    // every part matched
+    return true;
   }
 }

@@ -133,5 +133,3 @@ ut-dashboard.module.ts
 tile subscribes to mqtt +/system
 gets pushed messages
 updates its load indicator
-
-need mqtt-status in top-bar
