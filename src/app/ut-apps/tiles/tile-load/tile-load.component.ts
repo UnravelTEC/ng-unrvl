@@ -34,7 +34,18 @@ export class TileLoadComponent implements OnInit {
     }
   }
 
-  dygLabels = ['Date','System Load'];
+  /* labels should be something that identifies a series:
+  sources:
+   * topic ($hostname/sensor/$sensor/$measurement)
+   * tags (at least a set of selected, e.g. "id")
+   * fieldname
+
+  */
+  dygSeries = ['$hostname/$sensorname/$measurement/$id/$fieldname', 'Henri/BME280/i2c-1_0x77/gas/pressure_hPa']
+  dygLabels = ['Date','Atmospheric Pressure']; // human readable
+
+
+
   dygData = [] // mit push dranhängen, wo machen wir die maxlen?
   changeTrigger = false;
 
