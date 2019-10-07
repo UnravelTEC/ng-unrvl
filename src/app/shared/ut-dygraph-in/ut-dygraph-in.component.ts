@@ -216,11 +216,14 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
         this.dyGraphOptions.visibility.push(true);
       }
+      this.updateDateWindow()
       this.Dygraph.updateOptions({
         file: this.displayedData,
         labels: this.columnLabels,
-        visibility: this.dyGraphOptions.visibility
+        visibility: this.dyGraphOptions.visibility,
+        dateWindow: this.dyGraphOptions['dateWindow']
       });
+
     }
   }
 
@@ -876,10 +879,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     const dataEndTime = new Date();
     // this.endTime === 'now' ? new Date() : new Date(this.endTime);
 
-    // if (!this.currentXrange) {
-    //   // initial call from handleInitialData
-    //   this.currentXrange = this.h.parseToSeconds(this.startTime);
-    // }
+    if (!this.currentXrange) {
+      // initial call from handleInitialData
+      this.currentXrange = this.h.parseToSeconds(this.startTime);
+    }
 
     const dataBeginTime = new Date(
       dataEndTime.valueOf() - this.currentXrange * 1000
