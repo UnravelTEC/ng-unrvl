@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { MqttService } from '../../../core/mqtt.service';
 
 import { Subscription } from 'rxjs';
@@ -9,7 +9,7 @@ import cloneDeep from 'lodash-es/cloneDeep';
   templateUrl: './tile-load.component.html',
   styleUrls: ['./tile-load.component.scss']
 })
-export class TileLoadComponent implements OnInit {
+export class TileLoadComponent implements OnInit, OnDestroy {
   @Input()
   height = 100;
 
@@ -24,15 +24,24 @@ export class TileLoadComponent implements OnInit {
     colors: ['red']
   };
 
+  private mqttRequest = {
+    topic: '+/system',
+    tagFilters: undefined,
+    valueFilters: ['system_load']
+  };
+
   constructor(private mqtt: MqttService) {}
 
   ngOnInit() {
-    const topic = '+/system';
-    this.mqtt.subscribeTopic(topic);
+    const topic = this.mqttRequest.topic;
+    this.mqtt.request(this.mqttRequest);
     this.mqttSubscription$ = this.mqtt.observableTopics$[topic].subscribe(
       (obj: Object) => this.updateLoad(obj)
     );
     this.triggerChange();
+  }
+  ngOnDestroy() {
+    this.mqtt.unsubscribeTopic(this.mqttRequest.topic);
   }
 
   triggerChange() {

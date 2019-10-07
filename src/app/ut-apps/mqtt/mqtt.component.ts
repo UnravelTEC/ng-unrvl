@@ -14,7 +14,9 @@ export class MqttComponent implements OnInit, OnDestroy {
   public disconnects = 0;
   private client;
   private clientID = 'clientID_' + String(Math.random() * 100);
-  public topic = '+/sensors/SPS30/particulate_matter_typpartsize_um';
+  // public topic = '+/sensors/SPS30/particulate_matter_typpartsize_um';
+
+  public topic = '#';
 
   public mqttMessages = [
     { date: new Date(), topic: 'sample topic', payload: 'sample payload' }
@@ -73,14 +75,17 @@ export class MqttComponent implements OnInit, OnDestroy {
     this.client = new Paho.Client(server, 1885, this.clientID);
     this.client.onConnectionLost = this.onConnectionLost;
     this.client.onMessageArrived = this.onMessageArrived;
-    document['MQTT_CLIENT'] = this.client;
-    document['MQTT_CLIENT']['father'] = this;
+    document['MQTT_TEST'] = this.client;
+    document['MQTT_TEST']['father'] = this;
     console.log('onInit', this.client);
     this.connect();
 
     // this.dygLabels = ;
   }
   ngOnDestroy() {
+    this.stop();
+  }
+  stop() {
     this.client.unsubscribe(this.topic, {});
   }
   connect() {
@@ -93,13 +98,13 @@ export class MqttComponent implements OnInit, OnDestroy {
   onConnect() {
     console.log('onConnect');
     console.log(this);
-    const father = document['MQTT_CLIENT']['father'];
-    document['MQTT_CLIENT'].subscribe(father.topic);
+    const father = document['MQTT_TEST']['father'];
+    document['MQTT_TEST'].subscribe(father.topic);
     father.status = 'connected';
   }
 
   onMessageArrived(message: Object) {
-    const father = document['MQTT_CLIENT']['father'];
+    const father = document['MQTT_TEST']['father'];
 
     const arr = message['topic'].split('/');
     const sensor = arr[2];
@@ -158,10 +163,10 @@ export class MqttComponent implements OnInit, OnDestroy {
   onFailure(message) {
     console.error('MQTT failure on connect');
     console.error(message);
-    document['MQTT_CLIENT']['father'].status = 'failed';
+    document['MQTT_TEST']['father'].status = 'failed';
   }
   onConnectionLost(responseObject) {
-    const father = document['MQTT_CLIENT']['father'];
+    const father = document['MQTT_TEST']['father'];
     console.error('onConnectionLost object: ', responseObject);
     if (responseObject.errorCode !== 0) {
       console.error('onConnectionLost:', responseObject.errorMessage);
