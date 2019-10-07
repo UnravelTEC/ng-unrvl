@@ -1,10 +1,10 @@
 <a
   class="relcontainer {{
-    graph.getAverage('10s') < 1000
+    value < 1000
       ? 'green'
-      : graph.getAverage('10s') < 1500
+      : value < 1500
       ? 'yellow'
-      : graph.getAverage('10s') < 2000
+      : value < 2000
       ? 'orange'
       : 'red'
   }}"
@@ -15,10 +15,7 @@
     <h2>CO₂</h2>
     <data
       ><span *ngIf="graph['lastValues'].length > 2" class="xbar">X</span
-      >&nbsp;{{ graph.getAverage('10s') | number: '1.0-0' }}&nbsp;<em
-        class="unit"
-        >ppm</em
-      ></data
+      >&nbsp;{{ value | number: '1.0-0' }}&nbsp;<em class="unit">ppm</em></data
     >
     <div class="bar">
       <app-ut-bargauge-min
@@ -26,20 +23,23 @@
         [height]="height"
         max="2000"
         barstyle="filled"
-        [value]="graph.getAverage('10s')"
+        [value]="value"
         [highlights]="highlights"
       ></app-ut-bargauge-min>
     </div>
     <div class="graphabs">
       <div class="graphrel">
-        <app-ut-dygraph
-          queryString='gas_ppm{gas="CO2",sensor="SCD30"}'
-          dataBaseQueryStepMS="2000"
-          startTime="2m"
+        <app-ut-dygraph-in
+          [displayedData]="dygData"
+          [columnLabels]="dygLabels"
+          [changeTrigger]="changeTrigger"
           minimal="true"
+          startTime="3m"
+          [extraDyGraphConfig]="extraDyGraphConfig"
           [backGroundLevels]="backGroundLevels"
           #graph
-        ></app-ut-dygraph>
+        >
+        </app-ut-dygraph-in>
       </div>
     </div>
   </div>
