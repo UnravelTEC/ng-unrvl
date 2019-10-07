@@ -193,7 +193,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('onChanges');
+    // console.log('onChanges');
 
     this.updateGraph();
   }

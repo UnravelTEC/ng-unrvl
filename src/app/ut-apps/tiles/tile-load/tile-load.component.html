@@ -1,11 +1,32 @@
-<a class="relcontainer">
-  <table>
-    <tr>
-      <td>System load: {{ currentLoad | number: '1.1-2' }}</td>
-    </tr>
-    <tr>
-      <td style="position: relative">
-          <app-ut-dygraph-in
+<a
+  class="relcontainer {{
+    currentLoad < 1
+      ? 'green'
+      : currentLoad < 3
+      ? 'yellow'
+      : currentLoad < 5
+      ? 'orange'
+      : 'red'
+  }}"
+  routerLink="/Apps/System"
+  routerLinkActive="active"
+>
+  <div class="tilebox">
+    <h2>CPU load: {{ currentLoad | number: '1.1-2' }}</h2>
+
+    <div class="bar">
+      <app-ut-bargauge-min
+        [width]="width / 3.3"
+        [height]="height"
+        max="15"
+        [value]="currentLoad"
+        [highlights]="highlights"
+      ></app-ut-bargauge-min>
+    </div>
+
+    <div class="graphabs">
+      <div class="graphrel">
+        <app-ut-dygraph-in
           [displayedData]="dygData"
           [columnLabels]="dygLabels"
           [changeTrigger]="changeTrigger"
@@ -15,7 +36,7 @@
           #graph
         >
         </app-ut-dygraph-in>
-      </td>
-    </tr>
-  </table>
+      </div>
+    </div>
+  </div>
 </a>

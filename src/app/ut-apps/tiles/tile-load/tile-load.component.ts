@@ -7,7 +7,7 @@ import cloneDeep from 'lodash-es/cloneDeep';
 @Component({
   selector: 'app-tile-load',
   templateUrl: './tile-load.component.html',
-  styleUrls: ['./tile-load.component.scss']
+  styleUrls: ['./tile-load.component.scss','../tiles.scss']
 })
 export class TileLoadComponent implements OnInit, OnDestroy {
   @Input()
@@ -30,6 +30,12 @@ export class TileLoadComponent implements OnInit, OnDestroy {
     valueFilters: ['system_load']
   };
 
+  highlights =
+    '[ {"from": 0, "to": 1, "color": "green"}, \
+       {"from": 1, "to": 3, "color": "yellow"}, \
+       {"from": 3, "to": 5, "color": "orange"}, \
+       {"from": 5, "to": 12, "color": "red"} ]';
+
   constructor(private mqtt: MqttService) {}
 
   ngOnInit() {
@@ -50,7 +56,7 @@ export class TileLoadComponent implements OnInit, OnDestroy {
 
   updateLoad(msg: Object) {
     if (msg['system_load']) {
-      console.log(msg);
+      // console.log(msg);
 
       this.currentLoad = msg['system_load'];
       const newRow = [new Date(msg['UTS'] * 1000), msg['system_load']];
@@ -68,7 +74,7 @@ export class TileLoadComponent implements OnInit, OnDestroy {
       } else {
         this.dygData.push(newRow);
       }
-      console.log(cloneDeep(this.dygData));
+      // console.log(cloneDeep(this.dygData));
 
       this.triggerChange();
     }

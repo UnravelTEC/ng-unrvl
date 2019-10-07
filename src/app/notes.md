@@ -123,10 +123,16 @@ NO2
 
 module.ts
   add
+    imports: UtDygraphInModule, UtBargaugeMinModule
     exports: [TileLoadComponent]
 
 ut-dashboard.module.ts
   add TileLoadModule to imports
+
+component.ts
+  add   ,'../tiles.scss' to styleUrls:
+
+
 
 ## load-Tile
 
