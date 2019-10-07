@@ -18,18 +18,22 @@ export class MqttService {
 
   private emitChangeSources = {};
   public observableTopics$ = {};
-  private waitingRequests = [];
 
   private client;
   private clientID = 'clientID_' + String(Math.random() * 100);
   public status = 'init'; // | connecting | connected | failed | lost
   public disconnects = 0;
 
+  private timeoutcounter = 0;
+
   private sampleRequestObject = {
     topic: '+/sensors/+/temperature',
-    tagFilters: { key1: 'value1', key2: 'value2' },
-    valueFilters: ['air_degC', 'probe_degC']
+    tagFilters: { key1: 'value1', key2: 'value2' }, // TODO implement
+    valueFilters: ['air_degC', 'probe_degC'], // TODO implement
+    callBack: (obj: Object) => this.demo(obj)
   };
+  demo(obj: Object) {}
+  private waitingRequests = [];
   private activeRequesters = [];
 
   constructor(private globalSettings: GlobalSettingsService) {
@@ -54,7 +58,7 @@ export class MqttService {
         function() {
           this.init();
         }.bind(this),
-        50
+        50 + (this.timeoutcounter += 10)
       );
       return;
     }
@@ -69,15 +73,17 @@ export class MqttService {
   }
 
   public request(requestObject: Object) {
-    const topic =  requestObject['topic'];
-    if (! topic) {
+    const topic = requestObject['topic'];
+    if (!topic) {
       console.error('mqtt.request: no topic ');
-      return -1;
+      return undefined;
     }
-    this.emitChangeSources[topic] = new Subject<any>();
-    this.observableTopics$[topic] = this.emitChangeSources[
-      topic
-    ].asObservable();
+    if (!this.emitChangeSources[topic]) {
+      this.emitChangeSources[topic] = new Subject<any>();
+      this.observableTopics$[topic] = this.emitChangeSources[
+        topic
+      ].asObservable();
+    }
 
     if (this.status === 'connected') {
       this.client.subscribe(topic);
@@ -86,9 +92,14 @@ export class MqttService {
       console.log('not connected yet, put ' + requestObject + ' into queue.');
       this.waitingRequests.push(requestObject);
     }
+
+    return this.observableTopics$[topic].subscribe(requestObject['callBack']);
   }
   public unsubscribeTopic(topic: String) {
-    this.client.unsubscribe(topic, {});
+    console.log('unsubscribing from ', topic);
+    if (this.client) {
+      this.client.unsubscribe(topic, {});
+    }
   }
 
   private connect() {
@@ -136,6 +147,7 @@ export class MqttService {
       // console.log('subscriber:', element);
 
       if (this.compareTopics(element, topic)) {
+        // TODO implement filters
         this.emitChangeSources[element].next(payLoadObj);
         found = true;
       }
