@@ -157,16 +157,11 @@ export class MqttService {
     }
   }
   public compareTopics(subscribedTopic: string, receivedTopic: string) {
-    console.log(subscribedTopic, 'vs', receivedTopic);
-
     if (subscribedTopic === '#') {
       return true;
     }
     const subscribedArray = subscribedTopic.split('/');
     const receivedArray = receivedTopic.split('/');
-    if (receivedArray.length > subscribedArray.length) {
-      console.error('mqtt.compareTopics: unknown situation');
-    }
     for (let i = 0; i < subscribedArray.length; i++) {
       const subscribedPart = subscribedArray[i];
       const receivedPart = receivedArray[i];
@@ -181,8 +176,17 @@ export class MqttService {
       // not matched
       return false;
     }
+    if (receivedArray.length > subscribedArray.length) {
+      console.error(
+        'mqtt.compareTopics: unknown situation',
+        receivedArray,
+        subscribedArray
+      );
+      return false;
+    }
 
     // every part matched
+    console.log('matched', subscribedTopic, receivedTopic);
     return true;
   }
 }
