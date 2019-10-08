@@ -244,6 +244,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.dyGraphOptions['ylabel'] = this.YLabel;
     this.dyGraphOptions['labels'] = this.columnLabels;
+    if(!this.columnLabels || !this.columnLabels.length) {
+      console.error('you have to supply correct columnLabels');
+      return;
+    }
     while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
       this.dyGraphOptions.visibility.push(true);
     }
