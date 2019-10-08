@@ -2,6 +2,12 @@
   top: 70%;
 }
 
-table td {
+table {
+  margin-left: 1vh;
+  th {
+    font-size: 90%
+  }
+  td {
   text-align: center;
+  font-size: 80%}
 }

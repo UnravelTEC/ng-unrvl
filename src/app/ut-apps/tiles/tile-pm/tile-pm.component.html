@@ -10,8 +10,8 @@
       Particulate Matter:
     </h2>
     <h2>
-      {{ pm10 | number: '1.1-1' }}&nbsp;<em class="unit"
-        >µg/m³ <small>pm10</small></em
+      {{ pm10 | number: '1.1-1' }}&#8239;<em class="unit"
+        >µg&#8202;/&#8202;m³ <small>pm10</small></em
       >
     </h2>
 
@@ -38,9 +38,9 @@
         </app-ut-dygraph-in>
       </div>
     </div>
-    <table>
+    <table class="text" >
       <tr>
-        <th colspan="5">Particle distribution (# / cm³)</th>
+        <th colspan="5">Particle distribution (#&#8202;/&#8202;cm³)</th>
       </tr>
       <tr>
         <!-- <td *ngFor="let pn of particle_values | keyvalue">
@@ -48,23 +48,23 @@
           {{ pn.value | number: '1.1-1' }}
         </td> not sorted-->
         <td>
-          0.5µm: <br />
+          0.5&#8202;µm: <br />
           {{ particle_values['0.5'] | number: '1.0-1' }}
         </td>
         <td>
-          1µm: <br />
+          1&#8202;µm: <br />
           {{ particle_values['1'] - particle_values['0.5'] | number: '1.0-1' }}
         </td>
         <td>
-          2.5µm: <br />
+          2.5&#8202;µm: <br />
           {{ particle_values['2.5'] - particle_values['1'] | number: '1.0-1' }}
         </td>
         <td>
-          4µm: <br />
+          4&#8202;µm: <br />
           {{ particle_values['4'] - particle_values['2.5'] | number: '1.0-1' }}
         </td>
         <td>
-          10µm: <br />
+          10&#8202;µm: <br />
           {{ particle_values['10'] - particle_values['4'] | number: '1.0-1' }}
         </td>
       </tr>

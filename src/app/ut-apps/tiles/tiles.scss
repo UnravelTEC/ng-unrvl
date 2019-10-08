@@ -22,14 +22,17 @@
       display: block;
       margin-left: 5%;
       text-align: center;
-      font-size: 3vh;
+      font-size: 3.5vh;
       font-weight: bold;
       width: 90%;
       em {
-        font-size: 70%;
+        font-size: 60%;
         font-style: normal;
         font-weight: normal;
       }
+    }
+    .text {
+      font-size: 2vh;
     }
 
     div.graphabs {
