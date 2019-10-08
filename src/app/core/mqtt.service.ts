@@ -89,7 +89,7 @@ export class MqttService {
       this.client.subscribe(topic);
       this.activeRequesters.push(requestObject);
     } else {
-      console.log('not connected yet, put ' + requestObject + ' into queue.');
+      console.log('not connected yet, put ' + requestObject['topic'] + ' into queue.');
       this.waitingRequests.push(requestObject);
     }
 
