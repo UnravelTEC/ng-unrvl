@@ -1017,7 +1017,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   checkAndFetchOldData() {
-    console.log('checkAndFetchOldData called, do nothing');
+    // console.log('checkAndFetchOldData called, do nothing');
   }
 
   toggleOptions() {
