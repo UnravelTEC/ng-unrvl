@@ -10,7 +10,7 @@
       Particulate Matter:
     </h2>
     <h2>
-      {{ graph.lastValues[2] | number: '1.0-0' }}&nbsp;<em class="unit"
+      {{ pm10 | number: '1.1-1' }}&nbsp;<em class="unit"
         >µg/m³ <small>pm10</small></em
       >
     </h2>
@@ -26,16 +26,48 @@
     </div>
     <div class="graphabs">
       <div class="graphrel">
-        <app-ut-dygraph
-          queryString='{__name__=~"particulate_matter_ugpm3|particulate_matter_ppcm3"}'
-          dataBaseQueryStepMS="1000"
-          startTime="5m"
+        <app-ut-dygraph-in
+          [displayedData]="dygData"
+          [columnLabels]="dygLabels"
+          [changeTrigger]="changeTrigger"
           minimal="true"
-          [extraDyGraphConfig]="extraDyGraphConfig"
+          startTime="3m"
           [backGroundLevels]="backGroundLevels"
           #graph
-        ></app-ut-dygraph>
+        >
+        </app-ut-dygraph-in>
       </div>
     </div>
+    <table>
+      <tr>
+        <th colspan="5">Particle distribution (# / cm³)</th>
+      </tr>
+      <tr>
+        <!-- <td *ngFor="let pn of particle_values | keyvalue">
+          {{ pn.key }}µm: <br />
+          {{ pn.value | number: '1.1-1' }}
+        </td> not sorted-->
+        <td>
+          0.5µm: <br />
+          {{ particle_values['0.5'] | number: '1.0-1' }}
+        </td>
+        <td>
+          1µm: <br />
+          {{ particle_values['1'] - particle_values['0.5'] | number: '1.0-1' }}
+        </td>
+        <td>
+          2.5µm: <br />
+          {{ particle_values['2.5'] - particle_values['1'] | number: '1.0-1' }}
+        </td>
+        <td>
+          4µm: <br />
+          {{ particle_values['4'] - particle_values['2.5'] | number: '1.0-1' }}
+        </td>
+        <td>
+          10µm: <br />
+          {{ particle_values['10'] - particle_values['4'] | number: '1.0-1' }}
+        </td>
+      </tr>
+    </table>
   </div>
 </a>
