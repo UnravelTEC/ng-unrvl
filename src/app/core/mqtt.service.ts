@@ -104,12 +104,18 @@ export class MqttService {
       'count',
       this.topicSubscribers[topic]
     );
-    if (this.client) {
-      this.topicSubscribers[topic] -= 1;
-      if (this.topicSubscribers[topic] == 0) {
-        console.log('subscribers to ' + topic + ' down to 0, unsubscribe');
-        this.client.unsubscribe(topic, {});
-      }
+    if (!this.client) {
+      console.error('no client');
+      return;
+    }
+    if (!this.topicSubscribers[topic] || !(this.topicSubscribers[topic] > 0)) {
+      console.error('unsubscribing to a topic no longer existing');
+      return;
+    }
+    this.topicSubscribers[topic] -= 1;
+    if (this.topicSubscribers[topic] == 0) {
+      console.log('subscribers to ' + topic + ' down to 0, unsubscribe');
+      this.client.unsubscribe(topic, {});
     }
   }
   private subscribe(requestObject: Object) {
@@ -134,13 +140,12 @@ export class MqttService {
   private onConnect() {
     console.log('onConnect');
     this.status = 'connected';
-    while(this.waitingRequests.length) {
+    while (this.waitingRequests.length) {
       let request = this.waitingRequests.pop();
       console.log('handle waiting subscribing', request['topic']);
       this.subscribe(request);
     }
   }
-
   private onFailure(message) {
     console.error('MQTT failure on connect');
     console.error(message);
