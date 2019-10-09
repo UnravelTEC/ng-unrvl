@@ -35,6 +35,7 @@ export class MqttService {
   demo(obj: Object) {}
   private waitingRequests = [];
   private activeRequesters = [];
+  private topicSubscribers = { sampleTopic: 0 };
 
   constructor(private globalSettings: GlobalSettingsService) {
     let server = this.globalSettings.server.serverName;
@@ -86,19 +87,40 @@ export class MqttService {
     }
 
     if (this.status === 'connected') {
-      this.client.subscribe(topic);
-      this.activeRequesters.push(requestObject);
+      this.subscribe(requestObject);
     } else {
-      console.log('not connected yet, put ' + requestObject['topic'] + ' into queue.');
+      console.log(
+        'not connected yet, put ' + requestObject['topic'] + ' into queue.'
+      );
       this.waitingRequests.push(requestObject);
     }
 
     return this.observableTopics$[topic].subscribe(requestObject['callBack']);
   }
-  public unsubscribeTopic(topic: String) {
-    console.log('unsubscribing from ', topic);
+  public unsubscribeTopic(topic: string) {
+    console.log(
+      'unsubscribing from ',
+      topic,
+      'count',
+      this.topicSubscribers[topic]
+    );
     if (this.client) {
-      this.client.unsubscribe(topic, {});
+      this.topicSubscribers[topic] -= 1;
+      if (this.topicSubscribers[topic] == 0) {
+        console.log('subscribers to ' + topic + ' down to 0, unsubscribe');
+        this.client.unsubscribe(topic, {});
+      }
+    }
+  }
+  private subscribe(requestObject: Object) {
+    const topic = requestObject['topic'];
+    console.log('subscribing to', topic);
+    this.client.subscribe(topic);
+    this.activeRequesters.push(requestObject);
+    if (this.topicSubscribers[topic]) {
+      this.topicSubscribers[topic] += 1;
+    } else {
+      this.topicSubscribers[topic] = 1;
     }
   }
 
@@ -112,13 +134,13 @@ export class MqttService {
   private onConnect() {
     console.log('onConnect');
     this.status = 'connected';
-    for (let i = 0; i < this.waitingRequests.length; i++) {
-      const request = this.waitingRequests[i];
-      console.log('subscribing waiting', request);
-      this.client.subscribe(request['topic']);
-      this.activeRequesters.push(request);
+    while(this.waitingRequests.length) {
+      let request = this.waitingRequests.pop();
+      console.log('handle waiting subscribing', request['topic']);
+      this.subscribe(request);
     }
   }
+
   private onFailure(message) {
     console.error('MQTT failure on connect');
     console.error(message);
