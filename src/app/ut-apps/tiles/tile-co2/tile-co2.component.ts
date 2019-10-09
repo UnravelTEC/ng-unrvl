@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { colors } from '../../../shared/colors';
 import { MqttService } from '../../../core/mqtt.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
@@ -8,7 +8,7 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
   templateUrl: './tile-co2.component.html',
   styleUrls: ['./tile-co2.component.scss', '../tiles.scss']
 })
-export class TileCo2Component implements OnInit {
+export class TileCo2Component implements OnInit, OnDestroy {
   public value: number;
 
   @Input()
@@ -49,6 +49,9 @@ export class TileCo2Component implements OnInit {
   ngOnInit() {
     this.mqtt.request(this.mqttRequest);
     this.triggerChange();
+  }
+  ngOnDestroy() {
+    this.mqtt.unsubscribeTopic(this.mqttRequest.topic);
   }
 
   update(msg: Object) {

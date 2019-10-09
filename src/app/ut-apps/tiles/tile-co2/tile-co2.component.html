@@ -1,6 +1,8 @@
 <a
   class="relcontainer {{
-    value < 1000
+    !value
+      ? 'gray'
+      : value < 1000
       ? 'green'
       : value < 1500
       ? 'yellow'
@@ -14,8 +16,9 @@
   <div class="tilebox">
     <h2>CO₂</h2>
     <data
-      ><span *ngIf="graph['lastValues'].length > 2" class="xbar">X</span
-      >&nbsp;{{ value | number: '1.0-0' }}&nbsp;<em class="unit">ppm</em></data
+      ><span *ngIf="graph && graph['lastValues'].length > 2" class="xbar"
+        >X</span
+      >&nbsp;<span *ngIf="value === undefined">?</span>{{ value | number: '1.0-0' }}&nbsp;<em class="unit">ppm</em></data
     >
     <div class="bar">
       <app-ut-bargauge-min
@@ -28,7 +31,7 @@
       ></app-ut-bargauge-min>
     </div>
     <div class="graphabs">
-      <div class="graphrel">
+      <div class="graphrel" *ngIf="value !== undefined">
         <app-ut-dygraph-in
           [displayedData]="dygData"
           [columnLabels]="dygLabels"
@@ -39,6 +42,9 @@
           #graph
         >
         </app-ut-dygraph-in>
+      </div>
+      <div class="notactive" *ngIf="value === undefined">
+        Waiting for sensor...
       </div>
     </div>
   </div>

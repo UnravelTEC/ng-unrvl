@@ -16,7 +16,7 @@ export class TileLoadComponent implements OnInit, OnDestroy {
   @Input()
   width = 100;
 
-  public currentLoad = 42;
+  public currentLoad: number = undefined;
   private mqttSubscription$: Subscription;
 
   extraDyGraphConfig = {

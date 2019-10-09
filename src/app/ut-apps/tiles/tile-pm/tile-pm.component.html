@@ -1,6 +1,14 @@
 <a
   class="relcontainer {{
-    pm10 < 50 ? 'green' : pm10 < 100 ? 'yellow' : pm10 < 200 ? 'orange' : 'red'
+    !pm10
+      ? 'gray'
+      : pm10 < 50
+      ? 'green'
+      : pm10 < 100
+      ? 'yellow'
+      : pm10 < 200
+      ? 'orange'
+      : 'red'
   }}"
   routerLink="/Apps/PM"
   routerLinkActive="active"
@@ -10,6 +18,7 @@
       Particulate Matter:
     </h2>
     <h2>
+      <span *ngIf="pm10 === undefined">?</span>
       {{ pm10 | number: '1.1-1' }}&#8239;<em class="unit"
         >µg&#8202;/&#8202;m³ <small>pm10</small></em
       >
@@ -25,7 +34,7 @@
       ></app-ut-bargauge-min>
     </div>
     <div class="graphabs">
-      <div class="graphrel">
+      <div class="graphrel" *ngIf="pm10 !== undefined">
         <app-ut-dygraph-in
           [displayedData]="dygData"
           [columnLabels]="dygLabels"
@@ -37,8 +46,11 @@
         >
         </app-ut-dygraph-in>
       </div>
+      <div class="notactive" *ngIf="pm10 === undefined">
+          Waiting for data...
+        </div>
     </div>
-    <table class="text" >
+    <table class="text">
       <tr>
         <th colspan="5">Particle distribution (#&#8202;/&#8202;cm³)</th>
       </tr>

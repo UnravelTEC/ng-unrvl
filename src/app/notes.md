@@ -132,6 +132,10 @@ ut-dashboard.module.ts
 component.ts
   add   ,'../tiles.scss' to styleUrls:
 
+add onDestroy handler
+  1. Zeile import OnInit, OnDestroy
+  class implements OnInit, OnDestroy
+  ngOnDestroy()
 
 
 ## load-Tile

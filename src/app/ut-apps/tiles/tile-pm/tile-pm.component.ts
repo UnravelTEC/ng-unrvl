@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { MqttService } from '../../../core/mqtt.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
 
@@ -7,14 +7,14 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
   templateUrl: './tile-pm.component.html',
   styleUrls: ['../tiles.scss', './tile-pm.component.scss']
 })
-export class TilePmComponent implements OnInit {
+export class TilePmComponent implements OnInit, OnDestroy {
   @Input()
   height = 100;
 
   @Input()
   width = 100;
 
-  public pm10 = 0;
+  public pm10: number
   public particle_values = {
     '10': 0,
     '4': 0,
@@ -62,6 +62,9 @@ export class TilePmComponent implements OnInit {
   ngOnInit() {
     this.mqtt.request(this.mqttRequest);
     this.triggerChange();
+  }
+  ngOnDestroy() {
+    this.mqtt.unsubscribeTopic(this.mqttRequest.topic);
   }
 
   update(msg: Object) {

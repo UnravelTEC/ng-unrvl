@@ -1,6 +1,8 @@
 <a
   class="relcontainer {{
-    currentLoad < 1
+    !currentLoad
+      ? 'gray'
+      : currentLoad < 1
       ? 'green'
       : currentLoad < 3
       ? 'yellow'
@@ -25,7 +27,7 @@
     </div>
 
     <div class="graphabs">
-      <div class="graphrel">
+      <div class="graphrel" *ngIf="currentLoad !== undefined">
         <app-ut-dygraph-in
           [displayedData]="dygData"
           [columnLabels]="dygLabels"
@@ -37,6 +39,9 @@
           #graph
         >
         </app-ut-dygraph-in>
+      </div>
+      <div class="notactive" *ngIf="currentLoad === undefined">
+        Waiting for data...
       </div>
     </div>
   </div>
