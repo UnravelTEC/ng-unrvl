@@ -1,10 +1,6 @@
 <a
   class="relcontainer {{
-    graph['lastValue'] < 400
-      ? 'red'
-      : graph['lastValue'] < 1000
-      ? 'yellow'
-      : 'green'
+    !value ? 'gray' : value < 400 ? 'red' : value < 1000 ? 'yellow' : 'green'
   }}"
   routerLink="/Apps/Luminosity"
   routerLinkActive="active"
@@ -12,31 +8,35 @@
   <div class="tilebox">
     <h2>Brightness</h2>
     <data
-      ><span *ngIf="graph['lastValues'].length > 2" class="xbar">X</span
-      >&nbsp;{{ graph['lastValue'] | number: '1.0-0' }}&nbsp;<em class="unit"
-        >lux</em
-      ></data
+      ><span *ngIf="graph && graph['lastValues'].length > 2" class="xbar"
+        >X</span
+      >&nbsp;<span *ngIf="value === undefined">?</span>{{ value | number: '1.0-0' }}&nbsp;<em class="unit">lux</em></data
     >
 
-    <div class="bar">
+    <div class="bar" *ngIf="value !== undefined">
       <app-ut-bargauge-min
         [width]="width / 3.3"
         [height]="height"
         max="3000"
-        [value]="graph['lastValue']"
+        [value]="value"
         [highlights]="highlights"
       ></app-ut-bargauge-min>
     </div>
     <div class="graphabs">
-      <div class="graphrel">
-        <app-ut-dygraph
-          queryString='radiation_lux{wavelength="visible"}'
-          dataBaseQueryStepMS="1000"
-          startTime="2m"
+      <div class="graphrel" *ngIf="value !== undefined">
+        <app-ut-dygraph-in
+          [displayedData]="dygData"
+          [columnLabels]="dygLabels"
+          [changeTrigger]="changeTrigger"
           minimal="true"
+          startTime="3m"
           [backGroundLevels]="backGroundLevels"
           #graph
-        ></app-ut-dygraph>
+        >
+        </app-ut-dygraph-in>
+      </div>
+      <div class="notactive" *ngIf="value === undefined">
+        Waiting for sensor...
       </div>
     </div>
   </div>
