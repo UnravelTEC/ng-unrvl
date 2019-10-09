@@ -16,7 +16,7 @@
   <div class="tilebox">
     <h2>CPU load: {{ currentLoad | number: '1.1-2' }}</h2>
 
-    <div class="bar">
+    <div class="bar" *ngIf="currentLoad !== undefined">
       <app-ut-bargauge-min
         [width]="width / 3.3"
         [height]="height"

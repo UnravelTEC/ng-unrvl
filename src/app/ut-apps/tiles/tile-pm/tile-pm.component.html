@@ -14,8 +14,8 @@
   routerLinkActive="active"
 >
   <div class="tilebox">
-    <h2 style="text-align: left; font-size: 0.7em;">
-      Particulate Matter:
+    <h2 style="text-align: left;">
+      <span style="font-size: 0.7em;">Particulate Matter:</span>
     </h2>
     <h2>
       <span *ngIf="pm10 === undefined">?</span>
@@ -24,7 +24,7 @@
       >
     </h2>
 
-    <div class="bar">
+    <div class="bar" *ngIf="pm10 !== undefined">
       <app-ut-bargauge-min
         [width]="width / 3.3"
         [height]="height"
@@ -47,8 +47,8 @@
         </app-ut-dygraph-in>
       </div>
       <div class="notactive" *ngIf="pm10 === undefined">
-          Waiting for data...
-        </div>
+        Waiting for data...
+      </div>
     </div>
     <table class="text">
       <tr>

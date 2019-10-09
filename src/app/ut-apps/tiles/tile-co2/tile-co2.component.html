@@ -20,7 +20,7 @@
         >X</span
       >&nbsp;<span *ngIf="value === undefined">?</span>{{ value | number: '1.0-0' }}&nbsp;<em class="unit">ppm</em></data
     >
-    <div class="bar">
+    <div class="bar" *ngIf="value !== undefined">
       <app-ut-bargauge-min
         [width]="width / 3.3"
         [height]="height"
