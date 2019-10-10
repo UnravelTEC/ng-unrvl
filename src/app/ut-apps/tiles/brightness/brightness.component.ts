@@ -18,6 +18,8 @@ export class BrightnessComponent implements OnInit, OnDestroy {
   @Input()
   width = 100;
 
+  extraDyGraphConfig = { valueRange: [0.1, undefined] };
+
   highlights =
     '[ {"from": 0, "to": 400, "color": "red"}, \
      {"from": 400, "to": 1000, "color": "yellow"}, \
@@ -56,9 +58,12 @@ export class BrightnessComponent implements OnInit, OnDestroy {
       'values',
       this.mqttRequest.valueFilters[0]
     ]);
-    if (this.value) {
+    if (this.value !== undefined) {
       this.cleanInitValues();
-      this.dygData.push([new Date(msg['UTS'] * 1000), this.value]);
+      const dygValue = this.value === 0 ? 0.11 : this.value; // because of log scale of DyGraph
+      this.dygData.push([new Date(msg['UTS'] * 1000), dygValue]);
+      console.log(this.value);
+
       this.preventTooLargeGrowth();
 
       this.htmlColor = this.h.calcHTMLColor(

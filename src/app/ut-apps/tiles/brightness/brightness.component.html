@@ -1,6 +1,12 @@
 <a
   class="relcontainer {{
-    !value ? 'gray' : value < 400 ? 'red' : value < 1000 ? 'yellow' : 'green'
+    value === undefined
+      ? 'gray'
+      : value < 400
+      ? 'red'
+      : value < 1000
+      ? 'yellow'
+      : 'green'
   }}"
   routerLink="/Apps/Luminosity"
   routerLinkActive="active"
@@ -34,6 +40,7 @@
           [changeTrigger]="changeTrigger"
           minimal="true"
           startTime="3m"
+          [extraDyGraphConfig]="extraDyGraphConfig"
           [backGroundLevels]="backGroundLevels"
           #graph
         >
