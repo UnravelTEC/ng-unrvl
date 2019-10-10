@@ -49,6 +49,9 @@
         >
         </app-ut-dygraph-in>
       </div>
+      <div class="notactive" *ngIf="value === undefined">
+        Waiting for data...
+      </div>
     </div>
   </div>
 </a>
