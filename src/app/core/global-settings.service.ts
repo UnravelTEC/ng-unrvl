@@ -124,12 +124,17 @@ export class GlobalSettingsService implements OnInit {
         // http://tools.ietf.org/html/rfc4566#section-5.7
         var parts = line.split(' '),
           addr = parts[2];
-          this.updateLocalAddresses(addr);
+        this.updateLocalAddresses(addr);
       }
     });
   }
-  updateLocalAddresses(addr) {
+  updateLocalAddresses(addr) {}
 
+  stripProtPort(input: string) {
+    input = input.replace(/^http[s]*:\/\//, '');
+    input = input.replace(/:\d+$/, '');
+    input = input.replace(/\/$/, '');
+    return input;
   }
 
   // we do not need to handle localhost in a special case - covered by $baseurl
@@ -167,10 +172,7 @@ export class GlobalSettingsService implements OnInit {
         servername = servername.substr(0, -1);
       }
       this.server.baseurl = servername;
-      servername = servername.replace(/^http[s]*:\/\//, '');
-      servername = servername.replace(/:80$/, '');
-      servername = servername.replace(/:443$/, '');
-      this.server.serverName = servername;
+      this.server.serverName = this.stripProtPort(servername);
 
       let prometheusPath = this.h.getDeep(localStoredServer, [
         'prometheusPath',
@@ -199,9 +201,7 @@ export class GlobalSettingsService implements OnInit {
           prometheusProtocol = prometheusProtocol + '://';
         }
       }
-      let protAndHost = servername.startsWith('http')
-        ? servername
-        : prometheusProtocol + servername;
+      let protAndHost = prometheusProtocol + this.server.serverName;
 
       this.server.prometheus = protAndHost + prometheusPort + prometheusPath;
 
@@ -233,9 +233,7 @@ export class GlobalSettingsService implements OnInit {
           apiProtocol = apiProtocol + '://';
         }
       }
-      protAndHost = servername.startsWith('http')
-        ? servername
-        : apiProtocol + servername;
+      protAndHost = apiProtocol + this.server.serverName;
 
       this.server.api = protAndHost + apiPort + apiPath;
 
@@ -250,6 +248,7 @@ export class GlobalSettingsService implements OnInit {
     } else {
       // see if an API i there
       const firstURL = this.h.getBaseURL();
+      this.server.serverName = this.stripProtPort(firstURL);
       console.log('No settings in LocalStorage, try our webendpoint', firstURL);
 
       this.http
