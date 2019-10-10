@@ -16,6 +16,7 @@ export class TileRhComponent implements OnInit {
 
   @Input()
   width = 100;
+  extraDyGraphConfig = { logscale: false, valueRange: [0, 100] };
 
   highlights =
     '[ {"from": 0, "to": 30, "color": "red"}, \
@@ -35,8 +36,8 @@ export class TileRhComponent implements OnInit {
     [60, colors.bg.yellow],
     [95, colors.bg.orange],
     [100, colors.bg.red]
-
   ];
+
   private mqttRequest = {
     topic: '+/sensors/+/humidity',
     tagFilters: undefined,
