@@ -55,16 +55,17 @@ export class TileCo2Component implements OnInit, OnDestroy {
   }
 
   update(msg: Object) {
-    this.value = this.h.getDeep(msg, [
+    const value = this.h.getDeep(msg, [
       'values',
       this.mqttRequest.valueFilters[0]
     ]);
-    if (this.value) {
+    if (value >= 0) {
       this.cleanInitValues();
-      this.dygData.push([new Date(msg['UTS'] * 1000), this.value]);
+      this.dygData.push([new Date(msg['UTS'] * 1000), value]);
+      this.value = value;
       this.preventTooLargeGrowth();
+      this.triggerChange();
     }
-    this.triggerChange();
   }
 
   dygLabels = ['Date', 'CO₂'];

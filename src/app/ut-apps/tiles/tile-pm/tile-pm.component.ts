@@ -80,8 +80,8 @@ export class TilePmComponent implements OnInit, OnDestroy {
         }
       }
       this.preventTooLargeGrowth();
+      this.triggerChange();
     }
-    this.triggerChange();
   }
 
   dygLabels = ['Date', 'pm10'];

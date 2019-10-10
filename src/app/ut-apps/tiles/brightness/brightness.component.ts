@@ -54,14 +54,15 @@ export class BrightnessComponent implements OnInit, OnDestroy {
   }
 
   update(msg: Object) {
-    this.value = this.h.getDeep(msg, [
+    const value = this.h.getDeep(msg, [
       'values',
       this.mqttRequest.valueFilters[0]
     ]);
-    if (this.value !== undefined) {
+    if (value >= 0) {
       this.cleanInitValues();
-      const dygValue = this.value === 0 ? 0.11 : this.value; // because of log scale of DyGraph
+      const dygValue = value === 0 ? 0.11 : value; // because of log scale of DyGraph
       this.dygData.push([new Date(msg['UTS'] * 1000), dygValue]);
+      this.value = value;
 
       this.preventTooLargeGrowth();
 
@@ -70,8 +71,8 @@ export class BrightnessComponent implements OnInit, OnDestroy {
         msg['values']['green_lux'],
         msg['values']['blue_lux']
       );
+      this.triggerChange();
     }
-    this.triggerChange();
   }
 
   dygLabels = ['Date', 'Brightness'];

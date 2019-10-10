@@ -182,11 +182,11 @@ export class HelperFunctionsService {
     }
     if (lObj['model'] && labelBlackList.indexOf('model') === -1) {
       labelString = lObj['model'];
-      labelBlackList.push('model')
+      labelBlackList.push('model');
     }
     if (lObj['node'] && labelBlackList.indexOf('node') === -1) {
       labelString += '@' + lObj['node'];
-      labelBlackList.push('node')
+      labelBlackList.push('node');
     }
 
     let firstDone = false;
@@ -382,5 +382,58 @@ export class HelperFunctionsService {
       g_hex = ('00' + g.toString(16)).substr(-2),
       b_hex = ('00' + b.toString(16)).substr(-2);
     const htmlColor = '#' + r_hex + g_hex + b_hex;
-    return htmlColor;  }
+    return htmlColor;
+  }
+
+  addNewReceivedSensorToFilter(
+    sensor: string,
+    receivedSensors: Object,
+    sensorPriority: string[]
+  ) {
+    if (receivedSensors.hasOwnProperty(sensor)) {
+      return;
+    }
+    // if the new sensor is higher priority than others, true and each other false
+    let currentHighest;
+    for (let [key, value] of Object.entries(receivedSensors)) {
+      if (value == true) {
+        currentHighest = key;
+        break;
+      }
+    }
+    if (!currentHighest) {
+      receivedSensors[sensor] = true;
+      console.log('initial sensor:', sensor);
+      return;
+    }
+    let currentHighestOrder = 4242;
+    let newOrder = 4242;
+    for (let i = 0; i < sensorPriority.length; i++) {
+      const element = sensorPriority[i];
+      if (element === currentHighest) {
+        currentHighestOrder = i;
+        continue;
+      }
+      if (element === sensor) {
+        newOrder = i;
+      }
+    } // if not found, it stays the initial value
+    if (newOrder < currentHighestOrder) {
+      console.log('currentHighest: ', currentHighest);
+      receivedSensors[currentHighest] = false;
+      receivedSensors[sensor] = true;
+      console.log('new better sensor found:', sensor);
+    } else {
+      console.log('new sensor not better', sensor);
+      receivedSensors[sensor] = false;
+    }
+  }
+  getSensorFromTopic(topic: string) {
+    const parts = topic.split('/');
+    if (parts.length < 2 || parts[1] !== 'sensors') {
+      console.error('topic not in /sensors/ - format ');
+      return undefined;
+    }
+    return parts[2];
+  }
 }

@@ -45,6 +45,11 @@ export class TileRhComponent implements OnInit {
     callBack: (obj: Object) => this.update(obj)
   };
 
+  private sensorPriority = ['BME280', 'SCD30'];
+  private receivedSensors = {
+    /* NoSensor: true*/
+  }; // only one sensor is "true" - this is the chosen one, all others are false.
+
   changeTrigger = false;
   triggerChange() {
     this.changeTrigger = !this.changeTrigger;
@@ -60,17 +65,31 @@ export class TileRhComponent implements OnInit {
     this.mqtt.unsubscribeTopic(this.mqttRequest.topic);
   }
 
+  sensorFilter(msg): boolean {
+    const currentSensor = this.h.getSensorFromTopic(msg['topic']);
+    this.h.addNewReceivedSensorToFilter(
+      currentSensor,
+      this.receivedSensors,
+      this.sensorPriority
+    );
+
+    return this.receivedSensors[currentSensor];
+  }
+
   update(msg: Object) {
-    this.value = this.h.getDeep(msg, [
+    const value = this.h.getDeep(msg, [
       'values',
       this.mqttRequest.valueFilters[0]
     ]);
-    if (this.value) {
+    // console.log(msg);
+
+    if (value >= 0 && this.sensorFilter(msg)) {
       this.cleanInitValues();
-      this.dygData.push([new Date(msg['UTS'] * 1000), this.value]);
+      this.dygData.push([new Date(msg['UTS'] * 1000), value]);
+      this.value = value;
       this.preventTooLargeGrowth();
+      this.triggerChange();
     }
-    this.triggerChange();
   }
 
   dygLabels = ['Date', 'CO₂'];

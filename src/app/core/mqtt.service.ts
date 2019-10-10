@@ -175,6 +175,7 @@ export class MqttService {
 
       if (this.compareTopics(element, topic)) {
         // TODO implement filters
+        payLoadObj.topic = topic;
         this.emitChangeSources[element].next(payLoadObj);
         found = true;
       }
