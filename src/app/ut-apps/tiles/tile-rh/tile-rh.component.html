@@ -1,6 +1,8 @@
 <a
   class="relcontainer {{
-    value < 30
+    !value
+      ? 'gray'
+      : value < 30
       ? 'red'
       : value < 35
       ? 'orange'
@@ -22,8 +24,10 @@
     <data
       ><!-- <span *ngIf="graph && graph['lastValues'].length > 2" class="xbar"
         >X</span
-      >-->&nbsp;{{ value | number: '1.0-0' }}&nbsp;<em class="unit">%</em></data>
-    <div class="bar">
+      >-->&nbsp;<span *ngIf="value === undefined">?</span
+      >{{ value | number: '1.0-0' }}&nbsp;<em class="unit">%</em></data
+    >
+    <div class="bar" *ngIf="value !== undefined">
       <app-ut-bargauge-min
         [width]="width / 3.3"
         [height]="height"
