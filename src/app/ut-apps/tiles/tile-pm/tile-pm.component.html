@@ -18,9 +18,9 @@
       <span style="font-size: 0.7em;">Particulate Matter:</span>
     </h2>
     <h2>
-      <span *ngIf="pm10 === undefined">?</span>
-      {{ pm10 | number: '1.1-1' }}&#8239;<em class="unit"
-        >µg&#8202;/&#8202;m³ <small>pm10</small></em
+      <em><small>pm10</small></em>&nbsp;<span *ngIf="pm10 === undefined">?</span
+      >{{ pm10 | number: '1.1-1' }}&#8239;<em class="unit"
+        >µg&#8202;/&#8202;m³</em
       >
     </h2>
 
@@ -52,7 +52,7 @@
     </div>
     <table class="text">
       <tr>
-        <th colspan="5">Particle distribution (#&#8202;/&#8202;cm³)</th>
+        <th colspan="6">Particle size distribution</th>
       </tr>
       <tr>
         <!-- <td *ngFor="let pn of particle_values | keyvalue">
@@ -60,24 +60,42 @@
           {{ pn.value | number: '1.1-1' }}
         </td> not sorted-->
         <td>
-          0.5&#8202;µm: <br />
+          0.5:
+          <!-- &#8202;µm: -->
+        </td>
+        <td>
+          1:
+        </td>
+        <td>
+          2.5:
+        </td>
+        <td>
+          4:
+        </td>
+        <td>
+          10:
+        </td>
+        <td style="font-size: 80%">µm</td>
+      </tr>
+
+      <tr>
+        <td>
           {{ particle_values['0.5'] | number: '1.0-1' }}
         </td>
         <td>
-          1&#8202;µm: <br />
           {{ particle_values['1'] - particle_values['0.5'] | number: '1.0-1' }}
         </td>
         <td>
-          2.5&#8202;µm: <br />
           {{ particle_values['2.5'] - particle_values['1'] | number: '1.0-1' }}
         </td>
         <td>
-          4&#8202;µm: <br />
           {{ particle_values['4'] - particle_values['2.5'] | number: '1.0-1' }}
         </td>
         <td>
-          10&#8202;µm: <br />
           {{ particle_values['10'] - particle_values['4'] | number: '1.0-1' }}
+        </td>
+        <td style="font-size: 80%">
+          #&#8202;/&#8202;cm³
         </td>
       </tr>
     </table>
