@@ -29,7 +29,7 @@ export class HelperFunctionsService {
     }
     while (argumentsArray.length) {
       const currentIndex = argumentsArray.shift();
-      if (obj[currentIndex]) {
+      if (obj.hasOwnProperty(currentIndex)) {
         obj = obj[currentIndex];
       } else {
         return undefined;
