@@ -16,9 +16,9 @@
   <div class="tilebox">
     <h2>CO₂</h2>
     <data
-      ><span *ngIf="graph && graph['lastValues'].length > 2" class="xbar"
+      ><!--<span *ngIf="graph && graph['lastValues'].length > 2" class="xbar"
         >X</span
-      >&nbsp;<span *ngIf="value === undefined">?</span>{{ value | number: '1.0-0' }}&nbsp;<em class="unit">ppm</em></data
+      >-->&nbsp;<span *ngIf="value === undefined">?</span>{{ value | number: '1.0-0' }}&nbsp;<em class="unit">ppm</em></data
     >
     <div class="bar" *ngIf="value !== undefined">
       <app-ut-bargauge-min

@@ -6,10 +6,11 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
 @Component({
   selector: 'app-tile-brightness',
   templateUrl: './brightness.component.html',
-  styleUrls: ['./brightness.component.scss','../tiles.scss']
+  styleUrls: ['./brightness.component.scss', '../tiles.scss']
 })
 export class BrightnessComponent implements OnInit, OnDestroy {
   public value: number;
+  public htmlColor: string;
 
   @Input()
   height = 100;
@@ -30,9 +31,9 @@ export class BrightnessComponent implements OnInit, OnDestroy {
     [20000, colors.bg.green]
   ];
   private mqttRequest = {
-  topic: '+/sensors/+/luminosity',
+    topic: '+/sensors/+/luminosity',
     tagFilters: undefined,
-    valueFilters: ['visible_lux','visible_raw'],
+    valueFilters: ['visible_lux', 'visible_raw'],
     callBack: (obj: Object) => this.update(obj)
   };
 
@@ -59,6 +60,12 @@ export class BrightnessComponent implements OnInit, OnDestroy {
       this.cleanInitValues();
       this.dygData.push([new Date(msg['UTS'] * 1000), this.value]);
       this.preventTooLargeGrowth();
+
+      this.htmlColor = this.h.calcHTMLColor(
+        msg['values']['red_lux'],
+        msg['values']['green_lux'],
+        msg['values']['blue_lux']
+      );
     }
     this.triggerChange();
   }
@@ -83,5 +90,4 @@ export class BrightnessComponent implements OnInit, OnDestroy {
       this.dygData.shift();
     }
   }
-
 }

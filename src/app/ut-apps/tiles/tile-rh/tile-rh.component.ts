@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { colors } from '../../../shared/colors';
+import { MqttService } from '../../../core/mqtt.service';
+import { HelperFunctionsService } from '../../../core/helper-functions.service';
 
 @Component({
   selector: 'app-tile-rh',
@@ -35,7 +37,59 @@ export class TileRhComponent implements OnInit {
     [100, colors.bg.red]
 
   ];
-  constructor() {}
+  private mqttRequest = {
+    topic: '+/sensors/+/humidity',
+    tagFilters: undefined,
+    valueFilters: ['humidity_rel_percent'],
+    callBack: (obj: Object) => this.update(obj)
+  };
 
-  ngOnInit() {}
+  changeTrigger = false;
+  triggerChange() {
+    this.changeTrigger = !this.changeTrigger;
+  }
+
+  constructor(private mqtt: MqttService, private h: HelperFunctionsService) {}
+
+  ngOnInit() {
+    this.mqtt.request(this.mqttRequest);
+    this.triggerChange();
+  }
+  ngOnDestroy() {
+    this.mqtt.unsubscribeTopic(this.mqttRequest.topic);
+  }
+
+  update(msg: Object) {
+    this.value = this.h.getDeep(msg, [
+      'values',
+      this.mqttRequest.valueFilters[0]
+    ]);
+    if (this.value) {
+      this.cleanInitValues();
+      this.dygData.push([new Date(msg['UTS'] * 1000), this.value]);
+      this.preventTooLargeGrowth();
+    }
+    this.triggerChange();
+  }
+
+  dygLabels = ['Date', 'CO₂'];
+
+  private initDataValue = 0.042;
+  dygData = [
+    [new Date(new Date().valueOf() - 1), this.initDataValue],
+    [new Date(), this.initDataValue]
+  ];
+  cleanInitValues() {
+    if (
+      this.dygData.length === 2 &&
+      this.dygData[0][1] === this.initDataValue
+    ) {
+      this.dygData.shift();
+    }
+  }
+  preventTooLargeGrowth() {
+    while (this.dygData.length > 300) {
+      this.dygData.shift();
+    }
+  }
 }

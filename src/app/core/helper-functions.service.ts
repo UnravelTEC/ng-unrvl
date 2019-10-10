@@ -372,4 +372,15 @@ export class HelperFunctionsService {
     const y_m = Math.log((rH / 100) * Math.exp((b - T / d) * (T / (c + T))));
     return (c * y_m) / (b - y_m);
   }
+
+  calcHTMLColor(r_lux, g_lux, b_lux) {
+    let max = Math.max(r_lux, g_lux, b_lux);
+    let r = Math.round((r_lux / max) * 255);
+    let g = Math.round((g_lux / max) * 255);
+    let b = Math.round((b_lux / max) * 255);
+    const r_hex = ('00' + r.toString(16)).substr(-2),
+      g_hex = ('00' + g.toString(16)).substr(-2),
+      b_hex = ('00' + b.toString(16)).substr(-2);
+    const htmlColor = '#' + r_hex + g_hex + b_hex;
+    return htmlColor;  }
 }

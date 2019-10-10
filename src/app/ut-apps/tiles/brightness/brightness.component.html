@@ -7,11 +7,15 @@
 >
   <div class="tilebox">
     <h2>Brightness</h2>
+    <em id="displayedcolor" [style.background-color]="htmlColor">
+      &nbsp;
+    </em>
     <data
-      ><span *ngIf="graph && graph['lastValues'].length > 2" class="xbar"
+      ><!--<span *ngIf="graph && graph['lastValues'].length > 2" class="xbar"
         >X</span
-      >&nbsp;<span *ngIf="value === undefined">?</span>{{ value | number: '1.0-0' }}&nbsp;<em class="unit">lux</em></data
-    >
+      >-->&nbsp;<span *ngIf="value === undefined">?</span
+      >{{ value | number: '1.0-0' }}&nbsp;<em class="unit">lux</em>
+    </data>
 
     <div class="bar" *ngIf="value !== undefined">
       <app-ut-bargauge-min
