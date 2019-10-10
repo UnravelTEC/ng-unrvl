@@ -131,15 +131,18 @@ ut-dashboard.module.ts
 
 component.ts
   add   ,'../tiles.scss' to styleUrls:
+  add onDestroy handler
+    1. Zeile import OnInit, OnDestroy
+    class implements OnInit, OnDestroy
+    ngOnDestroy()
 
-add onDestroy handler
-  1. Zeile import OnInit, OnDestroy
-  class implements OnInit, OnDestroy
-  ngOnDestroy()
 
+## Top bar todos
 
-## load-Tile
+mqtt messages / s (for last 10 msgs)
+mqtt delay (avg of last 10 msgs)
 
-tile subscribes to mqtt +/system
-gets pushed messages
-updates its load indicator
+load indicator
+disk usage indicator ... sollte eher sein, wieviel Laufzeit noch in der DB Platz hat
+ram indicator?
+
