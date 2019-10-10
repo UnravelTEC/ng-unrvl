@@ -62,7 +62,6 @@ export class BrightnessComponent implements OnInit, OnDestroy {
       this.cleanInitValues();
       const dygValue = this.value === 0 ? 0.11 : this.value; // because of log scale of DyGraph
       this.dygData.push([new Date(msg['UTS'] * 1000), dygValue]);
-      console.log(this.value);
 
       this.preventTooLargeGrowth();
 
