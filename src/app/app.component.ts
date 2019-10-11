@@ -21,6 +21,7 @@ export class AppComponent implements OnInit {
   public appName = 'Home';
 
   public cursor = 'auto';
+  gap_right = '0px';
 
   public hostName = 'ng-unrvl';
 
@@ -48,7 +49,8 @@ export class AppComponent implements OnInit {
         if (obj['TricorderLocal'] === true) {
           this.cursor = 'none';
           this.toggleFooter(false);
-          alert('Welcome to Tricorder');
+          // alert('Welcome to Tricorder');
+          this.gap_right = '20px'; // bug in Raspi display/browser in portrait mode
         } else {
           this.toggleFooter(true);
           this.cursor = 'auto';
