@@ -29,6 +29,7 @@ export class UtBargaugeMinComponent implements OnInit {
   barstyle: string;
 
   public bar_progress = false;
+  public bar_width = 17;
   public needle = true;
 
   constructor() {}
@@ -57,6 +58,8 @@ export class UtBargaugeMinComponent implements OnInit {
     if (this.barstyle === 'filled') {
       this.bar_progress = true;
       this.needle = false;
+    } else {
+      this.bar_width = 0;
     }
   }
 }
