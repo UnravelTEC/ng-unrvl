@@ -97,7 +97,7 @@ export class MqttComponent implements OnInit, OnDestroy {
   }
   onConnect() {
     console.log('onConnect');
-    console.log(this);
+    // console.log(this);
     const father = document['MQTT_TEST']['father'];
     document['MQTT_TEST'].subscribe(father.topic);
     father.status = 'connected';
@@ -137,7 +137,7 @@ export class MqttComponent implements OnInit, OnDestroy {
       father.dygData.push([sentDate, Number(value)]);
       // father.graph.updateGraph()
       father.changeTrigger = ! father.changeTrigger;
-      console.log(cloneDeep(father.dygData));
+      // console.log(cloneDeep(father.dygData));
 
       if (father.updateMessages) {
         // console.log('msg:', message);
