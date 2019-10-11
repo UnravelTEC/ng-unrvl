@@ -17,6 +17,7 @@ export class BrightnessComponent implements OnInit, OnDestroy {
 
   @Input()
   width = 100;
+  fontsize_px = String(this.width/9) + 'px';
 
   extraDyGraphConfig = { valueRange: [0.1, undefined] };
 
@@ -33,7 +34,7 @@ export class BrightnessComponent implements OnInit, OnDestroy {
     [20000, colors.bg.green]
   ];
   private mqttRequest = {
-    topic: '+/sensors/+/luminosity',
+    topic: '+/sensors/TCS34725/luminosity',
     tagFilters: undefined,
     valueFilters: ['visible_lux', 'visible_raw'],
     callBack: (obj: Object) => this.update(obj)

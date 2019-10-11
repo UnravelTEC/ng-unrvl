@@ -13,11 +13,11 @@
   routerLink="/Apps/PM"
   routerLinkActive="active"
 >
-  <div class="tilebox">
+  <div class="tilebox" [style.font-size]="fontsize_px">
     <h2 class="1">
       <span style="font-size: 0.7em;">Particulate Matter:</span>
     </h2>
-    <h2>
+    <h2 class="2">
       <em><small>pm10</small></em>&nbsp;<span *ngIf="pm10 === undefined">?</span
       >{{ pm10 | number: '1.1-1' }}&#8239;<em class="unit"
         >µg&#8202;/&#8202;m³</em

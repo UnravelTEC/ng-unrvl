@@ -13,6 +13,7 @@ export class TilePmComponent implements OnInit, OnDestroy {
 
   @Input()
   width = 100;
+  fontsize_px = String(this.width/9) + 'px';
 
   public pm10: number
   public particle_values = {

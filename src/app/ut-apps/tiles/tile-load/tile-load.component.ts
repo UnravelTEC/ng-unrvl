@@ -15,6 +15,7 @@ export class TileLoadComponent implements OnInit, OnDestroy {
 
   @Input()
   width = 100;
+  fontsize_px = String(this.width/9) + 'px';
 
   public currentLoad: number = undefined;
   private mqttSubscription$: Subscription;

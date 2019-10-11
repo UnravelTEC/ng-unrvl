@@ -13,7 +13,7 @@
   routerLink="/Apps/CO2-graph"
   routerLinkActive="active"
 >
-  <div class="tilebox">
+  <div class="tilebox" [style.font-size]="fontsize_px">
     <h2>CO₂</h2>
     <data
       ><!--<span *ngIf="graph && graph['lastValues'].length > 2" class="xbar"

@@ -16,6 +16,8 @@ export class TileRhComponent implements OnInit {
 
   @Input()
   width = 100;
+  fontsize_px = String(this.width/9) + 'px';
+
   extraDyGraphConfig = { logscale: false, valueRange: [0, 100] };
 
   highlights =

@@ -25,9 +25,9 @@
       display: block;
       margin-left: 5%;
       text-align: center;
-      font-size: 3.5vw;
-      margin-top: 0.8vw;
-      margin-bottom: 0.8vw;
+      font-size: 150%;
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
       font-weight: bold;
       width: 90%;
       em {
@@ -37,12 +37,12 @@
       }
     }
     .text {
-      font-size: 2vw;
+      // font-size: 2vw;
     }
     .notactive {
-      font-size: 2.5vw;
+      // font-size: 2.5vw;
       margin-right: -15%;
-      padding-top: 2vw;
+      padding-top: 0.5em;
     }
 
     div.graphabs {

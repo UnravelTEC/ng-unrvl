@@ -13,7 +13,7 @@
   routerLink="/Apps/System"
   routerLinkActive="active"
 >
-  <div class="tilebox">
+  <div class="tilebox" [style.font-size]="fontsize_px">
     <h2>CPU load: {{ currentLoad | number: '1.1-2' }}</h2>
 
     <div class="bar" *ngIf="currentLoad !== undefined">

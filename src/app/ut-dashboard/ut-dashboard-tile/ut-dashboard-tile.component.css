@@ -23,7 +23,7 @@ th {
   font-weight: bold;
   text-emphasis: none;
   text-decoration: none;
-  font-size: 1em;
+  font-size: 0.9em;
   margin: 0.3em 0;
 }
 
@@ -37,8 +37,8 @@ th {
 
 .app-preview img {
   display: block;
-  max-width:5cm;
-  max-height:2cm;
+  max-width:4.5cm;
+  max-height:1.9cm;
   width: auto;
   height: auto;
   margin: auto;

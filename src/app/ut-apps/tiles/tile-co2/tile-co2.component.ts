@@ -16,6 +16,7 @@ export class TileCo2Component implements OnInit, OnDestroy {
 
   @Input()
   width = 100;
+  fontsize_px = String(this.width/9) + 'px';
 
   highlights =
     '[ {"from": 0, "to": 415, "color": "green"}, \
