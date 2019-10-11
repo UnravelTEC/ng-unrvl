@@ -14,11 +14,11 @@ style.padding-bottom="20vh"-->
       {{ fromZoom | date: 'shortDate' }}
     </div> -->
 
-    <div *ngIf="noData == true" class="info nodata">
+    <div *ngIf="noData == true && !minimal" class="info nodata">
       No data to display.
     </div>
 
-    <div *ngIf="waiting == true" class="info waiting">
+    <div *ngIf="waiting == true && !minimal" class="info waiting">
       Waiting for data...
     </div>
 
