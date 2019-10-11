@@ -214,7 +214,7 @@ export class MqttService {
     }
 
     // every part matched
-    console.log('matched', subscribedTopic, receivedTopic);
+    // console.log('matched', subscribedTopic, receivedTopic);
     return true;
   }
 }
