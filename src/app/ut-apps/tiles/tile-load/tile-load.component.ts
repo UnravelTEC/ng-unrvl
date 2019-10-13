@@ -19,6 +19,7 @@ export class TileLoadComponent implements OnInit, OnDestroy {
 
   public currentLoad: number = undefined;
   private mqttSubscription$: Subscription;
+  private lastMsgArrived: Date;
 
   extraDyGraphConfig = {
     logscale: false,
@@ -31,7 +32,6 @@ export class TileLoadComponent implements OnInit, OnDestroy {
     valueFilters: ['system_load'],
     callBack: (obj: Object) => this.updateLoad(obj)
   };
-  private maxDataLength = 300;
 
   highlights =
     '[ {"from": 0, "to": 1, "color": "green"}, \
@@ -80,12 +80,11 @@ export class TileLoadComponent implements OnInit, OnDestroy {
       } else {
         this.dygData.push(newRow);
       }
-      if (this.dygData.length > this.maxDataLength) {
-        this.dygData.shift();
-      }
+
       // console.log(cloneDeep(this.dygData));
 
       this.triggerChange();
+      this.lastMsgArrived = new Date();
     }
   }
 

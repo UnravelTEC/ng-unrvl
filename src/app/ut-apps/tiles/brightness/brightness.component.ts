@@ -65,8 +65,6 @@ export class BrightnessComponent implements OnInit, OnDestroy {
       this.dygData.push([new Date(msg['UTS'] * 1000), dygValue]);
       this.value = value;
 
-      this.preventTooLargeGrowth();
-
       this.htmlColor = this.h.calcHTMLColor(
         msg['values']['red_lux'],
         msg['values']['green_lux'],
@@ -88,11 +86,6 @@ export class BrightnessComponent implements OnInit, OnDestroy {
       this.dygData.length === 2 &&
       this.dygData[0][1] === this.initDataValue
     ) {
-      this.dygData.shift();
-    }
-  }
-  preventTooLargeGrowth() {
-    while (this.dygData.length > 300) {
       this.dygData.shift();
     }
   }

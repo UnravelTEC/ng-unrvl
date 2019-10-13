@@ -80,7 +80,6 @@ export class TilePmComponent implements OnInit, OnDestroy {
           this.particle_values[key] = values[values_key];
         }
       }
-      this.preventTooLargeGrowth();
       this.triggerChange();
     }
   }
@@ -97,11 +96,6 @@ export class TilePmComponent implements OnInit, OnDestroy {
       this.dygData.length === 2 &&
       this.dygData[0][1] === this.initDataValue
     ) {
-      this.dygData.shift();
-    }
-  }
-  preventTooLargeGrowth() {
-    while (this.dygData.length > 300) {
       this.dygData.shift();
     }
   }

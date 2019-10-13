@@ -216,14 +216,21 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
         this.dyGraphOptions.visibility.push(true);
       }
-      this.updateDateWindow()
+      this.updateDateWindow();
       this.Dygraph.updateOptions({
         file: this.displayedData,
         labels: this.columnLabels,
         visibility: this.dyGraphOptions.visibility,
         dateWindow: this.dyGraphOptions['dateWindow']
       });
-
+      if (this.minimal && this.displayedData.length > 10) {
+        const dateOfSecondPt = this.displayedData[1][0].valueOf();
+        const fromZoom = this.Dygraph.xAxisRange()[0];
+        if(fromZoom > dateOfSecondPt) {
+          console.log('shorten graph');
+          this.displayedData.shift();
+        }
+      }
     }
   }
 
@@ -244,7 +251,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.dyGraphOptions['ylabel'] = this.YLabel;
     this.dyGraphOptions['labels'] = this.columnLabels;
-    if(!this.columnLabels || !this.columnLabels.length) {
+    if (!this.columnLabels || !this.columnLabels.length) {
       console.error('you have to supply correct columnLabels');
       return;
     }

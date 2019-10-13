@@ -64,7 +64,6 @@ export class TileCo2Component implements OnInit, OnDestroy {
       this.cleanInitValues();
       this.dygData.push([new Date(msg['UTS'] * 1000), value]);
       this.value = value;
-      this.preventTooLargeGrowth();
       this.triggerChange();
     }
   }
@@ -81,11 +80,6 @@ export class TileCo2Component implements OnInit, OnDestroy {
       this.dygData.length === 2 &&
       this.dygData[0][1] === this.initDataValue
     ) {
-      this.dygData.shift();
-    }
-  }
-  preventTooLargeGrowth() {
-    while (this.dygData.length > 300) {
       this.dygData.shift();
     }
   }
