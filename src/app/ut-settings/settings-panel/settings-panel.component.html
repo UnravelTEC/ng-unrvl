@@ -25,6 +25,17 @@
     <button (click)="reboot()">Reboot</button>
   </section>
 
+  <section
+    class="center"
+    *ngIf="globalSettingsService.server.type == 'Tricorder'"
+  >
+  <h2>
+    Fan Speed: <span>{{fanspeed.currentSpeed}}&#8239;%</span>
+  </h2>
+    <app-fan-speed #fanspeed>
+    </app-fan-speed>
+  </section>
+
   <section *ngIf="globalSettingsService.server.type == 'Tricorder'">
     <h2>System Services</h2>
     <a routerLink="/Settings/Services" routerLinkActive="active"
