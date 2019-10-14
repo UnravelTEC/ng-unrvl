@@ -39,7 +39,7 @@ export class FanSpeedComponent implements OnInit {
 
   acceptSpeed(data: Object) {
     console.log('retval vom getspeed:', data);
-    if (data && data['fanspeed']) {
+    if (data && data['fanspeed'] !== undefined) {
       this.currentSpeed = data['fanspeed'];
       this.fanSpeedEvent.emit(this.currentSpeed);
       this.disabled = false;
@@ -49,7 +49,7 @@ export class FanSpeedComponent implements OnInit {
   }
 
   setSpeed(MatSliderChange) {
-    console.log(MatSliderChange);
+    console.log('new value', MatSliderChange.value);
     // alert(JSON.stringify(MatSliderChange)); // ERROR: cyclic data
     this.utHTTP
       .getHTTPData(
