@@ -26,14 +26,10 @@
   </section>
 
   <section
-    class="center"
     *ngIf="globalSettingsService.server.type == 'Tricorder'"
+    class="{{ fanspeed.disabled ? 'hidden' : ''}}"
   >
-  <h2>
-    Fan Speed: <span>{{fanspeed.currentSpeed}}&#8239;%</span>
-  </h2>
-    <app-fan-speed #fanspeed>
-    </app-fan-speed>
+    <app-fan-speed #fanspeed></app-fan-speed>
   </section>
 
   <section *ngIf="globalSettingsService.server.type == 'Tricorder'">
@@ -52,7 +48,8 @@
     <div
       *ngIf="
         settingsSection.value.settingAttributes.title == 'Backend Settings'
-      " style="display: flex;
+      "
+      style="display: flex;
       flex-wrap: wrap;"
     >
       <div style="margin-right:2em;">
@@ -96,8 +93,6 @@
           <td>{{ globalSettingsService.server.api }}</td>
         </tr>
       </table>
-
-
     </div>
 
     <section *ngFor="let entry of settingsSection.value.settings | keyvalue">

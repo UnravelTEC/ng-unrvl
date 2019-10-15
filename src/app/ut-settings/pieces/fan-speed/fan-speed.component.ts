@@ -14,8 +14,10 @@ export class FanSpeedComponent implements OnInit {
   public currentSpeed = 0;
   disabled = true;
 
-  constructor(private utHTTP: UtFetchdataService,
-    private gss: GlobalSettingsService) { }
+  constructor(
+    private utHTTP: UtFetchdataService,
+    private gss: GlobalSettingsService
+  ) {}
 
   ngOnInit() {
     if (this.gss.getAPIEndpoint()) {
@@ -34,7 +36,13 @@ export class FanSpeedComponent implements OnInit {
     // alert('get bn called');
     this.utHTTP
       .getHTTPData(this.gss.getAPIEndpoint() + 'system/fan.php')
-      .subscribe((data: Object) => this.acceptSpeed(data));
+      .subscribe(
+        (data: Object) => this.acceptSpeed(data),
+        (error: any) => {
+          console.log('no fan API present.');
+          console.log(error);
+        }
+      );
   }
 
   acceptSpeed(data: Object) {
@@ -45,7 +53,6 @@ export class FanSpeedComponent implements OnInit {
       this.disabled = false;
     }
     // alert('got bn:' + JSON.stringify(data));
-
   }
 
   setSpeed(MatSliderChange) {

@@ -2,6 +2,12 @@ div.settingspage {
     padding: 0 0.5em;
 }
 
+h1 {
+    text-align: center;
+    margin: 1rem;
+}
+h2 {margin: 0 0 1rem 0}
+
 section {
     border: 1px solid black;
     border-radius: 2px;
@@ -9,17 +15,18 @@ section {
     margin: 0.5em auto 0.5em auto;
 }
 
-h1 {
-    text-align: center;
-    margin: 1rem;
-}
-h2 {margin: 0 0 1rem 0}
-
 section section {
     border: 1px solid gray;
     padding: 0.1em 0.1em 0.1em 0.5em;
     margin: 0.2em 0;
     min-height: 2.5em;
+}
+section.hidden {
+    visibility:hidden; /* no display none because element must be present for JS */
+    height: 0px;
+    padding: 0;
+    margin: -0.25em;
+    border: 0;
 }
 
 label {
