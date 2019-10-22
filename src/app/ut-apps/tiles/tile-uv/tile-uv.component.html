@@ -1,0 +1,52 @@
+<a
+  class="relcontainer {{
+    uva === undefined
+      ? 'gray'
+      : uva < 400
+      ? 'red'
+      : uva < 1000
+      ? 'yellow'
+      : 'green'
+  }}"
+  routerLink="/Apps/UV"
+  routerLinkActive="active"
+>
+  <div class="tilebox" [style.font-size]="fontsize_px">
+    <h2>UV values</h2>
+
+    <data
+      ><!--<span *ngIf="graph && graph['lastValues'].length > 2" class="xbar"
+        >X</span
+      >-->&nbsp;<span *ngIf="uva === undefined">?</span
+      >UVA:{{ uva | number: '1.0-0' }}&nbsp;UVB:{{ uvb | number: '1.0-0' }}
+    </data>
+
+    <div class="bar" *ngIf="uva !== undefined">
+      <app-ut-bargauge-min
+        [width]="width / 3.1"
+        [height]="height * 0.96"
+        max="3000"
+        [value]="uva"
+        [highlights]="highlights"
+      ></app-ut-bargauge-min>
+    </div>
+    <div class="graphabs">
+      <div class="graphrel" *ngIf="uva !== undefined">
+        <app-ut-dygraph-in
+          [displayedData]="dygData"
+          [columnLabels]="dygLabels"
+          [changeTrigger]="changeTrigger"
+          minimal="true"
+          startTime="3m"
+          [extraDyGraphConfig]="extraDyGraphConfig"
+          [backGroundLevels]="backGroundLevels"
+          #graph
+        >
+        </app-ut-dygraph-in>
+      </div>
+      <div class="notactive" *ngIf="uva === undefined">
+        Waiting for sensor...
+      </div>
+    </div>
+  </div>
+</a>
