@@ -205,7 +205,7 @@ const appRoutes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'Dashboard',
+    redirectTo: 'Apps/Sensors/BME280',
     pathMatch: 'full'
   },
   {

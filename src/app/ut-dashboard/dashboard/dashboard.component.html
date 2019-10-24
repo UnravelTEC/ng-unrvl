@@ -1,11 +1,11 @@
 <div id="dashboard" #dashboard>
   <div class="tilebox">
-    <div [style.width]="tilewidth_px" [style.height]="tileheight_px">
+    <!-- <div [style.width]="tilewidth_px" [style.height]="tileheight_px">
       <app-tile-co2 [height]="tileheight" [width]="tilewidth"></app-tile-co2>
     </div>
     <div [style.width]="tilewidth_px" [style.height]="tileheight_px">
       <app-tile-brightness [height]="tileheight" [width]="tilewidth"></app-tile-brightness>
-    </div>
+    </div> -->
   <!--
     <div>
       <app-tile-radiation [height]="tileheight" [width]="tilewidth"></app-tile-radiation>
@@ -14,13 +14,13 @@
     <div [style.width]="tilewidth_px" [style.height]="tileheight_px">
       <app-tile-rh [height]="tileheight" [width]="tilewidth"></app-tile-rh>
     </div>
-    <div [style.width]="tilewidth_px" [style.height]="tileheight_px" class="empty"><div>&nbsp;</div></div>
+    <!-- <div [style.width]="tilewidth_px" [style.height]="tileheight_px" class="empty"><div>&nbsp;</div></div>
     <div [style.width]="tilewidth_px" [style.height]="tileheight_px">
       <app-tile-pm [height]="tileheight" [width]="tilewidth"></app-tile-pm>
     </div>
     <div [style.width]="tilewidth_px" [style.height]="tileheight_px">
       <app-tile-load [height]="tileheight" [width]="tilewidth"></app-tile-load>
-    </div>
+    </div> -->
     <!-- <div [style.width]="tilewidth_px" [style.height]="tileheight_px">
       <app-tile-uv [height]="tileheight" [width]="tilewidth"></app-tile-uv>
     </div> -->
@@ -29,12 +29,16 @@
   <hr />
 
   <div class="panel">
-    <app-ut-dashboard-tile title="Air Quality" path="/Apps/Airquality"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="rel. Humidity / T" path="/Apps/rHT"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="Air Pressure" path="/Apps/PressureGraph"></app-ut-dashboard-tile>
+  </div>
+  <hr />
+
+  <div class="panel">
     <!-- <app-ut-dashboard-tile title="Indoor Air Quality" path="/Apps/IAQ"></app-ut-dashboard-tile> -->
+    <app-ut-dashboard-tile title="Air Quality" path="/Apps/Airquality"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="CO₂" path="/Apps/CO2"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="Particulate Matter" path="/Apps/PM"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Air Pressure" path="/Apps/PressureGraph"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="rel. Humidity / T" path="/Apps/rHT"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="Humidity Analyzer" path="/Apps/Humidity"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="VOC" path="/Apps/voc"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="CO₂-Meter" path="/Apps/CO2-graph"></app-ut-dashboard-tile>
