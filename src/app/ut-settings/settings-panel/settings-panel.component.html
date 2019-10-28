@@ -13,10 +13,6 @@
     ></app-display-brightness>
   </section>
 
-  <section *ngIf="globalSettingsService.server.type !== 'Tricorder'">
-    <app-network></app-network>
-  </section>
-
   <section *ngIf="globalSettingsService.client.type !== 'local'">
     <a (click)="fullscreen()">Fullscreen</a>
   </section>
@@ -27,6 +23,10 @@
   >
     <button (click)="halt()">Shut Down</button>
     <button (click)="reboot()">Reboot</button>
+  </section>
+
+  <section *ngIf="globalSettingsService.server.type == 'Tricorder'">
+    <app-network></app-network>
   </section>
 
   <section
