@@ -13,6 +13,10 @@
     ></app-display-brightness>
   </section>
 
+  <section *ngIf="globalSettingsService.server.type !== 'Tricorder'">
+    <app-network></app-network>
+  </section>
+
   <section *ngIf="globalSettingsService.client.type !== 'local'">
     <a (click)="fullscreen()">Fullscreen</a>
   </section>
@@ -27,7 +31,7 @@
 
   <section
     *ngIf="globalSettingsService.server.type == 'Tricorder'"
-    class="{{ fanspeed.disabled ? 'hidden' : ''}}"
+    class="{{ fanspeed.disabled ? 'hidden' : '' }}"
   >
     <app-fan-speed #fanspeed></app-fan-speed>
   </section>

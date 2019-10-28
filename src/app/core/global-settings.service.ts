@@ -40,6 +40,8 @@ export class GlobalSettingsService implements OnInit {
     mobile: false
   };
 
+  public networkStatus: Object;
+
   // for local javascript client IPs:
   private RTCPeerConnection =
     /*window.RTCPeerConnection ||*/ window['webkitRTCPeerConnection'] ||
