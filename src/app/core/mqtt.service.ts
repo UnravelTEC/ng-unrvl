@@ -140,6 +140,10 @@ export class MqttService {
   private onConnect() {
     console.log('onConnect');
     this.status = 'connected';
+
+    // here to avoid circular dependency wit GlobalSettingsService
+    this.request(this.networkMqttRequest);
+
     while (this.waitingRequests.length) {
       let request = this.waitingRequests.pop();
       console.log('handle waiting subscribing', request['topic']);
@@ -216,5 +220,20 @@ export class MqttService {
     // every part matched
     // console.log('matched', subscribedTopic, receivedTopic);
     return true;
+  }
+
+  // here to avoid circular dependency with GlobalSettingsService
+  private networkMqttRequest = {
+    topic: '+/system/network',
+    tagFilters: undefined,
+    valueFilters: [],
+    callBack: (obj: Object) => this.updateNetWork(obj)
+  };
+  updateNetWork(msg: Object) {
+    if (msg['interfaces']) {
+      this.globalSettings.networkStatus = msg['interfaces'];
+    } else {
+      console.error('mqtt system/network: no valid data', msg);
+    }
   }
 }
