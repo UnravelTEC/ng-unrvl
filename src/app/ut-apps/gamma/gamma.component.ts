@@ -12,7 +12,7 @@ export class GammaComponent implements OnInit {
   startTime = '24h';
   step = 10000;
   dataSeriesLabels = ['RS 04'];
-  multiplicateFactors = [1000000000];
+  multiplicateFactors = [1000000000, 1000000000, 1000000000];
   runningAvgPoints = 0;
 
   graphstyle = {

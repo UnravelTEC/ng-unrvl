@@ -64,7 +64,7 @@ export class SettingsPanelComponent implements OnInit {
           },
           serverHostName: {
             fieldName: 'Server hostname/ip',
-            fieldValue: 'scpunraveltec2.tugraz.at'
+            fieldValue: 'newton.unraveltec.com'
           },
           prometheusPort: { fieldName: 'Prometheus port', fieldValue: '443' }, // 9090
           prometheusPath: {
