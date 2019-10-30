@@ -385,6 +385,46 @@ export class HelperFunctionsService {
     return htmlColor;
   }
 
+  /* series: array [[Date,values...][Date,values...]]
+  returns object with array (the same format, len -1 of input) and the averages for each series*/
+  calc1stDev(series = []) {
+    // change per second
+    if (!series.length || series.length < 2) {
+      console.error('not enough input for calc1stDev, return');
+      return { devs: [], avgs: [], error: true };
+    }
+    const devs = [];
+    const seriesSumDevs = [];
+    for (let c = 1; c < series[0].length; c++) {
+      seriesSumDevs.push(0);
+    }
+    for (let i = 1; i < series.length; i++) {
+      const thisrow = series[i];
+      const lastrow = series[i - 1];
+      const deltas = [];
+      for (let c = 0; c < thisrow.length; c++) {
+        // all time AND value deltas
+        if (c === 0) {
+          deltas[c] = thisrow[c].valueOf() - lastrow[c].valueOf();
+        } else {
+          deltas[c] = thisrow[c] - lastrow[c];
+        }
+      }
+      const deltaPerUnit = [thisrow[0]]; // timestamp
+      for (let c = 1; c < deltas.length; c++) {
+        deltaPerUnit[c] = (deltas[c] / deltas[0]) * 1000; // to make it per second
+        seriesSumDevs[c - 1] += deltaPerUnit[c];
+      }
+      devs.push(deltaPerUnit);
+    }
+    const avgDevs = [];
+    const len = devs.length;
+    for (let c = 0; c < seriesSumDevs.length; c++) {
+      avgDevs[c] = seriesSumDevs[c] / len;
+    }
+    return { devs: devs, avgs: avgDevs };
+  }
+
   addNewReceivedSensorToFilter(
     sensor: string,
     receivedSensors: Object,

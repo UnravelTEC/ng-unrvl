@@ -145,6 +145,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public toFormDate = new FormControl(new Date());
 
   public displayedData = [];
+  public firstDerivation = [];
   public lastValue = undefined;
   public lastValues = [];
 
@@ -162,6 +163,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public visibleStdDev: number;
   public stdDevs: number[] = [];
   public visibleStdDevs: number[] = [];
+  public firstDerivationAvgs: number[] = [];
   public min = Infinity;
   public max = -Infinity;
 
@@ -261,7 +263,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.overrideDateWindow[1] = this.dyGraphOptions['dateWindow'][1];
     }
 
-    // this.displayedData = [[undefined, null]];
     this.htmlID = 'graph_' + (Math.random() + 1).toString();
 
     console.log(this.startTime, this.endTime);
@@ -645,6 +646,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     if (validRows) {
       this.updateLastValueMembers(dataSet);
+      if (!this.minimal) {
+        const devResults = this.h.calc1stDev(dataSet);
+        this.firstDerivation = devResults['devs'];
+        this.firstDerivationAvgs = devResults['avgs'];
+      }
       this.dataEndTime = dataSet[dataSet.length - 1][0];
     }
 
