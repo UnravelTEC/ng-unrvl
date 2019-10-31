@@ -11,6 +11,8 @@ import { cloneDeep } from 'lodash-es';
 })
 export class InfluxTestComponent implements OnInit {
   influxresponse: String;
+  influxquery: String;
+  labelstrings: String[];
 
   public sensorData = {};
   public sensorDataExample = {
@@ -41,7 +43,7 @@ export class InfluxTestComponent implements OnInit {
     [new Date(new Date().valueOf() - 1000), 1],
     [new Date(), 2]
   ];
-  public dygLabels = ['Date','influx'];
+  public dygLabels = ['Date', 'influx'];
   changeTrigger = true;
 
   constructor(
@@ -59,8 +61,8 @@ export class InfluxTestComponent implements OnInit {
     q = 'SELECT LAST(gamma_cps),* FROM "radiation" GROUP BY *';
     q = 'SELECT * FROM "temperature" WHERE time > now() - 1m GROUP BY *';
     q = 'SELECT * FROM "temperature" LIMIT 3';
-    q = 'SELECT * FROM temperature WHERE time > now() - 10s GROUP BY *;';
     q = 'SELECT LAST(*) FROM "temperature" GROUP BY *';
+    q = 'SELECT * FROM temperature WHERE time > now() - 4s GROUP BY *;';
 
     let server = this.globalSettings.server.baseurl;
     server = server.replace(/:80$/, '');
@@ -68,6 +70,7 @@ export class InfluxTestComponent implements OnInit {
 
     let call = server + '/influxdb/query?db=telegraf&epoch=ms&q=' + q;
     console.log('calling', call);
+    this.influxquery = call;
 
     this.utHTTP
       .getHTTPData(call)
@@ -81,6 +84,47 @@ export class InfluxTestComponent implements OnInit {
   printResult(data: Object) {
     console.log(data);
     const dataarray = this.h.getDeep(data, ['results', 0, 'series']);
+
+    this.dygData;
+    this.dygLabels;
+
+    const labels = [];
+    if (dataarray) {
+      for (let i = 0; i < dataarray.length; i++) {
+        const series = dataarray[i];
+
+        let tags = {};
+        for (const tkey in series['tags']) {
+          if (series['tags'].hasOwnProperty(tkey)) {
+            const tval = series['tags'][tkey];
+            if (tval) {
+              tags[tkey] = tval;
+            }
+          }
+        }
+        // tags['__metric__'] = series['name']
+        let serieslabel = series['name'] + ' ';
+        for (const tkey in tags) {
+          if (tags.hasOwnProperty(tkey) && tkey != 'topic') {
+            const tval = tags[tkey];
+            serieslabel += tkey + ':' + tval + ',';
+          }
+        }
+
+        for (
+          let colindex = 1;
+          colindex < series['columns'].length;
+          colindex++
+        ) {
+          const colname = series['columns'][colindex];
+
+          const collabel = serieslabel + colname;
+          labels.push(collabel);
+        }
+      }
+    }
+    this.labelstrings = labels;
+
     if (dataarray && dataarray.length == 1) {
       const dataset = dataarray[0];
       const metric = dataset.name;

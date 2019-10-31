@@ -2,7 +2,15 @@
   Influx values:
 </h2>
 
-<pre>{{ influxresponse }}</pre>
+<h4>Query:</h4>
+<pre>{{ influxquery }}</pre>
+<h4>Response:</h4>
+<h5>Columns:</h5>
+<ol>
+  <li *ngFor="let label of labelstrings">{{ label }}</li>
+</ol>
+
+<pre style="max-height: 50vh; overflow:scroll">{{ influxresponse }}</pre>
 
 <div class="testgraph">
   <app-ut-dygraph-in
