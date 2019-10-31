@@ -57,7 +57,10 @@ export class InfluxTestComponent implements OnInit {
     q = 'SELECT * FROM "temperature" LIMIT 3';
     q = 'SELECT LAST(sensor_degC),* FROM "temperature" GROUP BY *';
     q = 'SELECT LAST(gamma_cps),* FROM "radiation" GROUP BY *';
-    q = 'SELECT * FROM "radiation" WHERE time > now() - 1m GROUP BY *';
+    q = 'SELECT * FROM "temperature" WHERE time > now() - 1m GROUP BY *';
+    q = 'SELECT * FROM "temperature" LIMIT 3';
+    q = 'SELECT * FROM temperature WHERE time > now() - 10s GROUP BY *;';
+    q = 'SELECT LAST(*) FROM "temperature" GROUP BY *';
 
     let server = this.globalSettings.server.baseurl;
     server = server.replace(/:80$/, '');
