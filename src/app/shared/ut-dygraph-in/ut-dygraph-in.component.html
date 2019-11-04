@@ -34,7 +34,14 @@ style.padding-bottom="20vh"-->
       <mat-icon>settings</mat-icon>
     </button>
 
-    <div class="series" *ngIf="options == true && optionsOpen == true && dyGraphOptions.legend == 'always'">
+    <div
+      class="series"
+      *ngIf="
+        options == true &&
+        optionsOpen == true &&
+        dyGraphOptions.legend == 'always'
+      "
+    >
       <div *ngFor="let label of dyGraphOptions['labels']; index as i">
         <h4 *ngIf="label === 'Date'">Series visibility</h4>
         <label
@@ -125,15 +132,16 @@ style.padding-bottom="20vh"-->
               ? 0
               : displayedData.length * (displayedData[0].length - 1)
           }}<br />
-          retain &infin;:
+
           <label for="retainDataInfinitely">
-            <input
-              type="checkbox"
-              name="retainDataInfinitely"
-              id="retainDataInfinitely"
-              [(ngModel)]="retainDataInfinitely"
-            />
+            retain &infin;:
           </label>
+          <input
+            type="checkbox"
+            name="retainDataInfinitely"
+            id="retainDataInfinitely"
+            [(ngModel)]="retainDataInfinitely"
+          />
         </small>
         <button (click)="resetData()">
           <mat-icon>delete_forever</mat-icon>

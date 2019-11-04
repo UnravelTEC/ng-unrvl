@@ -1,4 +1,3 @@
-import { formatDate } from '@angular/common';
 import { FormControl } from '@angular/forms';
 import {
   Component,
@@ -216,6 +215,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
         this.dyGraphOptions.visibility.push(true);
       }
+      this.setCurrentXrange();
       this.updateDateWindow();
       this.Dygraph.updateOptions({
         file: this.displayedData,
@@ -226,7 +226,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       if (this.minimal && this.displayedData.length > 10) {
         const dateOfSecondPt = this.displayedData[1][0].valueOf();
         const fromZoom = this.Dygraph.xAxisRange()[0];
-        if(fromZoom > dateOfSecondPt) {
+        if (fromZoom > dateOfSecondPt) {
           console.log('shorten graph');
           this.displayedData.shift();
         }
@@ -442,7 +442,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     this.updateDateWindow();
 
-    console.log(this.dyGraphOptions);
+    this.dyGraphOptions['labels'] = this.columnLabels;
+    console.log(cloneDeep(this.dyGraphOptions));
+    if (this.columnLabels.length != this.displayedData[0].length) {
+      console.error('mismatch columnlabels', this.columnLabels.length,'and datalen', this.displayedData[0].length);
+      return;
+    }
 
     this.waiting = false;
     while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
