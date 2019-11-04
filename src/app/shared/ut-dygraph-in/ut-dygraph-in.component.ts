@@ -445,6 +445,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     console.log(this.dyGraphOptions);
 
     this.waiting = false;
+    while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
+      this.dyGraphOptions.visibility.push(true);
+    }
     this.Dygraph = new Dygraph(
       this.htmlID,
       this.displayedData,

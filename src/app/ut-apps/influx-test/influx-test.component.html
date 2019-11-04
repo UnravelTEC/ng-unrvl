@@ -17,10 +17,14 @@
     [displayedData]="dygData"
     [columnLabels]="dygLabels"
     [changeTrigger]="changeTrigger"
+    [extraDyGraphConfig]="extraDyGraphConfig"
     #graph
   >
   </app-ut-dygraph-in>
 </div>
+
+<pre>{{ dygDataStr }}</pre>
+
 <!-- [style]="graphstyle" -->
 
 <table class="outer">
