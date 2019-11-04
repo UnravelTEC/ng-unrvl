@@ -3,14 +3,26 @@
 </h2>
 
 <h4>Query:</h4>
+<label for="startTime">Query Time Range:</label>
+<input type="text" id="startTime" [(ngModel)]="startTime" name="startTime" />
+<button type="submit" (click)="launchQuery()">Go!</button>
 <pre>{{ influxquery }}</pre>
 <h4>Response:</h4>
 <h5>Columns:</h5>
 <ol>
   <li *ngFor="let label of labelstrings">{{ label }}</li>
 </ol>
-
-<pre style="max-height: 50vh; overflow:scroll">{{ influxresponse }}</pre>
+<hr />
+<label for="showResultText">Show JSON</label>
+<input
+  type="checkbox"
+  name="showResultText"
+  id="showResultText"
+  [(ngModel)]="showResultText"
+/>
+<pre *ngIf="showResultText" style="max-height: 50vh; overflow:scroll">{{
+  influxresponse
+}}</pre>
 
 <div class="testgraph">
   <app-ut-dygraph-in
@@ -23,35 +35,6 @@
   </app-ut-dygraph-in>
 </div>
 
-<pre>{{ dygDataStr }}</pre>
+<!-- <pre>{{ dygDataStr }}</pre> -->
 
 <!-- [style]="graphstyle" -->
-
-<table class="outer">
-  <tr *ngFor="let sensor of sensorData | keyvalue">
-    <th>
-      {{ sensor.key }}
-    </th>
-    <td>
-      <table>
-        <tr *ngFor="let metric of sensor.value | keyvalue">
-          <th>
-            {{ metric.key }}
-          </th>
-          <td>
-            <table>
-              <tr *ngFor="let dataset of metric.value | keyvalue">
-                <th>
-                  {{ dataset.key }}
-                </th>
-                <td>
-                  {{ dataset.value.value | number: '1.0-6' }}
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>

@@ -1,73 +1,79 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { cloneDeep } from 'lodash-es';
 import { log } from 'util';
+import { LocalStorageService } from '../../core/local-storage.service';
 
 @Component({
   selector: 'app-influx-test',
   templateUrl: './influx-test.component.html',
   styleUrls: ['./influx-test.component.scss']
 })
-export class InfluxTestComponent implements OnInit {
+export class InfluxTestComponent implements OnInit, OnDestroy {
+  private appName = 'influx-test';
+
   influxresponse: String;
   influxquery: String;
   labelstrings: String[];
 
+  public startTime = '15m';
   extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 };
-
-  public sensorData = {};
-  public sensorDataExample = {
-    myBME: {
-      temperature: {
-        tags: { id: '0x77' },
-        values: {
-          sensor_degC: 25.5
-        }
-      },
-
-      pressure: {
-        index: {
-          value: 900,
-          tags: { id: '0x77' }
-        }
-      },
-      humidity: {
-        index: {
-          value: 42,
-          tags: { id: '0x77' }
-        }
-      }
-    }
-  };
-  public;
 
   public dygLabels = ['Date', 'sensor1-val1']; // , 'sensor2-val1', 'sensor2-val2'];
   public row1 = [new Date(new Date().valueOf() - 300100), 1]; //, null, null];
   public row2 = [new Date(new Date().valueOf() - 200000), 2]; // null, 1.2, 0.8];
-  public row3 = [new Date(new Date().valueOf() - 100000), 2, null, null];
-  public row4 = [new Date(), null, 2.2, 1.1];
+  // public row3 = [new Date(new Date().valueOf() - 100000), 2, null, null];
+  // public row4 = [new Date(), null, 2.2, 1.1];
 
   public dygData = [this.row1, this.row2]; // , this.row3, this.row4];
-  dygDataStr = '';
+  // dygDataStr = '';
 
   changeTrigger = true;
+  showResultText = false;
+
+  private variablesToSave = [
+    // 'queryString',
+    // 'dataBaseQueryStepMS',
+    'startTime',
+    'showResultText'
+    // 'endTime'
+  ];
+  private server;
 
   constructor(
+    private localStorage: LocalStorageService,
     private globalSettings: GlobalSettingsService,
     private h: HelperFunctionsService,
     private utHTTP: UtFetchdataService
   ) {
-    this.globalSettings.emitChange({ appName: 'influx-test' });
+    this.globalSettings.emitChange({ appName: this.appName });
     // this.row2[2] = 1.2;
     // this.row2[3] = 0.8;
     // this.row4[2] = 2.2;
     // this.row4[3] = 1.1;
-    this.dygDataStr = JSON.stringify(this.dygData);
+    // this.dygDataStr = JSON.stringify(this.dygData);
   }
   ngOnInit() {
+    this.loadSettings();
     //let call = 'http://' + this.globalSettings.getHostName() + '.lan:8086/ping';
+
+    let gsserver = this.globalSettings.server.baseurl;
+    gsserver = gsserver.replace(/:80$/, '');
+    this.server = gsserver.replace(/:443$/, '');
+
+    // console.log('baseurl:', this.globalSettings.server.baseurl);
+
+    // console.log(server);
+    this.launchQuery();
+  }
+  ngOnDestroy () {
+    this.saveSettings()
+  }
+
+
+  buildQuery() {
     let q: String;
     q = 'SELECT * FROM "temperature" LIMIT 3';
     q = 'SELECT LAST(sensor_degC),* FROM "temperature" GROUP BY *';
@@ -75,25 +81,22 @@ export class InfluxTestComponent implements OnInit {
     q = 'SELECT * FROM "temperature" WHERE time > now() - 1m GROUP BY *';
     q = 'SELECT * FROM "temperature" LIMIT 3';
     q = 'SELECT LAST(*) FROM "temperature" GROUP BY *';
-    q = 'SELECT * FROM temperature WHERE time > now() - 400s GROUP BY *;';
+    q =
+      'SELECT * FROM temperature WHERE time > now() - ' +
+      this.startTime +
+      ' GROUP BY *;';
+    return q;
+  }
 
-    let server = this.globalSettings.server.baseurl;
-    server = server.replace(/:80$/, '');
-    server = server.replace(/:443$/, '');
-
-    let call = server + '/influxdb/query?db=telegraf&epoch=ms&q=' + q;
+  launchQuery() {
+    let q = this.buildQuery()
+    let call = this.server + '/influxdb/query?db=telegraf&epoch=ms&q=' + q;
     console.log('calling', call);
     this.influxquery = call;
 
     this.utHTTP
       .getHTTPData(call)
       .subscribe((data: Object) => this.printResult(data));
-
-    console.log('baseurl:', this.globalSettings.server.baseurl);
-
-    console.log(server);
-
-    // this.changeTrigger = !this.changeTrigger;
   }
 
   printResult(data: Object) {
@@ -128,7 +131,7 @@ export class InfluxTestComponent implements OnInit {
       for (const tkey in tags) {
         if (tags.hasOwnProperty(tkey) && tkey != 'topic') {
           const tval = tags[tkey];
-          serieslabel += ' ' + tkey + ':' + tval + ',';
+          serieslabel += ' ' + tkey + ': ' + tval + ',';
         }
       }
 
@@ -192,13 +195,10 @@ export class InfluxTestComponent implements OnInit {
     }
     this.labelstrings = labels;
 
+    // console.log(cloneDeep(this.dygLabels));
+    this.dygLabels = labels;
     console.log(cloneDeep(this.dygLabels));
-    // this.dygLabels = labels;
-    for (let i = 0; i < labels.length; i++) {
-      this.dygLabels[i] = labels[i];
-    }
-    console.log(cloneDeep(this.dygLabels));
-    console.log(cloneDeep(this.dygData));
+    // console.log(cloneDeep(this.dygData));
     this.dygData = newData;
     console.log(cloneDeep(this.dygData));
 
@@ -211,5 +211,20 @@ export class InfluxTestComponent implements OnInit {
       this.influxresponse =
         'metric: ' + metric + '\n' + JSON.stringify(data, undefined, 2);
     }
+  }
+  loadSettings() {
+    let valueInLocalStorage;
+    this.variablesToSave.forEach(elementName => {
+      valueInLocalStorage = this.localStorage.get(this.appName + elementName);
+      if (valueInLocalStorage) {
+        this[elementName] = valueInLocalStorage;
+      }
+    });
+  }
+  saveSettings() {
+    this.variablesToSave.forEach(elementName => {
+      this.localStorage.set(this.appName + elementName, this[elementName]);
+    });
+    // alert('save ok');
   }
 }
