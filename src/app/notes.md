@@ -146,3 +146,9 @@ load indicator
 disk usage indicator ... sollte eher sein, wieviel Laufzeit noch in der DB Platz hat
 ram indicator?
 
+## chart.js
+
+npm install --save --save-exact ng2-charts@2.0.3 # this version works with ng6, the newer one only with ng8
+npm install --save chart.js
+
+

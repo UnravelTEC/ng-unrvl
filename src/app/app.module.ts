@@ -5,10 +5,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule, Routes } from '@angular/router';
 
-
 import { registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
-
 
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
@@ -80,11 +78,16 @@ const appRoutes: Routes = [
   },
   {
     path: 'Apps/PressureGraph',
-    loadChildren: './ut-apps/pressure-graph/pressure-graph.module#PressureGraphModule'
+    loadChildren:
+      './ut-apps/pressure-graph/pressure-graph.module#PressureGraphModule'
   },
   {
     path: 'Apps/PM',
     loadChildren: './ut-apps/pm/pm.module#PmModule'
+  },
+  {
+    path: 'Apps/PM-Analyzer',
+    loadChildren: './ut-apps/pm-analyzer/pm-analyzer.module#PmAnalyzerModule'
   },
   {
     path: 'Apps/voc',
@@ -160,7 +163,8 @@ const appRoutes: Routes = [
   },
   {
     path: 'Apps/Sensors/Alphasense-gas',
-    loadChildren: './ut-apps/sensors/galion-alphasense/galion-alphasense.module#GalionAlphasenseModule'
+    loadChildren:
+      './ut-apps/sensors/galion-alphasense/galion-alphasense.module#GalionAlphasenseModule'
   },
   {
     path: 'Apps/Sensors/TCS34725',
@@ -168,7 +172,8 @@ const appRoutes: Routes = [
   },
   {
     path: 'Apps/Temperatures',
-    loadChildren: './ut-apps/temperatures/temperatures.module#TemperaturesModule'
+    loadChildren:
+      './ut-apps/temperatures/temperatures.module#TemperaturesModule'
   },
   {
     path: 'Apps/Dygraph-Playground',
