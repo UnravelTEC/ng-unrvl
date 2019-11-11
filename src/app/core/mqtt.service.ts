@@ -170,6 +170,11 @@ export class MqttService {
     // );
     const topic = message['topic'];
     const payLoadObj = JSON.parse(message['payloadString']);
+    payLoadObj.topic = topic;
+    const sensor = topic.match(/sensors\/(.*)\//) || [];
+    if (sensor.length > 1 && payLoadObj['tags']) {
+      payLoadObj.tags.sensor = sensor[1];
+    }
 
     const keys = Object.keys(this.emitChangeSources);
     let found = false;
@@ -179,7 +184,6 @@ export class MqttService {
 
       if (this.compareTopics(element, topic)) {
         // TODO implement filters
-        payLoadObj.topic = topic;
         this.emitChangeSources[element].next(payLoadObj);
         found = true;
       }
