@@ -1,0 +1,17 @@
+<div class="sensors">
+  <div class="sensor" *ngFor="let sensor of value_arrays | keyvalue">
+    <h4>{{ sensor.key}}</h4>
+    <table>
+        <tr>
+            <th>Size (&lt;µm)</th>
+            <th *ngFor="let entry of sensor.value">{{ entry.size }}</th>
+          </tr>
+          <tr>
+            <td>Count</td>
+            <td *ngFor="let entry of sensor.value">{{ entry.v }}</td>
+          </tr>
+    </table>
+  </div>
+</div>
+
+<pre>{{ latestmsg }}</pre>
