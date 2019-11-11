@@ -14,16 +14,20 @@
   </div>
 </div>
 
-<pre>{{ latestmsg }}</pre>
-
-<div class="chart">
-  <canvas
-    baseChart
-    [datasets]="barChartData"
-    [labels]="barChartLabels"
-    [options]="barChartOptions"
-    [legend]="barChartLegend"
-    [chartType]="barChartType"
-  >
-  </canvas>
+<div class="chartabs">
+  <div class="chart">
+    <canvas
+      baseChart
+      [datasets]="barChartData"
+      [labels]="barChartLabels"
+      [options]="barChartOptions"
+      [legend]="barChartLegend"
+      [chartType]="barChartType"
+    >
+    </canvas>
+  </div>
 </div>
+<br />
+<br />
+
+<pre style="position: absolute; top:100vh; min-height:10em;">{{ latestmsg }}</pre>
