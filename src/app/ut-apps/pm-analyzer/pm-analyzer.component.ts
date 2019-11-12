@@ -9,6 +9,21 @@ import { HelperFunctionsService } from '../../core/helper-functions.service';
   styleUrls: ['./pm-analyzer.component.scss']
 })
 export class PmAnalyzerComponent implements OnInit, OnDestroy {
+  step = 1000;
+
+  graphstyle = {
+    position: 'absolute',
+    top: '1vh',
+    bottom: '1vh',
+    left: '1vw',
+    right: '1vw'
+  };
+  dataSeriesLabels = ['PM (µg/m³)'];
+  labelBlackList = ['__name__', 'interval'];
+  startTime = '15m';
+  extraDyGraphConfig = { includeZero: true };
+
+
   public particle_values = {
     '10': 0
   };
@@ -17,6 +32,11 @@ export class PmAnalyzerComponent implements OnInit, OnDestroy {
   pm10 = 0;
 
   latestmsg: String;
+
+  barColors = '#00BBF2';
+  borderColor = '#00ff00';
+
+  chartColors = [{ backgroundColor: this.barColors }];
 
   private mqttRequest = {
     topic: '+/sensors/+/particulate_matter',
@@ -114,20 +134,24 @@ export class PmAnalyzerComponent implements OnInit, OnDestroy {
     sortedValues.sort((a, b) => a.size - b.size);
     this.barChartLabels = [];
     this.barChartData = [];
-    let chartSeriesData = { data: [], label: sensor, backgroundColor: '#00aa00', borderColor:'#00ff00' }; // 'rgba(0,0,1,0.5)' };
+    let chartSeriesData = {
+      data: [],
+      label: sensor
+    };
     for (let i = 0; i < sortedValues.length; i++) {
       const v = sortedValues[i];
       this.barChartLabels.push(String(v.size) + ' µm');
       chartSeriesData.data.push(v.v);
     }
     this.barChartData.push(chartSeriesData);
-    // this.latestmsg = JSON.stringify(chartSeriesData, null, 2);
+    this.latestmsg = JSON.stringify(this.barChartData, null, 2);
   }
 
   public barChartOptions = {
     scaleShowVerticalLines: false,
     responsive: true,
     maintainAspectRatio: false,
+
     scales: {
       yAxes: [
         {
@@ -139,6 +163,7 @@ export class PmAnalyzerComponent implements OnInit, OnDestroy {
       ]
     }
   };
+
   public barChartLabels = [
     '2006',
     '2007',
@@ -152,7 +177,7 @@ export class PmAnalyzerComponent implements OnInit, OnDestroy {
   public barChartLegend = true;
   public barChartData = [
     // { data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A' },
-    { data: [28, 48, 40, 19, 86, 27, 90], label: 'Series B'}
+    { data: [28, 48, 40, 19, 86, 27, 90], label: 'Series B' }
   ];
   private testResult = {
     tags: {

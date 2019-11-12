@@ -14,6 +14,25 @@
   </div>
 </div>
 
+<div class="graphapp">
+  <!-- queryString="(sds011_pm25+sds011_pm10)*0.5"
+     [style]="graphstyle"
+    -->
+  <app-ut-dygraph
+    queryString="particulate_matter_ugpm3"
+    [fetchFromServerIntervalMS]="step"
+    [dataBaseQueryStepMS]="step"
+    [dataSeriesLabels]="dataSeriesLabels"
+    [labelBlackList]="labelBlackList"
+    YLabel="Particulate Matter (µg/m³)"
+    [extraDyGraphConfig]="extraDyGraphConfig"
+
+    [startTime]="startTime"
+    #graph
+  ></app-ut-dygraph>
+
+</div>
+
 <div class="chartabs">
   <div class="chart">
     <canvas
@@ -23,6 +42,7 @@
       [options]="barChartOptions"
       [legend]="barChartLegend"
       [chartType]="barChartType"
+      [colors]="chartColors"
     >
     </canvas>
   </div>
@@ -30,4 +50,4 @@
 <br />
 <br />
 
-<pre style="position: absolute; top:100vh; min-height:10em;">{{ latestmsg }}</pre>
+<pre style="position: absolute; top:150vh; min-height:10em;">{{ latestmsg }}</pre>
