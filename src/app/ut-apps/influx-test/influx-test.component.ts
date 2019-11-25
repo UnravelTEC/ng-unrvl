@@ -59,13 +59,9 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
     this.loadSettings();
     //let call = 'http://' + this.globalSettings.getHostName() + '.lan:8086/ping';
 
-    let gsserver = this.globalSettings.server.baseurl;
-    gsserver = gsserver.replace(/:80$/, '');
-    this.server = gsserver.replace(/:443$/, '');
+    this.server = 'http://' + this.globalSettings.server.serverName;
 
-    // console.log('baseurl:', this.globalSettings.server.baseurl);
-
-    // console.log(server);
+    console.log(this.server);
     this.launchQuery();
   }
   ngOnDestroy () {
