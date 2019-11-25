@@ -162,6 +162,11 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/sensors/sgas/sgas.module#SgasModule'
   },
   {
+    path: 'Apps/Sensors/NO2-B43F',
+    loadChildren:
+      './ut-apps/sensors/no2-b43f/no2-b43f.module#No2B43fModule'
+  },
+  {
     path: 'Apps/Sensors/Alphasense-gas',
     loadChildren:
       './ut-apps/sensors/galion-alphasense/galion-alphasense.module#GalionAlphasenseModule'
