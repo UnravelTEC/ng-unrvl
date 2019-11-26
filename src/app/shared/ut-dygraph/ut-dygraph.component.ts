@@ -894,15 +894,20 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       parent.hasOwnProperty('fromZoom') &&
       parent.hasOwnProperty('toZoom')
     ) {
-      const firstDataSet = parent.displayedData[0];
-      // const lastDataSet = parent.displayedData[parent.displayedData.length - 1];
-      const percentXFirst = g.toPercentXCoord(firstDataSet[0]);
-      // const percentXLast = g.toPercentXCoord(lastDataSet[0]);
-
       parent.fromZoom = new Date(from);
       parent.toZoom = new Date(to);
       parent.fromFormDate = new FormControl(parent.fromZoom);
       parent.toFormDate = new FormControl(parent.toZoom);
+
+      if (!parent.displayedData || parent.displayedData.length === 0) {
+        console.log('afterDrawCallback: no data');
+        return;
+      }
+      const firstDataSet = parent.displayedData[0];
+
+      // const lastDataSet = parent.displayedData[parent.displayedData.length - 1];
+      const percentXFirst = g.toPercentXCoord(firstDataSet[0]);
+      // const percentXLast = g.toPercentXCoord(lastDataSet[0]);
 
       parent.updateAverages();
 
@@ -922,7 +927,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     //   return;
     // }
     const from = this.fromZoom.valueOf();
+    if (this.displayedData.length == 0) {
+      this.dataBeginTime = this.toZoom;
+    }
     const missing_ms = this.dataBeginTime.valueOf() - from;
+
     // console.log(
     //   'checkAndFetchOldData diff [ms]:',
     //   missing_ms,
@@ -1367,8 +1376,12 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
     this.dataBeginTime = this.toZoom;
     this.dataEndTime = this.toZoom;
+    this.dyGraphOptions.logscale = false;
 
-    this.Dygraph.updateOptions({ file: this.displayedData });
+    this.Dygraph.updateOptions({
+      file: this.displayedData,
+      logscale: this.dyGraphOptions.logscale
+    });
   }
 
   getQueryStep() {
