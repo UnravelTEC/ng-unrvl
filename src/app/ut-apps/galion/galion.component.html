@@ -18,7 +18,7 @@
     <tr>
       <th>BME280 Environmental</th>
       <th>SCD30 NDIR CO₂</th>
-      <th>SGP30 VOC&#8202;/&#8202;eCO₂</th>
+      <th>SGP30&#8202;/&#8202;iAQ-Core VOC&#8202;/&#8202;eCO₂</th>
     </tr>
     <tr>
       <td>
@@ -67,7 +67,7 @@
       </td>
       <td>
         <app-ut-dygraph
-          queryString="sgp30_raw"
+          queryString='{__name__=~"sgp30_raw|gas_ohm"}'
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
           [dataSeriesLabels]="dataSeriesLabels"
@@ -82,30 +82,30 @@
       </td>
     </tr>
     <tr>
-      <th>DGS-O3968-042 O₃&#8202;/&#8202;NO₂</th>
-      <th>Alphasense NO&#8202;/&#8202;NO₂</th>
-      <th>PT1000</th>
+      <th>MiCS 6814</th>
+      <th>Alphasense</th>
+      <th>Analogue sensors</th>
     </tr>
     <tr>
       <td>
         <app-ut-dygraph
-          queryString='gas_ppm{gas="O3"}'
+          queryString='gas_V{sensor="MiCS6814"}'
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
           [dataSeriesLabels]="dataSeriesLabels"
           [labelBlackList]="labelBlackList"
-          YLabel="O₃ (ppb)"
+          YLabel="Volt"
           [style]="graphstyle_dgs"
           [startTime]="startTime"
           [extraDyGraphConfig]="extraDyGraphConfig"
           [options]="options"
-          [multiplicateFactors]="multiplicateFactorsVOC"
+
           #dgs
         ></app-ut-dygraph>
       </td>
       <td>
         <app-ut-dygraph
-          queryString='voltage_diff_V{model="adc"}'
+          queryString='gas_V{sensor=~"p-type|PID|NO2-A43F|NO-A4"}'
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
           [dataSeriesLabels]="dataSeriesLabels"
@@ -120,7 +120,7 @@
       </td>
       <td>
         <app-ut-dygraph
-          queryString='voltage_V{model="adc",channel="4"}'
+          queryString='gas_V{sensor=~"TGS5141|SGAS"}'
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
           [dataSeriesLabels]="dataSeriesLabels"
