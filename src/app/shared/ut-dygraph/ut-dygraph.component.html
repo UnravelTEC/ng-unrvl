@@ -114,11 +114,19 @@ style.padding-bottom="20vh"-->
           <mat-icon *ngIf="running">pause_circle_outline</mat-icon>
           <mat-icon *ngIf="!running">play_circle_outline</mat-icon>
         </button>
+
+      </form>
+      <form class="subbox">
+        <h5>History fetch</h5>
+        <button (click)="toggleHistoryFetching()" [class]="running">
+          <mat-icon *ngIf="runOldData">pause_circle_outline</mat-icon>
+          <mat-icon *ngIf="!runOldData">play_circle_outline</mat-icon>
+        </button>
       </form>
 
-      <form class="subbox" style="width: 9em">
+      <form class="subbox">
         <h5>Data</h5>
-        <small style="float: left;">
+        <small style="float: left; width:8em">
           #Points:
           {{
             !displayedData.length
@@ -137,6 +145,9 @@ style.padding-bottom="20vh"-->
         </small>
         <button (click)="resetData()">
           <mat-icon>delete_forever</mat-icon>
+        </button>
+        <button (click)="resetAndReload()">
+          <mat-icon>autorenew</mat-icon>
         </button>
       </form>
 

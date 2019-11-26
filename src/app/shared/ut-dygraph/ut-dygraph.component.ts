@@ -170,6 +170,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public error: string = undefined;
 
   public running = false;
+  public runOldData = true;
   public optionsOpen = false;
   public updateOnNewData = true;
 
@@ -746,6 +747,21 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.checkAndFetchOldData();
   }
 
+  handleResettedData(receivedData: Object) {
+    console.log('handleResettedData received', cloneDeep(receivedData));
+
+    this.updateDataSet(receivedData);
+    this.updateAverages();
+    this.updateDateWindow();
+    if (this.runningAvgPoints) {
+      this.Dygraph.adjustRoll(this.runningAvgPoints);
+    }
+    this.yRange = this.Dygraph.yAxisRange();
+    this.checkAndFetchOldData();
+    console.log('handleResettedData: started oldUpdate');
+    this.Dygraph.updateOptions({ file: this.displayedData });
+  }
+
   clickCallback(e, x, points) {
     console.log('clickCallback');
     if (this.hasOwnProperty('parent')) {
@@ -918,7 +934,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
 
   checkAndFetchOldData() {
-    if (!this.running) {
+    if (!this.runOldData) {
       console.log('not running, dont checkAndFetchOldData');
       return;
     }
@@ -1337,18 +1353,33 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       // no data here, maybe has been deleted
 
       console.log('fetchNewData: no previous data found');
+      console.log('------------------------------------');
+
       this.requestsUnderway--;
+
+      const fromNum = this.fromZoom.valueOf();
+      let toNum = this.toZoom.valueOf();
+
+      const rangeS = String((toNum - fromNum) / 1000);
+      console.log('range', rangeS, 's');
+
+      [this.dataBeginTime, this.dataEndTime] = this.calculateTimeRange(
+        rangeS + 's',
+        this.toZoom.toISOString(),
+        true
+      );
+      console.log('refetch from', this.dataBeginTime, 'to', this.dataEndTime);
 
       this.utFetchdataService
         .getRange(
           this.queryString,
-          this.fromZoom,
-          this.toZoom,
-          this.getQueryStep(),
+          this.dataBeginTime,
+          this.dataEndTime,
+          this.dataBaseQueryStepMS,
           this.queryEndPoint
         )
         .subscribe(
-          (displayedData: Object) => this.handleInitialData(displayedData),
+          (displayedData: Object) => this.handleResettedData(displayedData),
           error => this.handlePrometheusErrors(error)
         );
       return;
@@ -1382,6 +1413,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       file: this.displayedData,
       logscale: this.dyGraphOptions.logscale
     });
+    console.log('-----------------------------------');
+    console.log('.       data Discarded');
+    console.log('-----------------------------------');
   }
 
   getQueryStep() {
@@ -1471,6 +1505,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.oldRequestsRunning++;
     this.dataBeginTime = from;
     this.oldFetchRunning = { start: from, end: to };
+    console.log('do fetch old data from', from, 'to', to);
     this.highLightFetchRegion();
     this.utFetchdataService
       .getRange(
@@ -1489,15 +1524,15 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.oldFetchRunning = {};
     this.unHighLightFetchRegion();
     const now = new Date();
-    if (this.lastReset) {
-      // .valueOf() + this.resetTimeout < now.valueOf() ) {
-      console.log(
-        'last reset less than ',
-        this.resetTimeout / 1000,
-        's, discarding data'
-      );
-      return;
-    }
+    // if (this.lastReset) {
+    //   // .valueOf() + this.resetTimeout < now.valueOf() ) {
+    //   console.log(
+    //     'last reset less than ',
+    //     this.resetTimeout / 1000,
+    //     's, discarding data'
+    //   );
+    //   return;
+    // }
 
     if (!this.utFetchdataService.checkPrometheusDataValidity(oldData)) {
       return;
@@ -1744,6 +1779,17 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.checkAndFetchOldData();
     }
   }
+  toggleHistoryFetching() {
+    this.runOldData = !this.runOldData;
+    if(this.runOldData) {
+      this.checkAndFetchOldData();
+    }
+  }
+  resetAndReload() {
+    this.runOldData = true;
+    this.resetData();
+    this.fetchNewData();
+  }
   toggleAutoPan() {
     if (this.updateOnNewData) {
       this.stopUpdateOnNewData();
@@ -1855,7 +1901,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     let startDate: Date;
     let endDate: Date;
 
-    endDate = endTime === 'now' ? new Date() : new Date(endTime);
+    endDate = endTime === 'now' ? new Date() : new Date(Date.parse(endTime));
 
     const seconds = this.h.parseToSeconds(startTime);
 
