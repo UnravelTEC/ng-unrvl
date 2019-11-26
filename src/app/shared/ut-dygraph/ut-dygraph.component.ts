@@ -757,9 +757,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.Dygraph.adjustRoll(this.runningAvgPoints);
     }
     this.yRange = this.Dygraph.yAxisRange();
-    this.checkAndFetchOldData();
     console.log('handleResettedData: started oldUpdate');
     this.Dygraph.updateOptions({ file: this.displayedData });
+    this.checkAndFetchOldData();
   }
 
   clickCallback(e, x, points) {
@@ -938,14 +938,9 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       console.log('not running, dont checkAndFetchOldData');
       return;
     }
-    // if (!this.displayedData.length) {
-    //   this.noData = true;
-    //   return;
-    // }
+
     const from = this.fromZoom.valueOf();
-    if (this.displayedData.length == 0) {
-      this.dataBeginTime = this.toZoom;
-    }
+
     const missing_ms = this.dataBeginTime.valueOf() - from;
 
     // console.log(
@@ -1534,7 +1529,13 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     //   return;
     // }
 
-    if (!this.utFetchdataService.checkPrometheusDataValidity(oldData)) {
+    const checkResult = this.utFetchdataService.checkPrometheusDataValidity(
+      oldData
+    );
+    if (!checkResult) {
+      if (checkResult === null) {
+        this.checkAndFetchOldData();
+      }
       return;
     }
     const result = this.h.getDeep(oldData, ['data', 'result']);
@@ -1545,6 +1546,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     if (!dataSet.length) {
       console.log('no initial dataset');
       this.updateDataSet(oldData);
+      this.Dygraph.updateOptions({ file: this.displayedData });
+      this.checkAndFetchOldData();
       return;
     }
     const oldLabels = this.dyGraphOptions['labels'];
@@ -1781,7 +1784,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   }
   toggleHistoryFetching() {
     this.runOldData = !this.runOldData;
-    if(this.runOldData) {
+    if (this.runOldData) {
       this.checkAndFetchOldData();
     }
   }

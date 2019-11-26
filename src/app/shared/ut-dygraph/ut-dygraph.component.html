@@ -34,7 +34,14 @@ style.padding-bottom="20vh"-->
       <mat-icon>settings</mat-icon>
     </button>
 
-    <div class="series" *ngIf="options == true && optionsOpen == true && dyGraphOptions.legend == 'always'">
+    <div
+      class="series"
+      *ngIf="
+        options == true &&
+        optionsOpen == true &&
+        dyGraphOptions.legend == 'always'
+      "
+    >
       <div *ngFor="let label of dyGraphOptions['labels']; index as i">
         <h4 *ngIf="label === 'Date'">Series visibility</h4>
         <label
@@ -110,17 +117,21 @@ style.padding-bottom="20vh"-->
           style="width:4em"
         />
         <span class="unit">ms</span>
-        <button (click)="toggleFetching()" [class]="running">
-          <mat-icon *ngIf="running">pause_circle_outline</mat-icon>
-          <mat-icon *ngIf="!running">play_circle_outline</mat-icon>
-        </button>
-
       </form>
+
       <form class="subbox">
         <h5>History fetch</h5>
         <button (click)="toggleHistoryFetching()" [class]="running">
           <mat-icon *ngIf="runOldData">pause_circle_outline</mat-icon>
           <mat-icon *ngIf="!runOldData">play_circle_outline</mat-icon>
+        </button>
+      </form>
+
+      <form class="subbox">
+        <h5>Current fetch</h5>
+        <button (click)="toggleFetching()" [class]="running">
+          <mat-icon *ngIf="running">pause_circle_outline</mat-icon>
+          <mat-icon *ngIf="!running">play_circle_outline</mat-icon>
         </button>
       </form>
 
