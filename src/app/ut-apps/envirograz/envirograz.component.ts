@@ -10,15 +10,15 @@ export class EnvirograzComponent implements OnInit {
   graphstyle = {
     position: "absolute",
     top: "0",
-    bottom: "0rem",
-    left: "0",
+    bottom: "0.5rem",
+    left: "0.5rem",
     right: "9rem"
   };
   graphstylePM = {
     position: "absolute",
     top: "0",
-    bottom: "0rem",
-    left: "0",
+    bottom: "0.5rem",
+    left: "0.5rem",
     right: "15rem"
   };
   multiplicateFactors = [1000];
