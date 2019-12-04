@@ -1,17 +1,17 @@
 <div id="dashboard" #dashboard>
-  <div class="tilebox">
+  <!-- <div class="tilebox">
     <div [style.width]="tilewidth_px" [style.height]="tileheight_px">
       <app-tile-co2 [height]="tileheight" [width]="tilewidth"></app-tile-co2>
     </div>
     <div [style.width]="tilewidth_px" [style.height]="tileheight_px">
       <app-tile-brightness [height]="tileheight" [width]="tilewidth"></app-tile-brightness>
-    </div>
+    </div> -->
   <!--
     <div>
       <app-tile-radiation [height]="tileheight" [width]="tilewidth"></app-tile-radiation>
     </div>
   -->
-    <div [style.width]="tilewidth_px" [style.height]="tileheight_px">
+    <!-- <div [style.width]="tilewidth_px" [style.height]="tileheight_px">
       <app-tile-rh [height]="tileheight" [width]="tilewidth"></app-tile-rh>
     </div>
     <div [style.width]="tilewidth_px" [style.height]="tileheight_px" class="empty"><div>&nbsp;</div></div>
@@ -20,13 +20,13 @@
     </div>
     <div [style.width]="tilewidth_px" [style.height]="tileheight_px">
       <app-tile-load [height]="tileheight" [width]="tilewidth"></app-tile-load>
-    </div>
+    </div> -->
     <!-- <div [style.width]="tilewidth_px" [style.height]="tileheight_px">
       <app-tile-uv [height]="tileheight" [width]="tilewidth"></app-tile-uv>
     </div> -->
-  </div>
+  <!-- </div>
 
-  <hr />
+  <hr /> -->
 
   <div class="panel">
     <app-ut-dashboard-tile title="Air Quality" path="/Apps/Airquality"></app-ut-dashboard-tile>
@@ -94,10 +94,10 @@
   <div class="panel">
     <app-ut-dashboard-tile title="ADCs" path="/Apps/ADC"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="ADC Differential" path="/Apps/ADC-Diff"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Galion Single-Sensor" path="/Apps/Galion"></app-ut-dashboard-tile>
+    <!-- <app-ut-dashboard-tile title="Galion Single-Sensor" path="/Apps/Galion"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="Galion ViF" path="/Apps/Galion-Vif"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="Galion IES" path="/Apps/IES"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Capsi ViF" path="/Apps/vif"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="Capsi ViF" path="/Apps/vif"></app-ut-dashboard-tile> -->
     <app-ut-dashboard-tile title="VOC (raw)" path="/Apps/voc-raw"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="Influx Test" path="/Apps/Influx-Test"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="MQTT Test" path="/Apps/MQTT-Test"></app-ut-dashboard-tile>
