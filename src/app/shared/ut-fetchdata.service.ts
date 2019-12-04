@@ -18,7 +18,6 @@ export class UtFetchdataService {
     'http://belinda.cgv.tugraz.at:9090/api/v1/query?query=co2{location="FuzzyLab",sensor="scd30"}';
   Config = {};
 
-  queryEndPoint = 'https://scpunraveltec2.tugraz.at:443/api/v1/';
   queryDefaultStep = 1000; // ms
 
   getHTTPData(url: string) {
@@ -79,7 +78,7 @@ export class UtFetchdataService {
     start: Date,
     end: Date,
     step = this.queryDefaultStep,
-    queryEndPoint = this.queryEndPoint
+    queryEndPoint = this.globalSettingsService.server.prometheus
   ) {
     // console.log(start);
     // console.log(end);
