@@ -205,6 +205,11 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/ies/ies.module#IesModule'
   },
   {
+    path: 'Apps/EnviroGraz0',
+    loadChildren: './ut-apps/envirograz/envirograz.module#EnvirograzModule'
+  },
+
+  {
     path: 'Apps/System',
     loadChildren: './ut-apps/system/system.module#SystemModule'
   },
