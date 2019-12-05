@@ -251,6 +251,7 @@ export class GlobalSettingsService implements OnInit {
       // see if an API i there
       const firstURL = this.h.getBaseURL();
       this.server.serverName = this.stripProtPort(firstURL);
+      this.server.prometheus = firstURL + this.defaultPrometheusPath;
       console.log('No settings in LocalStorage, try our webendpoint', firstURL);
 
       this.http
@@ -310,7 +311,7 @@ export class GlobalSettingsService implements OnInit {
       this.server.databaseStatus = 'up';
       this.emitChange({ Prometheus: this.server.prometheus });
 
-      console.log('SUCCESS: prometheus found on endpoint', endpoint);
+      console.log('SUCCESS: prometheus found on endpoint', endpoint, 'path', endpath);
 
       this.checkIfTricorder();
     } else {

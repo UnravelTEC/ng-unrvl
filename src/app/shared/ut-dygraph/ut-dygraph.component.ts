@@ -282,6 +282,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     );
 
     this.queryEndPoint = this.constructQueryEndpoint();
+    // console.log('endpoint constructed:', this.queryEndPoint);
 
     this.utFetchdataService
       .getRange(
