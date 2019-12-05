@@ -84,6 +84,7 @@
         <app-ut-dygraph
         queryString='pressure_hPa{node="envirograz000"}'
         [labelBlackList]="labelBlackListT"
+        runningAvgPoints="30"
         [style]="graphstyle"
         YLabel="mbar"
         #P
@@ -158,6 +159,7 @@
         [labelBlackList]="labelBlackListT"
         [style]="graphstyle"
         [multiplicateFactors]="multiplicateFactors"
+        runningAvgPoints="30"
         YLabel="ppb"
         #N
       ></app-ut-dygraph>
