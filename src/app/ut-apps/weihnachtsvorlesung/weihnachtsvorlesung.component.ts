@@ -50,7 +50,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
     right: '5vw'
   };
 
-  multiplicateFactors = [100];
+  multiplicateFactors = [10];
 
   currentExperiment: string; // id: shortText
 
@@ -112,11 +112,11 @@ extraDyGraphConfig2 = {
   // for final usage
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2019-01-09 12:30';
+  start2 = '2019-12-05 12:30';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2019-01-09 12:30'), // earliest
-      new Date('2019-01-09 15:00') // latest
+      new Date('2019-12-05 12:30'), // earliest
+      new Date('2019-12-05 15:00') // latest
     ],
     dateWindowEnd: "15m",
     underlayCallback: this.underlayCallback,
