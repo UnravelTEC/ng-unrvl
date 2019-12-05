@@ -668,7 +668,28 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       dataset[dataset.length - 1]
     ) {
       const lastrow = dataset[dataset.length - 1];
-      this.lastValues = lastrow;
+      // if (this.queryString.startsWith("particulate_matter_ugpm3")) {
+      //   console.log("last", lastrow);
+      // }
+
+      for (let i = 0; i < lastrow.length; i++) {
+        const element = lastrow[i];
+        if (element !== undefined && !isNaN(element)) {
+          this.lastValues[i] = element;
+          // if (this.queryString.startsWith("particulate_matter_ugpm3")) {
+          //   console.log(i, lastrow[i]);
+          // }
+        }
+        if (this.lastValues[i] === undefined || isNaN(this.lastValues[i])) {
+          for (let row = dataset.length - 1; row >= 0; row--) {
+            const lastval = dataset[row][i];
+            if (!isNaN(lastval)) {
+              this.lastValues[i] = lastval;
+              break;
+            }
+          }
+        }
+      }
       this.lastValue = NaN;
       let nrValidElements = 0;
       let sum = 0;

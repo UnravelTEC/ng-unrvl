@@ -148,6 +148,7 @@
               <span *ngIf="value < 10000000">{{
                 value | number: "1.0-3"
               }}</span>
+              <span *ngIf="isNaN(value)">-</span>
             </div>
           </td>
         </tr>

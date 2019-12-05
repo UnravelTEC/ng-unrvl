@@ -23,10 +23,21 @@ export class EnvirograzComponent implements OnInit {
   };
   multiplicateFactors = [1000];
 
+  isNaN(a) {
+    return isNaN(a);
+  }
+
   constructor(private globalSettings: GlobalSettingsService) {
     this.globalSettings.emitChange({ appName: "Enviro Graz" });
   }
 
-  labelBlackListT = ["interval", "featureset", "serial", "id", "__name__"];
+  labelBlackListT = [
+    "interval",
+    "featureset",
+    "serial",
+    "id",
+    "__name__",
+    "node"
+  ];
   ngOnInit() {}
 }
