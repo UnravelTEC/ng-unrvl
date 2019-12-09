@@ -6,178 +6,186 @@ export const experimentList = [
   },
   {
     shortText: 0,
-    text: 'Singing Tesla Jingle Bell Plasma Neon Röhre'
+    text: 'Singing Tesla'
   },
   {
-    shortText: 1,
-    text: 'Fest – Flüssig - Gas – Plasma mit Wachs'
+    shortText: 0.1,
+    text: 'Einführung KUGELGERÄTE'
+  },
+  {
+    shortText: 1.1,
+    text: 'Start Foucault Pendel im Museum'
   },
   {
     shortText: 2,
-    text: 'H - Ballon'
+    text: 'Becher schneller als Kugel'
   },
   {
     shortText: 3,
-    text: 'Methan Schaum auf Hand'
+    text: 'Newton Craddle,  100 Billardkugeln'
   },
   {
     shortText: 4,
-    text: 'Mikrowellen Plasma Geschirr mit Goldrand, Gabeln'
-  },
-  {
-    shortText: 4.5,
-    text: 'Pulsheizexperiment Thermophysikgruppe'
+    text: 'Fallschnur'
   },
   {
     shortText: 5,
-    text: 'Kritischer Punkt CO2'
+    text: 'Schnellste Bahn/Roland / Langsamste Kugel Gernot'
   },
   {
     shortText: 6,
-    text: 'Komprimieren Feuerzeuggas'
+    text: 'Hochheben Kugel mit Zentrifugalkraft'
   },
   {
     shortText: 7,
-    text: 'Inneres Gasflasche mit Luftkissenmodell'
+    text: 'Kugellager'
   },
   {
     shortText: 8,
-    text: 'Inneres Flüssig-Gasflasche - Feuerzeug'
+    text: 'Kugel aus Reisbecher Lawinenairbag'
   },
   {
     shortText: 9,
-    text: 'Diverse Gasflaschen + Druckmesser'
+    text: 'Kugel im Trichter'
   },
   {
     shortText: 10,
-    text: 'Adiabatische Kompression'
+    text: 'Bernoulligleichung mit 2 Christbaumkugeln'
   },
   {
     shortText: 11,
-    text: 'Sublimieren  Kohlenbogenlampe,'
+    text: 'Bernoulli-Blaster'
   },
   {
     shortText: 12,
-    text: 'Resublimieren Wasserdampf auf kaltem Dewar'
+    text: 'Magdeburger Halbkugel'
   },
   {
     shortText: 13,
-    text: 'Teekessel mit fl. Stickstoff füllen und auf Eis  – pfeift'
+    text: 'Durchflusszähler Gas mit Kugel'
   },
   {
     shortText: 14,
-    text: 'Kreide in fl Stickstoff geben, gleitet auf Tischfläche'
+    text: 'Zähigkeitsgerät Science Kit'
   },
   {
     shortText: 15,
-    text: 'Heronsmotor'
+    text: 'Allseitigkeit des Drucks'
   },
   {
     shortText: 16,
-    text: 'Taupunkt flüssiger Sauerstoff'
+    text: 'Kugel im Überaschungsei'
   },
   {
     shortText: 17,
-    text: 'H20 durch Filzhut'
+    text: 'Auftrieb im Vakuum Styroporkugel'
   },
   {
     shortText: 18,
-    text: 'Fl. Stickstoff durch Filzhut'
+    text: 'Gradient mit Kugel in Schüssel'
   },
   {
     shortText: 19,
-    text: 'Stickstoff Springbrunnen'
+    text: 'Gekoppelte Kugeln in Schüssel'
   },
   {
     shortText: 20,
-    text: 'Fl. Stickstoff in Riesenballon einfüllen.'
+    text: 'Chladnische Klangfiguren'
   },
   {
     shortText: 21,
-    text: 'O2 destillieren'
+    text: 'Pickende Hühner'
   },
   {
     shortText: 22,
-    text: 'Fl. O2 blau, paramagnetisch'
+    text: 'Großes Pendel'
   },
   {
     shortText: 23,
-    text: 'Video suprafluides Helium'
+    text: 'Pendel in Fernseher'
   },
   {
     shortText: 24,
-    text: 'Tripelpunktszelle Wasser'
+    text: 'Transversale Welle Longitudinal  Kugelmodell'
   },
   {
     shortText: 25,
-    text: 'Kryophor'
+    text: 'Ball auf Sattelfläche rotieren'
   },
   {
     shortText: 26,
-    text: 'Latente Wärme'
+    text: '4 Christbaumkugeln - Helmholtzresonator'
   },
   {
     shortText: 27,
-    text: 'Wachsgiessen'
+    text: 'Pendulum wave toy'
   },
   {
     shortText: 28,
-    text: 'Eisblock schneiden mit Draht dick, dünn'
+    text: 'RGB-Kugel mit TTball'
   },
   {
     shortText: 29,
-    text: 'Eis schwimmt in Wasser, Wachs in flüssigem Wachs nicht!'
-  },
-  {
-    shortText: 30,
-    text: 'Trockeneis'
+    text: 'Farbe 3 Christbaumkugeln / rot, grün, blau / mit Neureiter LED-Generator'
   },
   {
     shortText: 31,
-    text: 'Gas-Feuerzeug in flüssigem Stickstoff einfrieren'
+    text: 'Ist die Erde eine Kugel?'
   },
   {
     shortText: 32,
-    text: 'Feste Phase Stickstoff'
+    text: 'Christbaumkugeln in Mikrowelle'
   },
   {
     shortText: 33,
-    text: 'Flüssiges Argon machen'
+    text: 'Wiener Schneekugel'
   },
   {
     shortText: 34,
-    text: 'Fester Argon  Schnee mit Membranpumpe'
+    text: 'Erwärmung Eisenkugel mit Infrarotkamera'
   },
   {
     shortText: 35,
-    text: 'Video flüssiges Helium KFU'
+    text: 'Eissprengkugel'
   },
   {
     shortText: 36,
-    text: 'Video fester Sauerstoff mit Helium KFU'
+    text: 'Maxwellverteilung'
   },
   {
     shortText: 37,
-    text: 'Video fester Sauerstoff Magnet KFU'
+    text: 'Boyle Marriot Gesetz nach Kröncke'
   },
   {
     shortText: 38,
-    text: 'Video Japaner'
+    text: 'Inneres eines Leiters ist feldfrei'
   },
   {
     shortText: 39,
-    text: 'Video Argon Gruppe Thermophysik TUG'
+    text: 'Van der Graaf Generator'
   },
   {
     shortText: 40,
-    text: 'Warmes Wasser in Stickstoffbehälter'
+    text: 'Tesla Transformator/ Elektrodenloser Ringstrom'
   },
   {
     shortText: 41,
-    text: 'Windholz – Weihnachtsmann + Singing Tesla'
+    text: 'Wasserbrücke'
+  },
+  {
+    shortText: 1.2,
+    text: 'Foucault-Pendel'
   },
   {
     shortText: 42,
+    text: 'Mit Cola-Mentos, Kugel an Hörsaaldecke treffen'
+  },
+  {
+    shortText: 43,
+    text: 'Petflasche Plastikball'
+  },
+  {
+    shortText: 44,
     text: 'UnravelTEC Lautstärkemessung'
   }
 ];
