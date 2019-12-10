@@ -8,11 +8,12 @@
     <h1>Weihnachtsvorlesung Lautstärkemessung</h1>
   </div>
 
+  <!-- server="https://newton.unraveltec.com" -->
   <div class="mydygraph upperdygraph">
     <app-ut-dygraph
-      queryString="voltage_V"
-      server="https://newton.unraveltec.com"
-      serverPort="443"
+      queryString="loudness_dB"
+      [serverHostName]="serverHostName"
+      [serverPort]="serverPort"
       dataBaseQueryStepMS="1000"
       [dataSeriesLabels]="dataSeriesNames"
       [style]="style1"
@@ -40,11 +41,11 @@
       [serverPort]="serverPort"
      -->
     <app-ut-dygraph
-      [queryString]="'max_over_time(' + 'voltage_V' + '[20s])'"
-      server="https://newton.unraveltec.com"
-      serverPort="443"
+      [queryString]="'max_over_time(' + 'loudness_dB' + '[20s])'"
       dataBaseQueryStepMS="1000"
       [dataSeriesLabels]="dataSeriesNames"
+      [serverHostName]="serverHostName"
+      [serverPort]="serverPort"
       [style]="style2"
       [endTime]="end2"
       [startTime]="start2"

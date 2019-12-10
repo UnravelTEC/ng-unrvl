@@ -19,8 +19,8 @@ import { experimentList } from './experiment-list';
 export class WeihnachtsvorlesungComponent implements OnInit {
   // serverHostName: string = 'http://koffer.lan';
   // serverHostName: string = 'http://belinda.cgv.tugraz.at'
-  // serverHostName = 'scpexploratory02.tugraz.at'; // 'raspigas.lan'; '192.168.11.171'
-  serverPort = '9090'; //443
+  serverHostName = '192.168.11.171';
+  serverPort = '80'; //443
   serverPath = 'api/v1/'; //prometheus/api/v1/
   // queryString: string = 'mic_audiolevel';
   // queryString: string = 'co2{location="FuzzyLab",sensor="scd30"}'
@@ -50,14 +50,14 @@ export class WeihnachtsvorlesungComponent implements OnInit {
     right: '5vw'
   };
 
-  multiplicateFactors = [10];
+  multiplicateFactors = [1];
 
   currentExperiment: string; // id: shortText
 
   extraDyGraphConfig1 = {
     underlayCallback: this.underlayCallback,
     // valueRange: [ 30, 120 ],
-    legend: <any>'never'  // options: follow, always, never, onlouseover (default)
+    legend: <any>'never' // options: follow, always, never, onlouseover (default)
   };
 
   underlayCallback(canvas, area, g) {
@@ -84,7 +84,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
         const end = annotation.clapStop;
         highlight_period(begin, end);
       }
-      if(annotation.clapStart && !annotation.clapStop) {
+      if (annotation.clapStart && !annotation.clapStop) {
         const begin = annotation.clapStart;
         const end = new Date();
         highlight_period(begin, end);
@@ -112,15 +112,15 @@ extraDyGraphConfig2 = {
   // for final usage
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2019-12-05 12:30';
+  start2 = '2019-12-09 14:30';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2019-12-05 12:30'), // earliest
-      new Date('2019-12-05 15:00') // latest
+      new Date('2019-12-09 14:30'), // earliest
+      new Date('2019-12-09 16:00') // latest
     ],
-    dateWindowEnd: "15m",
+    dateWindowEnd: '15m',
     underlayCallback: this.underlayCallback,
-    legend: <any>'never'  // options: follow, always, never, onlouseover (default)
+    legend: <any>'never' // options: follow, always, never, onlouseover (default)
     // dyShading (from = Date().getTime()- (.2*60*60*1000), to = Date().getTime()- (1.4*60*60*1000))
   };
 

@@ -225,7 +225,7 @@ export class AnnotationsEditorComponent implements OnInit {
       );
       const url =
         this.utHTTP.constructPrometheusEndPoint() +
-        'query?query=avg_over_time(adc1_c1:avg_1s_b10[' +
+        'query?query=avg_over_time(loudness_dB:avg_1s_b10[' +
         String(this.currentAnnotation['ceilClapLength']) +
         's])&time=' +
         now.toISOString();
@@ -333,12 +333,12 @@ export class AnnotationsEditorComponent implements OnInit {
 
   save() {
     this.saveToLocalStorage();
-    const url = 'https://scpexploratory02.tugraz.at/test/collector.php';
+    const url = 'https://newton.unraveltec.com/test/collector.php';
     this.utHTTP.postData(url, JSON.stringify(this.annotationList));
   }
 
   loadFromExt() {
-    const url = 'https://scpexploratory02.tugraz.at/test/tmp/test.txt';
+    const url = 'https://newton.unraveltec.com/test/tmp/test.txt';
     this.utHTTP
       .getHTTPData(url)
       .subscribe((data: Object) => this.loadData(data));
