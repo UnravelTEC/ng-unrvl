@@ -14,9 +14,13 @@
   float: left;
   display: inline-block;
   width: 30em;
+  background: rgb(226, 245, 208);
 }
 #annolist label {
   vertical-align: top;
+}
+#annolist select {
+  width: 30em;
 }
 
 .toggle {
