@@ -302,6 +302,8 @@ export class UtDygraphComponent implements OnInit {
     let usedAnnotations = [];
     if (this.annotations) {
       usedAnnotations = this.annotations;
+      console.log('using annotations', usedAnnotations);
+
     } else {
       usedAnnotations = this.localStorage.get(
         'annotations.' + this.dyGraphOptions['labels'][1]
@@ -447,7 +449,7 @@ export class UtDygraphComponent implements OnInit {
       let dataBeginTime;
       if (seconds) {
         dataBeginTime = new Date(dataEndTime.valueOf() - seconds * 1000);
-        console.log('length of interval displayed (s): ' + seconds.toString());
+        // console.log('length of interval displayed (s): ' + seconds.toString());
       } else {
         dataBeginTime = new Date(this.startTime);
       }
