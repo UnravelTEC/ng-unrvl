@@ -56,7 +56,7 @@ export class WeihnachtsvorlesungComponent implements OnInit {
 
   extraDyGraphConfig1 = {
     underlayCallback: this.underlayCallback,
-    // valueRange: [ 30, 120 ],
+    valueRange: [ 30, 120 ],
     legend: <any>'never' // options: follow, always, never, onlouseover (default)
   };
 
@@ -112,11 +112,11 @@ extraDyGraphConfig2 = {
   // for final usage
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2019-12-09 14:30';
+  start2 = '2019-12-10 12:00';
   extraDyGraphConfig2 = {
     dateWindow: [
-      new Date('2019-12-09 14:30'), // earliest
-      new Date('2019-12-09 16:00') // latest
+      new Date(this.start2), // earliest
+      new Date('2019-12-10 15:00') // latest
     ],
     dateWindowEnd: '15m',
     underlayCallback: this.underlayCallback,
@@ -166,7 +166,7 @@ extraDyGraphConfig2 = {
       let newitem = {
         shortText: item.shortText,
         text: item.text,
-        series: 'miclvl',
+        series: 'miclvl C.A832',
         cssClass: 'utAnnotation',
         tickColor: 'black', // 'rgb(148, 231, 255)
         tickWidth: '2',

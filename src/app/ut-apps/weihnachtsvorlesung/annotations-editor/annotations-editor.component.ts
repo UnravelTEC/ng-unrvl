@@ -165,6 +165,8 @@ export class AnnotationsEditorComponent implements OnInit {
     }
   }
   set() {
+    console.log('set triggered for', this.currentlyDisplayedExperiment.shortText);
+
     // if something running, stop
     if (
       this.currentlyDisplayedExperiment['clapStart'] &&
