@@ -112,11 +112,11 @@ extraDyGraphConfig2 = {
   // for final usage
   // end2 = '2018-12-03 15:00';
   end2 = 'now';
-  start2 = '2019-12-10 12:00';
+  start2 = '2019-12-11 16:00';
   extraDyGraphConfig2 = {
     dateWindow: [
       new Date(this.start2), // earliest
-      new Date('2019-12-10 15:00') // latest
+      new Date('2019-12-11 19:00') // latest
     ],
     dateWindowEnd: '15m',
     underlayCallback: this.underlayCallback,
@@ -186,7 +186,7 @@ extraDyGraphConfig2 = {
       this.annotations1.push(newitem);
       let newAnno = JSON.parse(JSON.stringify(newitem));
       newAnno.attachAtBottom = false;
-      newAnno.tickColor = 'rgb(255, 0, 0)';
+      // newAnno.tickColor = 'rgb(255, 0, 0)';
       this.annotations2.push(newAnno);
     });
 
