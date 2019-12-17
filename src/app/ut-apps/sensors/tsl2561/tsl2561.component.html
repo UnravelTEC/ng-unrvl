@@ -1,0 +1,11 @@
+<app-ut-dygraph
+  queryString='radiation_lux{sensor="TSL2561"}'
+  [fetchFromServerIntervalMS]="step"
+  [dataBaseQueryStepMS]="step"
+  [labelBlackList]="labelBlackList"
+  YLabel="Brightness (lux)"
+  [style]="graphstyle"
+  [startTime]="startTime"
+  [extraDyGraphConfig]="extraDyGraphConfig"
+  #bright
+></app-ut-dygraph>
