@@ -1,0 +1,103 @@
+<a
+  class="relcontainer {{
+    !pm10
+      ? 'gray'
+      : pm10 < 50
+      ? 'green'
+      : pm10 < 100
+      ? 'yellow'
+      : pm10 < 200
+      ? 'orange'
+      : 'red'
+  }}"
+  routerLink="/Apps/PM-Analyzer"
+  routerLinkActive="active"
+>
+  <div class="tilebox" [style.font-size]="fontsize_px">
+    <h2 class="1">
+      <span style="font-size: 0.7em;">Particulate Matter:</span>
+    </h2>
+    <h2 class="2">
+      <em><small>pm10</small></em>&nbsp;<span *ngIf="pm10 === undefined">?</span
+      >{{ pm10 | number: '1.1-1' }}&#8239;<em class="unit"
+        >µg&#8202;/&#8202;m³</em
+      >
+    </h2>
+
+    <div class="bar" *ngIf="pm10 !== undefined">
+      <app-ut-bargauge-min
+        [width]="width / 3.1"
+        [height]="height * 0.96"
+        max="200"
+        [value]="pm10"
+        [highlights]="highlights"
+      ></app-ut-bargauge-min>
+    </div>
+    <div class="graphabs">
+      <div class="graphrel" *ngIf="pm10 !== undefined">
+        <app-ut-dygraph-in
+          [displayedData]="dygData"
+          [columnLabels]="dygLabels"
+          [changeTrigger]="changeTrigger"
+          minimal="true"
+          startTime="3m"
+          [backGroundLevels]="backGroundLevels"
+          #graph
+        >
+        </app-ut-dygraph-in>
+      </div>
+      <div class="notactive" *ngIf="pm10 === undefined">
+        Waiting for data...
+      </div>
+    </div>
+    <table class="text">
+      <tr>
+        <th colspan="6">Particle size distribution</th>
+      </tr>
+      <tr>
+        <!-- <td *ngFor="let pn of particle_values | keyvalue">
+          {{ pn.key }}µm: <br />
+          {{ pn.value | number: '1.1-1' }}
+        </td> not sorted-->
+        <td>
+          0.5:
+          <!-- &#8202;µm: -->
+        </td>
+        <td>
+          1:
+        </td>
+        <td>
+          2.5:
+        </td>
+        <td>
+          4:
+        </td>
+        <td>
+          10:
+        </td>
+        <td style="font-size: 80%">µm</td>
+      </tr>
+
+      <tr>
+        <td>
+          {{ particle_values['0.5'] | number: '1.0-1' }}
+        </td>
+        <td>
+          {{ particle_values['1'] - particle_values['0.5'] | number: '1.0-1' }}
+        </td>
+        <td>
+          {{ particle_values['2.5'] - particle_values['1'] | number: '1.0-1' }}
+        </td>
+        <td>
+          {{ particle_values['4'] - particle_values['2.5'] | number: '1.0-1' }}
+        </td>
+        <td>
+          {{ particle_values['10'] - particle_values['4'] | number: '1.0-1' }}
+        </td>
+        <td style="font-size: 80%">
+          #&#8202;/&#8202;cm³
+        </td>
+      </tr>
+    </table>
+  </div>
+</a>

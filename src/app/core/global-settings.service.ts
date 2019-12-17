@@ -5,7 +5,6 @@ import { Subject } from 'rxjs';
 import { HelperFunctionsService } from './helper-functions.service';
 import { LocalStorageService } from './local-storage.service';
 import { HttpClient } from '@angular/common/http';
-import { e } from '@angular/core/src/render3';
 
 @Injectable({
   providedIn: 'root'
@@ -14,15 +13,16 @@ export class GlobalSettingsService implements OnInit {
   private hostName = 'uninitialized';
 
   public defaultPrometheusPath = '/prometheus/api/v1/';
-  public defaultPrometheusPort = undefined; // '9090'; // later switch to default port
+  public defaultPrometheusPort = undefined; // '80'; // later switch to default port
   private defaultAPIPath = '/api/';
-  private fallbackEndpoint = 'https://scpunraveltec2.tugraz.at';
+  private fallbackEndpoint = 'https://newton.unraveltec.com';
   private fallbackPrometheusEndpoint =
     this.fallbackEndpoint + this.defaultPrometheusPath;
-  private fallbackAPI = this.fallbackEndpoint + 'api/';
+  private fallbackAPI = this.fallbackEndpoint + '/api/';
 
   public server = {
     baseurl: '',
+    serverName: '', // pure IP or hostname w/o protocol/port
     architecture: undefined,
     type: 'unknown', // Tricorder || PublicServer
     hostname: 'uninitialized',
@@ -39,6 +39,13 @@ export class GlobalSettingsService implements OnInit {
     protocol: 'unknown', // http || https
     mobile: false
   };
+
+  public networkStatus: Object;
+
+  // for local javascript client IPs:
+  private RTCPeerConnection =
+    /*window.RTCPeerConnection ||*/ window['webkitRTCPeerConnection'] ||
+    window['mozRTCPeerConnection'];
 
   // Observable string sources
   private emitChangeSource = new Subject<any>();
@@ -77,7 +84,62 @@ export class GlobalSettingsService implements OnInit {
 
   ngOnInit() {
     this.reloadSettings();
+
+    // if (this.RTCPeerConnection) {
+    //   var rtc = new RTCPeerConnection({ iceServers: [] });
+    //   if (1 || window['mozRTCPeerConnection']) {
+    //     // FF [and now Chrome!] needs a channel/stream to proceed
+    //     rtc.createDataChannel('', { reliable: false });
+    //   }
+
+    //   rtc.onicecandidate = function(evt) {
+    //     // convert the candidate to SDP so we can run it through our general parser
+    //     // see https://twitter.com/lancestout/status/525796175425720320 for details
+    //     if (evt.candidate) {this.grepSDP('a=' + evt.candidate.candidate)};
+    //   };
+    //   rtc.createOffer(
+    //     function(offerDesc) {
+    //       this.grepSDP(offerDesc.sdp);
+    //       rtc.setLocalDescription(offerDesc);
+    //     },
+    //     function(e) {
+    //       console.warn('offer failed', e);
+    //     }
+    //   );
+    // } else {
+    //   console.error(
+    //     'error in getLocalIPs: RTCPeerConnection could not be created'
+    //   );
+    // }
   }
+
+  grepSDP(sdp) {
+    sdp.split('\r\n').forEach(function(line) {
+      // c.f. http://tools.ietf.org/html/rfc4566#page-39
+      if (~line.indexOf('a=candidate')) {
+        // http://tools.ietf.org/html/rfc4566#section-5.13
+        var parts = line.split(' '), // http://tools.ietf.org/html/rfc5245#section-15.1
+          addr = parts[4],
+          type = parts[7];
+        if (type === 'host') this.updateLocalAddresses(addr);
+      } else if (~line.indexOf('c=')) {
+        // http://tools.ietf.org/html/rfc4566#section-5.7
+        var parts = line.split(' '),
+          addr = parts[2];
+        this.updateLocalAddresses(addr);
+      }
+    });
+  }
+  updateLocalAddresses(addr) {}
+
+  stripProtPort(input: string) {
+    input = input.replace(/^http[s]*:\/\//, '');
+    input = input.replace(/:\d+$/, '');
+    input = input.replace(/\/$/, '');
+    return input;
+  }
+
+  // we do not need to handle localhost in a special case - covered by $baseurl
 
   // order - what is the criteria a server must met?
   // prometheus running? - yes
@@ -87,11 +149,13 @@ export class GlobalSettingsService implements OnInit {
   // 3. fallback to Newton
 
   // following use cases:
-  // developing on localhost:4200 with ng
-  // - default: connect to Newton
-  // - connect to other tricorders on demand
-  // connected to a Tricorder
-  // using public Webif on Newton:
+  // • developing on localhost:4200 with ng
+  //   - default: connect to Newton
+  //   - connect to other tricorders on demand
+  // • connected to a Tricorder
+  //   - via webif
+  //   - on local screen (localhost)
+  // • using public Webif on Newton:
   // - default: stay on newton
   // - try out switching to another server
   reloadSettings() {
@@ -110,6 +174,7 @@ export class GlobalSettingsService implements OnInit {
         servername = servername.substr(0, -1);
       }
       this.server.baseurl = servername;
+      this.server.serverName = this.stripProtPort(servername);
 
       let prometheusPath = this.h.getDeep(localStoredServer, [
         'prometheusPath',
@@ -138,9 +203,7 @@ export class GlobalSettingsService implements OnInit {
           prometheusProtocol = prometheusProtocol + '://';
         }
       }
-      let protAndHost = servername.startsWith('http')
-        ? servername
-        : prometheusProtocol + servername;
+      let protAndHost = prometheusProtocol + this.server.serverName;
 
       this.server.prometheus = protAndHost + prometheusPort + prometheusPath;
 
@@ -172,9 +235,7 @@ export class GlobalSettingsService implements OnInit {
           apiProtocol = apiProtocol + '://';
         }
       }
-      protAndHost = servername.startsWith('http')
-        ? servername
-        : apiProtocol + servername;
+      protAndHost = apiProtocol + this.server.serverName;
 
       this.server.api = protAndHost + apiPort + apiPath;
 
@@ -189,6 +250,8 @@ export class GlobalSettingsService implements OnInit {
     } else {
       // see if an API i there
       const firstURL = this.h.getBaseURL();
+      this.server.serverName = this.stripProtPort(firstURL);
+      this.server.prometheus = firstURL + this.defaultPrometheusPath;
       console.log('No settings in LocalStorage, try our webendpoint', firstURL);
 
       this.http
@@ -223,24 +286,22 @@ export class GlobalSettingsService implements OnInit {
 
   checkForPrometheus(baseurl, path) {
     const prometheusTestQuery = 'query?query=scrape_samples_scraped';
-    this.http
-      .get(baseurl + path + prometheusTestQuery)
-      .subscribe(
-        (data: Object) => {
-          this.checkPrometheusTestResponse(
-            data,
-            baseurl,
-            path
-          );
-        },
-        error => {
-          console.log('no prometheus yet there', baseurl + path + prometheusTestQuery, ', 5s to next try.');
-          this.server.databaseStatus = 'down';
-          setTimeout(() => {
-            this.checkForPrometheus(baseurl, path);
-          }, 5 * 1000);
-        }
-      );
+    this.http.get(baseurl + path + prometheusTestQuery).subscribe(
+      (data: Object) => {
+        this.checkPrometheusTestResponse(data, baseurl, path);
+      },
+      error => {
+        console.log(
+          'no prometheus yet there',
+          baseurl + path + prometheusTestQuery,
+          ', 5s to next try.'
+        );
+        this.server.databaseStatus = 'down';
+        setTimeout(() => {
+          this.checkForPrometheus(baseurl, path);
+        }, 5 * 1000);
+      }
+    );
   }
 
   checkPrometheusTestResponse(data: Object, endpoint: string, endpath: string) {
@@ -250,7 +311,9 @@ export class GlobalSettingsService implements OnInit {
       this.server.databaseStatus = 'up';
       this.emitChange({ Prometheus: this.server.prometheus });
 
-      console.log('SUCCESS: prometheus found on endpoint', endpoint);
+      console.log('SUCCESS: prometheus found on endpoint', endpoint, 'path', endpath);
+
+      this.checkIfTricorder();
     } else {
       console.error('FAILURE: prometheus on endpoint not ready', endpoint);
     }
@@ -330,13 +393,14 @@ export class GlobalSettingsService implements OnInit {
 
   checkIfTricorder() {
     if (
-      this.server.architecture === undefined ||
-      this.server.prometheus === undefined
+      this.server.architecture === undefined // ||
+      // this.server.prometheus === undefined
     ) {
       console.log('not enough information to check if I am on a Tricorder');
       return;
     }
-    if (this.server.architecture.startsWith('arm') && this.server.prometheus) {
+    if (this.server.architecture.startsWith('arm')) {
+      // && this.server.prometheus) {
       this.server.type = 'Tricorder';
     } else {
       this.server.type = 'PublicServer';

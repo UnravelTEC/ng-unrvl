@@ -1,0 +1,47 @@
+<a
+  class="relcontainer {{
+    graph.getAverage('30s') < 100
+      ? 'green'
+      : graph.getAverage('30s') < 150
+      ? 'yellow'
+      : graph.getAverage('30s') < 300
+      ? 'orange'
+      : 'red'
+  }}"
+  routerLink="/Apps/gamma"
+  routerLinkActive="active"
+>
+  <div class="tilebox">
+    <h2>Radiation</h2>
+    <data>
+      {{ graph.getAverage('30s') | number: '1.0-0' }}&nbsp;<em class="unit"
+        >µSv/h</em
+      ></data
+    >
+    <div class="bar">
+      <app-ut-bargauge-min
+        [width]="width / 3.3"
+        [height]="height"
+        max="350"
+        [value]="graph.getAverage('30s')"
+        [highlights]="highlights"
+      ></app-ut-bargauge-min>
+    </div>
+    <div class="graphabs">
+      <div class="graphrel">
+        <app-ut-dygraph
+          serverHostName="newton.unraveltec.com"
+          serverPort="443"
+          serverPath="prometheus/api/v1/"
+          queryString='radiation_Svph'
+          [multiplicateFactors]="[1000000000]"
+          dataBaseQueryStepMS="10000"
+          startTime="30m"
+          minimal="true"
+          [backGroundLevels]="backGroundLevels"
+          #graph
+        ></app-ut-dygraph>
+      </div>
+    </div>
+  </div>
+</a>

@@ -64,7 +64,7 @@ export class SettingsPanelComponent implements OnInit {
           },
           serverHostName: {
             fieldName: 'Server hostname/ip',
-            fieldValue: 'scpunraveltec2.tugraz.at'
+            fieldValue: 'newton.unraveltec.com'
           },
           prometheusPort: { fieldName: 'Prometheus port', fieldValue: '443' }, // 9090
           prometheusPath: {
@@ -90,46 +90,8 @@ export class SettingsPanelComponent implements OnInit {
         }
       }
     },
-    localhost: {
-      server: {
-        // settingsSection
-        settingAttributes: {
-          title: 'Backend Settings'
-        },
-        settings: {
-          serverName: {
-            fieldName: 'Endpoint Name',
-            fieldValue: 'LocalHost'
-          },
-          serverHostName: {
-            fieldName: 'Server hostname/ip',
-            fieldValue: 'localhost'
-          },
-          prometheusPort: { fieldName: 'Prometheus port', fieldValue: '8ß' }, // 9090
-          prometheusPath: {
-            fieldName: 'Prometheus database API path',
-            fieldValue: 'prometheus/api/v1/'
-          },
-          prometheusProtocol: {
-            fieldName: 'Prometheus Protocol',
-            fieldValue: 'http'
-          },
-          apiPort: {
-            fieldName: 'API port',
-            fieldValue: '80'
-          },
-          apiPath: {
-            fieldName: 'API path',
-            fieldValue: 'api/'
-          },
-          apiProtocol: {
-            fieldName: 'API protocol',
-            fieldValue: 'http'
-          }
-        }
-      }
-    },
     default: {
+      // includes localhost
       server: {
         // settingsSection
         settingAttributes: {

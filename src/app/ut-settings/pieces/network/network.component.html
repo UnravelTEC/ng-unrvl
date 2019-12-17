@@ -1,0 +1,28 @@
+<h2>
+  Network Status
+</h2>
+
+<div *ngFor="let interface of gss['networkStatus'] | keyvalue">
+  <div *ngIf="interface.key !== 'lo'" class="block">
+    <h4>{{ interface.key }}: {{ interface.value['status'] }}</h4>
+    <table>
+      <tr *ngFor="let line of interface.value | keyvalue">
+
+        <th *ngIf="line.key !== 'status'">
+          {{ line.key }}
+        </th>
+        <td *ngIf="line.key !== 'IPv4' && line.key !== 'IPv6' && line.key !== 'status'">
+          {{ line.value }}
+        </td>
+        <td *ngIf="line.key === 'IPv4' || line.key === 'IPv6'">
+          <div *ngFor="let address of line.value">
+            {{ address }}
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+<div *ngIf="gss['networkStatus'] == undefined">
+  Waiting for network status...
+</div>

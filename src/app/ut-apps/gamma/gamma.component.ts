@@ -12,8 +12,8 @@ export class GammaComponent implements OnInit {
   startTime = '24h';
   step = 10000;
   dataSeriesLabels = ['RS 04'];
-  multiplicateFactors = [1000000000];
-  runningAvgSeconds = 0;
+  multiplicateFactors = [1000000000, 1000000000, 1000000000];
+  runningAvgPoints = 0;
 
   graphstyle = {
     position: 'absolute',
@@ -31,7 +31,7 @@ export class GammaComponent implements OnInit {
     private localStorage: LocalStorageService
   ) {
      // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
-    this.globalSettings.emitChange({ appName: 'Gamma Radiation' });
+    this.globalSettings.emitChange({ appName: 'Radioactivity Demo' });
   }
 
   ngOnInit() {
@@ -43,11 +43,11 @@ export class GammaComponent implements OnInit {
     if (lsStartTime) {
       this.startTime = lsStartTime;
     }
-    const lsRunningAvgSeconds = this.localStorage.get(
-      'gamma.runningAvgSeconds'
+    const lsRunningAvgPoints = this.localStorage.get(
+      'gamma.runningAvgPoints'
     );
-    if (lsRunningAvgSeconds) {
-      this.runningAvgSeconds = lsRunningAvgSeconds;
+    if (lsRunningAvgPoints) {
+      this.runningAvgPoints = lsRunningAvgPoints;
     }
   }
 
@@ -56,7 +56,7 @@ export class GammaComponent implements OnInit {
     this.step = step;
     this.localStorage.set('gamma.step', step);
     this.localStorage.set('gamma.start', startTime);
-    this.localStorage.set('gamma.runningAvgSeconds', this.runningAvgSeconds);
+    this.localStorage.set('gamma.runningAvgPoints', this.runningAvgPoints);
   }
   save() {
     this.step = 10000;
@@ -67,6 +67,6 @@ export class GammaComponent implements OnInit {
     }
     this.localStorage.set('gamma.step', this.step);
     this.localStorage.set('gamma.start', this.startTime);
-    this.localStorage.set('gamma.runningAvgSeconds', this.runningAvgSeconds);
+    this.localStorage.set('gamma.runningAvgPoints', this.runningAvgPoints);
   }
 }

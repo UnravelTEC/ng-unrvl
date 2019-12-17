@@ -1,11 +1,3 @@
-
-h4 {
-  margin: 1em;
-}
-
-#co2dygraph {
-}
-
 .graphapp {
   /* background: blue; */
   padding: 5px;
@@ -18,7 +10,7 @@ span.value {
 form {
   position: absolute;
   bottom: 1rem;
-  left:5vh;
+  left: 5vh;
   right: 5vh;
 }
 
@@ -26,6 +18,9 @@ span.red {
   color: red;
 }
 span.yellow {
+  color: yellow;
+}
+span.orange {
   color: orange;
 }
 span.green {

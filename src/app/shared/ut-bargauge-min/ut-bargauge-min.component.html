@@ -1,0 +1,32 @@
+<div class="bar">
+    <linear-gauge
+      [attr.width]="width"
+      [attr.height]="height"
+      [attr.needle]="needle"
+      needle-width="7"
+      needle-end="100"
+      [attr.min-value]="min"
+      [attr.max-value]="max"
+      borders="false"
+      value-box="false"
+      units=""
+      bar-begin-circle="0"
+      [attr.bar-width]="bar_width"
+      tick-side="right"
+      needle-side="left"
+      number-side="left"
+      title=""
+      minor-ticks="0"
+      [attr.bar-progress]="bar_progress"
+
+      color-needle="blue"
+      color-bar="transparent"
+      color-plate="transparent"
+      color-major-ticks="transparent"
+      color-numbers="transparent"
+      [attr.highlights]='highlights'
+      highlights-width="15"
+      [attr.value]="value"
+    ></linear-gauge>
+    <!-- bar-stroke-width="0.4" -->
+  </div>

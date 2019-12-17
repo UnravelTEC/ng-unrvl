@@ -9,6 +9,8 @@ import { MatSliderModule } from '@angular/material/slider';
 import { MatSelectModule } from '@angular/material/select';
 import { SystemTimeComponent } from './pieces/system-time/system-time.component';
 import { MatIconModule } from '@angular/material/icon';
+import { FanSpeedComponent } from './pieces/fan-speed/fan-speed.component';
+import { NetworkComponent } from './pieces/network/network.component';
 
 @NgModule({
   imports: [
@@ -19,6 +21,6 @@ import { MatIconModule } from '@angular/material/icon';
     MatSelectModule,
     MatIconModule
   ],
-  declarations: [SettingsPanelComponent, DisplayBrighnessComponent, SystemTimeComponent]
+  declarations: [SettingsPanelComponent, DisplayBrighnessComponent, SystemTimeComponent, FanSpeedComponent, NetworkComponent]
 })
 export class UtSettingsModule {}

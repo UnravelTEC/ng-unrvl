@@ -1,0 +1,51 @@
+<a
+  class="relcontainer {{
+    !value
+      ? 'gray'
+      : value < 1000
+      ? 'green'
+      : value < 1500
+      ? 'yellow'
+      : value < 2000
+      ? 'orange'
+      : 'red'
+  }}"
+  routerLink="/Apps/CO2-graph"
+  routerLinkActive="active"
+>
+  <div class="tilebox" [style.font-size]="fontsize_px">
+    <h2>CO₂</h2>
+    <data
+      ><!--<span *ngIf="graph && graph['lastValues'].length > 2" class="xbar"
+        >X</span
+      >-->&nbsp;<span *ngIf="value === undefined">?</span>{{ value | number: '1.0-0' }}&nbsp;<em class="unit">ppm</em></data
+    >
+    <div class="bar" *ngIf="value !== undefined">
+      <app-ut-bargauge-min
+        [width]="width / 3.1"
+        [height]="height * 0.96"
+        max="2000"
+        barstyle="filled"
+        [value]="value"
+        [highlights]="highlights"
+      ></app-ut-bargauge-min>
+    </div>
+    <div class="graphabs">
+      <div class="graphrel" *ngIf="value !== undefined">
+        <app-ut-dygraph-in
+          [displayedData]="dygData"
+          [columnLabels]="dygLabels"
+          [changeTrigger]="changeTrigger"
+          minimal="true"
+          startTime="3m"
+          [backGroundLevels]="backGroundLevels"
+          #graph
+        >
+        </app-ut-dygraph-in>
+      </div>
+      <div class="notactive" *ngIf="value === undefined">
+        Waiting for sensor...
+      </div>
+    </div>
+  </div>
+</a>

@@ -1,0 +1,28 @@
+table {
+  //   border: 1px solid gray;
+  th {
+    min-width: 11em;
+    text-align: right;
+    margin-right: 1em;
+  }
+  th:after {
+    content: ':';
+  }
+  td {
+    padding-left: 1em;
+  }
+}
+
+.block {
+  border: 1px solid gray;
+  border-radius: 2px;
+  padding: 0.4em;
+  margin: 0.2em 0;
+}
+
+h4 {
+  margin: 0.1em;
+}
+h2 {
+  margin: 0 0 1rem 0;
+}

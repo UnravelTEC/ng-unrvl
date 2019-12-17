@@ -1,0 +1,40 @@
+<h2>
+  Influx values:
+</h2>
+
+<h4>Query:</h4>
+<label for="startTime">Query Time Range:</label>
+<input type="text" id="startTime" [(ngModel)]="startTime" name="startTime" />
+<button type="submit" (click)="launchQuery()">Go!</button>
+<pre>{{ influxquery }}</pre>
+<h4>Response:</h4>
+<h5>Columns:</h5>
+<ol>
+  <li *ngFor="let label of labelstrings">{{ label }}</li>
+</ol>
+<hr />
+<label for="showResultText">Show JSON</label>
+<input
+  type="checkbox"
+  name="showResultText"
+  id="showResultText"
+  [(ngModel)]="showResultText"
+/>
+<pre *ngIf="showResultText" style="max-height: 50vh; overflow:scroll">{{
+  influxresponse
+}}</pre>
+
+<div class="testgraph">
+  <app-ut-dygraph-in
+    [displayedData]="dygData"
+    [columnLabels]="dygLabels"
+    [changeTrigger]="changeTrigger"
+    [extraDyGraphConfig]="extraDyGraphConfig"
+    #graph
+  >
+  </app-ut-dygraph-in>
+</div>
+
+<!-- <pre>{{ dygDataStr }}</pre> -->
+
+<!-- [style]="graphstyle" -->

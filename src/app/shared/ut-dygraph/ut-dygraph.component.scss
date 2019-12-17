@@ -1,17 +1,33 @@
+.abscontainer {
+  position: absolute;
+  border: 0px solid green;
+  flex-direction: column;
+  display: flex;
+}
 .mydygraph-component {
-  border: 0px solid black;
+  flex: 1;
+  border: 0px solid red;
+  position: relative;
+  height: 100%;
+  min-height: 50%;
+  width: 100%;
+
+  .graph {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+  }
 
   ul {
     text-align: left;
   }
 
-  .debug {
-    background: rgb(198, 198, 255);
-    z-index: 200;
-    transform: translateY(8em);
-  }
-
   .info {
+    position: absolute;
+    top: 1em;
+    left: 1em;
     margin: 1em;
     border: 1px solid blue;
     padding: 1em;
@@ -29,127 +45,203 @@
   }
 
   .date {
+    position: absolute;
+    bottom: 0;
+    left: 0;
     margin-left: 3.6rem;
     font-size: 0.8em;
   }
   .lastTime {
+    position: absolute;
+    bottom: 0;
+    right: 0;
     margin-right: 1rem;
     font-size: 0.8em;
   }
+  .ymax,
+  .ymin {
+    border: 0px solid salmon;
+    background: white;
+    position: absolute;
+    left: 1.7em;
+    width: 2.5em;
+    font-size: 0.8em;
+    text-align: right;
+    padding-right: 0.2em;
+    border-right: 1px solid #969696;
+  }
+  .ymax {
+    border-top: 1px solid #969696;
+    top: 0;
+  }
+  .ymin {
+    bottom: 2.9em;
+    border-bottom: 1px solid #969696;
+  }
+  .ymin.noxlabel {
+    bottom: 1.6em;
+  }
 
   .dygraph-legend {
-    /* background: rgba(123, 123, 252, 0.993); */
-    padding: 5px;
+    // background: rgba(123, 123, 252, 0.993);
+    padding-left: 5px;
     text-align: left;
     background: transparent;
     text-shadow: 1px 1px white, -1px 1px white, 1px -1px white, -1px -1px white,
       2px 2px white, -2px 2px white, 2px -2px white, -2px -2px white;
     position: absolute !important;
-    top: 0.5em !important;
+    top: 0.1em !important;
     left: 4em !important;
-    min-width: 25%;
+    bottom: 3em;
+    width: auto;
+    overflow-x : visible;
+    overflow-y: auto;
+    pointer-events : none;
   }
   .dygraph-legend > span.highlight {
     border: 1px solid black;
     background: rgb(197, 197, 197);
     text-shadow: none;
   }
+  .series {
+    text-align: right;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 2.5em;
+    overflow-y: auto;
+    h4 {
+      margin: 0;
+      text-align: left;
+    }
+  }
 
   button.toggleOptions {
-    transform: translateY(-3rem);
-    height: 3rem;
-    width: 3rem;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2.1rem;
+    width: 2.1rem;
     border-radius: 0.5rem;
-    font-size: 3rem;
     background: transparent;
     cursor: pointer;
     border: 1px solid gray;
     display: block;
-    margin-left: 4.5rem;
     margin-right: auto;
     * {
-      transform: translateY(-0.7rem);
+      transform: translate(-0.1rem,0.2rem);
+      font-size: 1.1rem;
     }
   }
   button.toggleOptions:hover {
     background-color: gray;
   }
-
-  div.optionsarea {
-    margin-right: 8rem;
-    max-height: 50%; // not yet perfect, only works if screen is not too small / bottem left of graph is not too far top right.
-    transform: translate(8rem, -2.7rem);
-    overflow: auto;
-    div.options {
-      padding-left: 0.15rem;
-      padding-right: 0.15rem;
-      background: rgba(128, 128, 128, 0.719);
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      .subbox {
-        border: 1px solid black;
-        display: inline-block;
-        padding: 0.2em;
-        margin-bottom: 0.15rem;
-        margin-top: 0.15rem;
-        height: 3rem;
-        > * {
-          margin: 0 0.25ch;
-        }
-        h5 {
+}
+div.optionsarea {
+  overflow: auto;
+  div.options {
+    padding-left: 0.15rem;
+    padding-right: 0.15rem;
+    background: rgba(128, 128, 128, 0.719);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    .subbox {
+      border: 1px solid black;
+      display: inline-block;
+      padding: 0.2em;
+      margin-bottom: 0.15rem;
+      margin-top: 0.15rem;
+      height: 3rem;
+      > * {
+        margin: 0 0.25ch;
+      }
+      h5 {
+        margin: 0;
+        padding: 0;
+        font-weight: bold;
+        font-size: 0.7em;
+      }
+      input[type='text'] {
+        padding: 0.1em;
+        border-radius: 0.5em;
+      }
+      select {
+        height: 2.2em;
+      }
+      button {
+        border: 0;
+        border-radius: 0.5em;
+        background: #5cb85c;
+        padding: 0.5em;
+        cursor: pointer;
+        min-width: 2.25em;
+        .mat-icon {
           margin: 0;
-          padding: 0;
-          font-weight: bold;
+          margin-bottom: -10px;
+          margin-top: -10px;
+          transform: translateY(6px);
+        }
+      }
+      .time {
+        h5 {
+          display: inline-block;
+          margin-right: 1em;
+        }
+        small {
           font-size: 0.7em;
         }
-        input[type='text'] {
-          padding: 0.1em;
-          border-radius: 0.5em;
-        }
-        select {
-          height: 2.2em;
-        }
         button {
-          border: 0;
-          border-radius: 0.5em;
-          background: #5cb85c;
-          padding: 0.5em;
-          cursor: pointer;
-          min-width: 2.25em;
-          .mat-icon {
-            margin: 0;
-            margin-bottom: -10px;
-            margin-top: -10px;
-            transform: translateY(6px);
-          }
+          background: none;
+          min-width: unset;
+          border-radius: unset;
+          padding: unset;
+          border: unset;
         }
-        .time {
-          h5 {
-            display: inline-block;
-            margin-right: 1em;
+        mat-form-field {
+          width: 7em;
+          // background: greenyellow;
+          height: 1.5em;
+        }
+        .mat-form-field-infix {
+          border-top: 0;
+          padding: 0;
+        }
+      }
+      .stats {
+        display: flex;
+        flex-wrap: wrap;
+        small {
+          display: inline-block;
+          margin-left: 1em;
+        }
+        span {
+          display: inline-block;
+          min-width: 7em;
+        }
+        table {
+          margin-left: 1em;
+          font-size: 0.8em;
+          border-collapse: collapse;
+          th,
+          td {
+            border-left: 1px solid black;
+            padding: 0 0.3em;
           }
-          small {
-            font-size: 0.7em;
+          th:first-child,
+          td:first-child {
+            border-left: 0;
           }
-          button {
-            background: none;
-            min-width: unset;
-            border-radius: unset;
-            padding: unset;
-            border: unset;
-          }
-          mat-form-field {
-            width: 7em;
-            // background: greenyellow;
-            height: 1.5em;
-          }
-          .mat-form-field-infix {
-            border-top: 0;
-            padding: 0;
+
+          th {
+            text-align: left;
+            border-bottom: 1px solid black;
           }
         }
       }
+    }
+    #stats {
+      height: auto;
     }
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
 import { formatDate } from '@angular/common';
 import * as FileSaver from 'file-saver';
+import { cloneDeep } from 'lodash-es';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,7 @@ export class HelperFunctionsService {
     }
     while (argumentsArray.length) {
       const currentIndex = argumentsArray.shift();
-      if (obj[currentIndex]) {
+      if (obj.hasOwnProperty(currentIndex)) {
         obj = obj[currentIndex];
       } else {
         return undefined;
@@ -172,14 +173,29 @@ export class HelperFunctionsService {
   }
 
   createLabelString(lObj: Object, blackListLabels: string[] = []): string {
+    const labelBlackList = cloneDeep(blackListLabels);
+    //$sensor@host
     let labelString = '';
+    if (lObj['sensor'] && labelBlackList.indexOf('sensor') === -1) {
+      labelString = lObj['sensor'];
+      labelBlackList.push('sensor');
+    }
+    if (lObj['model'] && labelBlackList.indexOf('model') === -1) {
+      labelString = lObj['model'];
+      labelBlackList.push('model');
+    }
+    if (lObj['node'] && labelBlackList.indexOf('node') === -1) {
+      labelString += '@' + lObj['node'];
+      labelBlackList.push('node');
+    }
+
     let firstDone = false;
     for (let key in lObj) {
-      const value = lObj[key];
+      let value = lObj[key];
 
       let isInBlackList = false;
-      if (blackListLabels) {
-        blackListLabels.forEach(item => {
+      if (labelBlackList) {
+        labelBlackList.forEach(item => {
           if (key == item) {
             isInBlackList = true;
           }
@@ -189,11 +205,10 @@ export class HelperFunctionsService {
         continue;
       }
 
-      if (key === '__name__') {
-        labelString += value + ': ';
+      if (key === 'model' && value === 'adc') {
         continue;
       }
-      if (key === 'model' && value === 'adc') {
+      if (key === 'job') {
         continue;
       }
       if (key === 'channel') {
@@ -202,11 +217,24 @@ export class HelperFunctionsService {
       if (key === 'interval') {
         key = 'i';
       }
+      if (value === 'temperature_degC') {
+        value = 'T';
+      }
+      if (value === 'humidity_rel_percent') {
+        value = 'rH';
+      }
 
       if (firstDone) {
         labelString += ', ';
       } else {
+        if (labelString) {
+          labelString += ': ';
+        }
         firstDone = true;
+      }
+      if (key === '__name__') {
+        labelString += value;
+        continue;
       }
       labelString += key + ': ' + value;
     }
@@ -282,5 +310,170 @@ export class HelperFunctionsService {
       formatDate(endDate, 'HH.mm.ss', 'en-uk') +
       '.csv';
     FileSaver.saveAs(blob, name);
+  }
+
+  isString(x) {
+    return Object.prototype.toString.call(x) === '[object String]';
+  }
+
+  relHumidity(argT, argTD) {
+    const T = this.isString(argT) ? Number(argT) : argT;
+
+    let a: number, b: number;
+    if (T >= 0) {
+      a = 7.5;
+      b = 237.3;
+    } else {
+      a = 7.6;
+      b = 240.7;
+    }
+
+    const SDD = 6.1078 * Math.pow(10, (a * T) / (b + T)); // Sättigungsdampfdruck in hPa
+    const SDDDP = 6.1078 * Math.pow(10, (a * argTD) / (b + argTD));
+    const rH = (100 * SDDDP) / SDD;
+    return rH;
+  }
+  absHumidity(argT, argRH) {
+    const T = this.isString(argT) ? Number(argT) : argT;
+    const rH = this.isString(argRH) ? Number(argRH) : argRH;
+    // console.log('aH(', T, rH, ')');
+    // from https://www.wetterochs.de/wetter/feuchte.html
+    const T_K = T + 273.15;
+    let a: number, b: number;
+    if (T >= 0) {
+      a = 7.5;
+      b = 237.3;
+    } else {
+      a = 7.6;
+      b = 240.7;
+    }
+    const m_w = 18.016; // kg/kmol Molekulargewicht des Wasserdampfes
+    const R = 8314.3; // J/(kmol*K) (universelle Gaskonstante)
+
+    const SDD = 6.1078 * Math.pow(10, (a * T) / (b + T)); // Sättigungsdampfdruck in hPa
+    const DD = (rH / 100) * SDD; // Dampfdruck in hPa
+    return 100000 * (m_w / R) * (DD / T_K);
+
+    //=  10^5 * mw/R* * DD(r,T)/TK; AF(TD,TK) = 10^5 * mw/R* * SDD(TD)/TK
+    // console.log('result:', aH);
+  }
+  dewPoint(argT, argRH, P = 972) {
+    const T = this.isString(argT) ? Number(argT) : argT;
+    const rH = this.isString(argRH) ? Number(argRH) : argRH;
+
+    // source: https://en.wikipedia.org/wiki/Dew_point#Calculating_the_dew_point
+    // todo enhance with constants for different temperature sets
+    let a: number, b: number, c: number, d: number;
+    a = 6.1121; //mbar
+    b = 18.678;
+    c = 257.14; // °C
+    d = 234.5; // °C
+
+    const y_m = Math.log((rH / 100) * Math.exp((b - T / d) * (T / (c + T))));
+    return (c * y_m) / (b - y_m);
+  }
+
+  calcHTMLColor(r_lux, g_lux, b_lux) {
+    let max = Math.max(r_lux, g_lux, b_lux);
+    let r = Math.round((r_lux / max) * 255);
+    let g = Math.round((g_lux / max) * 255);
+    let b = Math.round((b_lux / max) * 255);
+    const r_hex = ('00' + r.toString(16)).substr(-2),
+      g_hex = ('00' + g.toString(16)).substr(-2),
+      b_hex = ('00' + b.toString(16)).substr(-2);
+    const htmlColor = '#' + r_hex + g_hex + b_hex;
+    return htmlColor;
+  }
+
+  /* series: array [[Date,values...][Date,values...]]
+  returns object with array (the same format, len -1 of input) and the averages for each series*/
+  calc1stDev(series = []) {
+    // change per second
+    if (!series.length || series.length < 2) {
+      console.error('not enough input for calc1stDev, return');
+      return { devs: [], avgs: [], error: true };
+    }
+    const devs = [];
+    const seriesSumDevs = [];
+    for (let c = 1; c < series[0].length; c++) {
+      seriesSumDevs.push(0);
+    }
+    for (let i = 1; i < series.length; i++) {
+      const thisrow = series[i];
+      const lastrow = series[i - 1];
+      const deltas = [];
+      for (let c = 0; c < thisrow.length; c++) {
+        // all time AND value deltas
+        if (c === 0) {
+          deltas[c] = thisrow[c].valueOf() - lastrow[c].valueOf();
+        } else {
+          deltas[c] = thisrow[c] - lastrow[c];
+        }
+      }
+      const deltaPerUnit = [thisrow[0]]; // timestamp
+      for (let c = 1; c < deltas.length; c++) {
+        deltaPerUnit[c] = (deltas[c] / deltas[0]) * 1000; // to make it per second
+        seriesSumDevs[c - 1] += deltaPerUnit[c];
+      }
+      devs.push(deltaPerUnit);
+    }
+    const avgDevs = [];
+    const len = devs.length;
+    for (let c = 0; c < seriesSumDevs.length; c++) {
+      avgDevs[c] = seriesSumDevs[c] / len;
+    }
+    return { devs: devs, avgs: avgDevs };
+  }
+
+  addNewReceivedSensorToFilter(
+    sensor: string,
+    receivedSensors: Object,
+    sensorPriority: string[]
+  ) {
+    if (receivedSensors.hasOwnProperty(sensor)) {
+      return;
+    }
+    // if the new sensor is higher priority than others, true and each other false
+    let currentHighest;
+    for (let [key, value] of Object.entries(receivedSensors)) {
+      if (value == true) {
+        currentHighest = key;
+        break;
+      }
+    }
+    if (!currentHighest) {
+      receivedSensors[sensor] = true;
+      console.log('initial sensor:', sensor);
+      return;
+    }
+    let currentHighestOrder = 4242;
+    let newOrder = 4242;
+    for (let i = 0; i < sensorPriority.length; i++) {
+      const element = sensorPriority[i];
+      if (element === currentHighest) {
+        currentHighestOrder = i;
+        continue;
+      }
+      if (element === sensor) {
+        newOrder = i;
+      }
+    } // if not found, it stays the initial value
+    if (newOrder < currentHighestOrder) {
+      console.log('currentHighest: ', currentHighest);
+      receivedSensors[currentHighest] = false;
+      receivedSensors[sensor] = true;
+      console.log('new better sensor found:', sensor);
+    } else {
+      console.log('new sensor not better', sensor);
+      receivedSensors[sensor] = false;
+    }
+  }
+  getSensorFromTopic(topic: string) {
+    const parts = topic.split('/');
+    if (parts.length < 2 || parts[1] !== 'sensors') {
+      console.error('topic not in /sensors/ - format ');
+      return undefined;
+    }
+    return parts[2];
   }
 }

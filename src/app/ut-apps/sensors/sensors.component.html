@@ -1,5 +1,5 @@
 <h3>
-  Sensors Overview
+  Sensor Daemons
 </h3>
 
 <table>
@@ -10,7 +10,7 @@
     <th>Currently Running</th>
   </tr>
 
-  <tbody *ngIf="! services.length">
+  <tbody *ngIf="!services.length">
     <tr *ngFor="let service of implemented_sensors">
       <td>
         <a
@@ -89,3 +89,23 @@
     </td>
   </tr>
 </table>
+
+<h3>
+  I²C Sensors
+</h3>
+
+<section *ngFor="let bus of i2cDevices | keyvalue">
+  <h4>
+    {{ bus.key }}
+  </h4>
+  <table>
+    <tr>
+      <th>Address</th>
+      <th>Device</th>
+    </tr>
+    <tr *ngFor="let device of bus.value | keyvalue">
+      <td>{{ device.key }}</td>
+      <td>{{ device.value }}</td>
+    </tr>
+  </table>
+</section>

@@ -1,0 +1,16 @@
+<div *ngIf="disabled == false">
+  <h2>
+    Fan Speed: <span>{{ currentSpeed }}&#8239;%</span>
+  </h2>
+  <mat-slider
+    min="0"
+    max="100"
+    step="1"
+    [value]="currentSpeed"
+    (change)="setSpeed($event)"
+    [disabled]="disabled"
+  ></mat-slider>
+</div>
+<div *ngIf="disabled == true">
+  No fan present.
+</div>

@@ -1,0 +1,86 @@
+<div>
+  Progress:
+  <span *ngIf="status === 'init'">Initializing...</span>
+  <span *ngIf="status === 'connecting'">Connecting...</span>
+  <span *ngIf="status === 'connected'">Connected.</span>
+  <span *ngIf="status === 'failed'">Connection failed.</span>
+  <span *ngIf="status === 'lost'">Connection lost.</span>
+  ({{ disconnects }})
+</div>
+
+<div>
+  Topic:
+  <!-- <input
+    type="text"
+    id="topic"
+    name="topic"
+    [(ngModel)]="topic"
+    style="width:4em"
+  />{{ topic }} -->
+</div>
+<button (click)="stop()">
+  Stop
+</button>
+
+<div>
+  <h3>Latest MQTT messages:</h3>
+  <table class="messages">
+    <tr>
+      <th>Time</th>
+      <th>Topic</th>
+      <th>Qos</th>
+      <th>Retained</th>
+      <!-- <th>destinationName</th> -->
+      <th>Payload</th>
+    </tr>
+    <tr *ngFor="let message of mqttMessages">
+      <td>{{ message.date }}</td>
+      <td>{{ message.topic }}</td>
+      <td>{{ message.qos }}</td>
+      <td>{{ message.retained }}</td>
+      <!-- <td>{{ message.destinationName }}</td> -->
+      <td>{{ message.payload }}</td>
+    </tr>
+  </table>
+</div>
+
+<!-- <div class="testgraph">
+  <app-ut-dygraph-in
+    [style]="graphstyle"
+    [displayedData]="dygData"
+    [columnLabels]="dygLabels"
+    [changeTrigger]="changeTrigger"
+    #graph
+  >
+  </app-ut-dygraph-in>
+</div> -->
+<!--
+<h3>Data:</h3>
+<table class="outer">
+  <tr *ngFor="let sensor of sensorData | keyvalue">
+    <th>
+      {{ sensor.key }}
+    </th>
+    <td>
+      <table>
+        <tr *ngFor="let metric of sensor.value | keyvalue">
+          <th>
+            {{ metric.key }}
+          </th>
+          <td>
+            <table>
+              <tr *ngFor="let dataset of metric.value | keyvalue">
+                <th>
+                  {{ dataset.key }}
+                </th>
+                <td>
+                  {{ dataset.value.value | number: '1.0-6' }}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table> -->

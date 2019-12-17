@@ -15,15 +15,15 @@ export class DygraphDevComponent implements OnInit {
   endTime = 'now';
   serverPort = '';
   serverPath = 'prometheus/api/v1/';
-  runningAvgSeconds = 0;
+  runningAvgPoints = 0;
   fetchFromServerIntervalMS = 5000;
 
   style = {
     position: 'absolute',
-    top: '3rem',
-    bottom: '35vh',
-    left: '5vw',
-    right: '5vw'
+    top: '1vh',
+    bottom: '25vh',
+    left: '0',
+    right: '0'
   };
 
   private variablesToSave = [
@@ -32,7 +32,7 @@ export class DygraphDevComponent implements OnInit {
     'dataBaseQueryStepMS',
     'startTime',
     'endTime',
-    'runningAvgSeconds',
+    'runningAvgPoints',
     'fetchFromServerIntervalMS'
   ];
 

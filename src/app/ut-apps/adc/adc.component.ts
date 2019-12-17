@@ -12,10 +12,15 @@ export class AdcComponent implements OnInit {
     top: '1vh',
     bottom: '1vh',
     left: '1vw',
-    right: '1vw'
+    right: '10rem'
   };
   dataSeriesLabels = ['ADS1*15'];
+  labelBlackList = ['__name__', 'model','sensor','interval']; //'sensor',,'id'
   startTime = '5m';
+
+  extraDyGraphConfig = {
+    logscale: true
+  };
 
   constructor(private globalSettings: GlobalSettingsService) {
     // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError

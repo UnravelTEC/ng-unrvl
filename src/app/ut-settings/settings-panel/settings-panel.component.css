@@ -1,76 +1,89 @@
 div.settingspage {
-    padding: 0 0.5em;
-}
-
-section {
-    border: 1px solid black;
-    border-radius: 2px;
-    padding: 10px;
-    margin: 0.5em auto 0.5em auto;
+  padding: 0 0.5em;
 }
 
 h1 {
-    text-align: center;
-    margin: 1rem;
+  text-align: center;
+  margin: 1rem;
 }
-h2 {margin: 0 0 1rem 0}
+h2 {
+  margin: 0 0 1rem 0;
+}
+
+section {
+  border: 1px solid black;
+  border-radius: 2px;
+  padding: 10px;
+  margin: 0.5em auto 0.5em auto;
+}
 
 section section {
-    border: 1px solid gray;
-    padding: 0.1em 0.1em 0.1em 0.5em;
-    margin: 0.2em 0;
-    min-height: 2.5em;
+  border: 1px solid gray;
+  padding: 0.1em 0.1em 0.1em 0.5em;
+  margin: 0.2em 0;
+  min-height: 2.5em;
+}
+section.hidden {
+  visibility: hidden; /* no display none because element must be present for JS */
+  height: 0px;
+  padding: 0;
+  margin: -0.25em;
+  border: 0;
 }
 
 label {
-    display: block;
-    color: #333;
-    font-weight: 700;
+  display: block;
+  color: #333;
+  font-weight: 700;
 }
 input {
-    width: 20em;
+  width: 20em;
 }
 
 section.center {
-    text-align: center;
+  text-align: center;
 }
-
 
 div.valuedebug {
-     position: relative;
-     left: 20em;
-     margin-top: -3em;
+  position: relative;
+  left: 20em;
+  margin-top: -3em;
 }
 .valuedebug {
-    display:inline-block;
-    width: 18em;
-    margin-left: 0.3em;
+  display: inline-block;
+  width: 18em;
+  margin-left: 0.3em;
 }
 
-section > a, button {
-    display: block;
-    background-color: #5cb85c;
-    border-color: #4cae4c;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 1.42857143;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    padding: 7px;
-    color: white;
-    margin: 5px;
-    text-decoration: none;
-    cursor: pointer;
+section > a,
+button {
+  display: block;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 7px;
+  color: white;
+  margin: 5px;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 button {
-    margin: 0.3em;
-    display: inline-block;
+  margin: 0.3em;
+  display: inline-block;
 }
 button:disabled {
-    background-color: gray;
-    cursor: default;
+  background-color: gray;
+  cursor: default;
+}
+
+table.th_right th {
+  text-align: right;
 }

@@ -1,23 +1,24 @@
+<div id="dashboard" #dashboard>
+  <div id="panel">
+    <app-ut-dashboard-tile title="CO₂-Graph" path="/Apps/CO2-graph"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="rel. Humidity / T" path="/Apps/rHT"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="Air Pressure" path="/Apps/PressureGraph"></app-ut-dashboard-tile>
+  </div>
+  <hr>
+  <h2>Sensors</h2>
+  <div class="panel">
+    <app-ut-dashboard-tile bg="#FFF" title="SCD30 NDIR CO₂" path="/Apps/Sensors/SCD30" icon="manufacturers/sensirion.png"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile bg="#FFF" title="BME280 Environmental" path="/Apps/Sensors/BME280" icon="manufacturers/Bosch.svg"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile bg="#FFF" title="TSL2561 Brightness" path="/Apps/Sensors/TSL2561" icon="manufacturers/Ams.svg"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile bg="#FFF" title="VEML6075 UVA&thinsp;/&thinsp;B" path="/Apps/UV" icon="manufacturers/Vishay.svg"></app-ut-dashboard-tile>
+  </div>
+  <hr>
+  <h2>Tools</h2>
+  <div class="panel">
+    <app-ut-dashboard-tile title="Sensor Overview" path="/Apps/Sensors"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="System stats" path="/Apps/System"></app-ut-dashboard-tile>
 
-<div id="panel">
-  <app-ut-dashboard-tile title="CO₂" path="/Apps/CO2"></app-ut-dashboard-tile>
-  <app-ut-dashboard-tile title="rel. Humidity / T" path="/Apps/rHT"></app-ut-dashboard-tile>
-<!--
-  <app-ut-dashboard-tile title="Air Pressure" path="/Apps/PressureGraph"></app-ut-dashboard-tile>
-  <app-ut-dashboard-tile title="Particulate Matter" path="/Apps/Sensors/SPS30"></app-ut-dashboard-tile>-->
-
-<!--
-  <a>VOC</a>
-  <a>UV Radiation</a>
-  <a>Loudness</a>
-  <a>NoIR Camera</a>
-  <a>ADCs</a>
-  <a>Particulate Matter</a>
-  <a>Atmospheric Pressure</a>
-  <a>External Temperature Probe</a> -->
-  <app-ut-dashboard-tile title="CO₂-Graph" path="/Apps/CO2-graph"></app-ut-dashboard-tile>
-  <app-ut-dashboard-tile title="Sensor Overview" path="/Apps/Sensors"></app-ut-dashboard-tile>
-
-  <app-ut-dashboard-tile title="All Temperatures" path="/Apps/Temperatures"></app-ut-dashboard-tile>
-  <app-ut-dashboard-tile title="Dygraph Playground" path="/Apps/Dygraph-Playground"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="All Temperatures" path="/Apps/Temperatures"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="Dygraph Playground" path="/Apps/Dygraph-Playground"></app-ut-dashboard-tile>
+  </div>
 </div>

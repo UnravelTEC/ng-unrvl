@@ -1,0 +1,189 @@
+<table class="envirobody">
+  <colgroup>
+    <col />
+    <col />
+    <col />
+  </colgroup>
+  <tr>
+    <th>
+      <h3>
+        Temperature
+      </h3>
+    </th>
+    <th>
+      <h3>
+        relative Humidity
+      </h3>
+    </th>
+    <th>
+      <h3>
+        Barometric Pressure
+      </h3>
+    </th>
+  </tr>
+  <tr>
+    <td class="T">
+      <app-ut-dygraph
+        queryString='temperature_degC{node="envirograz000"}'
+        [labelBlackList]="labelBlackListT"
+        [style]="graphstyle"
+        YLabel="°C"
+        #Temp
+      ></app-ut-dygraph>
+      <table class="val" *ngIf="Temp.lastValues && Temp.lastValues.length">
+        <tr>
+          <th>Sensor</th>
+          <th>T&nbsp;(°C)</th>
+        </tr>
+        <tr>
+          <td>
+            <div *ngFor="let sensor of Temp.columnLabels">
+              {{ sensor.sensor }}
+            </div>
+          </td>
+          <td>
+            <div *ngFor="let value of Temp.lastValues">
+              <span *ngIf="value < 10000000">{{
+                value | number: "1.0-3"
+              }}</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td class="rH">
+      <app-ut-dygraph
+        queryString='humidity_rel_percent{node="envirograz000"}'
+        [labelBlackList]="labelBlackListT"
+        [style]="graphstyle"
+        YLabel="%"
+        #rH
+      ></app-ut-dygraph>
+      <table class="val" *ngIf="rH.lastValues && rH.lastValues.length">
+        <tr>
+          <th>Sensor</th>
+          <th>rH&nbsp;(%)</th>
+        </tr>
+        <tr>
+          <td>
+            <div *ngFor="let sensor of rH.columnLabels">
+              {{ sensor.sensor }}
+            </div>
+          </td>
+          <td>
+            <div *ngFor="let value of rH.lastValues">
+              <span *ngIf="value < 10000000">{{
+                value | number: "1.0-3"
+              }}</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td class="P">
+        <app-ut-dygraph
+        queryString='pressure_hPa{node="envirograz000"}'
+        [labelBlackList]="labelBlackListT"
+        runningAvgPoints="30"
+        [style]="graphstyle"
+        YLabel="mbar"
+        #P
+      ></app-ut-dygraph>
+      <table class="val" *ngIf="P.lastValues && P.lastValues.length">
+        <tr>
+          <th>Sensor</th>
+          <th>P&nbsp;(hPa)</th>
+        </tr>
+        <tr>
+          <td>
+            <div *ngFor="let sensor of P.columnLabels">
+              {{ sensor.sensor }}
+            </div>
+          </td>
+          <td>
+            <div *ngFor="let value of P.lastValues">
+              <span *ngIf="value < 10000000">{{
+                value | number: "1.0-3"
+              }}</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <th colspan="2">
+      <h3>
+        Particulate Matter
+      </h3>
+    </th>
+    <th>
+      <h3>
+        Nitrogen Dioxide
+      </h3>
+    </th>
+  </tr>
+  <tr>
+    <td class="pm" colspan="2">
+        <app-ut-dygraph
+        queryString='particulate_matter_ugpm3{node="envirograz000"}'
+        [labelBlackList]="labelBlackListT"
+        [style]="graphstylePM"
+        YLabel="µg&#8202;/&#8202;m³"
+        #PM
+      ></app-ut-dygraph>
+      <table class="val big" *ngIf="PM.lastValues && PM.lastValues.length">
+        <tr>
+          <th>Sensor</th>
+          <th>PM&nbsp;(µg&#8239;/&#8239;m³)</th>
+        </tr>
+        <tr>
+          <td>
+            <div *ngFor="let sensor of PM.columnLabels">
+              {{ sensor.sensor }} {{sensor.size}}
+            </div>
+          </td>
+          <td>
+            <div *ngFor="let value of PM.lastValues">
+              <span *ngIf="value < 10000000">{{
+                value | number: "1.0-3"
+              }}</span>
+              <span *ngIf="isNaN(value)">-</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td class="NO2">
+        <app-ut-dygraph
+        queryString='gas_ppm{node="envirograz000"}'
+        [labelBlackList]="labelBlackListT"
+        [style]="graphstyle"
+        [multiplicateFactors]="multiplicateFactors"
+        runningAvgPoints="30"
+        YLabel="ppb"
+        #N
+      ></app-ut-dygraph>
+      <table class="val" *ngIf="N.lastValues && N.lastValues.length">
+        <tr>
+          <th>Sensor</th>
+          <th>ppb</th>
+        </tr>
+        <tr>
+          <td>
+            <div *ngFor="let sensor of N.columnLabels">
+              {{ sensor.sensor }}
+            </div>
+          </td>
+          <td>
+            <div *ngFor="let value of N.lastValues">
+              <span *ngIf="value < 10000000">{{
+                value | number: "1.0-3"
+              }}</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
