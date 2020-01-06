@@ -3,7 +3,6 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { cloneDeep } from 'lodash-es';
-import { log } from 'util';
 import { LocalStorageService } from '../../core/local-storage.service';
 
 @Component({
@@ -14,9 +13,9 @@ import { LocalStorageService } from '../../core/local-storage.service';
 export class InfluxTestComponent implements OnInit, OnDestroy {
   private appName = 'influx-test';
 
-  influxresponse: String;
-  influxquery: String;
-  labelstrings: String[];
+  influxresponse: string;
+  influxquery: string;
+  labelstrings: string[];
 
   public startTime = '15m';
   extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 };
@@ -81,127 +80,32 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
       'SELECT * FROM temperature WHERE time > now() - ' +
       this.startTime +
       ' GROUP BY *;';
-    return q;
+    this.influxquery = this.server + '/influxdb/query?db=telegraf&epoch=ms&q=' +q;
   }
 
   launchQuery() {
-    let q = this.buildQuery()
-    let call = this.server + '/influxdb/query?db=telegraf&epoch=ms&q=' + q;
-    console.log('calling', call);
-    this.influxquery = call;
-
+    this.buildQuery();
+    console.log('calling', this.influxquery);
     this.utHTTP
-      .getHTTPData(call)
+      .getHTTPData(this.influxquery)
       .subscribe((data: Object) => this.printResult(data));
   }
 
   printResult(data: Object) {
     console.log(data);
-    const dataarray = this.h.getDeep(data, ['results', 0, 'series']);
-
-    // this.dygData;
-    // this.dygLabels;
-
-    const labels = ['Date'];
-    if (!dataarray) {
-      console.log('no data');
-      return;
-    }
-    let validColCount = 0;
-    const seriesValidColumns = [];
-    const newData = [];
-    for (let i = 0; i < dataarray.length; i++) {
-      const series = dataarray[i];
-
-      let tags = {};
-      for (const tkey in series['tags']) {
-        if (series['tags'].hasOwnProperty(tkey)) {
-          const tval = series['tags'][tkey];
-          if (tval) {
-            tags[tkey] = tval;
-          }
-        }
-      }
-      // tags['__metric__'] = series['name']
-      let serieslabel = series['name'];
-      for (const tkey in tags) {
-        if (tags.hasOwnProperty(tkey) && tkey != 'topic') {
-          const tval = tags[tkey];
-          serieslabel += ' ' + tkey + ': ' + tval + ',';
-        }
-      }
-
-      seriesValidColumns[i] = [];
-      for (let colindex = 1; colindex < series['columns'].length; colindex++) {
-        // [0]: Date
-        let empty = true;
-        // check if row !empty
-        for (let rowindex = 0; rowindex < series['values'].length; rowindex++) {
-          const value = series['values'][rowindex][colindex];
-          if (value !== null) {
-            empty = false;
-            break;
-          }
-        }
-        if (!empty) {
-          validColCount += 1;
-          seriesValidColumns[i][colindex] = validColCount; // where should it be in the end
-          const colname = series['columns'][colindex];
-          const collabel = serieslabel + ' ' + colname;
-          labels.push(collabel);
-        } else {
-          seriesValidColumns[i][colindex] = false;
-        }
-      }
-    }
-    // fill data
-    for (let seriesI = 0; seriesI < seriesValidColumns.length; seriesI++) {
-      const series = seriesValidColumns[seriesI];
-      if (!series.length) {
-        console.log('series', seriesI, 'invalid');
-        continue;
-      }
-      let validColIndices = [];
-      for (let colindex = 1; colindex < series.length; colindex++) {
-        // [0]: Date
-        const finalColNr = series[colindex];
-        if (finalColNr === false) {
-          console.log('col', colindex, 'empty');
-          continue;
-        }
-        console.log('col', colindex, 'valid, into', finalColNr);
-        validColIndices.push({ from: colindex, to: finalColNr });
-      }
-      const seriesValues = dataarray[seriesI]['values'];
-
-      for (let ri = 0; ri < seriesValues.length; ri++) {
-        const row = seriesValues[ri];
-        const newRow = [];
-        newRow[0] = new Date(row[0]); // Date
-        for (let ni = 0; ni < validColCount; ni++) {
-          newRow.push(null);
-        }
-        // newRow.concat(new Array(validColCount).fill(null));
-        for (let c = 0; c < validColIndices.length; c++) {
-          const colInfo = validColIndices[c];
-          newRow[colInfo.to] = row[colInfo.from];
-        }
-        newData.push(newRow);
-      }
-    }
-    this.labelstrings = labels;
+    let ret = this.utHTTP.parseInfluxData(data)
 
     // console.log(cloneDeep(this.dygLabels));
-    this.dygLabels = labels;
+    this.dygLabels = ret['labels'];
     console.log(cloneDeep(this.dygLabels));
     // console.log(cloneDeep(this.dygData));
-    this.dygData = newData;
+    this.dygData = ret['data'];
     console.log(cloneDeep(this.dygData));
 
     // this.changeTrigger = !this.changeTrigger;
 
-    if (dataarray && dataarray.length) {
-      const dataset = dataarray[0];
+    if (this.dygData.length) {
+      const dataset = data['results'][0]['series'][0];
       const metric = dataset.name;
 
       this.influxresponse =
