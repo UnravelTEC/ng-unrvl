@@ -39,7 +39,6 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
     'showResultText'
     // 'endTime'
   ];
-  private server;
 
   constructor(
     private localStorage: LocalStorageService,
@@ -58,15 +57,11 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
     this.loadSettings();
     //let call = 'http://' + this.globalSettings.getHostName() + '.lan:8086/ping';
 
-    this.server = 'http://' + this.globalSettings.server.serverName;
-
-    console.log(this.server);
     this.launchQuery();
   }
-  ngOnDestroy () {
-    this.saveSettings()
+  ngOnDestroy() {
+    this.saveSettings();
   }
-
 
   buildQuery() {
     let q: String;
@@ -80,7 +75,11 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
       'SELECT * FROM temperature WHERE time > now() - ' +
       this.startTime +
       ' GROUP BY *;';
-    this.influxquery = this.server + '/influxdb/query?db=telegraf&epoch=ms&q=' +q;
+    this.influxquery =
+      'http://' +
+      this.globalSettings.server.serverName +
+      '/influxdb/query?db=telegraf&epoch=ms&q=' +
+      q;
   }
 
   launchQuery() {
@@ -93,12 +92,11 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
 
   printResult(data: Object) {
     console.log(data);
-    let ret = this.utHTTP.parseInfluxData(data)
+    let ret = this.utHTTP.parseInfluxData(data);
 
-    // console.log(cloneDeep(this.dygLabels));
     this.dygLabels = ret['labels'];
     console.log(cloneDeep(this.dygLabels));
-    // console.log(cloneDeep(this.dygData));
+
     this.dygData = ret['data'];
     console.log(cloneDeep(this.dygData));
 

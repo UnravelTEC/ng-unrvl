@@ -137,7 +137,7 @@ export class UtFetchdataService {
     }
     let validColCount = 0;
     const seriesValidColumns = [];
-    const newData = [];
+    let newData = [];
     for (let i = 0; i < dataarray.length; i++) {
       const series = dataarray[i];
 
@@ -216,6 +216,14 @@ export class UtFetchdataService {
         }
         newData.push(newRow);
       }
+    }
+
+    if (newData[0][0].valueOf() < newData[newData.length -1][0].valueOf()) {
+      console.log('Order OK');
+
+    } else{
+      console.log('reversing Influx data');
+      newData = newData.reverse()
     }
     retval['labels'] = labels;
     retval['data'] = newData;

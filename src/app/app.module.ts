@@ -90,6 +90,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/pm-analyzer/pm-analyzer.module#PmAnalyzerModule'
   },
   {
+    path: 'Apps/Flicker',
+    loadChildren: './ut-apps/flicker/flicker.module#FlickerModule'
+  },
+  {
     path: 'Apps/voc',
     loadChildren: './ut-apps/voc/voc.module#VocModule'
   },
