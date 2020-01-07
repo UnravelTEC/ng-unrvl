@@ -129,6 +129,10 @@ export const experimentList = [
     text: 'Farbe 3 Christbaumkugeln / rot, grün, blau / mit Neureiter LED-Generator'
   },
   {
+    shortText: 30,
+    text: 'Sonne und Mond'
+  },
+  {
     shortText: 31,
     text: 'Ist die Erde eine Kugel?'
   },
