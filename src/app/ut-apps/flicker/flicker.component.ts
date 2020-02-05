@@ -22,6 +22,8 @@ export class FlickerComponent implements OnInit {
   };
   changeTrigger = true;
 
+  frequency = 0;
+
   public startTime = '1s';
 
   constructor(
@@ -55,5 +57,10 @@ export class FlickerComponent implements OnInit {
     this.dygLabels = ret['labels'];
 
     this.dygData = ret['data'];
+    const firstd = this.dygData[0][0]
+    const numvalues = this.dygData.length
+    const lastd = this.dygData[numvalues-1][0]
+    const seconds = lastd.valueOf() - firstd.valueOf()
+    this.frequency = numvalues / seconds;
   }
 }

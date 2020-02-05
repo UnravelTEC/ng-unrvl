@@ -72,11 +72,11 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
     q = 'SELECT * FROM "temperature" LIMIT 3';
     q = 'SELECT LAST(*) FROM "temperature" GROUP BY *';
     q =
-      'SELECT * FROM temperature WHERE time > now() - ' +
+      'SELECT * FROM cpu WHERE time > now() - ' +
       this.startTime +
       ' GROUP BY *;';
     this.influxquery =
-      'http://' +
+      'https://' +
       this.globalSettings.server.serverName +
       '/influxdb/query?db=telegraf&epoch=ms&q=' +
       q;
