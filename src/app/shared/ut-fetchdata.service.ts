@@ -4,6 +4,8 @@ import { Injectable } from '@angular/core';
 import { GlobalSettingsService } from '../core/global-settings.service';
 import { HelperFunctionsService } from '../core/helper-functions.service';
 
+import { HttpHeaders } from '@angular/common/http';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -22,6 +24,24 @@ export class UtFetchdataService {
 
   getHTTPData(url: string) {
     const thisurl = url ? url : this.httpURL;
+    if (thisurl.startsWith('https') && thisurl.search(/\/influxdb\//)) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          Authorization:
+            'Basic ' +
+            btoa(
+              this.globalSettingsService.server.influxuser +
+                ':' +
+                this.globalSettingsService.server.influxpass
+            )
+        })
+      };
+      console.log('HEADERS', httpOptions);
+
+      return this.http.get(thisurl, httpOptions);
+    }
+    console.log('ordinary HTTP');
+
     return this.http.get(thisurl);
   }
 
@@ -218,12 +238,11 @@ export class UtFetchdataService {
       }
     }
 
-    if (newData[0][0].valueOf() < newData[newData.length -1][0].valueOf()) {
+    if (newData[0][0].valueOf() < newData[newData.length - 1][0].valueOf()) {
       console.log('Order OK');
-
-    } else{
+    } else {
       console.log('reversing Influx data');
-      newData = newData.reverse()
+      newData = newData.reverse();
     }
     retval['labels'] = labels;
     retval['data'] = newData;
