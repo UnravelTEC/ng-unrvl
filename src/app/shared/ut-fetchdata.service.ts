@@ -23,18 +23,16 @@ export class UtFetchdataService {
 
   queryDefaultStep = 1000; // ms
 
-  getHTTPData(url: string) {
+  getHTTPData(
+    url: string,
+    user = this.globalSettingsService.server.influxuser,
+    pass = this.globalSettingsService.server.influxpass
+  ) {
     const thisurl = url ? url : this.httpURL;
     if (thisurl.startsWith('https') && thisurl.search(/\/influxdb\//)) {
       const httpOptions = {
         headers: new HttpHeaders({
-          Authorization:
-            'Basic ' +
-            btoa(
-              this.globalSettingsService.server.influxuser +
-                ':' +
-                this.globalSettingsService.server.influxpass
-            )
+          Authorization: 'Basic ' + btoa(user + ':' + pass)
         })
       };
       console.log('HEADERS', httpOptions);
@@ -173,9 +171,10 @@ export class UtFetchdataService {
         }
       }
       // tags['__metric__'] = series['name']
-      let serieslabel = (tagBlackList.indexOf(series['name']) === -1) ? series['name'] : '';
+      let serieslabel =
+        tagBlackList.indexOf(series['name']) === -1 ? series['name'] : '';
       for (const tkey in tags) {
-        if (tags.hasOwnProperty(tkey) && (tagBlackList.indexOf(tkey) === -1)) {
+        if (tags.hasOwnProperty(tkey) && tagBlackList.indexOf(tkey) === -1) {
           const tval = tags[tkey];
           serieslabel += ' ' + tkey + ': ' + tval + ',';
         }
