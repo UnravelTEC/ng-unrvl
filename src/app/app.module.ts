@@ -90,6 +90,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/pm-analyzer/pm-analyzer.module#PmAnalyzerModule'
   },
   {
+    path: 'Apps/Flicker',
+    loadChildren: './ut-apps/flicker/flicker.module#FlickerModule'
+  },
+  {
     path: 'Apps/voc',
     loadChildren: './ut-apps/voc/voc.module#VocModule'
   },
@@ -141,6 +145,11 @@ const appRoutes: Routes = [
     path: 'Apps/Sensors/BME280',
     loadChildren: './ut-apps/sensors/bme280/bme280.module#Bme280Module'
   },
+  {
+    path: 'Apps/Sensors/TSL2561',
+    loadChildren: './ut-apps/sensors/tsl2561/tsl2561.module#Tsl2561Module'
+  },
+
   {
     path: 'Apps/Sensors/TYPE5',
     loadChildren: './ut-apps/sensors/type5/type5.module#Type5Module'

@@ -4,6 +4,9 @@ import { Injectable } from '@angular/core';
 import { GlobalSettingsService } from '../core/global-settings.service';
 import { HelperFunctionsService } from '../core/helper-functions.service';
 
+import { HttpHeaders } from '@angular/common/http';
+import { cloneDeep } from 'lodash-es';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,8 +23,24 @@ export class UtFetchdataService {
 
   queryDefaultStep = 1000; // ms
 
-  getHTTPData(url: string) {
+  getHTTPData(
+    url: string,
+    user = this.globalSettingsService.server.influxuser,
+    pass = this.globalSettingsService.server.influxpass
+  ) {
     const thisurl = url ? url : this.httpURL;
+    if (thisurl.startsWith('https') && thisurl.search(/\/influxdb\//)) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          Authorization: 'Basic ' + btoa(user + ':' + pass)
+        })
+      };
+      console.log('HEADERS', httpOptions);
+
+      return this.http.get(thisurl, httpOptions);
+    }
+    console.log('ordinary HTTP');
+
     return this.http.get(thisurl);
   }
 
@@ -123,5 +142,112 @@ export class UtFetchdataService {
       }
     }
     return false;
+  }
+
+  parseInfluxData(data: Object, labelBlackList: string[] = []) {
+    const tagBlackList = cloneDeep(labelBlackList);
+    let retval = { labels: [], data: [] };
+
+    const dataarray = this.h.getDeep(data, ['results', 0, 'series']);
+
+    const labels = ['Date'];
+    if (!dataarray) {
+      console.log('no data');
+      return retval;
+    }
+    let validColCount = 0;
+    const seriesValidColumns = [];
+    let newData = [];
+    for (let i = 0; i < dataarray.length; i++) {
+      const series = dataarray[i];
+
+      let tags = {};
+      for (const tkey in series['tags']) {
+        if (series['tags'].hasOwnProperty(tkey)) {
+          const tval = series['tags'][tkey];
+          if (tval) {
+            tags[tkey] = tval;
+          }
+        }
+      }
+      // tags['__metric__'] = series['name']
+      let serieslabel =
+        tagBlackList.indexOf(series['name']) === -1 ? series['name'] : '';
+      for (const tkey in tags) {
+        if (tags.hasOwnProperty(tkey) && tagBlackList.indexOf(tkey) === -1) {
+          const tval = tags[tkey];
+          serieslabel += ' ' + tkey + ': ' + tval + ',';
+        }
+      }
+
+      seriesValidColumns[i] = [];
+      for (let colindex = 1; colindex < series['columns'].length; colindex++) {
+        // [0]: Date
+        let empty = true;
+        // check if row !empty
+        for (let rowindex = 0; rowindex < series['values'].length; rowindex++) {
+          const value = series['values'][rowindex][colindex];
+          if (value !== null) {
+            empty = false;
+            break;
+          }
+        }
+        if (!empty) {
+          validColCount += 1;
+          seriesValidColumns[i][colindex] = validColCount; // where should it be in the end
+          const colname = series['columns'][colindex];
+          const collabel = serieslabel + ' ' + colname;
+          labels.push(collabel);
+        } else {
+          seriesValidColumns[i][colindex] = false;
+        }
+      }
+    }
+    // fill data
+    for (let seriesI = 0; seriesI < seriesValidColumns.length; seriesI++) {
+      const series = seriesValidColumns[seriesI];
+      if (!series.length) {
+        console.log('series', seriesI, 'invalid');
+        continue;
+      }
+      let validColIndices = [];
+      for (let colindex = 1; colindex < series.length; colindex++) {
+        // [0]: Date
+        const finalColNr = series[colindex];
+        if (finalColNr === false) {
+          console.log('col', colindex, 'empty');
+          continue;
+        }
+        console.log('col', colindex, 'valid, into', finalColNr);
+        validColIndices.push({ from: colindex, to: finalColNr });
+      }
+      const seriesValues = dataarray[seriesI]['values'];
+
+      for (let ri = 0; ri < seriesValues.length; ri++) {
+        const row = seriesValues[ri];
+        const newRow = [];
+        newRow[0] = new Date(row[0]); // Date
+        for (let ni = 0; ni < validColCount; ni++) {
+          newRow.push(null);
+        }
+        // newRow.concat(new Array(validColCount).fill(null));
+        for (let c = 0; c < validColIndices.length; c++) {
+          const colInfo = validColIndices[c];
+          newRow[colInfo.to] = row[colInfo.from];
+        }
+        newData.push(newRow);
+      }
+    }
+
+    if (newData[0][0].valueOf() < newData[newData.length - 1][0].valueOf()) {
+      console.log('Order OK');
+    } else {
+      console.log('reversing Influx data');
+      newData = newData.reverse();
+    }
+    retval['labels'] = labels;
+    retval['data'] = newData;
+
+    return retval;
   }
 }

@@ -63,7 +63,7 @@
     border: 0px solid salmon;
     background: white;
     position: absolute;
-    left: 1.7em;
+    left: 0.8em;
     width: 2.5em;
     font-size: 0.8em;
     text-align: right;
@@ -75,7 +75,7 @@
     top: 0;
   }
   .ymin {
-    bottom: 2.9em;
+    bottom: 2.37em;
     border-bottom: 1px solid #969696;
   }
   .ymin.noxlabel {
@@ -120,8 +120,8 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    height: 2.1rem;
-    width: 2.1rem;
+    height: 1.9rem;
+    width: 1.9rem;
     border-radius: 0.5rem;
     background: transparent;
     cursor: pointer;
@@ -129,7 +129,7 @@
     display: block;
     margin-right: auto;
     * {
-      transform: translate(-0.1rem,0.2rem);
+      transform: translate(0rem,0rem);
       font-size: 1.1rem;
     }
   }

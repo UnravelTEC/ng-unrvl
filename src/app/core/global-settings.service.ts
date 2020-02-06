@@ -32,7 +32,10 @@ export class GlobalSettingsService implements OnInit {
     sensors: [],
     prometheus: undefined, // String
     databaseStatus: 'unknown', // db status: up, down, unknown, waiting
-    api: undefined
+    api: undefined,
+    influxdb: '',
+    influxuser: '',
+    influxpass: ''
   };
   public client = {
     type: 'unknown', // local || web
@@ -160,6 +163,9 @@ export class GlobalSettingsService implements OnInit {
   // - try out switching to another server
   reloadSettings() {
     // const localStoredServer = this.getPrometheusServerFromLocalStorage();
+    this.server.influxdb = this.localStorage.get('influxdb');
+    this.server.influxuser = this.localStorage.get('influxuser');
+    this.server.influxpass = this.localStorage.get('influxpass');
     const localSettings = this.localStorage.get('globalSettings');
     const localStoredServer = this.h.getDeep(localSettings, [
       'server',
@@ -311,7 +317,12 @@ export class GlobalSettingsService implements OnInit {
       this.server.databaseStatus = 'up';
       this.emitChange({ Prometheus: this.server.prometheus });
 
-      console.log('SUCCESS: prometheus found on endpoint', endpoint, 'path', endpath);
+      console.log(
+        'SUCCESS: prometheus found on endpoint',
+        endpoint,
+        'path',
+        endpath
+      );
 
       this.checkIfTricorder();
     } else {

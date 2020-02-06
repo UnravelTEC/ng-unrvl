@@ -82,7 +82,11 @@
           <th>
             URL:
           </th>
-          <td>{{ globalSettingsService.server.baseurl }}</td>
+          <td>
+            <a href="{{ globalSettingsService.server.baseurl }}">{{
+              globalSettingsService.server.baseurl
+            }}</a>
+          </td>
         </tr>
         <tr>
           <th>
@@ -131,6 +135,11 @@
         >'
       </div>
     </section>
+
+    <section>
+      <app-influxsettings></app-influxsettings>
+    </section>
+
     <section id="submit" class="center">
       <div>
         <!-- div needed for text-align center -->
@@ -159,15 +168,12 @@
     </section>
   </section>
 
-  <section id="links" class="center">
-    <a
+  <section id="links">
+    <!-- <a
       *ngIf="globalSettingsService.server.type == 'Tricorder'"
       href="{{ oldIFPath }}"
       >Old Interface</a
-    >
-    <a *ngIf="uv4lPath" href="{{ uv4lPath }}">
-      UV4L Admin Interface
-    </a>
+    > -->
     <a
       *ngIf="globalSettingsService.server.prometheus"
       href="{{ prometheusPath }}"

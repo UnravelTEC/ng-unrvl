@@ -455,6 +455,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   handleInitialData(receivedData: Object) {
+    if(!this.displayedData.length) {
+      return;
+    }
     // console.log('handleInitialData: received Data:', cloneDeep(receivedData));
 
     // this.updateDataSet(receivedData);
@@ -474,6 +477,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
       this.dyGraphOptions.visibility.push(true);
     }
+    console.log('creating Dyg', this.htmlID, this.displayedData, this.dyGraphOptions);
+
     this.Dygraph = new Dygraph(
       this.htmlID,
       this.displayedData,
@@ -650,6 +655,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       parent.hasOwnProperty('fromZoom') &&
       parent.hasOwnProperty('toZoom')
     ) {
+      if(!parent['displayedData'].length) {
+        return;
+      }
       const firstDataSet = parent.displayedData[0];
       // const lastDataSet = parent.displayedData[parent.displayedData.length - 1];
       const percentXFirst = g.toPercentXCoord(firstDataSet[0]);
