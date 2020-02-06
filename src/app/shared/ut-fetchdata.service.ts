@@ -5,6 +5,7 @@ import { GlobalSettingsService } from '../core/global-settings.service';
 import { HelperFunctionsService } from '../core/helper-functions.service';
 
 import { HttpHeaders } from '@angular/common/http';
+import { cloneDeep } from 'lodash-es';
 
 @Injectable({
   providedIn: 'root'
@@ -145,7 +146,8 @@ export class UtFetchdataService {
     return false;
   }
 
-  parseInfluxData(data: Object) {
+  parseInfluxData(data: Object, labelBlackList: string[] = []) {
+    const tagBlackList = cloneDeep(labelBlackList);
     let retval = { labels: [], data: [] };
 
     const dataarray = this.h.getDeep(data, ['results', 0, 'series']);
@@ -171,9 +173,9 @@ export class UtFetchdataService {
         }
       }
       // tags['__metric__'] = series['name']
-      let serieslabel = series['name'];
+      let serieslabel = (tagBlackList.indexOf(series['name']) === -1) ? series['name'] : '';
       for (const tkey in tags) {
-        if (tags.hasOwnProperty(tkey) && tkey != 'topic') {
+        if (tags.hasOwnProperty(tkey) && (tagBlackList.indexOf(tkey) === -1)) {
           const tval = tags[tkey];
           serieslabel += ' ' + tkey + ': ' + tval + ',';
         }

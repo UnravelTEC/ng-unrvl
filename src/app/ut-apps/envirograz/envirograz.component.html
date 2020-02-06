@@ -23,13 +23,17 @@
   </tr>
   <tr>
     <td class="T">
-      <app-ut-dygraph
-        queryString='temperature_degC{node="envirograz000"}'
-        [labelBlackList]="labelBlackListT"
+      <app-ut-dygraph-in
+        [displayedData]="data['T']"
+        [columnLabels]="labels['T']"
         [style]="graphstyle"
+        [changeTrigger]="changeTrigger"
+        [extraDyGraphConfig]="extraDyGraphConfig"
+        [startTime]="startTime"
         YLabel="°C"
         #Temp
-      ></app-ut-dygraph>
+      >
+      </app-ut-dygraph-in>
       <table class="val" *ngIf="Temp.lastValues && Temp.lastValues.length">
         <tr>
           <th>Sensor</th>
@@ -44,7 +48,7 @@
           <td>
             <div *ngFor="let value of Temp.lastValues">
               <span *ngIf="value < 10000000">{{
-                value | number: "1.0-3"
+                value | number: '1.0-3'
               }}</span>
             </div>
           </td>
@@ -52,13 +56,17 @@
       </table>
     </td>
     <td class="rH">
-      <app-ut-dygraph
-        queryString='humidity_rel_percent{node="envirograz000"}'
-        [labelBlackList]="labelBlackListT"
+      <app-ut-dygraph-in
+        [displayedData]="data['H']"
+        [columnLabels]="labels['H']"
         [style]="graphstyle"
+        [changeTrigger]="changeTrigger"
+        [extraDyGraphConfig]="extraDyGraphConfig"
+        [startTime]="startTime"
         YLabel="%"
         #rH
-      ></app-ut-dygraph>
+      >
+      </app-ut-dygraph-in>
       <table class="val" *ngIf="rH.lastValues && rH.lastValues.length">
         <tr>
           <th>Sensor</th>
@@ -73,7 +81,7 @@
           <td>
             <div *ngFor="let value of rH.lastValues">
               <span *ngIf="value < 10000000">{{
-                value | number: "1.0-3"
+                value | number: '1.0-3'
               }}</span>
             </div>
           </td>
@@ -81,14 +89,17 @@
       </table>
     </td>
     <td class="P">
-        <app-ut-dygraph
-        queryString='pressure_hPa{node="envirograz000"}'
-        [labelBlackList]="labelBlackListT"
-        runningAvgPoints="30"
+      <app-ut-dygraph-in
+        [displayedData]="data['P']"
+        [columnLabels]="labels['P']"
         [style]="graphstyle"
+        [changeTrigger]="changeTrigger"
+        [extraDyGraphConfig]="extraDyGraphConfig"
+        [startTime]="startTime"
         YLabel="mbar"
         #P
-      ></app-ut-dygraph>
+      ></app-ut-dygraph-in>
+      <!-- runningAvgPoints="30" -->
       <table class="val" *ngIf="P.lastValues && P.lastValues.length">
         <tr>
           <th>Sensor</th>
@@ -103,7 +114,7 @@
           <td>
             <div *ngFor="let value of P.lastValues">
               <span *ngIf="value < 10000000">{{
-                value | number: "1.0-3"
+                value | number: '1.0-3'
               }}</span>
             </div>
           </td>
@@ -125,13 +136,17 @@
   </tr>
   <tr>
     <td class="pm" colspan="2">
-        <app-ut-dygraph
-        queryString='particulate_matter_ugpm3{node="envirograz000"}'
-        [labelBlackList]="labelBlackListT"
+      <app-ut-dygraph-in
+        [displayedData]="data['PM']"
+        [columnLabels]="labels['PM']"
         [style]="graphstylePM"
+        [changeTrigger]="changeTrigger"
+        [extraDyGraphConfig]="extraDyGraphConfig"
+        [startTime]="startTime"
         YLabel="µg&#8202;/&#8202;m³"
         #PM
-      ></app-ut-dygraph>
+      >
+      </app-ut-dygraph-in>
       <table class="val big" *ngIf="PM.lastValues && PM.lastValues.length">
         <tr>
           <th>Sensor</th>
@@ -140,13 +155,13 @@
         <tr>
           <td>
             <div *ngFor="let sensor of PM.columnLabels">
-              {{ sensor.sensor }} {{sensor.size}}
+              {{ sensor.sensor }} {{ sensor.size }}
             </div>
           </td>
           <td>
             <div *ngFor="let value of PM.lastValues">
               <span *ngIf="value < 10000000">{{
-                value | number: "1.0-3"
+                value | number: '1.0-3'
               }}</span>
               <span *ngIf="isNaN(value)">-</span>
             </div>
@@ -155,15 +170,18 @@
       </table>
     </td>
     <td class="NO2">
-        <app-ut-dygraph
-        queryString='gas_ppm{node="envirograz000"}'
-        [labelBlackList]="labelBlackListT"
+      <app-ut-dygraph-in
+        [displayedData]="data['N']"
+        [columnLabels]="labels['N']"
         [style]="graphstyle"
-        [multiplicateFactors]="multiplicateFactors"
-        runningAvgPoints="30"
-        YLabel="ppb"
+        [changeTrigger]="changeTrigger"
+        [extraDyGraphConfig]="extraDyGraphConfig"
+        [startTime]="startTime"
+        YLabel="µg&#8202;/&#8202;m³"
         #N
-      ></app-ut-dygraph>
+      >
+      </app-ut-dygraph-in>
+      <!-- [multiplicateFactors]="multiplicateFactors" -->
       <table class="val" *ngIf="N.lastValues && N.lastValues.length">
         <tr>
           <th>Sensor</th>
@@ -178,7 +196,7 @@
           <td>
             <div *ngFor="let value of N.lastValues">
               <span *ngIf="value < 10000000">{{
-                value | number: "1.0-3"
+                value | number: '1.0-3'
               }}</span>
             </div>
           </td>

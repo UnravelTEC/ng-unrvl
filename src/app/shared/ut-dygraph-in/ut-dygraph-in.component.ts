@@ -455,7 +455,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   handleInitialData(receivedData: Object) {
-    if(!this.displayedData) {
+    if(!this.displayedData.length) {
       return;
     }
     // console.log('handleInitialData: received Data:', cloneDeep(receivedData));
