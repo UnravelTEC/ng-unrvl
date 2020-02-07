@@ -192,7 +192,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
-    // console.log('onChanges');
+    console.log('onChanges');
 
     this.updateGraph();
   }
@@ -215,6 +215,17 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
         this.dyGraphOptions.visibility.push(true);
       }
+
+      [this.fromZoom, this.toZoom] = this.calculateTimeRange(
+        this.startTime,
+        'now'
+      );
+
+      this.dyGraphOptions['dateWindow'] = [
+        this.fromZoom.valueOf(),
+        this.toZoom.valueOf()
+      ];
+
       this.setCurrentXrange();
       this.updateDateWindow();
       this.Dygraph.updateOptions({
@@ -455,7 +466,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   handleInitialData(receivedData: Object) {
-    if(!this.displayedData.length) {
+    if (!this.displayedData.length) {
       return;
     }
     // console.log('handleInitialData: received Data:', cloneDeep(receivedData));
@@ -469,7 +480,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.dyGraphOptions['labels'] = this.columnLabels;
     console.log(cloneDeep(this.dyGraphOptions));
     if (this.columnLabels.length != this.displayedData[0].length) {
-      console.error('mismatch columnlabels', this.columnLabels.length,'and datalen', this.displayedData[0].length);
+      console.error(
+        'mismatch columnlabels',
+        this.columnLabels.length,
+        'and datalen',
+        this.displayedData[0].length
+      );
       return;
     }
 
@@ -477,7 +493,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
       this.dyGraphOptions.visibility.push(true);
     }
-    console.log('creating Dyg', this.htmlID, this.displayedData, this.dyGraphOptions);
+    console.log(
+      'creating Dyg',
+      this.htmlID,
+      this.displayedData,
+      this.dyGraphOptions
+    );
 
     this.Dygraph = new Dygraph(
       this.htmlID,
@@ -655,7 +676,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       parent.hasOwnProperty('fromZoom') &&
       parent.hasOwnProperty('toZoom')
     ) {
-      if(!parent['displayedData'].length) {
+      if (!parent['displayedData'].length) {
         return;
       }
       const firstDataSet = parent.displayedData[0];
