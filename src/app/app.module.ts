@@ -214,7 +214,7 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/ies/ies.module#IesModule'
   },
   {
-    path: 'Apps/EnviroGraz0',
+    path: 'Apps/EnviroGraz000',
     loadChildren: './ut-apps/envirograz/envirograz.module#EnvirograzModule'
   },
 
