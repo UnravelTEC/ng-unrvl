@@ -29,7 +29,7 @@
         [style]="graphstyle"
         [changeTrigger]="changeTrigger"
         [extraDyGraphConfig]="extraDyGraphConfig"
-        [startTime]="startTime"
+        [startTime]="startTimes['T']"
         YLabel="°C"
         #Temp
       >
@@ -62,7 +62,7 @@
         [style]="graphstyle"
         [changeTrigger]="changeTrigger"
         [extraDyGraphConfig]="extraDyGraphConfig"
-        [startTime]="startTime"
+        [startTime]="startTimes['H']"
         YLabel="%"
         #rH
       >
@@ -95,7 +95,7 @@
         [style]="graphstyle"
         [changeTrigger]="changeTrigger"
         [extraDyGraphConfig]="extraDyGraphConfig"
-        [startTime]="startTime"
+        [startTime]="startTimes['P']"
         YLabel="mbar"
         #P
       ></app-ut-dygraph-in>
@@ -136,13 +136,45 @@
   </tr>
   <tr>
     <td class="pm" colspan="2">
+      <div class="settings">
+        <mat-form-field>
+          <mat-label>Time range</mat-label>
+          <mat-select
+            [(ngModel)]="userStartTime"
+            name="startTime"
+            (ngModelChange)="changeMean($event)"
+          >
+            <mat-option value="15m">15 min.</mat-option>
+            <mat-option value="1h" selected="selected"> 1h</mat-option>
+            <mat-option value="6h">6 h</mat-option>
+            <mat-option value="24h">24 h</mat-option>
+            <mat-option value="7d">1 week</mat-option>
+            <mat-option value="30d">1 month</mat-option>
+            <mat-option value="356d">1 year</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <br />
+        <label for="runningAvgPoints"># Mean Points</label><br />
+        <input
+          type="text"
+          id="runningAvgPoints"
+          name="runningAvgPoints"
+          [(ngModel)]="userMeanS"
+          style="width:4em"
+        /><br />
+        <br />
+        <button (click)="reload()">
+          Reload
+        </button>
+      </div>
       <app-ut-dygraph-in
         [displayedData]="data['PM']"
         [columnLabels]="labels['PM']"
         [style]="graphstylePM"
         [changeTrigger]="changeTrigger"
-        [extraDyGraphConfig]="extraDyGraphConfig"
-        [startTime]="startTime"
+        [extraDyGraphConfig]="extraDyGraphConfigPM"
+        [startTime]="startTimes['PM']"
         YLabel="µg&#8202;/&#8202;m³"
         #PM
       >
@@ -176,7 +208,7 @@
         [style]="graphstyle"
         [changeTrigger]="changeTrigger"
         [extraDyGraphConfig]="extraDyGraphConfig"
-        [startTime]="startTime"
+        [startTime]="startTimes['N']"
         YLabel="µg&#8202;/&#8202;m³"
         #N
       >
