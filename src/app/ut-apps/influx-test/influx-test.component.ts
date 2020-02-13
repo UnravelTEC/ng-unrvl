@@ -75,6 +75,9 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
       'SELECT * FROM gas WHERE time > now() - ' +
       this.startTime +
       ' GROUP BY *;';
+    q = 'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE time > now() - ' +
+    this.startTime +
+    ' GROUP BY sensor,time(30s)'
     this.influxquery =
       'https://' +
       this.globalSettings.server.serverName +

@@ -231,22 +231,58 @@ export class UtFetchdataService {
           newRow.push(null);
         }
         // newRow.concat(new Array(validColCount).fill(null));
+        let v = NaN;
+        let isValid = false;
         for (let c = 0; c < validColIndices.length; c++) {
           const colInfo = validColIndices[c];
-          newRow[colInfo.to] = row[colInfo.from];
+          v = row[colInfo.from];
+          newRow[colInfo.to] = v;
+          if (v !== null) {
+            isValid = true;
+          }
         }
-        newData.push(newRow);
+        if (isValid) {
+          newData.push(newRow);
+        }
       }
     }
 
-    if (newData[0][0].valueOf() < newData[newData.length - 1][0].valueOf()) {
-      console.log('Order OK');
-    } else {
-      console.log('reversing Influx data');
-      newData = newData.reverse();
+    // console.log('before sort', cloneDeep(newData));
+
+    newData.sort((rowa, rowb) => rowa[0] - rowb[0]);
+
+    for (let i = 1; i < newData.length; i++) {
+      const current = newData[i];
+      const previous = newData[i - 1];
+      if (current[0].valueOf() == previous[0].valueOf()) {
+        // timestamp the same
+        let prevRowEmpty = true;
+        for (let column = 1; column < current.length; column++) {
+          if (current[column] === null && previous[column] !== null) {
+            current[column] = previous[column];
+            previous[column] = null;
+          }
+          if (previous[column] != null) {
+            prevRowEmpty = false;
+          }
+        }
+        if (prevRowEmpty) {
+          delete newData[i - 1];
+        }
+      }
     }
+
+    let newArray = [] // non-sparse Array
+    newData.forEach(row => {
+      if(row !== undefined) {
+        newArray.push(row)
+      }
+    });
+
+    // console.log('after sort', cloneDeep(newArray));
+
     retval['labels'] = labels;
-    retval['data'] = newData;
+    retval['data'] = newArray;
 
     return retval;
   }
