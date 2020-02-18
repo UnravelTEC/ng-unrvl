@@ -27,6 +27,25 @@ export class EnvirograzComponent implements OnInit {
   };
   multiplicateFactors = [1000];
 
+  backGroundLevelsPM = [
+    // the color acts for "everything below $value"
+    [0.01, 'white'], // first one not used
+    [25, 'rgba(0, 128, 0, 0.678)'], // green
+    [50, 'rgba(0, 128, 0, 0.35)'], // light green
+    [100, 'rgba(255, 255, 0, 0.35)'], // yellow
+    [250, 'rgba(255, 166, 0, 0.35)'], // orange
+    [500, 'rgba(255, 0, 0, 0.35)'] // red
+  ];
+  backGroundLevelsN = [
+    // the color acts for "everything below $value"
+    [0.01, 'white'], // first one not used
+    [40, 'rgba(0, 128, 0, 0.678)'], // green Jahresgrenzwert
+    [80, 'rgba(0, 128, 0, 0.35)'], // light green Vorsorgegrenzwert 60-Minuten-Mittelwert
+    [200, 'rgba(255, 255, 0, 0.35)'], // yellow 1h-Mittel-Grenzwert Außen
+    [250, 'rgba(255, 166, 0, 0.35)'], // orange 1h-Mittel Gefahrengrenzwert f Innenräume
+    [400, 'rgba(255, 0, 0, 0.35)'] // red Alarmschwelle
+  ];
+
   extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 };
   extraDyGraphConfigPM = {
     connectSeparatedPoints: true,
@@ -168,7 +187,8 @@ export class EnvirograzComponent implements OnInit {
     console.log('new query:', q);
 
     this.utHTTP
-      .getHTTPData(q)
+      // .getHTTPData(q)
+      .getHTTPData(q, 'grazweb', '.RaVNaygexThM')
       .subscribe((data: Object) => this.handleData(data, id));
   }
 
