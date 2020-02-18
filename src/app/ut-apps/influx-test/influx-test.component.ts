@@ -13,11 +13,16 @@ import { LocalStorageService } from '../../core/local-storage.service';
 export class InfluxTestComponent implements OnInit, OnDestroy {
   private appName = 'influx-test';
 
+  public startTime = '15m';
   influxresponse: string;
   influxquery: string;
   labelstrings: string[];
 
-  public startTime = '15m';
+  q = 'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE time > now() - ' +
+    this.startTime +
+    ' GROUP BY sensor,time(30s)'
+
+
   extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 };
 
   public dygLabels = ['Date', 'sensor1-val1']; // , 'sensor2-val1', 'sensor2-val2'];
@@ -64,25 +69,23 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
   }
 
   buildQuery() {
-    let q: String;
-    q = 'SELECT * FROM "temperature" LIMIT 3';
-    q = 'SELECT LAST(sensor_degC),* FROM "temperature" GROUP BY *';
-    q = 'SELECT LAST(gamma_cps),* FROM "radiation" GROUP BY *';
-    q = 'SELECT * FROM "temperature" WHERE time > now() - 1m GROUP BY *';
-    q = 'SELECT * FROM "temperature" LIMIT 3';
-    q = 'SELECT LAST(*) FROM "temperature" GROUP BY *  ';
-    q =
-      'SELECT * FROM gas WHERE time > now() - ' +
-      this.startTime +
-      ' GROUP BY *;';
-    q = 'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE time > now() - ' +
-    this.startTime +
-    ' GROUP BY sensor,time(30s)'
+    // let q: String;
+    // q = 'SELECT * FROM "temperature" LIMIT 3';
+    // q = 'SELECT LAST(sensor_degC),* FROM "temperature" GROUP BY *';
+    // q = 'SELECT LAST(gamma_cps),* FROM "radiation" GROUP BY *';
+    // q = 'SELECT * FROM "temperature" WHERE time > now() - 1m GROUP BY *';
+    // q = 'SELECT * FROM "temperature" LIMIT 3';
+    // q = 'SELECT LAST(*) FROM "temperature" GROUP BY *  ';
+    // q =
+    //   'SELECT * FROM gas WHERE time > now() - ' +
+    //   this.startTime +
+    //   ' GROUP BY *;';
+
     this.influxquery =
       'https://' +
       this.globalSettings.server.serverName +
       '/influxdb/query?db='+this.globalSettings.server.influxdb+'&epoch=ms&q=' +
-      q;
+      this.q;
   }
 
   launchQuery() {

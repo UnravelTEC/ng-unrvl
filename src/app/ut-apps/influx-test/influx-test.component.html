@@ -3,8 +3,20 @@
 </h2>
 
 <h4>Query:</h4>
-<label for="startTime">Query Time Range:</label>
-<input type="text" id="startTime" [(ngModel)]="startTime" name="startTime" />
+<div>
+  <label for="q">Query String</label> ({{ q }})<br>
+  <input
+    type="text"
+    id="q"
+    [(ngModel)]="q"
+    name="q"
+    style="width: 90%;"
+  />
+</div>
+
+
+<!-- <label for="startTime">Query Time Range:</label>
+<input type="text" id="startTime" [(ngModel)]="startTime" name="startTime" /> -->
 <button type="submit" (click)="launchQuery()">Go!</button>
 <pre>{{ influxquery }}</pre>
 <h4>Response:</h4>
@@ -30,7 +42,7 @@
     [columnLabels]="dygLabels"
     [changeTrigger]="changeTrigger"
     [extraDyGraphConfig]="extraDyGraphConfig"
-    [startTime]="startTime"
+
     #graph
   >
   </app-ut-dygraph-in>
@@ -38,4 +50,7 @@
 
 <!-- <pre>{{ dygDataStr }}</pre> -->
 
-<!-- [style]="graphstyle" -->
+<!-- [style]="graphstyle"
+
+[startTime]="startTime"
+-->
