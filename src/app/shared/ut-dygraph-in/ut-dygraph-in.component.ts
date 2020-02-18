@@ -260,6 +260,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.XLabel = '';
       this.maxRetentionTime = 1.2;
     }
+    if (this.backGroundLevels) {
+      this.dyGraphOptions['backGroundLevels'] = this.backGroundLevels; // option we create ourselves to access without Dygraphs.parent in initial draw call
+    }
     this.dyGraphOptions['ylabel'] = this.YLabel;
     this.dyGraphOptions['labels'] = this.columnLabels;
     if (!this.columnLabels || !this.columnLabels.length) {
@@ -1015,13 +1018,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   highLightBackgroundLevels(canvas, area, g) {
+    let bglevels = undefined;
     if (
       !g['parent'] ||
       !Array.isArray(g.parent['backGroundLevels']) ||
       g.parent.backGroundLevels.length < 2
     ) {
+      bglevels = g.getOption('backGroundLevels');
       console.log('highLightBackgroundLevels: no parent');
-      return;
+      console.log('bglevels', bglevels);
     }
     function highlight_period(y_start, y_end) {
       const y_min = g.toDomYCoord(y_start);
@@ -1031,7 +1036,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       canvas.fillRect(area.x, y_min, area.w, area_h);
     }
 
-    const backGroundLevels = g.parent.backGroundLevels;
+    const backGroundLevels = bglevels ? bglevels : g.parent.backGroundLevels;
 
     let last_y = backGroundLevels[0][0];
     for (let i = 1; i < backGroundLevels.length; i++) {
