@@ -10,16 +10,8 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
   styleUrls: ['./radiation.component.scss']
 })
 export class RadiationComponent implements OnInit {
-  extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 };
-  labelBlackListT = [
-    'interval',
-    'temperature',
-    'pressure',
-    'humidity',
-    'particulate_matter',
-    'serial',
-    'id'
-  ];
+  extraDyGraphConfig = { pointSize: 3 };
+  labelBlackListT = ['humidity', 'radiation', 'serial', 'id'];
   graphstyle = {
     position: 'absolute',
     top: '4em',
@@ -48,7 +40,7 @@ export class RadiationComponent implements OnInit {
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService
   ) {
-    this.globalSettings.emitChange({ appName: 'Enviro Graz 000' });
+    this.globalSettings.emitChange({ appName: 'Radiation' });
   }
 
   ngOnInit() {
@@ -60,7 +52,7 @@ export class RadiationComponent implements OnInit {
     this.launchQuery(
       'SELECT 1000000000 * mean("total_Svph") FROM radiation WHERE time > now() - ' +
         this.startTime +
-        ' GROUP BY sensor,time(' +
+        ' GROUP BY sensor,host,time(' +
         String(this.meanS) +
         's)'
     );

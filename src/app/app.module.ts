@@ -228,6 +228,11 @@ const appRoutes: Routes = [
       './ut-apps/weihnachtsvorlesung/weihnachtsvorlesung.module#WeihnachtsvorlesungModule'
   },
   {
+    path: 'Apps/I/Radiation',
+    loadChildren:
+      './ut-apps/i/radiation/radiation.module#RadiationModule'
+  },
+  {
     path: '',
     redirectTo: 'Dashboard',
     pathMatch: 'full'
