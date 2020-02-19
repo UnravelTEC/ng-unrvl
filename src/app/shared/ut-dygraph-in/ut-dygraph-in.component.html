@@ -10,9 +10,9 @@ style.padding-bottom="20vh"-->
 >
   <div class="mydygraph-component">
     <div class="graph" id="{{ htmlID }}"></div>
-    <!-- <div class="date" *ngIf="showDate == true">
+    <div class="date" *ngIf="showDate == true">
       {{ fromZoom | date: 'shortDate' }}
-    </div> -->
+    </div>
 
     <div *ngIf="noData == true && !minimal" class="info nodata">
       No data to display.
@@ -84,28 +84,8 @@ style.padding-bottom="20vh"-->
 
   <div *ngIf="options == true && optionsOpen == true" class="optionsarea">
     <div class="options">
-      <!-- <form class="subbox">
-      <h5>Data Resolution</h5>
-      <mat-radio-group aria-label="Select an option"
-        ><mat-radio-button value="native" id="native"
-          >Native: f {{ maxNativeInterval }}s</mat-radio-button
-        ><br />
-        <mat-radio-button value="manual" id="manual"
-          >Manual:
-        </mat-radio-button>
-        <label for="dataBaseQueryStepMS">f:</label>
-        <input
-          type="text"
-          id="dataBaseQueryStepMS"
-          name="dataBaseQueryStepMS"
-          [(ngModel)]="dataBaseQueryStepMS"
-          style="width:4em"
-        />
-      </mat-radio-group>
 
-      <span class="unit">ms</span>
-    </form> -->
-
+<!--
       <form class="subbox">
         <h5>Fetching interval</h5>
         <label for="fetchFromServerIntervalMS"></label>
@@ -121,7 +101,7 @@ style.padding-bottom="20vh"-->
           <mat-icon *ngIf="running">pause_circle_outline</mat-icon>
           <mat-icon *ngIf="!running">play_circle_outline</mat-icon>
         </button>
-      </form>
+      </form> -->
 
       <form class="subbox">
         <h5>Data</h5>
@@ -148,12 +128,12 @@ style.padding-bottom="20vh"-->
         </button>
       </form>
 
-      <form class="subbox">
+      <!-- <form class="subbox">
         <h5>Autopan</h5>
         <button (click)="toggleAutoPan()">
           {{ updateOnNewData ? 'disable' : 'enable' }}
         </button>
-      </form>
+      </form> -->
 
       <!-- <div class="subbox">
         <div class="time">
