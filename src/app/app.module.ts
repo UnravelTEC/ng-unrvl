@@ -233,6 +233,11 @@ const appRoutes: Routes = [
       './ut-apps/i/radiation/radiation.module#RadiationModule'
   },
   {
+    path: 'Apps/I/Pressure',
+    loadChildren:
+      './ut-apps/i/pressure/pressure.module#PressureModule'
+  },
+  {
     path: '',
     redirectTo: 'Dashboard',
     pathMatch: 'full'

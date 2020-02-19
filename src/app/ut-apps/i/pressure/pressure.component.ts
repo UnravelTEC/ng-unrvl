@@ -5,13 +5,13 @@ import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
 
 @Component({
-  selector: 'app-radiation',
-  templateUrl: './radiation.component.html',
-  styleUrls: ['./radiation.component.scss']
+  selector: 'app-pressure',
+  templateUrl: './pressure.component.html',
+  styleUrls: ['./pressure.component.scss']
 })
-export class RadiationComponent implements OnInit {
+export class PressureComponent implements OnInit {
   extraDyGraphConfig = { pointSize: 3 };
-  labelBlackListT = ['humidity', 'radiation', 'serial', 'id'];
+  labelBlackListT = ['pressure', 'serial', 'id'];
   graphstyle = {
     position: 'absolute',
     top: '4em',
@@ -19,8 +19,6 @@ export class RadiationComponent implements OnInit {
     left: '0rem',
     right: '15rem'
   };
-
-  multiplicateFactor = 1000000000;
 
   public startTime = '24h';
   public userStartTime = this.startTime;
@@ -34,7 +32,7 @@ export class RadiationComponent implements OnInit {
   labels = ['Date', 'sensor1-val1'];
   data = [this.row1, this.row2];
 
-  appName = 'Radiation';
+  appName = 'Air Pressure'
 
   constructor(
     private globalSettings: GlobalSettingsService,
@@ -60,7 +58,7 @@ export class RadiationComponent implements OnInit {
     this.meanS = this.userMeanS;
     this.startTime = this.userStartTime;
     this.launchQuery(
-      'SELECT 1000000000 * mean("total_Svph") FROM radiation WHERE time > now() - ' +
+      'SELECT mean("air_hPa") FROM pressure WHERE time > now() - ' +
         this.startTime +
         ' GROUP BY sensor,host,time(' +
         String(this.meanS) +
@@ -87,9 +85,6 @@ export class RadiationComponent implements OnInit {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
     this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);
   }
-  saveMean(param) {
-    this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
-  }
 
   launchQuery(clause: string) {
     const q = this.buildQuery(clause);
@@ -99,6 +94,9 @@ export class RadiationComponent implements OnInit {
       // .getHTTPData(q)
       .getHTTPData(q, 'utweb', 'kJImNSmq1m84py7jhaGq')
       .subscribe((data: Object) => this.handleData(data));
+  }
+  saveMean(param) {
+    this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
   }
 
   handleData(data: Object) {
@@ -110,4 +108,5 @@ export class RadiationComponent implements OnInit {
     this.startTime = this.userStartTime;
     // this.changeTrigger = !this.changeTrigger;
   }
+
 }
