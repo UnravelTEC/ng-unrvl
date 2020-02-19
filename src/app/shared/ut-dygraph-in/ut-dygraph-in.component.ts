@@ -529,6 +529,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.yRange = this.Dygraph.yAxisRange();
     // console.log('handleInitialData: calling checkAndFetchOldData');
     // this.checkAndFetchOldData();
+    this.setCurrentXrange();
   }
 
   clickCallback(e, x, points) {
