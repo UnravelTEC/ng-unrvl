@@ -34,6 +34,8 @@ export class PressureComponent implements OnInit {
 
   appName = 'Air Pressure'
 
+  changeTrigger = true;
+
   constructor(
     private globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,

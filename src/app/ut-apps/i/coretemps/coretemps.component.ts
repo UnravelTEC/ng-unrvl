@@ -10,7 +10,6 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
   styleUrls: ['./coretemps.component.scss']
 })
 export class CoretempsComponent implements OnInit {
-
   extraDyGraphConfig = { pointSize: 3 };
   labelBlackListT = ['temperature', 'serial'];
   graphstyle = {
@@ -33,7 +32,9 @@ export class CoretempsComponent implements OnInit {
   labels = ['Date', 'sensor1-val1'];
   data = [this.row1, this.row2];
 
-  appName = 'Core Temperatures'
+  appName = 'Core Temperatures';
+
+  changeTrigger = true;
 
   constructor(
     private globalSettings: GlobalSettingsService,

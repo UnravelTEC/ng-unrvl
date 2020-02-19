@@ -36,6 +36,8 @@ export class RadiationComponent implements OnInit {
 
   appName = 'Radiation';
 
+  changeTrigger = true;
+
   constructor(
     private globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
