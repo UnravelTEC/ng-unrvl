@@ -131,11 +131,11 @@ export class HelperFunctionsService {
 
     console.log('slicing from', from, 'to', to, 'in', indata);
     let startindex;
-    if (from.valueOf() < indata[0][0].valueOf()) {
+    if (from.valueOf() <= indata[0][0].valueOf()) {
       startindex = 0;
     }
     let endindex;
-    if (to.valueOf() > indata[indata.length - 1][0].valueOf()) {
+    if (to.valueOf() >= indata[indata.length - 1][0].valueOf()) {
       endindex = indata.length - 1;
     }
 
@@ -158,7 +158,7 @@ export class HelperFunctionsService {
         }
       }
     }
-    if (!startindex) {
+    if (startindex === undefined) {
       console.error('startindex not found');
       return [];
     }
