@@ -225,6 +225,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.fromZoom.valueOf(),
         this.toZoom.valueOf()
       ];
+      this.dyGraphOptions['labels'] = this.columnLabels
 
       this.setCurrentXrange();
       this.updateDateWindow();
