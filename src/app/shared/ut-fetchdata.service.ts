@@ -195,7 +195,16 @@ export class UtFetchdataService {
         if (!empty) {
           validColCount += 1;
           seriesValidColumns[i][colindex] = validColCount; // where should it be in the end
-          const colname = series['columns'][colindex];
+          let colname = series['columns'][colindex];
+          if (tagBlackList.indexOf('mean_*') === -1) {
+            colname = colname.replace(/^mean_/, '');
+            colname = colname.replace(/percent$/, '%');
+            colname = colname.replace(/_%/, '-%');
+            colname = colname.replace(/degC$/, '°C');
+            colname = colname.replace(/ugpm3$/, 'µg/m³');
+            colname = colname.replace(/gpm3$/, 'g/m³');
+            colname = colname.replace(/_(\S+)$/, ' ($1)');
+          }
           const collabel = serieslabel + ' ' + colname;
           labels.push(collabel);
         } else {
@@ -272,10 +281,10 @@ export class UtFetchdataService {
       }
     }
 
-    let newArray = [] // non-sparse Array
+    let newArray = []; // non-sparse Array
     newData.forEach(row => {
-      if(row !== undefined) {
-        newArray.push(row)
+      if (row !== undefined) {
+        newArray.push(row);
       }
     });
 
