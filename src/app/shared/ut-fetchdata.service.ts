@@ -208,6 +208,12 @@ export class UtFetchdataService {
           colname = colname.replace(/degC$/, '°C');
           colname = colname.replace(/ugpm3$/, 'µg/m³');
           colname = colname.replace(/gpm3$/, 'g/m³');
+          colname = colname.replace(/H2O_/, 'H₂O_');
+          colname = colname.replace(/CO2_/, 'CO₂_');
+          colname = colname.replace(/NO2_/, 'NO₂_');
+          colname = colname.replace(/O3_/, 'O₃_');
+          colname = colname.replace(/NH3_/, 'NH₃_');
+          colname = colname.replace(/H2_/, 'H₂_');
           colname = colname.replace(/_(\S+)$/, ' ($1)');
           const collabel = colname ? serieslabel + ' ' + colname : serieslabel.replace(/,$/,"");
           labels.push(collabel);
