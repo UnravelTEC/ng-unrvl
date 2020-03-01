@@ -17,6 +17,7 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
   influxresponse: string;
   influxquery: string;
   labelstrings: string[];
+  https = true;
 
   q = 'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE time > now() - ' +
     this.startTime +
@@ -82,7 +83,7 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
     //   ' GROUP BY *;';
 
     this.influxquery =
-      'https://' +
+      (this.https ? 'https':'http' ) + '://' +
       this.globalSettings.server.serverName +
       '/influxdb/query?db='+this.globalSettings.server.influxdb+'&epoch=ms&q=' +
       this.q;
