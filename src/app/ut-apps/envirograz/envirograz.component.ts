@@ -112,7 +112,9 @@ export class EnvirograzComponent implements OnInit {
     'particulate_matter',
     'serial',
     'id',
-    'host'
+    'host',
+    'mean_*',
+    'mean'
   ];
 
   ngOnInit() {

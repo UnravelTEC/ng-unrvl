@@ -39,7 +39,6 @@ export class IndoorclimateComponent implements OnInit {
 
   extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 };
 
-
   isNaN(a) {
     return isNaN(a);
   }
@@ -96,7 +95,9 @@ export class IndoorclimateComponent implements OnInit {
     'particulate_matter',
     'serial',
     'id',
-    'host'
+    'host',
+    'mean',
+    'mean_*'
   ];
 
   ngOnInit() {
@@ -177,5 +178,4 @@ export class IndoorclimateComponent implements OnInit {
     this.startTimes[id] = this.userStartTime;
     this.changeTrigger = !this.changeTrigger;
   }
-
 }

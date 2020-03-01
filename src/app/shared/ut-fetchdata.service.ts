@@ -196,16 +196,20 @@ export class UtFetchdataService {
           validColCount += 1;
           seriesValidColumns[i][colindex] = validColCount; // where should it be in the end
           let colname = series['columns'][colindex];
-          if (tagBlackList.indexOf('mean_*') === -1) {
-            colname = colname.replace(/^mean_/, '');
-            colname = colname.replace(/percent$/, '%');
-            colname = colname.replace(/_%/, '-%');
-            colname = colname.replace(/degC$/, '°C');
-            colname = colname.replace(/ugpm3$/, 'µg/m³');
-            colname = colname.replace(/gpm3$/, 'g/m³');
-            colname = colname.replace(/_(\S+)$/, ' ($1)');
+          if (tagBlackList.indexOf(colname) > -1) {
+            colname = '';
           }
-          const collabel = serieslabel + ' ' + colname;
+          if (tagBlackList.indexOf('mean_*') > -1) {
+            colname = colname.replace(/^mean_/, '');
+          }
+
+          colname = colname.replace(/percent$/, '%');
+          colname = colname.replace(/_%/, '-%');
+          colname = colname.replace(/degC$/, '°C');
+          colname = colname.replace(/ugpm3$/, 'µg/m³');
+          colname = colname.replace(/gpm3$/, 'g/m³');
+          colname = colname.replace(/_(\S+)$/, ' ($1)');
+          const collabel = colname ? serieslabel + ' ' + colname : serieslabel.replace(/,$/,"");
           labels.push(collabel);
         } else {
           seriesValidColumns[i][colindex] = false;
