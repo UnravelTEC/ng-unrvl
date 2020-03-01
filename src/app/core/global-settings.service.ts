@@ -12,6 +12,34 @@ import { HttpClient } from '@angular/common/http';
 export class GlobalSettingsService implements OnInit {
   private hostName = 'uninitialized';
 
+  public graphBackgrounds = {
+    CO2_ppm: [
+      // the color acts for "everything below $value"
+      [0.01, 'white'], // first one not used
+      [415, 'rgba(0, 128, 0, 0.678)'], // green
+      [600, 'rgba(0, 128, 0, 0.35)'], // light green
+      [1000, 'rgba(255, 255, 0, 0.35)'], // yellow
+      [1500, 'rgba(255, 166, 0, 0.35)'], // orange
+      [20000, 'rgba(255, 0, 0, 0.35)'] // red
+    ],
+    PM_ugpm3: [
+      [0.01, 'white'],
+      [25, 'rgba(0, 128, 0, 0.678)'], // green
+      [50, 'rgba(0, 128, 0, 0.35)'], // light green
+      [100, 'rgba(255, 255, 0, 0.35)'], // yellow
+      [250, 'rgba(255, 166, 0, 0.35)'], // orange
+      [500, 'rgba(255, 0, 0, 0.35)'] // red
+    ],
+    NO2_ugpm3: [
+      [0.01, 'white'],
+      [40, 'rgba(0, 128, 0, 0.678)'], // green Jahresgrenzwert
+      [80, 'rgba(0, 128, 0, 0.35)'], // light green Vorsorgegrenzwert 60-Minuten-Mittelwert
+      [200, 'rgba(255, 255, 0, 0.35)'], // yellow 1h-Mittel-Grenzwert Außen
+      [250, 'rgba(255, 166, 0, 0.35)'], // orange 1h-Mittel Gefahrengrenzwert f Innenräume
+      [400, 'rgba(255, 0, 0, 0.35)'] // red Alarmschwelle
+    ]
+  };
+
   public defaultPrometheusPath = '/prometheus/api/v1/';
   public defaultPrometheusPort = undefined; // '80'; // later switch to default port
   private defaultAPIPath = '/api/';
