@@ -1,0 +1,209 @@
+<table class="envirobody">
+  <colgroup>
+    <col />
+    <col />
+  </colgroup>
+  <tr class="firstrow">
+    <th>
+      <h2>Indoor Room Climate</h2>
+    </th>
+    <th>
+      <div class="settings">
+        <mat-form-field>
+          <mat-label>Time range</mat-label>
+          <mat-select
+            [(ngModel)]="userStartTime"
+            name="startTime"
+            (ngModelChange)="changeMean($event)"
+          >
+            <mat-option value="15m">15 min.</mat-option>
+            <mat-option value="1h" selected="selected"> 1h</mat-option>
+            <mat-option value="6h">6 h</mat-option>
+            <mat-option value="24h">24 h</mat-option>
+            <mat-option value="7d">1 week</mat-option>
+            <mat-option value="30d">1 month</mat-option>
+            <mat-option value="356d">1 year</mat-option>
+          </mat-select>
+        </mat-form-field>
+        &nbsp;|&nbsp;
+        <label for="runningAvgPoints"># Mean Seconds</label>
+        <input
+          type="text"
+          id="runningAvgPoints"
+          name="runningAvgPoints"
+          [(ngModel)]="userMeanS"
+          style="width:4em"
+        />
+        &nbsp;|&nbsp;
+        <button (click)="reload()">
+          Reload
+        </button>
+      </div>
+    </th>
+  </tr>
+
+  <tr>
+    <th>
+      <h3>
+        CO₂
+      </h3>
+    </th>
+    <th>
+      <h3>
+        VOCs
+      </h3>
+    </th>
+  </tr>
+  <tr>
+    <td>
+      <app-ut-dygraph-in
+        [displayedData]="data['CO2']"
+        [columnLabels]="labels['CO2']"
+        [style]="graphstyle"
+        [changeTrigger]="changeTrigger"
+        [extraDyGraphConfig]="extraDyGraphConfig"
+        [startTime]="startTimes['CO2']"
+        YLabel="ppm"
+        [backGroundLevels]="globalSettings['graphBackgrounds']['CO2_ppm']"
+        #CO2
+      >
+      </app-ut-dygraph-in>
+      <table class="val" *ngIf="CO2.lastValues && CO2.lastValues.length">
+        <tr>
+          <th>Sensor</th>
+          <th>CO₂&nbsp;(ppm)</th>
+        </tr>
+        <tr>
+          <td>
+            <div *ngFor="let sensor of CO2.columnLabels">
+              {{ sensor.sensor }} {{ sensor.size }}
+            </div>
+          </td>
+          <td>
+            <div *ngFor="let value of CO2.lastValues">
+              <span *ngIf="value < 10000000">{{
+                value | number: '1.0-3'
+              }}</span>
+              <span *ngIf="isNaN(value)">-</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td class="VOCs">
+      <app-ut-dygraph-in
+        [displayedData]="data['V']"
+        [columnLabels]="labels['V']"
+        [style]="graphstyle"
+        [changeTrigger]="changeTrigger"
+        [extraDyGraphConfig]="extraDyGraphConfig"
+        [startTime]="startTimes['V']"
+        YLabel="ppm"
+        [backGroundLevels]="backGroundLevelsV"
+        #V
+      >
+      </app-ut-dygraph-in>
+      <!-- [multiplicateFactors]="multiplicateFactors" -->
+      <table class="val" *ngIf="V.lastValues && V.lastValues.length">
+        <tr>
+          <th>Sensor</th>
+          <th>ppb</th>
+        </tr>
+        <tr>
+          <td>
+            <div *ngFor="let sensor of V.columnLabels">
+              {{ sensor.sensor }}
+            </div>
+          </td>
+          <td>
+            <div *ngFor="let value of V.lastValues">
+              <span *ngIf="value < 10000000">{{
+                value | number: '1.0-3'
+              }}</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <th>
+      <h3>
+        Temperature
+      </h3>
+    </th>
+    <th>
+      <h3>
+        Humidity
+      </h3>
+    </th>
+  </tr>
+  <tr>
+    <td class="T">
+      <app-ut-dygraph-in
+        [displayedData]="data['T']"
+        [columnLabels]="labels['T']"
+        [style]="graphstyle"
+        [changeTrigger]="changeTrigger"
+        [extraDyGraphConfig]="extraDyGraphConfig"
+        [startTime]="startTimes['T']"
+        YLabel="°C"
+        #Temp
+      >
+      </app-ut-dygraph-in>
+      <table class="val" *ngIf="Temp.lastValues && Temp.lastValues.length">
+        <tr>
+          <th>Sensor</th>
+          <th>T&nbsp;(°C)</th>
+        </tr>
+        <tr>
+          <td>
+            <div *ngFor="let sensor of Temp.columnLabels">
+              {{ sensor.sensor }}
+            </div>
+          </td>
+          <td>
+            <div *ngFor="let value of Temp.lastValues">
+              <span *ngIf="value < 10000000">{{
+                value | number: '1.0-3'
+              }}</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td class="rH">
+      <app-ut-dygraph-in
+        [displayedData]="data['H']"
+        [columnLabels]="labels['H']"
+        [style]="graphstyle"
+        [changeTrigger]="changeTrigger"
+        [extraDyGraphConfig]="extraDyGraphConfig"
+        [startTime]="startTimes['H']"
+        YLabel="%, g&#8202;/&#8202;m³, °C"
+        #rH
+      >
+      </app-ut-dygraph-in>
+      <table class="val" *ngIf="rH.lastValues && rH.lastValues.length">
+        <tr>
+          <th>Sensor</th>
+          <th>rH&nbsp;(%)</th>
+        </tr>
+        <tr>
+          <td>
+            <div *ngFor="let sensor of rH.columnLabels">
+              {{ sensor.sensor }}
+            </div>
+          </td>
+          <td>
+            <div *ngFor="let value of rH.lastValues">
+              <span *ngIf="value < 10000000">{{
+                value | number: '1.0-3'
+              }}</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>

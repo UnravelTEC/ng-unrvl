@@ -238,6 +238,11 @@ const appRoutes: Routes = [
       './ut-apps/i/pressure/pressure.module#PressureModule'
   },
   {
+    path: 'Apps/I/IndoorClimate',
+    loadChildren:
+      './ut-apps/i/indoorclimate/indoorclimate.module#IndoorclimateModule'
+  },
+  {
     path: 'Apps/I/CPU',
     loadChildren:
       './ut-apps/i/coretemps/coretemps.module#CoretempsModule'
