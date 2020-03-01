@@ -144,11 +144,16 @@ export class UtFetchdataService {
     return false;
   }
 
-  parseInfluxData(data: Object, labelBlackList: string[] = []) {
+  parseInfluxData(data: Object, labelBlackList: string[] = [], epoch: string = "ms") {
     const tagBlackList = cloneDeep(labelBlackList);
     let retval = { labels: [], data: [] };
 
     const dataarray = this.h.getDeep(data, ['results', 0, 'series']);
+
+    let factor = 1;
+    if (epoch == "s") {
+      factor = 1000;
+    }
 
     const labels = ['Date'];
     if (!dataarray) {
@@ -214,6 +219,7 @@ export class UtFetchdataService {
           colname = colname.replace(/O3_/, 'O₃_');
           colname = colname.replace(/NH3_/, 'NH₃_');
           colname = colname.replace(/H2_/, 'H₂_');
+          colname = colname.replace(/dewPoint/, 'dew point');
           colname = colname.replace(/_(\S+)$/, ' ($1)');
           const collabel = colname ? serieslabel + ' ' + colname : serieslabel.replace(/,$/,"");
           labels.push(collabel);
@@ -245,7 +251,7 @@ export class UtFetchdataService {
       for (let ri = 0; ri < seriesValues.length; ri++) {
         const row = seriesValues[ri];
         const newRow = [];
-        newRow[0] = new Date(row[0]); // Date
+        newRow[0] = new Date(row[0] * factor); // Date
         for (let ni = 0; ni < validColCount; ni++) {
           newRow.push(null);
         }
