@@ -22,6 +22,15 @@ export class GlobalSettingsService implements OnInit {
       [1500, 'rgba(255, 166, 0, 0.35)'], // orange
       [20000, 'rgba(255, 0, 0, 0.35)'] // red
     ],
+    VOC_ppm: [
+      // the color acts for "everything below $value"
+      [0.0001, 'white'], // first one not used
+      [0.06, 'rgba(0, 128, 0, 0.678)'], // green
+      [0.2, 'rgba(0, 128, 0, 0.35)'], // light green
+      [0.6, 'rgba(255, 255, 0, 0.35)'], // yellow
+      [2, 'rgba(255, 166, 0, 0.35)'], // orange
+      [2000, 'rgba(255, 0, 0, 0.35)'] // red
+    ],
     PM_ugpm3: [
       [0.01, 'white'],
       [25, 'rgba(0, 128, 0, 0.678)'], // green

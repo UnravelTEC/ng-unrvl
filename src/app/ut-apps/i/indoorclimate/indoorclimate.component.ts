@@ -72,7 +72,7 @@ export class IndoorclimateComponent implements OnInit {
   public row2 = [new Date(new Date().valueOf() - 200000), 2]; // null, 1.2, 0.8];
 
   constructor(
-    private globalSettings: GlobalSettingsService,
+    public globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService
@@ -107,7 +107,7 @@ export class IndoorclimateComponent implements OnInit {
     this.meanS = this.userMeanS;
     this.startTime = this.userStartTime;
     this.launchQuery(
-      'SELECT mean(*) FROM temperature WHERE time > now() - ' +
+      'SELECT mean(air_degC) FROM temperature WHERE time > now() - ' +
         this.startTime +
         ' GROUP BY sensor,time(' +
         String(this.meanS) +
@@ -115,11 +115,11 @@ export class IndoorclimateComponent implements OnInit {
       'T'
     );
     this.launchQuery(
-      'SELECT mean(/H2O|humidity|dewPoint/) FROM humidity WHERE time > now() - ' +
+      'SELECT mean(/H2O|humidity|dewPoint/) FROM humidity WHERE sensor=\'SCD30|DS18B20\' AND time > now() - ' +
         this.startTime +
         ' GROUP BY sensor,time(' +
         String(this.meanS) +
-        's)',
+        's);',
       'H'
     );
     this.launchQuery(
