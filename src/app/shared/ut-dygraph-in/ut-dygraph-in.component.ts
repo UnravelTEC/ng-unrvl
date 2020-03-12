@@ -192,7 +192,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
-    // console.log('onChanges');
+    console.log('onChanges');
 
     this.updateGraph();
   }
@@ -215,6 +215,18 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
         this.dyGraphOptions.visibility.push(true);
       }
+
+      [this.fromZoom, this.toZoom] = this.calculateTimeRange(
+        this.startTime,
+        'now'
+      );
+
+      this.dyGraphOptions['dateWindow'] = [
+        this.fromZoom.valueOf(),
+        this.toZoom.valueOf()
+      ];
+      this.dyGraphOptions['labels'] = this.columnLabels
+
       this.setCurrentXrange();
       this.updateDateWindow();
       this.Dygraph.updateOptions({
@@ -248,6 +260,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.YLabel = '';
       this.XLabel = '';
       this.maxRetentionTime = 1.2;
+    }
+    if (this.backGroundLevels) {
+      this.dyGraphOptions['backGroundLevels'] = this.backGroundLevels; // option we create ourselves to access without Dygraphs.parent in initial draw call
     }
     this.dyGraphOptions['ylabel'] = this.YLabel;
     this.dyGraphOptions['labels'] = this.columnLabels;
@@ -455,6 +470,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   handleInitialData(receivedData: Object) {
+    if (!this.displayedData.length) {
+      return;
+    }
     // console.log('handleInitialData: received Data:', cloneDeep(receivedData));
 
     // this.updateDataSet(receivedData);
@@ -466,7 +484,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.dyGraphOptions['labels'] = this.columnLabels;
     console.log(cloneDeep(this.dyGraphOptions));
     if (this.columnLabels.length != this.displayedData[0].length) {
-      console.error('mismatch columnlabels', this.columnLabels.length,'and datalen', this.displayedData[0].length);
+      console.error(
+        'mismatch columnlabels',
+        this.columnLabels.length,
+        'and datalen',
+        this.displayedData[0].length
+      );
       return;
     }
 
@@ -474,6 +497,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
       this.dyGraphOptions.visibility.push(true);
     }
+    console.log(
+      'creating Dyg',
+      this.htmlID,
+      this.displayedData,
+      this.dyGraphOptions
+    );
+
     this.Dygraph = new Dygraph(
       this.htmlID,
       this.displayedData,
@@ -500,6 +530,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.yRange = this.Dygraph.yAxisRange();
     // console.log('handleInitialData: calling checkAndFetchOldData');
     // this.checkAndFetchOldData();
+    this.setCurrentXrange();
   }
 
   clickCallback(e, x, points) {
@@ -650,6 +681,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       parent.hasOwnProperty('fromZoom') &&
       parent.hasOwnProperty('toZoom')
     ) {
+      if (!parent['displayedData'].length) {
+        return;
+      }
       const firstDataSet = parent.displayedData[0];
       // const lastDataSet = parent.displayedData[parent.displayedData.length - 1];
       const percentXFirst = g.toPercentXCoord(firstDataSet[0]);
@@ -986,13 +1020,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   highLightBackgroundLevels(canvas, area, g) {
+    let bglevels = undefined;
     if (
       !g['parent'] ||
       !Array.isArray(g.parent['backGroundLevels']) ||
       g.parent.backGroundLevels.length < 2
     ) {
+      bglevels = g.getOption('backGroundLevels');
       console.log('highLightBackgroundLevels: no parent');
-      return;
+      console.log('bglevels', bglevels);
     }
     function highlight_period(y_start, y_end) {
       const y_min = g.toDomYCoord(y_start);
@@ -1002,7 +1038,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       canvas.fillRect(area.x, y_min, area.w, area_h);
     }
 
-    const backGroundLevels = g.parent.backGroundLevels;
+    const backGroundLevels = bglevels ? bglevels : g.parent.backGroundLevels;
 
     let last_y = backGroundLevels[0][0];
     for (let i = 1; i < backGroundLevels.length; i++) {

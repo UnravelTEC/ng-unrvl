@@ -1,16 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { GlobalSettingsService } from '../../core/global-settings.service';
-import { LocalStorageService } from '../../core/local-storage.service';
-import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
-import { HelperFunctionsService } from '../../core/helper-functions.service';
-import { stringify } from 'querystring';
+import { GlobalSettingsService } from '../../../core/global-settings.service';
+import { LocalStorageService } from '../../../core/local-storage.service';
+import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
+import { HelperFunctionsService } from '../../../core/helper-functions.service';
 
 @Component({
-  selector: 'app-envirograz',
-  templateUrl: './envirograz.component.html',
-  styleUrls: ['./envirograz.component.scss']
+  selector: 'app-indoorclimate',
+  templateUrl: './indoorclimate.component.html',
+  styleUrls: ['./indoorclimate.component.scss']
 })
-export class EnvirograzComponent implements OnInit {
+export class IndoorclimateComponent implements OnInit {
   graphstyle = {
     position: 'absolute',
     top: '0',
@@ -18,14 +17,6 @@ export class EnvirograzComponent implements OnInit {
     left: '0.5rem',
     right: '1rem'
   };
-  graphstylePM = {
-    position: 'absolute',
-    top: '0',
-    bottom: '0.5rem',
-    left: '15rem',
-    right: '0.5rem'
-  };
-  multiplicateFactors = [1000];
 
   backGroundLevelsPM = [
     // the color acts for "everything below $value"
@@ -47,11 +38,6 @@ export class EnvirograzComponent implements OnInit {
   ];
 
   extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 };
-  extraDyGraphConfigPM = {
-    connectSeparatedPoints: true,
-    pointSize: 3,
-    logscale: true
-  };
 
   isNaN(a) {
     return isNaN(a);
@@ -61,40 +47,37 @@ export class EnvirograzComponent implements OnInit {
   public userStartTime = this.startTime;
   public meanS = 10;
   public userMeanS = this.meanS;
-  db = 'envirograz000';
+  db = 'telegraf';
 
   labels = {
     T: {},
     H: {},
-    P: {},
-    PM: {},
-    N: {}
+    CO2: {},
+    V: {}
   };
   data = {
     T: [],
     H: [],
-    P: [],
-    PM: [],
-    N: []
+    CO2: [],
+    V: []
   };
   startTimes = {
     T: this.startTime,
     H: this.startTime,
-    P: this.startTime,
-    PM: this.startTime,
-    N: this.startTime
+    CO2: this.startTime,
+    V: this.startTime
   };
 
   public row1 = [new Date(new Date().valueOf() - 300100), 1]; //, null, null];
   public row2 = [new Date(new Date().valueOf() - 200000), 2]; // null, 1.2, 0.8];
 
   constructor(
-    private globalSettings: GlobalSettingsService,
+    public globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService
   ) {
-    this.globalSettings.emitChange({ appName: 'Enviro Graz 000' });
+    this.globalSettings.emitChange({ appName: 'Indoor Room Climate' });
     for (const key in this.labels) {
       if (this.labels.hasOwnProperty(key)) {
         this.labels[key] = ['Date', 'sensor1-val1'];
@@ -113,8 +96,8 @@ export class EnvirograzComponent implements OnInit {
     'serial',
     'id',
     'host',
-    'mean_*',
-    'mean'
+    'mean',
+    'mean_*'
   ];
 
   ngOnInit() {
@@ -124,7 +107,7 @@ export class EnvirograzComponent implements OnInit {
     this.meanS = this.userMeanS;
     this.startTime = this.userStartTime;
     this.launchQuery(
-      'SELECT mean(*) FROM temperature WHERE time > now() - ' +
+      'SELECT mean(air_degC) FROM temperature WHERE time > now() - ' +
         this.startTime +
         ' GROUP BY sensor,time(' +
         String(this.meanS) +
@@ -132,46 +115,38 @@ export class EnvirograzComponent implements OnInit {
       'T'
     );
     this.launchQuery(
-      'SELECT mean(/rel_percent/) FROM humidity WHERE time > now() - ' +
+      'SELECT mean(/H2O|humidity|dewPoint/) FROM humidity WHERE sensor=\'SCD30|DS18B20\' AND time > now() - ' +
         this.startTime +
         ' GROUP BY sensor,time(' +
         String(this.meanS) +
-        's)',
+        's);',
       'H'
     );
     this.launchQuery(
-      'SELECT mean(*) FROM pressure WHERE time > now() - ' +
+      'SELECT mean(CO2_ppm) FROM gas WHERE time > now() - ' +
         this.startTime +
         ' GROUP BY sensor,time(' +
         String(this.meanS) +
         's)',
-      'P'
+      'CO2'
     );
     this.launchQuery(
-      'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE time > now() - ' +
+      'SELECT mean(VOC_ppm) FROM gas WHERE time > now() - ' +
         this.startTime +
         ' GROUP BY sensor,time(' +
         String(this.meanS) +
         's)',
-      'PM'
-    );
-    this.launchQuery(
-      'SELECT mean(NO2_ugpm3) FROM gas WHERE time > now() - ' +
-        this.startTime +
-        ' GROUP BY sensor,time(' +
-        String(this.meanS) +
-        's)',
-      'N'
+      'V'
     );
   }
 
   buildQuery(clause: string) {
     return (
-      'https://' +
+      'http://' +
       this.globalSettings.server.serverName +
       '/influxdb/query?db=' +
       this.db +
-      '&epoch=ms&q=' +
+      '&epoch=s&q=' +
       clause
     );
   }
@@ -195,7 +170,7 @@ export class EnvirograzComponent implements OnInit {
   }
 
   handleData(data: Object, id: string) {
-    let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
+    let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT, "s");
     console.log(id, 'received', ret);
     this.labels[id] = ret['labels'];
     this.data[id] = ret['data'];

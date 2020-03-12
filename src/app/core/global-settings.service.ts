@@ -12,6 +12,43 @@ import { HttpClient } from '@angular/common/http';
 export class GlobalSettingsService implements OnInit {
   private hostName = 'uninitialized';
 
+  public graphBackgrounds = {
+    CO2_ppm: [
+      // the color acts for "everything below $value"
+      [0.01, 'white'], // first one not used
+      [415, 'rgba(0, 128, 0, 0.678)'], // green
+      [600, 'rgba(0, 128, 0, 0.35)'], // light green
+      [1000, 'rgba(255, 255, 0, 0.35)'], // yellow
+      [1500, 'rgba(255, 166, 0, 0.35)'], // orange
+      [20000, 'rgba(255, 0, 0, 0.35)'] // red
+    ],
+    VOC_ppm: [
+      // the color acts for "everything below $value"
+      [0.0001, 'white'], // first one not used
+      [0.06, 'rgba(0, 128, 0, 0.678)'], // green
+      [0.2, 'rgba(0, 128, 0, 0.35)'], // light green
+      [0.6, 'rgba(255, 255, 0, 0.35)'], // yellow
+      [2, 'rgba(255, 166, 0, 0.35)'], // orange
+      [2000, 'rgba(255, 0, 0, 0.35)'] // red
+    ],
+    PM_ugpm3: [
+      [0.01, 'white'],
+      [25, 'rgba(0, 128, 0, 0.678)'], // green
+      [50, 'rgba(0, 128, 0, 0.35)'], // light green
+      [100, 'rgba(255, 255, 0, 0.35)'], // yellow
+      [250, 'rgba(255, 166, 0, 0.35)'], // orange
+      [500, 'rgba(255, 0, 0, 0.35)'] // red
+    ],
+    NO2_ugpm3: [
+      [0.01, 'white'],
+      [40, 'rgba(0, 128, 0, 0.678)'], // green Jahresgrenzwert
+      [80, 'rgba(0, 128, 0, 0.35)'], // light green Vorsorgegrenzwert 60-Minuten-Mittelwert
+      [200, 'rgba(255, 255, 0, 0.35)'], // yellow 1h-Mittel-Grenzwert Außen
+      [250, 'rgba(255, 166, 0, 0.35)'], // orange 1h-Mittel Gefahrengrenzwert f Innenräume
+      [400, 'rgba(255, 0, 0, 0.35)'] // red Alarmschwelle
+    ]
+  };
+
   public defaultPrometheusPath = '/prometheus/api/v1/';
   public defaultPrometheusPort = undefined; // '80'; // later switch to default port
   private defaultAPIPath = '/api/';
@@ -32,7 +69,10 @@ export class GlobalSettingsService implements OnInit {
     sensors: [],
     prometheus: undefined, // String
     databaseStatus: 'unknown', // db status: up, down, unknown, waiting
-    api: undefined
+    api: undefined,
+    influxdb: '',
+    influxuser: '',
+    influxpass: ''
   };
   public client = {
     type: 'unknown', // local || web
@@ -160,6 +200,9 @@ export class GlobalSettingsService implements OnInit {
   // - try out switching to another server
   reloadSettings() {
     // const localStoredServer = this.getPrometheusServerFromLocalStorage();
+    this.server.influxdb = this.localStorage.get('influxdb');
+    this.server.influxuser = this.localStorage.get('influxuser');
+    this.server.influxpass = this.localStorage.get('influxpass');
     const localSettings = this.localStorage.get('globalSettings');
     const localStoredServer = this.h.getDeep(localSettings, [
       'server',
@@ -311,7 +354,12 @@ export class GlobalSettingsService implements OnInit {
       this.server.databaseStatus = 'up';
       this.emitChange({ Prometheus: this.server.prometheus });
 
-      console.log('SUCCESS: prometheus found on endpoint', endpoint, 'path', endpath);
+      console.log(
+        'SUCCESS: prometheus found on endpoint',
+        endpoint,
+        'path',
+        endpath
+      );
 
       this.checkIfTricorder();
     } else {

@@ -90,6 +90,10 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/pm-analyzer/pm-analyzer.module#PmAnalyzerModule'
   },
   {
+    path: 'Apps/Flicker',
+    loadChildren: './ut-apps/flicker/flicker.module#FlickerModule'
+  },
+  {
     path: 'Apps/voc',
     loadChildren: './ut-apps/voc/voc.module#VocModule'
   },
@@ -210,7 +214,7 @@ const appRoutes: Routes = [
     loadChildren: './ut-apps/ies/ies.module#IesModule'
   },
   {
-    path: 'Apps/EnviroGraz0',
+    path: 'Apps/EnviroGraz000',
     loadChildren: './ut-apps/envirograz/envirograz.module#EnvirograzModule'
   },
 
@@ -222,6 +226,26 @@ const appRoutes: Routes = [
     path: 'Apps/Weihnachtsvorlesung',
     loadChildren:
       './ut-apps/weihnachtsvorlesung/weihnachtsvorlesung.module#WeihnachtsvorlesungModule'
+  },
+  {
+    path: 'Apps/I/Radiation',
+    loadChildren:
+      './ut-apps/i/radiation/radiation.module#RadiationModule'
+  },
+  {
+    path: 'Apps/I/Pressure',
+    loadChildren:
+      './ut-apps/i/pressure/pressure.module#PressureModule'
+  },
+  {
+    path: 'Apps/I/IndoorClimate',
+    loadChildren:
+      './ut-apps/i/indoorclimate/indoorclimate.module#IndoorclimateModule'
+  },
+  {
+    path: 'Apps/I/CPU',
+    loadChildren:
+      './ut-apps/i/coretemps/coretemps.module#CoretempsModule'
   },
   {
     path: '',

@@ -1,0 +1,15 @@
+<p>
+  flicker works! Frequency: {{ frequency }}
+</p>
+
+<div class="testgraph" *ngIf="dygData.length > 1">
+  <app-ut-dygraph-in
+    [displayedData]="dygData"
+    [columnLabels]="dygLabels"
+    [changeTrigger]="changeTrigger"
+    [extraDyGraphConfig]="extraDyGraphConfig"
+    [startTime]="startTime"
+    #graph
+  >
+  </app-ut-dygraph-in>
+</div>

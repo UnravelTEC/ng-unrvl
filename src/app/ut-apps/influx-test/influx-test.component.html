@@ -2,11 +2,22 @@
   Influx values:
 </h2>
 
-<h4>Query:</h4>
-<label for="startTime">Query Time Range:</label>
-<input type="text" id="startTime" [(ngModel)]="startTime" name="startTime" />
-<button type="submit" (click)="launchQuery()">Go!</button>
-<pre>{{ influxquery }}</pre>
+<div style="margin-left:1em;">
+  <h4>Query:</h4>
+  <div>
+    <label for="q">Query String</label> ({{ q }})<br />
+    <input type="text" id="q" [(ngModel)]="q" name="q" style="width: 90%;" />
+  </div>
+
+  <!-- <label for="startTime">Query Time Range:</label>
+<input type="text" id="startTime" [(ngModel)]="startTime" name="startTime" /> -->
+  <label for="https">HTTPS</label>&nbsp;
+  <input type="checkbox" name="https" id="https" [(ngModel)]="https" />
+  &nbsp;&nbsp;
+  <button type="submit" (click)="launchQuery()">Go!</button>
+  <pre>{{ influxquery }}</pre>
+</div>
+
 <h4>Response:</h4>
 <h5>Columns:</h5>
 <ol>
@@ -37,4 +48,7 @@
 
 <!-- <pre>{{ dygDataStr }}</pre> -->
 
-<!-- [style]="graphstyle" -->
+<!-- [style]="graphstyle"
+
+[startTime]="startTime"
+-->

@@ -6,11 +6,11 @@ table.envirobody {
   margin: 0;
   table-layout: fixed;
   h3 {
-    margin: 0.5rem;
+    margin: 0rem;
   }
   th {
     padding: 0.5rem;
-    height: 7vh;
+    height: 6vh;
     border-left: 1px solid gray;
     width: 32%;
   }
@@ -18,7 +18,38 @@ table.envirobody {
     position: relative;
     border-left: 1px solid gray;
     width: 100%;
-    height: 35vh;
+    height: 36vh;
+    .settings {
+      border: 1px solid green;
+      width: 11rem;
+      margin: 1rem;
+      padding: 1rem;
+      label {
+        display: inline-block;
+        color: rgba(0, 0, 0, 0.54);
+        text-align: right;
+        margin-right: 0.7rem;
+        font-weight: 400;
+        font-size: 16px;
+        ￼line-height: 1.125;
+        ￼font-family: Roboto, 'Helvetica Neue', sans-serif;
+      }
+      input[type='text'] {
+        padding: 0.3em;
+        // border-radius: 0.5em;
+        font-size: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.54);
+      }
+      button {
+        border: 0;
+        border-radius: 0.5em;
+        background: #5cb85c;
+        padding: 0.5em;
+        cursor: pointer;
+        min-width: 2.25em;
+        color: white;
+      }
+    }
   }
   th:first-child,
   td:first-child {
@@ -32,7 +63,7 @@ table.envirobody {
     top: 0;
     bottom: 0;
     right: 0;
-    width: 9rem;
+    width: 1rem;
     background: transparent;
     th,
     td {
