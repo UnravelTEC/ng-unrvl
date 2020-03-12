@@ -130,14 +130,14 @@ export class IndoorclimateComponent implements OnInit {
         's)',
       'CO2'
     );
-    this.launchQuery(
-      'SELECT mean(VOC_ppm) FROM gas WHERE time > now() - ' +
-        this.startTime +
-        ' GROUP BY sensor,time(' +
-        String(this.meanS) +
-        's)',
-      'V'
-    );
+    // this.launchQuery(
+    //   'SELECT mean(VOC_ppm) FROM gas WHERE time > now() - ' +
+    //     this.startTime +
+    //     ' GROUP BY sensor,time(' +
+    //     String(this.meanS) +
+    //     's)',
+    //   'V'
+    // );
   }
 
   buildQuery(clause: string) {

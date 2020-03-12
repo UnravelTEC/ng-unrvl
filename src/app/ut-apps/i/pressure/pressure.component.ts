@@ -24,7 +24,7 @@ export class PressureComponent implements OnInit {
   public userStartTime = this.startTime;
   public meanS = 54;
   public userMeanS = this.meanS;
-  db = 'koffer';
+  db = 'telegraf';
 
   public row1 = [new Date(new Date().valueOf() - 300100), 1]; //, null, null];
   public row2 = [new Date(new Date().valueOf() - 200000), 2]; // null, 1.2, 0.8];
@@ -32,7 +32,7 @@ export class PressureComponent implements OnInit {
   labels = ['Date', 'sensor1-val1'];
   data = [this.row1, this.row2];
 
-  appName = 'Air Pressure'
+  appName = 'Air Pressure';
 
   changeTrigger = true;
 
@@ -69,7 +69,7 @@ export class PressureComponent implements OnInit {
   }
   buildQuery(clause: string) {
     return (
-      'https://' +
+      'http://' +
       this.globalSettings.server.serverName +
       '/influxdb/query?db=' +
       this.db +
@@ -93,8 +93,8 @@ export class PressureComponent implements OnInit {
     console.log('new query:', q);
 
     this.utHTTP
-      // .getHTTPData(q)
-      .getHTTPData(q, 'utweb', 'kJImNSmq1m84py7jhaGq')
+      .getHTTPData(q)
+      // .getHTTPData(q, 'utweb', 'kJImNSmq1m84py7jhaGq')
       .subscribe((data: Object) => this.handleData(data));
   }
   saveMean(param) {
@@ -110,5 +110,4 @@ export class PressureComponent implements OnInit {
     this.startTime = this.userStartTime;
     // this.changeTrigger = !this.changeTrigger;
   }
-
 }

@@ -328,23 +328,24 @@ export class GlobalSettingsService implements OnInit {
   }
 
   checkForPrometheus(baseurl, path) {
-    const prometheusTestQuery = 'query?query=scrape_samples_scraped';
-    this.http.get(baseurl + path + prometheusTestQuery).subscribe(
-      (data: Object) => {
-        this.checkPrometheusTestResponse(data, baseurl, path);
-      },
-      error => {
-        console.log(
-          'no prometheus yet there',
-          baseurl + path + prometheusTestQuery,
-          ', 5s to next try.'
-        );
-        this.server.databaseStatus = 'down';
-        setTimeout(() => {
-          this.checkForPrometheus(baseurl, path);
-        }, 5 * 1000);
-      }
-    );
+    return ;
+    // const prometheusTestQuery = 'query?query=scrape_samples_scraped';
+    // this.http.get(baseurl + path + prometheusTestQuery).subscribe(
+    //   (data: Object) => {
+    //     this.checkPrometheusTestResponse(data, baseurl, path);
+    //   },
+    //   error => {
+    //     console.log(
+    //       'no prometheus yet there',
+    //       baseurl + path + prometheusTestQuery,
+    //       ', 5s to next try.'
+    //     );
+    //     this.server.databaseStatus = 'down';
+    //     setTimeout(() => {
+    //       this.checkForPrometheus(baseurl, path);
+    //     }, 5 * 1000);
+    //   }
+    // );
   }
 
   checkPrometheusTestResponse(data: Object, endpoint: string, endpath: string) {
