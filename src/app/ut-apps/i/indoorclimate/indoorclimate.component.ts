@@ -104,6 +104,7 @@ export class IndoorclimateComponent implements OnInit {
     this.reload();
   }
   reload() {
+    this.db = this.globalSettings.server.influxdb;
     this.meanS = this.userMeanS;
     this.startTime = this.userStartTime;
     this.launchQuery(
@@ -115,7 +116,7 @@ export class IndoorclimateComponent implements OnInit {
       'T'
     );
     this.launchQuery(
-      'SELECT mean(/H2O|humidity|dewPoint/) FROM humidity WHERE sensor=\'SCD30|DS18B20\' AND time > now() - ' +
+      "SELECT mean(/H2O|humidity|dewPoint/) FROM humidity WHERE sensor='SCD30|DS18B20' AND time > now() - " +
         this.startTime +
         ' GROUP BY sensor,time(' +
         String(this.meanS) +
@@ -142,7 +143,7 @@ export class IndoorclimateComponent implements OnInit {
 
   buildQuery(clause: string) {
     return (
-      'http://' +
+      this.globalSettings.server.protocol +
       this.globalSettings.server.serverName +
       '/influxdb/query?db=' +
       this.db +
@@ -162,15 +163,23 @@ export class IndoorclimateComponent implements OnInit {
   launchQuery(clause: string, id: string) {
     const q = this.buildQuery(clause);
     console.log('new query:', q);
-
-    this.utHTTP
-      // .getHTTPData(q)
-      .getHTTPData(q, 'grazweb', '.RaVNaygexThM')
-      .subscribe((data: Object) => this.handleData(data, id));
+    if (this.globalSettings.server.influxuser) {
+      this.utHTTP
+        .getHTTPData(
+          q,
+          this.globalSettings.server.influxuser,
+          this.globalSettings.server.influxpass
+        )
+        .subscribe((data: Object) => this.handleData(data, id));
+    } else {
+      this.utHTTP
+        .getHTTPData(q)
+        .subscribe((data: Object) => this.handleData(data, id));
+    }
   }
 
   handleData(data: Object, id: string) {
-    let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT, "s");
+    let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT, 's');
     console.log(id, 'received', ret);
     this.labels[id] = ret['labels'];
     this.data[id] = ret['data'];

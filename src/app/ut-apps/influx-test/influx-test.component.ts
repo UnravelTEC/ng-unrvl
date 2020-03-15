@@ -19,10 +19,10 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
   labelstrings: string[];
   https = true;
 
-  q = 'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE time > now() - ' +
+  q =
+    'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE time > now() - ' +
     this.startTime +
-    ' GROUP BY sensor,time(30s)'
-
+    ' GROUP BY sensor,time(30s)';
 
   extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 };
 
@@ -42,7 +42,8 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
     // 'queryString',
     // 'dataBaseQueryStepMS',
     'startTime',
-    'showResultText'
+    'showResultText',
+    'q'
     // 'endTime'
   ];
 
@@ -83,10 +84,13 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
     //   ' GROUP BY *;';
 
     this.influxquery =
-      (this.https ? 'https':'http' ) + '://' +
+      (this.https ? 'https' : 'http') +
+      '://' +
       this.globalSettings.server.serverName +
-      '/influxdb/query?db='+this.globalSettings.server.influxdb+'&epoch=ms&q=' +
-      this.q;
+      '/influxdb/query?db=' +
+      this.globalSettings.server.influxdb +
+      '&epoch=ms&q=' +
+      this.q.replace(';','%3B'); // ; needs to be encoded for influxdb!
   }
 
   launchQuery() {
@@ -98,7 +102,7 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
   }
 
   printResult(data: Object) {
-    console.log(data);
+    console.log(cloneDeep (data));
     let ret = this.utHTTP.parseInfluxData(data);
 
     this.dygLabels = ret['labels'];

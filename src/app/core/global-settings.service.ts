@@ -60,6 +60,7 @@ export class GlobalSettingsService implements OnInit {
   public server = {
     baseurl: '',
     serverName: '', // pure IP or hostname w/o protocol/port
+    protocol: '', // https or http
     architecture: undefined,
     type: 'unknown', // Tricorder || PublicServer
     hostname: 'uninitialized',
@@ -72,7 +73,8 @@ export class GlobalSettingsService implements OnInit {
     api: undefined,
     influxdb: '',
     influxuser: '',
-    influxpass: ''
+    influxpass: '',
+    prometheusEnabled: true
   };
   public client = {
     type: 'unknown', // local || web
@@ -125,6 +127,7 @@ export class GlobalSettingsService implements OnInit {
   ngOnInit() {
     this.reloadSettings();
 
+    // for local javascript client IPs:
     // if (this.RTCPeerConnection) {
     //   var rtc = new RTCPeerConnection({ iceServers: [] });
     //   if (1 || window['mozRTCPeerConnection']) {
@@ -278,6 +281,7 @@ export class GlobalSettingsService implements OnInit {
           apiProtocol = apiProtocol + '://';
         }
       }
+      this.server.protocol = apiProtocol;
       protAndHost = apiProtocol + this.server.serverName;
 
       this.server.api = protAndHost + apiPort + apiPath;
@@ -328,6 +332,10 @@ export class GlobalSettingsService implements OnInit {
   }
 
   checkForPrometheus(baseurl, path) {
+    if (this.server.prometheusEnabled == false) {
+      return;
+    }
+
     const prometheusTestQuery = 'query?query=scrape_samples_scraped';
     this.http.get(baseurl + path + prometheusTestQuery).subscribe(
       (data: Object) => {
@@ -340,9 +348,10 @@ export class GlobalSettingsService implements OnInit {
           ', 5s to next try.'
         );
         this.server.databaseStatus = 'down';
-        setTimeout(() => {
-          this.checkForPrometheus(baseurl, path);
-        }, 5 * 1000);
+        this.server.prometheusEnabled = false;
+        // setTimeout(() => {
+        //   this.checkForPrometheus(baseurl, path);
+        // }, 5 * 1000);
       }
     );
   }
