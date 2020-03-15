@@ -144,22 +144,41 @@ export class UtFetchdataService {
     return false;
   }
 
-  parseInfluxData(data: Object, labelBlackList: string[] = [], epoch: string = "ms") {
+  parseInfluxData(
+    data: Object,
+    labelBlackList: string[] = [],
+    epoch: string = 'ms'
+  ) {
     const tagBlackList = cloneDeep(labelBlackList);
     let retval = { labels: [], data: [] };
 
-    const dataarray = this.h.getDeep(data, ['results', 0, 'series']);
-
-    let factor = 1;
-    if (epoch == "s") {
-      factor = 1000;
+    const results = this.h.getDeep(data, ['results']);
+    if (!results) {
+      console.log('no results');
+      return retval;
     }
-
-    const labels = ['Date'];
+    let dataarray = [];
+    for (let statementId = 0; statementId < results.length; statementId++) {
+      const statement = results[statementId];
+      if (statement['series']) {
+        const seriesArray = statement['series'];
+        for (let seriesI = 0; seriesI < seriesArray.length; seriesI++) {
+          dataarray.push(seriesArray[seriesI]);
+        }
+      }
+    }
     if (!dataarray) {
       console.log('no data');
       return retval;
     }
+
+    let factor = 1;
+    if (epoch == 's') {
+      factor = 1000;
+    }
+
+    const labels = ['Date'];
+
     let validColCount = 0;
     const seriesValidColumns = [];
     let newData = [];
@@ -221,7 +240,9 @@ export class UtFetchdataService {
           colname = colname.replace(/H2_/, 'H₂_');
           colname = colname.replace(/dewPoint/, 'dew point');
           colname = colname.replace(/_(\S+)$/, ' ($1)');
-          const collabel = colname ? serieslabel + ' ' + colname : serieslabel.replace(/,$/,"");
+          const collabel = colname
+            ? serieslabel + ' ' + colname
+            : serieslabel.replace(/,$/, '');
           labels.push(collabel);
         } else {
           seriesValidColumns[i][colindex] = false;
