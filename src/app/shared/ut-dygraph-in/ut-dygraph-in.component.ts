@@ -1352,23 +1352,25 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
   updateVisibility() {
     // wait for ng to update variables
+    console.log('click on vis');
+
     setTimeout(() => {
-      // console.log('new vis:', this.dyGraphOptions.visibility);
+      console.log('new vis:', this.dyGraphOptions.visibility);
 
       let everythingHidden = true;
-      // this.dyGraphOptions.visibility.forEach(series => {
-      //   if (series === true) {
-      //     everythingHidden = false;
-      //   }
-      // });
-      // if (everythingHidden) {
-      //   for (let i = 0; i < this.dyGraphOptions.visibility.length; i++) {
-      //     this.dyGraphOptions.visibility[i] = true;
-      //   }
-      // }
-      // this.Dygraph.updateOptions({
-      //   visibility: this.dyGraphOptions.visibility
-      // });
+      this.dyGraphOptions.visibility.forEach(series => {
+        if (series === true) {
+          everythingHidden = false;
+        }
+      });
+      if (everythingHidden) {
+        for (let i = 0; i < this.dyGraphOptions.visibility.length; i++) {
+          this.dyGraphOptions.visibility[i] = true;
+        }
+      }
+      this.Dygraph.updateOptions({
+        visibility: this.dyGraphOptions.visibility
+      });
     }, 50);
   }
 }

@@ -248,6 +248,11 @@ const appRoutes: Routes = [
       './ut-apps/i/coretemps/coretemps.module#CoretempsModule'
   },
   {
+    path: 'Apps/I/EnviroOne',
+    loadChildren:
+      './ut-apps/i/enviroone/enviroone.module#EnvirooneModule'
+  },
+  {
     path: '',
     redirectTo: 'Dashboard',
     pathMatch: 'full'

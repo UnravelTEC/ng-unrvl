@@ -124,7 +124,7 @@ export class EnvirograzComponent implements OnInit {
     this.meanS = this.userMeanS;
     this.startTime = this.userStartTime;
     this.launchQuery(
-      'SELECT mean(*) FROM temperature WHERE time > now() - ' +
+      "SELECT mean(*) FROM temperature WHERE (sensor='EE08' OR sensor='BME280') AND time > now() - " +
         this.startTime +
         ' GROUP BY sensor,time(' +
         String(this.meanS) +
