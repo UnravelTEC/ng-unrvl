@@ -10,7 +10,20 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
   styleUrls: ['./enviroone.component.scss']
 })
 export class EnvirooneComponent implements OnInit {
-  extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 , logscale: true};
+  sensorsEnabled = {
+    BME280: true,
+    EE08: true,
+    OPCN3: true,
+    SDS011: true,
+    SPS30: true,
+    NO2B43F: true
+  };
+
+  extraDyGraphConfig = {
+    connectSeparatedPoints: true,
+    pointSize: 3,
+    logscale: true
+  };
   labelBlackListT = ['host', 'serial'];
   graphstyle = {
     position: 'absolute',
@@ -61,33 +74,88 @@ export class EnvirooneComponent implements OnInit {
     this.startTime = this.userStartTime;
     const ts = this.startTime;
     const mS = String(this.meanS);
-    this.launchQuery(
-      "SELECT mean(*) FROM temperature WHERE (sensor='EE08' OR sensor='BME280') AND time > now() - " +
+
+    let rHquery = '';
+    if (this.sensorsEnabled['BME280'] || this.sensorsEnabled['EE08']) {
+      let sensorw = '',
+        s;
+      for (s of ['BME280', 'EE08']) {
+        if (this.sensorsEnabled[s]) {
+          sensorw += (sensorw ? ' OR ' : '') + "sensor='" + s + "'";
+        }
+      }
+
+      rHquery =
+        'SELECT mean(*) FROM temperature WHERE (' +
+        sensorw +
+        ') AND time > now() - ' +
         ts +
         ' GROUP BY sensor,host,time(' +
         mS +
         's);' +
-        'SELECT mean(/rel_percent/) FROM humidity WHERE time > now() - ' +
+        'SELECT mean(/rel_percent/) FROM humidity WHERE ' +
+        (sensorw ? '(' + sensorw + ') AND ' : '') +
+        ' time > now() - ' +
         ts +
         ' GROUP BY sensor,host,time(' +
         mS +
-        's);' +
+        's);';
+    }
+
+    let pquery = '';
+    if (this.sensorsEnabled['BME280']) {
+      pquery =
         'SELECT mean(*) FROM pressure WHERE time > now() - ' +
         ts +
         ' GROUP BY sensor,host,time(' +
         mS +
-        's);' +
-        'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE time > now() - ' +
+        's);';
+    }
+
+    let pmquery = '';
+    if (
+      this.sensorsEnabled['OPCN3'] ||
+      this.sensorsEnabled['SDS011'] ||
+      this.sensorsEnabled['SPS30']
+    ) {
+      pmquery =
+        'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE ';
+
+      let sensorw = '';
+      if (
+        !(
+          this.sensorsEnabled['OPCN3'] &&
+          this.sensorsEnabled['SDS011'] &&
+          this.sensorsEnabled['SPS30']
+        )
+      ) {
+        let s;
+        for (s of ['OPCN3', 'SDS011', 'SPS30']) {
+          if (this.sensorsEnabled[s]) {
+            sensorw += (sensorw ? ' OR ' : '') + "sensor='" + s + "'";
+          }
+        }
+      }
+
+      pmquery +=
+        (sensorw ? '(' + sensorw + ') AND ' : '') +
+        'time > now() - ' +
         ts +
         ' GROUP BY sensor,host,time(' +
         mS +
-        's);' +
+        's);';
+    }
+
+    let no2query = '';
+    if (this.sensorsEnabled['NO2B43F']) {
+      no2query =
         'SELECT mean(NO2_ugpm3) FROM gas WHERE time > now() - ' +
         ts +
         ' GROUP BY sensor,host,time(' +
         mS +
-        's);'
-    );
+        's);';
+    }
+    this.launchQuery(rHquery + pquery + pmquery + no2query);
   }
   buildQuery(clause: string) {
     return (
@@ -97,7 +165,7 @@ export class EnvirooneComponent implements OnInit {
       this.db +
       '&epoch=ms&q=' +
       clause
-    ).replace(/;/g,'%3B');
+    ).replace(/;/g, '%3B');
   }
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);

@@ -1355,7 +1355,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     console.log('click on vis');
 
     setTimeout(() => {
-      console.log('new vis:', this.dyGraphOptions.visibility);
+      this.toggleVisibility();
+    }, 50);
+  }
+  toggleVisibility() {
+    console.log('new vis:', this.dyGraphOptions.visibility);
 
       let everythingHidden = true;
       this.dyGraphOptions.visibility.forEach(series => {
@@ -1371,6 +1375,5 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.Dygraph.updateOptions({
         visibility: this.dyGraphOptions.visibility
       });
-    }, 50);
   }
 }
