@@ -253,6 +253,11 @@ const appRoutes: Routes = [
       './ut-apps/i/enviroone/enviroone.module#EnvirooneModule'
   },
   {
+    path: 'Apps/I/Pmhist',
+    loadChildren:
+      './ut-apps/i/pmhist/pmhist.module#PmhistModule'
+  },
+  {
     path: '',
     redirectTo: 'Dashboard',
     pathMatch: 'full'

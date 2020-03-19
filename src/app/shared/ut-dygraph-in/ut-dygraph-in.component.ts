@@ -85,6 +85,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Output()
   returnRunningAvg = new EventEmitter<number>();
 
+  @Input()
+  enableHighlightCallback = false;
+  @Output()
+  returnHighlightedRow = new EventEmitter<number>();
+
   public yRange = [null, null];
 
   dyGraphOptions = {
@@ -225,7 +230,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.fromZoom.valueOf(),
         this.toZoom.valueOf()
       ];
-      this.dyGraphOptions['labels'] = this.columnLabels
+      this.dyGraphOptions['labels'] = this.columnLabels;
 
       this.setCurrentXrange();
       this.updateDateWindow();
@@ -263,6 +268,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     if (this.backGroundLevels) {
       this.dyGraphOptions['backGroundLevels'] = this.backGroundLevels; // option we create ourselves to access without Dygraphs.parent in initial draw call
+    }
+    if (this.enableHighlightCallback) {
+      this.dyGraphOptions['highlightCallback'] = this.highlightCallback;
     }
     this.dyGraphOptions['ylabel'] = this.YLabel;
     this.dyGraphOptions['labels'] = this.columnLabels;
@@ -542,6 +550,18 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         parent.stopUpdateOnNewData();
       }
     }
+  }
+
+  highlightCallback(event, x, points, row, seriesName) {
+    if (!this.hasOwnProperty('parent')) {
+      console.error('afterZoom: No parent');
+      return;
+    }
+    const parent = this['parent'];
+
+    const values = { points: points, seriesName: seriesName}
+
+    parent.returnHighlightedRow.emit(values);
   }
 
   afterZoomCallback(
@@ -1361,19 +1381,19 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   toggleVisibility() {
     console.log('new vis:', this.dyGraphOptions.visibility);
 
-      let everythingHidden = true;
-      this.dyGraphOptions.visibility.forEach(series => {
-        if (series === true) {
-          everythingHidden = false;
-        }
-      });
-      if (everythingHidden) {
-        for (let i = 0; i < this.dyGraphOptions.visibility.length; i++) {
-          this.dyGraphOptions.visibility[i] = true;
-        }
+    let everythingHidden = true;
+    this.dyGraphOptions.visibility.forEach(series => {
+      if (series === true) {
+        everythingHidden = false;
       }
-      this.Dygraph.updateOptions({
-        visibility: this.dyGraphOptions.visibility
-      });
+    });
+    if (everythingHidden) {
+      for (let i = 0; i < this.dyGraphOptions.visibility.length; i++) {
+        this.dyGraphOptions.visibility[i] = true;
+      }
+    }
+    this.Dygraph.updateOptions({
+      visibility: this.dyGraphOptions.visibility
+    });
   }
 }
