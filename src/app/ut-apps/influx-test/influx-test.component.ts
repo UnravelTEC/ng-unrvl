@@ -19,6 +19,16 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
   labelstrings: string[];
   https = true;
 
+  // q = 'SELECT * FROM "temperature" LIMIT 3';
+    // q = 'SELECT LAST(sensor_degC),* FROM "temperature" GROUP BY *';
+    // q = 'SELECT LAST(gamma_cps),* FROM "radiation" GROUP BY *';
+    // q = 'SELECT * FROM "temperature" WHERE time > now() - 1m GROUP BY *';
+    // q = 'SELECT * FROM "temperature" LIMIT 3';
+    // q = 'SELECT LAST(*) FROM "temperature" GROUP BY *  ';
+    // q =
+    //   'SELECT * FROM gas WHERE time > now() - ' +
+    //   this.startTime +
+    //   ' GROUP BY *;';
   q =
     'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE time > now() - ' +
     this.startTime +
@@ -64,40 +74,23 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
     this.loadSettings();
     //let call = 'http://' + this.globalSettings.getHostName() + '.lan:8086/ping';
 
-    this.launchQuery();
+    this.reload();
   }
+
+  reload() {
+    this.launchQuery(this.q);
+  }
+
   ngOnDestroy() {
     this.saveSettings();
   }
 
-  buildQuery() {
-    // let q: String;
-    // q = 'SELECT * FROM "temperature" LIMIT 3';
-    // q = 'SELECT LAST(sensor_degC),* FROM "temperature" GROUP BY *';
-    // q = 'SELECT LAST(gamma_cps),* FROM "radiation" GROUP BY *';
-    // q = 'SELECT * FROM "temperature" WHERE time > now() - 1m GROUP BY *';
-    // q = 'SELECT * FROM "temperature" LIMIT 3';
-    // q = 'SELECT LAST(*) FROM "temperature" GROUP BY *  ';
-    // q =
-    //   'SELECT * FROM gas WHERE time > now() - ' +
-    //   this.startTime +
-    //   ' GROUP BY *;';
+  launchQuery(clause: string) {
 
-    this.influxquery =
-      (this.https ? 'https' : 'http') +
-      '://' +
-      this.globalSettings.server.serverName +
-      '/influxdb/query?db=' +
-      this.globalSettings.server.influxdb +
-      '&epoch=ms&q=' +
-      this.q.replace(';','%3B'); // ; needs to be encoded for influxdb!
-  }
-
-  launchQuery() {
-    this.buildQuery();
-    console.log('calling', this.influxquery);
+    const q = this.utHTTP.buildInfluxQuery(clause, 'koffer')
+    console.log('calling', q);
     this.utHTTP
-      .getHTTPData(this.influxquery)
+      .getHTTPData(q)
       .subscribe((data: Object) => this.printResult(data));
   }
 

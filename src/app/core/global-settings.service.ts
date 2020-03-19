@@ -203,9 +203,6 @@ export class GlobalSettingsService implements OnInit {
   // - try out switching to another server
   reloadSettings() {
     // const localStoredServer = this.getPrometheusServerFromLocalStorage();
-    this.server.influxdb = this.localStorage.get('influxdb');
-    this.server.influxuser = this.localStorage.get('influxuser');
-    this.server.influxpass = this.localStorage.get('influxpass');
     const localSettings = this.localStorage.get('globalSettings');
     const localStoredServer = this.h.getDeep(localSettings, [
       'server',
@@ -328,6 +325,20 @@ export class GlobalSettingsService implements OnInit {
             //TODO set fallback!
           }
         );
+    }
+    this.server.influxdb = this.localStorage.get('influxdb');
+    const isPublicServer = this.server.serverName == 'newton.unraveltec.com';
+    if (!this.server.influxdb) {
+      // this.server.influxdb = isPublicServer ? 'public' : 'telegraf';
+      this.server.influxdb = isPublicServer ? 'koffer' : 'telegraf';
+    }
+    this.server.influxuser = this.localStorage.get('influxuser');
+    if (!this.server.influxuser && isPublicServer) {
+      this.server.influxuser = 'public';
+    }
+    this.server.influxpass = this.localStorage.get('influxpass');
+    if (!this.server.influxpass && isPublicServer) {
+      this.server.influxpass = 'unravelit42.14153';
     }
   }
 

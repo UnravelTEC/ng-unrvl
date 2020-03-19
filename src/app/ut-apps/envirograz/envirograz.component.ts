@@ -62,6 +62,7 @@ export class EnvirograzComponent implements OnInit {
   public meanS = 10;
   public userMeanS = this.meanS;
   db = 'envirograz000';
+  server = 'https://newton.unraveltec.com';
 
   labels = {
     T: {},
@@ -165,16 +166,6 @@ export class EnvirograzComponent implements OnInit {
     );
   }
 
-  buildQuery(clause: string) {
-    return (
-      'https://' +
-      this.globalSettings.server.serverName +
-      '/influxdb/query?db=' +
-      this.db +
-      '&epoch=ms&q=' +
-      clause
-    );
-  }
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
     const widthPx = 600;
@@ -185,11 +176,10 @@ export class EnvirograzComponent implements OnInit {
   }
 
   launchQuery(clause: string, id: string) {
-    const q = this.buildQuery(clause);
+    const q = this.utHTTP.buildInfluxQuery(clause, this.db, this.server);
     console.log('new query:', q);
 
     this.utHTTP
-      // .getHTTPData(q)
       .getHTTPData(q, 'grazweb', '.RaVNaygexThM')
       .subscribe((data: Object) => this.handleData(data, id));
   }

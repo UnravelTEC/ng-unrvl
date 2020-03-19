@@ -26,7 +26,6 @@ export class RadiationComponent implements OnInit {
   public userStartTime = this.startTime;
   public meanS = 54;
   public userMeanS = this.meanS;
-  db = 'koffer';
 
   public row1 = [new Date(new Date().valueOf() - 300100), 1]; //, null, null];
   public row2 = [new Date(new Date().valueOf() - 200000), 2]; // null, 1.2, 0.8];
@@ -69,16 +68,7 @@ export class RadiationComponent implements OnInit {
         's)'
     );
   }
-  buildQuery(clause: string) {
-    return (
-      'https://' +
-      this.globalSettings.server.serverName +
-      '/influxdb/query?db=' +
-      this.db +
-      '&epoch=ms&q=' +
-      clause
-    );
-  }
+
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
     const widthPx = 1600;
@@ -94,7 +84,7 @@ export class RadiationComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
-    const q = this.buildQuery(clause);
+    const q = this.utHTTP.buildInfluxQuery(clause, 'koffer')
     console.log('new query:', q);
 
     this.utHTTP

@@ -144,6 +144,32 @@ export class UtFetchdataService {
     return false;
   }
 
+  buildInfluxQuery(
+    clause: string,
+    database? : string,
+    serverstring?: string,
+    epoch = 'ms'
+  ) {
+    const cleanClause = clause.replace(/;/g, '%3B');
+    if (database === undefined) {
+      database = this.globalSettingsService.server.influxdb;
+    }
+    if (serverstring === undefined) {
+      serverstring =
+        this.globalSettingsService.server.protocol +
+        this.globalSettingsService.server.serverName;
+    }
+    return (
+      serverstring +
+      '/influxdb/query?db=' +
+      database +
+      '&epoch=' +
+      epoch +
+      '&q=' +
+      cleanClause
+    );
+  }
+
   parseInfluxData(
     data: Object,
     labelBlackList: string[] = [],

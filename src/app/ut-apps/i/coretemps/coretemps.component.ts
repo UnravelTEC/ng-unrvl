@@ -67,16 +67,7 @@ export class CoretempsComponent implements OnInit {
         's)'
     );
   }
-  buildQuery(clause: string) {
-    return (
-      'https://' +
-      this.globalSettings.server.serverName +
-      '/influxdb/query?db=' +
-      this.db +
-      '&epoch=ms&q=' +
-      clause
-    );
-  }
+
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
     const widthPx = 1600;
@@ -89,7 +80,7 @@ export class CoretempsComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
-    const q = this.buildQuery(clause);
+    const q = this.utHTTP.buildInfluxQuery(clause, this.db);
     console.log('new query:', q);
 
     this.utHTTP

@@ -47,7 +47,6 @@ export class IndoorclimateComponent implements OnInit {
   public userStartTime = this.startTime;
   public meanS = 10;
   public userMeanS = this.meanS;
-  db = 'telegraf';
 
   labels = {
     T: {},
@@ -104,7 +103,6 @@ export class IndoorclimateComponent implements OnInit {
     this.reload();
   }
   reload() {
-    this.db = this.globalSettings.server.influxdb;
     this.meanS = this.userMeanS;
     this.startTime = this.userStartTime;
     this.launchQuery(
@@ -116,7 +114,8 @@ export class IndoorclimateComponent implements OnInit {
       'T'
     );
     this.launchQuery(
-      "SELECT mean(/H2O|humidity|dewPoint/) FROM humidity WHERE sensor='SCD30|DS18B20' AND time > now() - " +
+      // "SELECT mean(/H2O|humidity|dewPoint/) FROM humidity WHERE sensor='SCD30|DS18B20' AND time > now() - " +
+      "SELECT mean(/H2O|humidity|dewPoint/) FROM humidity WHERE time > now() - " +
         this.startTime +
         ' GROUP BY sensor,time(' +
         String(this.meanS) +
@@ -141,16 +140,6 @@ export class IndoorclimateComponent implements OnInit {
     );
   }
 
-  buildQuery(clause: string) {
-    return (
-      this.globalSettings.server.protocol +
-      this.globalSettings.server.serverName +
-      '/influxdb/query?db=' +
-      this.db +
-      '&epoch=s&q=' +
-      clause
-    );
-  }
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
     const widthPx = 600;
@@ -161,7 +150,7 @@ export class IndoorclimateComponent implements OnInit {
   }
 
   launchQuery(clause: string, id: string) {
-    const q = this.buildQuery(clause);
+    const q = this.utHTTP.buildInfluxQuery(clause, undefined, undefined, 's');
     console.log('new query:', q);
     if (this.globalSettings.server.influxuser) {
       this.utHTTP
