@@ -295,6 +295,7 @@ export class GlobalSettingsService implements OnInit {
       // see if an API i there
       const firstURL = this.h.getBaseURL();
       this.server.serverName = this.stripProtPort(firstURL);
+      this.server.protocol = firstURL.startsWith('https://') ? 'https://' : 'http://';
       this.server.prometheus = firstURL + this.defaultPrometheusPath;
       console.log('No settings in LocalStorage, try our webendpoint', firstURL);
 
