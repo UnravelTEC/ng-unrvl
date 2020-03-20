@@ -17,18 +17,15 @@ export class UtFetchdataService {
     private h: HelperFunctionsService
   ) {}
 
-  httpURL =
-    'http://belinda.cgv.tugraz.at:9090/api/v1/query?query=co2{location="FuzzyLab",sensor="scd30"}';
   Config = {};
 
   queryDefaultStep = 1000; // ms
 
   getHTTPData(
-    url: string,
+    thisurl: string,
     user = this.globalSettingsService.server.influxuser,
     pass = this.globalSettingsService.server.influxpass
   ) {
-    const thisurl = url ? url : this.httpURL;
     if (thisurl.startsWith('https') && thisurl.search(/\/influxdb\//)) {
       const httpOptions = {
         headers: new HttpHeaders({
