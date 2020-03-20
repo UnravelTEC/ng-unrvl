@@ -200,9 +200,58 @@ export class PmhistComponent implements OnInit {
   handleData(data: Object) {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
-    console.log('parsed', ret);
-    this.labels = ret['labels'];
-    this.data = ret['data'];
+    // console.log('parsed', ret);
+
+    // custom sort
+    const oldLabels = ret['labels'];
+
+    const pms = [];
+    const pns = [];
+    for (let i = 1; i < oldLabels.length; i++) {
+      const label = oldLabels[i];
+
+      let match = label.match(/([0-9.]*) µm/) || [];
+      if (match.length > 1) {
+        const size = parseFloat(match[1]);
+        // console.log('found pn', size, '@', i);
+        pns.push({ size: size, index: i });
+        continue;
+      }
+      match = label.match(/pm([0-9.]*) \(µg\/m³/) || [];
+      if (match.length > 1) {
+        const size = parseFloat(match[1]);
+        // console.log('found pm', size, '@', i);
+        pms.push({ size: size, index: i });
+      }
+    }
+    pms.sort((a, b) => a.size - b.size);
+    // console.log("pm's", pms);
+    pns.sort((a, b) => a.size - b.size);
+    // console.log("pn's", pns);
+    const newOrder = [NaN].concat(pms, pns);
+    // console.log('newOrder', newOrder);
+    const newLabels = [oldLabels[0]]; // Date stays
+    const newIndices = [0]
+    for (let c = 1; c < newOrder.length; c++) {
+      const index = newOrder[c]['index'];
+      newLabels.push(oldLabels[index])
+      newIndices.push(index);
+    }
+    // console.log('newLabels', newLabels);
+    const oldData = ret['data']
+    const newData = [];
+    for (let rowindex = 0; rowindex < oldData.length; rowindex++) {
+      const oldRow = oldData[rowindex];
+      const newRow = []
+      for (let c = 0; c < newIndices.length; c++) {
+        const index = newIndices[c];
+        newRow.push(oldRow[index])
+      }
+      newData.push(newRow)
+    }
+
+    this.labels = newLabels;
+    this.data = newData;
     // console.log(cloneDeep(this.dygLabels));
     this.startTime = this.userStartTime;
     // this.changeTrigger = !this.changeTrigger;
@@ -228,7 +277,7 @@ export class PmhistComponent implements OnInit {
         const rowvalues = this.data[datarow];
         for (let i = 0; i < pnRows.length; i++) {
           if (pnRows[i]) {
-            const v = this.data[datarow][i];
+            const v = rowvalues[i];
             if (v > this.maxVal) {
               this.maxVal = v;
             }
@@ -259,7 +308,7 @@ export class PmhistComponent implements OnInit {
     const tmpBarChartLabels = [];
     let chartSeriesData = {
       data: [],
-      label: sensor,
+      label: sensor
     };
     const sortedValues = [];
     for (let i = 0; i < dataObj['points'].length; i++) {
