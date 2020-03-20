@@ -167,8 +167,17 @@
         <button (click)="reload()">
           Reload
         </button>
-        <a routerLink="/Apps/I/EnviroOne" routerLinkActive="active">Single Graph</a>
       </div>
+      <p>
+        <a routerLink="/Apps/I/EnviroOne" routerLinkActive="active"
+          >Single Graph</a
+        >
+      </p>
+      <p>
+        <a routerLink="/Apps/I/Pmhist" routerLinkActive="active"
+          >Particulate Matter Histogram</a
+        >
+      </p>
       <app-ut-dygraph-in
         [displayedData]="data['PM']"
         [columnLabels]="labels['PM']"
