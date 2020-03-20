@@ -250,7 +250,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
   }
-
+  waitForData() {
+    if (this.displayedData && this.displayedData.length > 1) {
+      this.handleInitialData(this.displayedData);
+    } else {
+      setTimeout(() => {
+        this.waitForData();
+      }, 200);
+    }
+  }
   ngOnInit() {
     this.dyGraphOptions['underlayCallback'] = this.backGroundLevels
       ? this.highLightBackgroundLevels
@@ -274,10 +282,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.dyGraphOptions['ylabel'] = this.YLabel;
     this.dyGraphOptions['labels'] = this.columnLabels;
-    if (!this.columnLabels || !this.columnLabels.length) {
-      console.error('you have to supply correct columnLabels');
-      return;
-    }
     while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
       this.dyGraphOptions.visibility.push(true);
     }
@@ -303,9 +307,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       true
     );
 
-    setTimeout(() => {
-      this.handleInitialData(this.displayedData);
-    }, 200);
+    this.waitForData();
 
     // console.log(
     //   'dataEndTime ' + (this.dataEndTime.valueOf() / 1000).toString(),
@@ -479,6 +481,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   handleInitialData(receivedData: Object) {
     if (!this.displayedData.length) {
+      console.error('no data');
+      return;
+    }
+    if (!this.columnLabels || !this.columnLabels.length) {
+      console.error('you have to supply correct columnLabels');
       return;
     }
     // console.log('handleInitialData: received Data:', cloneDeep(receivedData));
@@ -559,7 +566,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     const parent = this['parent'];
 
-    const values = { points: points, seriesName: seriesName}
+    const values = { points: points, seriesName: seriesName };
 
     parent.returnHighlightedRow.emit(values);
   }

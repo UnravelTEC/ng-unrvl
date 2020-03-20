@@ -258,6 +258,7 @@ export class UtFetchdataService {
           colname = colname.replace(/degC$/, '°C');
           colname = colname.replace(/ugpm3$/, 'µg/m³');
           colname = colname.replace(/gpm3$/, 'g/m³');
+          colname = colname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm');
           colname = colname.replace(/H2O_/, 'H₂O_');
           colname = colname.replace(/CO2_/, 'CO₂_');
           colname = colname.replace(/NO2_/, 'NO₂_');
@@ -269,7 +270,7 @@ export class UtFetchdataService {
           const collabel = colname
             ? serieslabel + ' ' + colname
             : serieslabel.replace(/,$/, '');
-          labels.push(collabel);
+          labels.push(collabel.trim());
         } else {
           seriesValidColumns[i][colindex] = false;
         }
