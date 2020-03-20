@@ -67,9 +67,6 @@ export class IndoorclimateComponent implements OnInit {
     V: this.startTime
   };
 
-  public row1 = [new Date(new Date().valueOf() - 300100), 1]; //, null, null];
-  public row2 = [new Date(new Date().valueOf() - 200000), 2]; // null, 1.2, 0.8];
-
   constructor(
     public globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
@@ -77,13 +74,6 @@ export class IndoorclimateComponent implements OnInit {
     private h: HelperFunctionsService
   ) {
     this.globalSettings.emitChange({ appName: 'Indoor Room Climate' });
-    for (const key in this.labels) {
-      if (this.labels.hasOwnProperty(key)) {
-        this.labels[key] = ['Date', 'sensor1-val1'];
-
-        this.data[key] = [this.row1, this.row2];
-      }
-    }
   }
 
   labelBlackListT = [

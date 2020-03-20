@@ -27,11 +27,8 @@ export class RadiationComponent implements OnInit {
   public meanS = 54;
   public userMeanS = this.meanS;
 
-  public row1 = [new Date(new Date().valueOf() - 300100), 1]; //, null, null];
-  public row2 = [new Date(new Date().valueOf() - 200000), 2]; // null, 1.2, 0.8];
-
-  labels = ['Date', 'sensor1-val1'];
-  data = [this.row1, this.row2];
+  labels = [];
+  data = [];
 
   appName = 'Radiation';
 

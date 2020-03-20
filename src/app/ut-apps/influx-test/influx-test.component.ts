@@ -36,14 +36,8 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
 
   extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 };
 
-  public dygLabels = ['Date', 'sensor1-val1']; // , 'sensor2-val1', 'sensor2-val2'];
-  public row1 = [new Date(new Date().valueOf() - 300100), 1]; //, null, null];
-  public row2 = [new Date(new Date().valueOf() - 200000), 2]; // null, 1.2, 0.8];
-  // public row3 = [new Date(new Date().valueOf() - 100000), 2, null, null];
-  // public row4 = [new Date(), null, 2.2, 1.1];
-
-  public dygData = [this.row1, this.row2]; // , this.row3, this.row4];
-  // dygDataStr = '';
+  public dygLabels = [];
+  public dygData = [];
 
   changeTrigger = true;
   showResultText = false;
