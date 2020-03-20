@@ -29,7 +29,7 @@ export class PmhistComponent implements OnInit {
         axis: 'y2'
       }
     },
-    y2label: 'µg&#8202;/&#8202;m³',
+    y2label: 'Particulate Mass (&#8202;µg&#8202;/&#8202;m³&#8202;)',
     axes: {
       y2: {
         independentTicks: true,
@@ -56,6 +56,7 @@ export class PmhistComponent implements OnInit {
 
   labels = [];
   data = [];
+  maxVal = 0;
 
   appName = 'Particulate Matter Histogram';
 
@@ -63,7 +64,7 @@ export class PmhistComponent implements OnInit {
 
   barColors = '#00BBF2';
   borderColor = '#00ff00';
-  chartColors = [{ backgroundColor: this.barColors }];
+  chartColors = [{ backgroundColor: [] }];
   public barChartLabels = [
     '0.46 µm',
     '0.66 µm',
@@ -88,13 +89,14 @@ export class PmhistComponent implements OnInit {
     '31 µm',
     '34 µm',
     '37 µm',
-    '40 µm'
+    '40 µm',
+    ''
   ];
   public barChartType = 'bar';
   public barChartLegend = true;
   public barChartData = [
     // { data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A' },
-    { data: [1,0], label: 'OPC-N3' }
+    { data: [1, 0], label: 'OPC-N3' }
   ];
   public barChartOptions = {
     scaleShowVerticalLines: false,
@@ -122,6 +124,10 @@ export class PmhistComponent implements OnInit {
     private h: HelperFunctionsService
   ) {
     this.globalSettings.emitChange({ appName: this.appName });
+    for (let i = 0; i < 24; i++) {
+      this.chartColors[0].backgroundColor.push(this.barColors);
+    }
+    this.chartColors[0].backgroundColor.push('rgba(255, 255, 255, 0)');
   }
 
   ngOnInit() {
@@ -208,6 +214,28 @@ export class PmhistComponent implements OnInit {
         const label = this.labels[i];
         points.push({ name: label, yval: lastrow[i] });
       }
+      // search for p-count maximum
+      const pnRows = [];
+      for (let i = 0; i < this.labels.length; i++) {
+        const valueLabel = this.labels[i];
+        if ((valueLabel.match(/([0-9.]*) µm/) || []).length) {
+          pnRows.push(true);
+        } else {
+          pnRows.push(false);
+        }
+      }
+      for (let datarow = 0; datarow < this.data.length; datarow++) {
+        const rowvalues = this.data[datarow];
+        for (let i = 0; i < pnRows.length; i++) {
+          if (pnRows[i]) {
+            const v = this.data[datarow][i];
+            if (v > this.maxVal) {
+              this.maxVal = v;
+            }
+          }
+        }
+      }
+      console.log('maxVal:', this.maxVal);
       this.handleHighlightCallback({
         seriesName: this.labels[1], // first non-date
         points: points
@@ -231,7 +259,7 @@ export class PmhistComponent implements OnInit {
     const tmpBarChartLabels = [];
     let chartSeriesData = {
       data: [],
-      label: sensor
+      label: sensor,
     };
     const sortedValues = [];
     for (let i = 0; i < dataObj['points'].length; i++) {
@@ -251,6 +279,8 @@ export class PmhistComponent implements OnInit {
       tmpBarChartLabels.push(String(v.size) + ' µm');
       chartSeriesData.data.push(v.v);
     }
+    tmpBarChartLabels.push('');
+    chartSeriesData.data.push(this.maxVal);
     this.barChartLabels = tmpBarChartLabels;
     this.barChartData = [];
     this.barChartData.push(chartSeriesData);
