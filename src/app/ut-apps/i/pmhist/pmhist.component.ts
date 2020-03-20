@@ -19,13 +19,13 @@ export class PmhistComponent implements OnInit {
     connectSeparatedPoints: true,
     pointSize: 3,
     series: {
-      'sensor: OPC-N3, p10 (µg/m³)': {
+      'sensor: OPC-N3, pm10 (µg/m³)': {
         axis: 'y2'
       },
-      'sensor: OPC-N3, p2.5 (µg/m³)': {
+      'sensor: OPC-N3, pm2.5 (µg/m³)': {
         axis: 'y2'
       },
-      'sensor: OPC-N3, p1 (µg/m³)': {
+      'sensor: OPC-N3, pm1 (µg/m³)': {
         axis: 'y2'
       }
     },

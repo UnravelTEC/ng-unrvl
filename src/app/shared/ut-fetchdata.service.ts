@@ -256,6 +256,7 @@ export class UtFetchdataService {
           colname = colname.replace(/percent$/, '%');
           colname = colname.replace(/_%/, '-%');
           colname = colname.replace(/degC$/, '°C');
+          colname = colname.replace(/p([0-9.]*)_ugpm3$/, 'pm$1 (µg/m³)');
           colname = colname.replace(/ugpm3$/, 'µg/m³');
           colname = colname.replace(/gpm3$/, 'g/m³');
           colname = colname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm');
