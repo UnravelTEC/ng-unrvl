@@ -279,6 +279,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     if (this.enableHighlightCallback) {
       this.dyGraphOptions['highlightCallback'] = this.highlightCallback;
+      this.dyGraphOptions['unhighlightCallback'] = this.unhighlightCallback;
     }
     this.dyGraphOptions['ylabel'] = this.YLabel;
     this.dyGraphOptions['labels'] = this.columnLabels;
@@ -561,14 +562,98 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   highlightCallback(event, x, points, row, seriesName) {
     if (!this.hasOwnProperty('parent')) {
-      console.error('afterZoom: No parent');
+      console.error('highlightCallback: No parent');
       return;
     }
     const parent = this['parent'];
 
     const values = { points: points, seriesName: seriesName };
-
     parent.returnHighlightedRow.emit(values);
+
+    if (this['numAxes']() < 2) {
+      return;
+    }
+
+    let axis = 'y1';
+    if (
+      parent['dyGraphOptions'] &&
+      parent['dyGraphOptions']['series'] &&
+      parent['dyGraphOptions']['series'][seriesName] &&
+      parent['dyGraphOptions']['series'][seriesName]['axis'] &&
+      parent['dyGraphOptions']['series'][seriesName]['axis'] == 'y2'
+    ) {
+      axis = 'y2';
+    }
+    // console.log(seriesName, axis);
+
+    // console.log(event, x, row, points);
+    const htmlID = event.path[2]['id'];
+    const DygDiv = event.path[1];
+    // console.log(event, DygDiv);
+
+    let y1axis = undefined,
+      y2axis = undefined;
+    const children = DygDiv.childNodes;
+    for (const key in children) {
+      if (y1axis && y2axis) {
+        break;
+      }
+      if (children.hasOwnProperty(key)) {
+        const element = children[key];
+        if (
+          element.firstChild &&
+          element.firstChild.firstChild &&
+          element.firstChild.firstChild.className
+        ) {
+          const destchild = element.firstChild.firstChild;
+          const childclass = destchild.className;
+          if (!y1axis && childclass.search('dygraph-ylabel') > -1) {
+            y1axis = destchild;
+            continue;
+          }
+          if (!y2axis && childclass.search('dygraph-y2label') > -1) {
+            // console.log('found y2');
+            y2axis = destchild;
+          }
+        }
+        // console.log('child:', element);
+      }
+    }
+    const shadow = '0 0 1em orange, 0 0 0.2em orange';
+    if (axis == 'y1') {
+      y1axis.style.textShadow = shadow;
+      y2axis.style.textShadow = 'none';
+      y1axis.style.color = 'black';
+      y2axis.style.color = 'gray';
+    } else {
+      y2axis.style.textShadow = shadow;
+      y1axis.style.textShadow = 'none';
+      y2axis.style.color = 'black';
+      y1axis.style.color = 'gray';
+    }
+  }
+  unhighlightCallback(event) {
+    if (this['numAxes']() < 2) {
+      return;
+    }
+    // console.log('unhighlight');
+    // console.log(event);
+    const children = event.path[1].childNodes;
+    ['dygraph-ylabel', 'dygraph-y2label'].forEach(cssclass => {
+      for (const key in children) {
+        if (
+          children.hasOwnProperty(key) &&
+          children[key].firstChild &&
+          children[key].firstChild.firstChild &&
+          children[key].firstChild.firstChild.className &&
+          children[key].firstChild.firstChild.className.search(cssclass) > -1
+        ) {
+          children[key].firstChild.firstChild.style.textShadow = 'none';
+          children[key].firstChild.firstChild.style.color = 'black';
+          break;
+        }
+      }
+    });
   }
 
   afterZoomCallback(
