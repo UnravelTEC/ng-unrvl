@@ -13,7 +13,7 @@ export class EnvirooneComponent implements OnInit {
   sensorsEnabled = {
     BME280: true,
     EE08: true,
-    OPCN3: true,
+    'OPC-N3': true,
     SDS011: true,
     SPS30: true,
     NO2B43F: true
@@ -22,9 +22,21 @@ export class EnvirooneComponent implements OnInit {
   extraDyGraphConfig = {
     connectSeparatedPoints: true,
     pointSize: 3,
-    logscale: true
+    logscale: true,
+    series: {
+      'pressure sensor: BME280, pressure (hPa)': {
+        axis: 'y2'
+      }
+    },
+    y2label: 'Atmospheric Pressure (hPa)',
+    axes: {
+      y2: {
+        independentTicks: true,
+        drawGrid: false
+      }
+    }
   };
-  labelBlackListT = ['host', 'serial'];
+  labelBlackListT = ['host', 'serial', 'mean_*'];
   graphstyle = {
     position: 'absolute',
     top: '4em',
@@ -35,7 +47,7 @@ export class EnvirooneComponent implements OnInit {
 
   public startTime = '6h';
   public userStartTime = this.startTime;
-  public meanS = 13;
+  public meanS = 30;
   public userMeanS = this.meanS;
   db = 'envirograz000';
   server = 'https://newton.unraveltec.com';
@@ -112,7 +124,7 @@ export class EnvirooneComponent implements OnInit {
 
     let pmquery = '';
     if (
-      this.sensorsEnabled['OPCN3'] ||
+      this.sensorsEnabled['OPC-N3'] ||
       this.sensorsEnabled['SDS011'] ||
       this.sensorsEnabled['SPS30']
     ) {
@@ -122,13 +134,13 @@ export class EnvirooneComponent implements OnInit {
       let sensorw = '';
       if (
         !(
-          this.sensorsEnabled['OPCN3'] &&
+          this.sensorsEnabled['OPC-N3'] &&
           this.sensorsEnabled['SDS011'] &&
           this.sensorsEnabled['SPS30']
         )
       ) {
         let s;
-        for (s of ['OPCN3', 'SDS011', 'SPS30']) {
+        for (s of ['OPC-N3', 'SDS011', 'SPS30']) {
           if (this.sensorsEnabled[s]) {
             sensorw += (sensorw ? ' OR ' : '') + "sensor='" + s + "'";
           }
