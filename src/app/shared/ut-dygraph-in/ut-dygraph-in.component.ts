@@ -1491,27 +1491,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.Dygraph.resize(undefined, undefined);
     }, 50);
   }
-  updateVisibility() {
-    // wait for ng to update variables
-    console.log('click on vis');
-
-    setTimeout(() => {
-      this.toggleVisibility();
-    }, 50);
-  }
-  toggleVisibility() {
-    console.log('new vis:', this.dyGraphOptions.visibility);
-
-    this.showAllifNone();
-    this.Dygraph.updateOptions({
-      visibility: this.dyGraphOptions.visibility
-    });
-  }
   tVis4Label(label: string) {
     for (let i = 1; i < this.columnLabels.length; i++) {
       const ilabel = this.columnLabels[i];
       if (label == ilabel) {
-        console.log(i, ilabel);
+        // console.log(i, ilabel);
         this.dyGraphOptions.visibility[i - 1] = !this.dyGraphOptions.visibility[
           i - 1
         ];
@@ -1524,19 +1508,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     });
   }
   showAllifNone() {
-    console.log('show all?', this.dyGraphOptions.visibility);
+    // console.log('show all?', this.dyGraphOptions.visibility);
     let everythingHidden = true;
     for (let i = 0; i < this.dyGraphOptions.visibility.length; i++) {
       if (this.dyGraphOptions.visibility[i] === true) {
-        console.log('found true', i);
-
         everythingHidden = false;
         break;
       }
     }
     if (everythingHidden) {
-      console.log('show all');
-
       for (let i = 0; i < this.dyGraphOptions.visibility.length; i++) {
         this.dyGraphOptions.visibility[i] = true;
       }
