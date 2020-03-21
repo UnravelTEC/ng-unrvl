@@ -94,9 +94,17 @@
     left: 4em !important;
     bottom: 3em;
     width: auto;
-    overflow-x : visible;
+    overflow-x: visible;
     overflow-y: auto;
-    pointer-events : none;
+    pointer-events: none;
+
+    span {
+      pointer-events: auto;
+      cursor: pointer;
+    }
+    span:hover {
+      font-style: italic;
+    }
   }
   .dygraph-legend > span.highlight {
     border: 1px solid black;
@@ -129,7 +137,7 @@
     display: block;
     margin-right: auto;
     * {
-      transform: translate(0rem,0rem);
+      transform: translate(0rem, 0rem);
       font-size: 1.1rem;
     }
   }

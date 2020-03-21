@@ -217,7 +217,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
   updateGraph() {
     if (this.Dygraph) {
-      while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
+      while (this.dyGraphOptions.visibility.length < this.columnLabels.length -1) {
         this.dyGraphOptions.visibility.push(true);
       }
 
@@ -273,6 +273,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.YLabel = '';
       this.XLabel = '';
       this.maxRetentionTime = 1.2;
+    } else {
+      this.dyGraphOptions['legendFormatter'] = this.legendFormatter;
     }
     if (this.backGroundLevels) {
       this.dyGraphOptions['backGroundLevels'] = this.backGroundLevels; // option we create ourselves to access without Dygraphs.parent in initial draw call
@@ -283,7 +285,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.dyGraphOptions['ylabel'] = this.YLabel;
     this.dyGraphOptions['labels'] = this.columnLabels;
-    while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
+    while (this.dyGraphOptions.visibility.length < this.columnLabels.length -1) {
       this.dyGraphOptions.visibility.push(true);
     }
     this.updateXLabel();
@@ -299,6 +301,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     // this.displayedData = [[undefined, null]];
     this.htmlID = 'graph_' + (Math.random() + 1).toString();
+    if (!document['Dygraphs']) {
+      document['Dygraphs'] = [];
+    }
+    document['Dygraphs'][this.htmlID] = this;
 
     // console.log(this.startTime, this.endTime);
 
@@ -339,6 +345,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.Dygraph.destroy();
       console.log('DyGraph destroyed');
     }
+    delete document['Dygraphs'][this.htmlID];
   }
 
   updateDyGraphOptions() {
@@ -510,7 +517,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     this.waiting = false;
-    while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
+    while (this.dyGraphOptions.visibility.length < this.columnLabels.length -1) {
       this.dyGraphOptions.visibility.push(true);
     }
     console.log(
@@ -587,7 +594,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     // console.log(seriesName, axis);
 
     // console.log(event, x, row, points);
-    const htmlID = event.path[2]['id'];
     const DygDiv = event.path[1];
     // console.log(event, DygDiv);
 
@@ -616,7 +622,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
             y2axis = destchild;
           }
         }
-        // console.log('child:', element);
       }
     }
     const shadow = '0 0 1em orange, 0 0 0.2em orange';
@@ -654,6 +659,30 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         }
       }
     });
+  }
+  legendFormatter(data) {
+    let html = data.xHTML ? data.xHTML + ':' : 'Legend:';
+    if (data.x == null) {
+      // This happens when there's no selection and {legend: 'always'} is set.
+      for (let i = 0; i < data.series.length; i++) {
+        const series = data.series[i];
+        if (!series.isVisible) series.color = 'gray';
+        html += `<br/><span style='font-weight: bold; color: ${series.color};'>${series.dashHTML} ${series.labelHTML}</span>`;
+      }
+      return html;
+    }
+    for (let i = 0; i < data.series.length; i++) {
+      const series = data.series[i];
+      // console.log(series);
+
+      if (!series.isVisible) series.color = 'gray';
+      const cls = series.isHighlighted ? ' class="highlight"' : '';
+      html +=
+        `<br><span${cls} onClick="document['Dygraphs']['` +
+        this['parent']['htmlID'] +
+        `'].tVis4Label('${series.label}')"> <b><span style='color: ${series.color};'>${series.dashHTML} ${series.labelHTML}</span></b>:&#160;${series.yHTML}</span>`;
+    }
+    return html;
   }
 
   afterZoomCallback(
@@ -1473,19 +1502,44 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   toggleVisibility() {
     console.log('new vis:', this.dyGraphOptions.visibility);
 
-    let everythingHidden = true;
-    this.dyGraphOptions.visibility.forEach(series => {
-      if (series === true) {
-        everythingHidden = false;
-      }
+    this.showAllifNone();
+    this.Dygraph.updateOptions({
+      visibility: this.dyGraphOptions.visibility
     });
+  }
+  tVis4Label(label: string) {
+    for (let i = 1; i < this.columnLabels.length; i++) {
+      const ilabel = this.columnLabels[i];
+      if (label == ilabel) {
+        console.log(i, ilabel);
+        this.dyGraphOptions.visibility[i - 1] = !this.dyGraphOptions.visibility[
+          i - 1
+        ];
+        break;
+      }
+    }
+    this.showAllifNone();
+    this.Dygraph.updateOptions({
+      visibility: this.dyGraphOptions.visibility
+    });
+  }
+  showAllifNone() {
+    console.log('show all?', this.dyGraphOptions.visibility);
+    let everythingHidden = true;
+    for (let i = 0; i < this.dyGraphOptions.visibility.length; i++) {
+      if (this.dyGraphOptions.visibility[i] === true) {
+        console.log('found true', i);
+
+        everythingHidden = false;
+        break;
+      }
+    }
     if (everythingHidden) {
+      console.log('show all');
+
       for (let i = 0; i < this.dyGraphOptions.visibility.length; i++) {
         this.dyGraphOptions.visibility[i] = true;
       }
     }
-    this.Dygraph.updateOptions({
-      visibility: this.dyGraphOptions.visibility
-    });
   }
 }
