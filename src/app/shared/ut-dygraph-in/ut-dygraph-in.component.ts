@@ -48,8 +48,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   XLabel = undefined;
   @Input()
-  dataSeriesLabels: Array<string>;
-  @Input()
   maxRetentionTime = 3; // how long the data is hold in Browser RAM - times the "startTime"
   // - only enforced on fetchnewdata - and only cuts as much as is fetched new.
   public retainDataInfinitely = false;
@@ -257,6 +255,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     if (this.displayedData && this.displayedData.length > 1) {
       this.handleInitialData(this.displayedData);
     } else {
+      if (this.displayedData.length == 0 && this.columnLabels.length == 1) {
+        this.noData = true;
+        this.waiting = false;
+        return;
+      }
       setTimeout(() => {
         this.waitForData();
       }, 200);
@@ -266,10 +269,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.dyGraphOptions['underlayCallback'] = this.backGroundLevels
       ? this.highLightBackgroundLevels
       : undefined;
-    /*this.dyGraphOptions.labels.push(...this.dataSeriesLabels);
-    if (!this.dyGraphOptions.labels[1]) {
-      this.dyGraphOptions.labels[1] = this.queryString;
-    }*/
     if (this.minimal) {
       this.options = false;
       this.showDate = false;
