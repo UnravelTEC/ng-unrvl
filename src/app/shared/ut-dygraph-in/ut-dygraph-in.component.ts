@@ -217,7 +217,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
   updateGraph() {
     if (this.Dygraph) {
-      while (this.dyGraphOptions.visibility.length < this.columnLabels.length -1) {
+      while (
+        this.dyGraphOptions.visibility.length <
+        this.columnLabels.length - 1
+      ) {
         this.dyGraphOptions.visibility.push(true);
       }
 
@@ -285,7 +288,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.dyGraphOptions['ylabel'] = this.YLabel;
     this.dyGraphOptions['labels'] = this.columnLabels;
-    while (this.dyGraphOptions.visibility.length < this.columnLabels.length -1) {
+    while (
+      this.dyGraphOptions.visibility.length <
+      this.columnLabels.length - 1
+    ) {
       this.dyGraphOptions.visibility.push(true);
     }
     this.updateXLabel();
@@ -517,7 +523,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     this.waiting = false;
-    while (this.dyGraphOptions.visibility.length < this.columnLabels.length -1) {
+    while (
+      this.dyGraphOptions.visibility.length <
+      this.columnLabels.length - 1
+    ) {
       this.dyGraphOptions.visibility.push(true);
     }
     console.log(
@@ -1418,7 +1427,24 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.toZoom
       );
     }
-    this.h.exportCSV(data, labels, this.exportUTC);
+    let visibleLabels = [labels[0]]; // Date
+    for (let i = 1; i < labels.length; i++) {
+      if (this.dyGraphOptions.visibility[i - 1]) {
+        visibleLabels.push(labels[i]);
+      }
+    }
+    let visibleData = [];
+    for (let r = 0; r < data.length; r++) {
+      const origRow = data[r];
+      let newRow = [origRow[0]]; // Timestamp
+      for (let c = 0; c < origRow.length; c++) {
+        if (this.dyGraphOptions.visibility[c - 1]) {
+          newRow.push(origRow[c]);
+        }
+      }
+      visibleData.push(newRow);
+    }
+    this.h.exportCSV(visibleData, visibleLabels, this.exportUTC);
   }
   getAverage(time = '1m', index = 1) {
     let time_s = this.h.parseToSeconds(time);
