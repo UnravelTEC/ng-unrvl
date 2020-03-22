@@ -7,6 +7,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { UtDygraphModule } from '../../shared/ut-dygraph/ut-dygraph.module';
 import { FormsModule } from '@angular/forms';
 import { UtDygraphInModule } from '../../shared/ut-dygraph-in/ut-dygraph-in.module';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { UtDygraphInModule } from '../../shared/ut-dygraph-in/ut-dygraph-in.modu
     UtDygraphModule,
     UtDygraphInModule,
     MatSelectModule,
+    MatIconModule,
     FormsModule
   ],
   declarations: [EnvirograzComponent]

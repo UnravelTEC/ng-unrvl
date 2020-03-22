@@ -9,16 +9,37 @@
       <h3>
         Temperature
       </h3>
+      <a
+        routerLink="/Apps/I/EnviroOne"
+        [queryParams]="{ filter: 'T' }"
+        routerLinkActive="active"
+        class="fullscreen"
+        ><mat-icon>settings_overscan</mat-icon></a
+      >
     </th>
     <th>
       <h3>
         relative Humidity
       </h3>
+      <a
+        routerLink="/Apps/I/EnviroOne"
+        [queryParams]="{ filter: 'rH' }"
+        routerLinkActive="active"
+        class="fullscreen"
+        ><mat-icon>settings_overscan</mat-icon></a
+      >
     </th>
     <th>
       <h3>
         Barometric Pressure
       </h3>
+      <a
+        routerLink="/Apps/I/EnviroOne"
+        [queryParams]="{ filter: 'P' }"
+        routerLinkActive="active"
+        class="fullscreen"
+        ><mat-icon>settings_overscan</mat-icon></a
+      >
     </th>
   </tr>
   <tr>
@@ -127,11 +148,25 @@
       <h3>
         Particulate Matter
       </h3>
+      <a
+        routerLink="/Apps/I/EnviroOne"
+        [queryParams]="{ filter: 'PM' }"
+        routerLinkActive="active"
+        class="fullscreen"
+        ><mat-icon>settings_overscan</mat-icon></a
+      >
     </th>
     <th>
       <h3>
         Nitrogen Dioxide
       </h3>
+      <a
+        routerLink="/Apps/I/EnviroOne"
+        [queryParams]="{ filter: 'NO2' }"
+        routerLinkActive="active"
+        class="fullscreen"
+        ><mat-icon>settings_overscan</mat-icon></a
+      >
     </th>
   </tr>
   <tr>
@@ -168,11 +203,11 @@
           Reload
         </button>
       </div>
-      <p>
+      <!-- <p>
         <a routerLink="/Apps/I/EnviroOne" routerLinkActive="active"
           >Single Graph</a
         >
-      </p>
+      </p> -->
       <p>
         <a routerLink="/Apps/I/Pmhist" routerLinkActive="active"
           >Particulate Matter Histogram</a

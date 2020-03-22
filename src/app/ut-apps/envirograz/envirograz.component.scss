@@ -6,13 +6,24 @@ table.envirobody {
   margin: 0;
   table-layout: fixed;
   h3 {
-    margin: 0rem;
+    margin: 0;
+    display: inline-block;
+
+    padding: 0;
   }
   th {
-    padding: 0.5rem;
+    padding: 0.5rem 0;
     height: 6vh;
     border-left: 1px solid gray;
     width: 32%;
+    position: relative;
+    a.fullscreen,
+    a.fullscreen:visited {
+      color: black;
+      position: absolute;
+      top: 1em;
+      right: 1em;
+    }
   }
   td {
     position: relative;
