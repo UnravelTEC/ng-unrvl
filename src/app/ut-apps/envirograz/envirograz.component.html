@@ -52,6 +52,7 @@
         [extraDyGraphConfig]="extraDyGraphConfig"
         [startTime]="startTimes['T']"
         YLabel="°C"
+        options="false"
         #Temp
       >
       </app-ut-dygraph-in>
@@ -85,6 +86,7 @@
         [extraDyGraphConfig]="extraDyGraphConfig"
         [startTime]="startTimes['H']"
         YLabel="%"
+        options="false"
         #rH
       >
       </app-ut-dygraph-in>
@@ -118,6 +120,7 @@
         [extraDyGraphConfig]="extraDyGraphConfig"
         [startTime]="startTimes['P']"
         YLabel="mbar"
+        options="false"
         #P
       ></app-ut-dygraph-in>
       <!-- runningAvgPoints="30" -->
@@ -222,6 +225,7 @@
         [startTime]="startTimes['PM']"
         YLabel="µg&#8202;/&#8202;m³"
         [backGroundLevels]="backGroundLevelsPM"
+        options="false"
         #PM
       >
       </app-ut-dygraph-in>
@@ -257,6 +261,7 @@
         [startTime]="startTimes['N']"
         YLabel="µg&#8202;/&#8202;m³"
         [backGroundLevels]="backGroundLevelsN"
+        options="false"
         #N
       >
       </app-ut-dygraph-in>
