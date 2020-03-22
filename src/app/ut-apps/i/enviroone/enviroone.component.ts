@@ -3,6 +3,7 @@ import { GlobalSettingsService } from '../../../core/global-settings.service';
 import { LocalStorageService } from '../../../core/local-storage.service';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-enviroone',
@@ -10,6 +11,13 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
   styleUrls: ['./enviroone.component.scss']
 })
 export class EnvirooneComponent implements OnInit {
+  physParamEnabled = {
+    T: true,
+    rH: true,
+    P: true,
+    PM: true,
+    NO2: true
+  };
   sensorsEnabled = {
     BME280: true,
     EE08: true,
@@ -17,6 +25,39 @@ export class EnvirooneComponent implements OnInit {
     SDS011: true,
     SPS30: true,
     NO2B43F: true
+  };
+  filters = {
+    T: {
+      sensorsEnabled: {
+        EE08: true,
+        BME280: true
+      }
+    },
+    rH: {
+      sensorsEnabled: {
+        EE08: true,
+        BME280: true
+      },
+      filter: ['rel_percent']
+    },
+    P: {
+      sensorsEnabled: {
+        BME280: true
+      },
+      filter: ['pressure']
+    },
+    NO2: {
+      sensorsEnabled: {
+        NO2B43F: true
+      }
+    },
+    PM: {
+      sensorsEnabled: {
+        'OPC-N3': true,
+        SDS011: true,
+        SPS30: true
+      }
+    }
   };
 
   extraDyGraphConfig = {
@@ -63,7 +104,8 @@ export class EnvirooneComponent implements OnInit {
     private globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
-    private h: HelperFunctionsService
+    private h: HelperFunctionsService,
+    private router: ActivatedRoute
   ) {
     this.globalSettings.emitChange({ appName: this.appName });
   }
@@ -77,6 +119,12 @@ export class EnvirooneComponent implements OnInit {
     if (lsStartTime) {
       this.userStartTime = lsStartTime;
     }
+    const filter = this.router.snapshot.queryParamMap.get('filter');
+    const chosenfilter = this.filters[filter];
+    if (chosenfilter) {
+    }
+    console.log('filter', filter);
+
     this.reload();
   }
   reload() {
@@ -85,8 +133,11 @@ export class EnvirooneComponent implements OnInit {
     const ts = this.startTime;
     const mS = String(this.meanS);
 
-    let rHquery = '';
-    if (this.sensorsEnabled['BME280'] || this.sensorsEnabled['EE08']) {
+    let Tquery = '';
+    if (
+      this.physParamEnabled['T'] &&
+      (this.sensorsEnabled['BME280'] || this.sensorsEnabled['EE08'])
+    ) {
       let sensorw = '',
         s;
       for (s of ['BME280', 'EE08']) {
@@ -94,15 +145,29 @@ export class EnvirooneComponent implements OnInit {
           sensorw += (sensorw ? ' OR ' : '') + "sensor='" + s + "'";
         }
       }
-
-      rHquery =
+      Tquery =
         'SELECT mean(*) FROM temperature WHERE (' +
         sensorw +
         ') AND time > now() - ' +
         ts +
         ' GROUP BY sensor,host,time(' +
         mS +
-        's);' +
+        's);';
+    }
+
+    let rHquery = '';
+    if (
+      this.physParamEnabled['rH'] &&
+      (this.sensorsEnabled['BME280'] || this.sensorsEnabled['EE08'])
+    ) {
+      let sensorw = '',
+        s;
+      for (s of ['BME280', 'EE08']) {
+        if (this.sensorsEnabled[s]) {
+          sensorw += (sensorw ? ' OR ' : '') + "sensor='" + s + "'";
+        }
+      }
+      rHquery =
         'SELECT mean(/rel_percent/) FROM humidity WHERE ' +
         (sensorw ? '(' + sensorw + ') AND ' : '') +
         ' time > now() - ' +
@@ -113,7 +178,7 @@ export class EnvirooneComponent implements OnInit {
     }
 
     let pquery = '';
-    if (this.sensorsEnabled['BME280']) {
+    if (this.physParamEnabled['P'] && this.sensorsEnabled['BME280']) {
       pquery =
         'SELECT mean(*) FROM pressure WHERE time > now() - ' +
         ts +
@@ -124,9 +189,10 @@ export class EnvirooneComponent implements OnInit {
 
     let pmquery = '';
     if (
-      this.sensorsEnabled['OPC-N3'] ||
-      this.sensorsEnabled['SDS011'] ||
-      this.sensorsEnabled['SPS30']
+      this.physParamEnabled['PM'] &&
+      (this.sensorsEnabled['OPC-N3'] ||
+        this.sensorsEnabled['SDS011'] ||
+        this.sensorsEnabled['SPS30'])
     ) {
       pmquery =
         'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE ';
@@ -157,7 +223,7 @@ export class EnvirooneComponent implements OnInit {
     }
 
     let no2query = '';
-    if (this.sensorsEnabled['NO2B43F']) {
+    if (this.physParamEnabled['NO2'] && this.sensorsEnabled['NO2B43F']) {
       no2query =
         'SELECT mean(NO2_ugpm3) FROM gas WHERE time > now() - ' +
         ts +
@@ -165,7 +231,8 @@ export class EnvirooneComponent implements OnInit {
         mS +
         's);';
     }
-    this.launchQuery(rHquery + pquery + pmquery + no2query);
+    const queries = Tquery + rHquery + pquery + pmquery + no2query;
+    if (queries) this.launchQuery(queries);
   }
 
   changeMean(param) {

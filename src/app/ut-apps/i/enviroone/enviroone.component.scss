@@ -1,37 +1,58 @@
 .settings {
-    position: absolute;
-    bottom: 2em;
-    right: 0;
-    border: 1px solid green;
-    width: 11rem;
-    margin: 1rem;
-    padding: 1rem;
-    label {
-      display: inline-block;
-      color: rgba(0, 0, 0, 0.54);
-      text-align: right;
-      margin-right: 0.7rem;
-      font-weight: 400;
-      font-size: 16px;
-      ￼line-height: 1.125;
-      ￼font-family: Roboto, 'Helvetica Neue', sans-serif;
+  position: absolute;
+  bottom: 2em;
+  right: 0;
+  border: 1px solid green;
+  width: 11rem;
+  margin: 1rem;
+  padding: 1rem;
+  label {
+    display: inline-block;
+    color: rgba(0, 0, 0, 0.54);
+    text-align: left;
+    margin-right: 0.7rem;
+    font-weight: 400;
+    font-size: 16px;
+    ￼line-height: 1.125;
+    ￼font-family: Roboto, 'Helvetica Neue', sans-serif;
+  }
+  table {
+    border-collapse: separate;
+    border-spacing: 0;
+    padding: 0.5em;
+    // background-color: khaki;
+    th {
+      // padding: 0.5em;
     }
-    input[type='text'] {
-      padding: 0.3em;
-      // border-radius: 0.5em;
-      font-size: 20px;
-      border: 1px solid rgba(0, 0, 0, 0.54);
+    td:first-child {
+      width: 1em;
+      input {
+        cursor: pointer;
+      }
     }
-    button {
-      border: 0;
-      border-radius: 0.5em;
-      background: #5cb85c;
-      padding: 0.5em;
+    td label {
+      // background-color: greenyellow;
+      width: 100%;
       cursor: pointer;
-      min-width: 2.25em;
-      color: white;
     }
   }
+
+  input[type='text'] {
+    padding: 0.3em;
+    // border-radius: 0.5em;
+    font-size: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.54);
+  }
+  button {
+    border: 0;
+    border-radius: 0.5em;
+    background: #5cb85c;
+    padding: 0.5em;
+    cursor: pointer;
+    min-width: 2.25em;
+    color: white;
+  }
+}
 h2 {
-    margin-left: 1em;
+  margin-left: 1em;
 }

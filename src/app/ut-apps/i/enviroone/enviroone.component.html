@@ -54,14 +54,32 @@
     style="width:4em"
   /><br />
   <br />
+
+  <table style="border: 1px solid gray; padding: 0.5em;">
+    <tr>
+      <th colspan="2">Parameters</th>
+    </tr>
+    <tr *ngFor="let param of physParamEnabled | keyvalue">
+      <td>
+        <input
+          type="checkbox"
+          name="en_{{ param.key }}"
+          id="en_{{ param.key }}"
+          [(ngModel)]="physParamEnabled[param.key]"
+        />
+      </td>
+      <td>
+        <label for="en_{{ param.key }}">{{ param.key }}</label>
+      </td>
+    </tr>
+  </table>
+
+  <br />
   <table style="border: 1px solid gray; padding: 0.5em;">
     <tr>
       <th colspan="2">Sensors</th>
     </tr>
     <tr *ngFor="let sensor of sensorsEnabled | keyvalue">
-      <td>
-        <label for="en_{{ sensor.key }}">{{ sensor.key }}</label>
-      </td>
       <td>
         <input
           type="checkbox"
@@ -69,6 +87,9 @@
           id="en_{{ sensor.key }}"
           [(ngModel)]="sensorsEnabled[sensor.key]"
         />
+      </td>
+      <td>
+        <label for="en_{{ sensor.key }}">{{ sensor.key }}</label>
       </td>
     </tr>
   </table>
