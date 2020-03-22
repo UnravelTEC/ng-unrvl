@@ -26,39 +26,6 @@ export class EnvirooneComponent implements OnInit {
     SPS30: true,
     NO2B43F: true
   };
-  filters = {
-    T: {
-      sensorsEnabled: {
-        EE08: true,
-        BME280: true
-      }
-    },
-    rH: {
-      sensorsEnabled: {
-        EE08: true,
-        BME280: true
-      },
-      filter: ['rel_percent']
-    },
-    P: {
-      sensorsEnabled: {
-        BME280: true
-      },
-      filter: ['pressure']
-    },
-    NO2: {
-      sensorsEnabled: {
-        NO2B43F: true
-      }
-    },
-    PM: {
-      sensorsEnabled: {
-        'OPC-N3': true,
-        SDS011: true,
-        SPS30: true
-      }
-    }
-  };
 
   extraDyGraphConfig = {
     connectSeparatedPoints: true,
@@ -120,8 +87,13 @@ export class EnvirooneComponent implements OnInit {
       this.userStartTime = lsStartTime;
     }
     const filter = this.router.snapshot.queryParamMap.get('filter');
-    const chosenfilter = this.filters[filter];
-    if (chosenfilter) {
+    // const chosenfilter = this.filters[filter];
+    if (filter && this.physParamEnabled.hasOwnProperty(filter)) {
+      for (const key in this.physParamEnabled) {
+        if (this.physParamEnabled.hasOwnProperty(key)) {
+          this.physParamEnabled[key] = key == filter ? true : false;
+        }
+      }
     }
     console.log('filter', filter);
 
