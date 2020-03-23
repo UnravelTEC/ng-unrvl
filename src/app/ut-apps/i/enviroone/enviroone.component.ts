@@ -197,7 +197,8 @@ export class EnvirooneComponent implements OnInit {
     let no2query = '';
     if (this.physParamEnabled['NO2'] && this.sensorsEnabled['NO2B43F']) {
       no2query =
-        'SELECT mean(NO2_ugpm3) FROM gas WHERE time > now() - ' +
+        // 'SELECT mean(/NO2_/) FROM gas WHERE time > now() - ' +
+        'SELECT mean(/NO2_ugpm3/) FROM gas WHERE time > now() - ' +
         ts +
         ' GROUP BY sensor,host,time(' +
         mS +
@@ -237,6 +238,21 @@ export class EnvirooneComponent implements OnInit {
     console.log('parsed', ret);
     this.labels = ret['labels'];
     this.data = ret['data'];
+    for (let c = 1; c < this.labels.length; c++) {
+      const item = this.labels[c];
+      if (item.match(/NO₂ \(ppm\)/)) {
+        this.labels[c] = item.replace(/ppm/, 'ppb');
+        for (let r = 0; r < this.data.length; r++) {
+          this.data[r][c] *= 1000;
+        }
+      }
+
+      if (item.match(/NO₂ \(µg\/m³\)/)) {
+        for (let r = 0; r < this.data.length; r++) {
+          this.data[r][c] = this.h.smoothNO2(this.data[r][c]);
+        }
+      }
+    }
     // console.log(cloneDeep(this.dygLabels));
     this.startTime = this.userStartTime;
     // this.changeTrigger = !this.changeTrigger;

@@ -373,6 +373,14 @@ export class HelperFunctionsService {
     return (c * y_m) / (b - y_m);
   }
 
+  private e = Math.exp(1);
+  // smooth sensor values at bottom of measurement range
+  smoothNO2(value, threshold = 20.0) {
+    if(value > threshold) return value;
+    const factor = threshold / this.e;
+    return Math.exp(value / threshold) * factor;
+  }
+
   calcHTMLColor(r_lux, g_lux, b_lux) {
     let max = Math.max(r_lux, g_lux, b_lux);
     let r = Math.round((r_lux / max) * 255);
