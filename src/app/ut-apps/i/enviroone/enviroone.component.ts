@@ -30,7 +30,7 @@ export class EnvirooneComponent implements OnInit {
   extraDyGraphConfig = {
     connectSeparatedPoints: true,
     pointSize: 3,
-    logscale: true,
+    logscale: false,
     series: {
       'pressure sensor: BME280, pressure (hPa)': {
         axis: 'y2'
@@ -236,25 +236,47 @@ export class EnvirooneComponent implements OnInit {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('parsed', ret);
-    this.labels = ret['labels'];
-    this.data = ret['data'];
-    for (let c = 1; c < this.labels.length; c++) {
-      const item = this.labels[c];
+    const labels = ret['labels'];
+    const idata = ret['data'];
+    let logscale = true;
+    for (let c = 1; c < labels.length; c++) {
+      const item = labels[c];
       if (item.match(/NO₂ \(ppm\)/)) {
-        this.labels[c] = item.replace(/ppm/, 'ppb');
-        for (let r = 0; r < this.data.length; r++) {
-          this.data[r][c] *= 1000;
+        labels[c] = item.replace(/ppm/, 'ppb');
+        for (let r = 0; r < idata.length; r++) {
+          idata[r][c] *= 1000;
+        }
+      }
+
+      if (logscale == true) {
+        for (let r = 0; r < idata.length; r++) {
+          const point = idata[r][c]
+          if (point <= 0 && point !== NaN && point !== null) {
+            logscale = false;
+            console.log('found', idata[r][c], 'at row', r, 'column', c , 'of', item);
+            break;
+          }
         }
       }
 
       if (item.match(/NO₂ \(µg\/m³\)/)) {
-        for (let r = 0; r < this.data.length; r++) {
-          this.data[r][c] = this.h.smoothNO2(this.data[r][c]);
+        for (let r = 0; r < idata.length; r++) {
+          idata[r][c] = this.h.smoothNO2(idata[r][c]);
         }
       }
     }
     // console.log(cloneDeep(this.dygLabels));
+    if (logscale) {
+      console.log('scale: log');
+      this.extraDyGraphConfig.logscale = logscale;
+    } else {
+      console.log('scale: lin');
+    }
     this.startTime = this.userStartTime;
+    this.labels = labels;
+    this.data = idata;
+    console.log(labels);
+    console.log(idata);
     // this.changeTrigger = !this.changeTrigger;
   }
 }
