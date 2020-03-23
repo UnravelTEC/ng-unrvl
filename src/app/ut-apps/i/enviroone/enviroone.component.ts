@@ -49,7 +49,7 @@ export class EnvirooneComponent implements OnInit {
     position: 'absolute',
     top: '4em',
     bottom: '0rem',
-    left: '0rem',
+    left: '0.5rem',
     right: '15rem'
   };
 
@@ -94,6 +94,9 @@ export class EnvirooneComponent implements OnInit {
           this.physParamEnabled[key] = key == filter ? true : false;
         }
       }
+    }
+    if (this.physParamEnabled['PM']) {
+      this.extraDyGraphConfig.logscale = true;
     }
     console.log('filter', filter);
 
@@ -213,10 +216,12 @@ export class EnvirooneComponent implements OnInit {
     const widthPx = 1600;
     const divider = rangeSeconds / widthPx;
     if (divider > 1) {
-      this.userMeanS = Math.floor(divider);
+      const rounded = Math.floor(divider);
+      this.userMeanS = rounded > 30 ? rounded : 30;
     }
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
     this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);
+    this.reload();
   }
 
   launchQuery(clause: string) {
@@ -250,10 +255,19 @@ export class EnvirooneComponent implements OnInit {
 
       if (logscale == true) {
         for (let r = 0; r < idata.length; r++) {
-          const point = idata[r][c]
+          const point = idata[r][c];
           if (point <= 0 && point !== NaN && point !== null) {
             logscale = false;
-            console.log('found', idata[r][c], 'at row', r, 'column', c , 'of', item);
+            console.log(
+              'found',
+              idata[r][c],
+              'at row',
+              r,
+              'column',
+              c,
+              'of',
+              item
+            );
             break;
           }
         }
@@ -277,6 +291,7 @@ export class EnvirooneComponent implements OnInit {
     this.data = idata;
     console.log(labels);
     console.log(idata);
-    // this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger = !this.changeTrigger;
   }
 }

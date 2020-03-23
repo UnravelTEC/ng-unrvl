@@ -1,3 +1,8 @@
+$graphbg: #505050;
+$labelcolor: #666666;
+$buttontext: #666666;
+$dygfontsize: 14px;
+
 .abscontainer {
   position: absolute;
   border: 0px solid green;
@@ -31,7 +36,7 @@
     margin: 1em;
     border: 1px solid blue;
     padding: 1em;
-    background: white;
+    background: $graphbg;
   }
 
   .nodata {
@@ -49,7 +54,8 @@
     bottom: 0;
     left: 0;
     margin-left: 3.6rem;
-    font-size: 0.8em;
+    font-size: $dygfontsize;
+    color: $labelcolor;
   }
   .lastTime {
     position: absolute;
@@ -57,60 +63,82 @@
     right: 0;
     margin-right: 1rem;
     font-size: 0.8em;
+    color: $labelcolor;
   }
   .ymax,
   .ymin {
     border: 0px solid salmon;
-    background: white;
+    background: $graphbg;
     position: absolute;
-    left: 0.8em;
-    width: 2.5em;
-    font-size: 0.8em;
+    width: 42px; // dyg y-width: 50px
+    left: 4px;
+    font-size: $dygfontsize;
     text-align: right;
-    padding-right: 0.2em;
-    border-right: 1px solid #969696;
+    padding: 0.2em;
+    color: $buttontext;
+    // border-right: 1px solid #969696;
   }
   .ymax {
-    border-top: 1px solid #969696;
+    // border-top: 1px solid #969696;
     top: 0;
   }
   .ymin {
-    bottom: 2.37em;
-    border-bottom: 1px solid #969696;
+    bottom: 40px;
+    // border-bottom: 1px solid #969696;
   }
   .ymin.noxlabel {
     bottom: 1.6em;
   }
 
   .dygraph-legend {
-    // background: rgba(123, 123, 252, 0.993);
-    padding-left: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 5px;
     text-align: left;
-    background: transparent;
-    text-shadow: 1px 1px white, -1px 1px white, 1px -1px white, -1px -1px white,
-      2px 2px white, -2px 2px white, 2px -2px white, -2px -2px white;
+    // text-shadow: 1px 1px $graphbg, -1px 1px $graphbg, 1px -1px $graphbg, -1px -1px $graphbg,
+    //   2px 2px $graphbg, -2px 2px $graphbg, 2px -2px $graphbg, -2px -2px $graphbg;
     position: absolute !important;
-    top: 0.1em !important;
-    left: 4em !important;
-    bottom: 3em;
+    top: 5px !important;
+    left: 61px !important; // y-w(50) + 5px margin + 5px padding + 1px axis-width
+    // bottom: 3em;
     width: auto;
     overflow-x: visible;
     overflow-y: auto;
     pointer-events: none;
 
-    span {
-      pointer-events: auto;
-      cursor: pointer;
-    }
-    span:hover {
-      font-style: italic;
+    table {
+      border-collapse: collapse;
+      margin-top: 0.2em;
+      tr {
+        pointer-events: auto;
+        cursor: pointer;
+        td,
+        th {
+          border: 1px solid black;
+        }
+        th {
+          font-weight: bold;
+          border-right-width: 0;
+          padding: 0.1em 0.2em;
+          span {
+            color: transparent;
+          }
+        }
+        th:hover {
+          font-style: italic;
+        }
+        td {
+          color: black;
+          width: 4.5em; // width of string 'undefined'
+          border-left-width: 0;
+          padding: 0.1em 0 ;
+        }
+      }
+      tr.highlight {
+        background-color: #8E8E8E;
+      }
     }
   }
-  .dygraph-legend > span.highlight {
-    border: 1px solid black;
-    background: rgb(197, 197, 197);
-    text-shadow: none;
-  }
+
   .series {
     text-align: right;
     position: absolute;
@@ -122,6 +150,10 @@
       margin: 0;
       text-align: left;
     }
+  }
+  .dygraph-label,
+  .dygraph-axis-label {
+    color: $labelcolor;
   }
 
   button.toggleOptions {

@@ -102,15 +102,26 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     title: '',
     animatedZooms: true,
     connectSeparatedPoints: false,
+    highlightSeriesBackgroundAlpha: 1,
     logscale: false,
     pointSize: 1, // radius
     hideOverlayOnMouseOut: true,
     highlightSeriesOpts: {
       strokeWidth: 3,
       strokeBorderWidth: 1,
-      highlightCircleSize: 5
+      highlightCircleSize: 5,
+      strokeBorderColor: '#505050'
     },
     labelsSeparateLines: true,
+
+    gridLinePattern: [4, 4],
+    gridLineWidth: 1.5,
+    gridLineColor: '#666666',
+    axisLineColor: '#666666',
+    axisLineWidth: 1,
+    xAxisHeight: 22, // xlabel is 18 high
+    // yRangePad: 200, // spacing for data points inside graph
+
     valueRange: this.yRange,
     legend: <any>'always', // also 'never' possible
     visibility: []
@@ -204,7 +215,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     const xRangeText = this.currentXrangeText ? this.currentXrangeText : '??';
     // : this.startTime;
     return this.XLabel === undefined
-      ? 'Time (' + xRangeText + ')'
+      ? 'Time (&#8202;' + xRangeText + '&#8202;)'
       : this.XLabel;
   }
   updateXLabel() {
@@ -238,6 +249,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.Dygraph.updateOptions({
         file: this.displayedData,
         labels: this.columnLabels,
+        logscale: this.dyGraphOptions.logscale,
         visibility: this.dyGraphOptions.visibility,
         dateWindow: this.dyGraphOptions['dateWindow']
       });
@@ -268,7 +280,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   ngOnInit() {
     this.dyGraphOptions['underlayCallback'] = this.backGroundLevels
       ? this.highLightBackgroundLevels
-      : undefined;
+      : this.highlightDefaultBackground;
     if (this.minimal) {
       this.options = false;
       this.showDate = false;
@@ -636,13 +648,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     if (axis == 'y1') {
       y1axis.style.textShadow = shadow;
       y2axis.style.textShadow = 'none';
-      y1axis.style.color = 'black';
-      y2axis.style.color = 'gray';
+      y1axis.style.opacity = 1;
+      y2axis.style.opacity = 0.5;
     } else {
       y2axis.style.textShadow = shadow;
       y1axis.style.textShadow = 'none';
-      y2axis.style.color = 'black';
-      y1axis.style.color = 'gray';
+      y2axis.style.opacity = 1;
+      y1axis.style.opacity = 0.5;
     }
   }
   unhighlightCallback(event) {
@@ -662,7 +674,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           children[key].firstChild.firstChild.className.search(cssclass) > -1
         ) {
           children[key].firstChild.firstChild.style.textShadow = 'none';
-          children[key].firstChild.firstChild.style.color = 'black';
+          children[key].firstChild.firstChild.style.opacity = 1;
           break;
         }
       }
@@ -670,14 +682,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
   legendFormatter(data) {
     let html = data.xHTML ? data.xHTML + ':' : 'Legend:';
+    html += "<table>"
     if (data.x == null) {
       // This happens when there's no selection and {legend: 'always'} is set.
       for (let i = 0; i < data.series.length; i++) {
         const series = data.series[i];
         if (!series.isVisible) series.color = 'gray';
-        html += `<br/><span style='font-weight: bold; color: ${series.color};'>${series.dashHTML} ${series.labelHTML}</span>`;
+        html += `<tr style='color:${series.color};'><th>${series.dashHTML}</th><th>${series.labelHTML}<span>:</span>&thinsp;</th><td></td></tr>`;
       }
-      return html;
+      return html + "</table>";
     }
     for (let i = 0; i < data.series.length; i++) {
       const series = data.series[i];
@@ -686,11 +699,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       if (!series.isVisible) series.color = 'gray';
       const cls = series.isHighlighted ? ' class="highlight"' : '';
       html +=
-        `<br><span${cls} onClick="document['Dygraphs']['` +
+        `<tr style='color:${series.color};' ${cls} onmousedown="document['Dygraphs']['` +
         this['parent']['htmlID'] +
-        `'].tVis4Label('${series.label}')"> <b><span style='color: ${series.color};'>${series.dashHTML} ${series.labelHTML}</span></b>:&#160;${series.yHTML}</span>`;
+        `'].tVis4Label('${series.label}')"><th>${series.dashHTML}</th><th>${series.labelHTML}:&thinsp;</th><td>${series.yHTML}</td></tr>`;
     }
-    return html;
+    return html  + "</table>";
   }
 
   afterZoomCallback(
@@ -1198,6 +1211,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       highlight_period(last_y, level[0]);
       last_y = level[0];
     }
+  }
+  highlightDefaultBackground(canvas, area, g) {
+    canvas.fillStyle = '#505050';
+    canvas.fillRect(area.x, area.y, area.w, area.h);
   }
 
   highLightFetchRegionCallBack(canvas, area, g) {

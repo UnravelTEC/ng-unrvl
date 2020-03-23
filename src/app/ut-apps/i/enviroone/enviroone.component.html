@@ -25,7 +25,7 @@
   #R
 ></app-ut-dygraph-in>
 
-<div class="settings">
+<form class="settings" (submit)="reload()">
   <mat-form-field>
     <mat-label>Time range</mat-label>
     <mat-select
@@ -95,7 +95,7 @@
   </table>
 
   <br />
-  <button (click)="reload()">
+  <button type="submit">
     Reload
   </button>
-</div>
+</form>
