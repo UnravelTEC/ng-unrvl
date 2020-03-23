@@ -376,7 +376,8 @@ export class HelperFunctionsService {
   private e = Math.exp(1);
   // smooth sensor values at bottom of measurement range
   smoothNO2(value, threshold = 20.0) {
-    if(value > threshold) return value;
+    if (value === null) return NaN;
+    if (value > threshold) return value;
     const factor = threshold / this.e;
     return Math.exp(value / threshold) * factor;
   }
