@@ -26,6 +26,14 @@ export class EnvirooneComponent implements OnInit {
     SPS30: true,
     NO2B43F: true
   };
+  colors = { T: 'red', rH: 'blue', P: 'green', PM: 'brown', NO2: 'violet' };
+  searchstrings = {
+    T: 'temperature',
+    rH: 'humidity',
+    P: 'pressure',
+    PM: 'particulate',
+    NO2: 'gas'
+  }
 
   extraDyGraphConfig = {
     connectSeparatedPoints: true,

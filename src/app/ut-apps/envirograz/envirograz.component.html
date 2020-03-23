@@ -229,7 +229,7 @@
         [extraDyGraphConfig]="extraDyGraphConfigPM"
         [startTime]="startTimes['PM']"
         YLabel="µg&#8202;/&#8202;m³"
-        [backGroundLevels]="backGroundLevelsPM"
+        [backGroundLevels]="globalSettings['graphBackgrounds']['PM_ugpm3']"
         options="false"
         #PM
       >
@@ -265,7 +265,7 @@
         [extraDyGraphConfig]="extraDyGraphConfig"
         [startTime]="startTimes['N']"
         YLabel="µg&#8202;/&#8202;m³"
-        [backGroundLevels]="backGroundLevelsN"
+        [backGroundLevels]="globalSettings['graphBackgrounds']['NO2_ugpm3']"
         options="false"
         #N
       >
