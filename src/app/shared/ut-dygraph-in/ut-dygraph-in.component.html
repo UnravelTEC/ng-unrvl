@@ -10,8 +10,11 @@ style.padding-bottom="20vh"-->
 >
   <div class="mydygraph-component">
     <div class="graph" id="{{ htmlID }}"></div>
-    <div class="date" *ngIf="showDate == true">
+    <div class="fromDate" *ngIf="showDate == true">
       {{ fromZoom | date: 'shortDate' }}
+    </div>
+    <div class="toDate" *ngIf="showDate == true">
+      {{ toZoom | date: 'shortDate' }}
     </div>
 
     <div *ngIf="noData == true && !minimal" class="info nodata">
@@ -49,8 +52,23 @@ style.padding-bottom="20vh"-->
     >
       {{ yRange[0] | number: '1.0-2' }}
     </div>
+    <div
+      class="y2min {{ XLabel == '' ? 'noxlabel' : '' }}"
+      *ngIf="dyGraphOptions['drawAxis'] !== false"
+    >
+      {{ y2Range[0] | number: '1.0-2' }}
+    </div>
     <div class="ymax" *ngIf="dyGraphOptions['drawAxis'] !== false">
       {{ yRange[1] | number: '1.0-2' }}
+    </div>
+    <div class="y2max" *ngIf="dyGraphOptions['drawAxis'] !== false">
+      {{ y2Range[1] | number: '1.0-2' }}
+    </div>
+    <div class="xmin" *ngIf="dyGraphOptions['drawAxis'] !== false">
+      {{ fromZoom | date: 'shortTime' }}
+    </div>
+    <div class="xmax" *ngIf="dyGraphOptions['drawAxis'] !== false">
+      {{ toZoom | date: 'shortTime' }}
     </div>
   </div>
 

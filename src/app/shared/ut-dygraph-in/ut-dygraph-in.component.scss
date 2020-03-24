@@ -3,41 +3,41 @@ $labelcolor: #666666;
 $buttontext: #666666;
 $dygfontsize: 14px;
 
-$green3 : #0F7A1D;
-$green5 : #4FBB5D;
-$green1 : #15AD29;
-$green4 : #1EFA3B;
-$green2 : #69FA7C;
-$brown3 : #7A3E14;
-$brown5 : #80573B;
-$brown1 : #CC6821;
-$brown4 : #FF8C3B;
-$brown2 : #FFAF75;
-$blue3 : #0C187D;
-$blue5 : #1222B0;
-$blue1 : #1930FC;
-$blue4 : #4C57BD;
-$blue2 : #6574FC;
-$violet3 : #54348C;
-$violet5 : #6840AD;
-$violet1 : #7F4ED4;
-$violet4 : #A383DB;
-$violet2 : #C8B5EB;
-$olive3 : #1B4D40;
-$olive5 : #1F594B;
-$olive1 : #2D806B;
-$olive4 : #569585;
-$olive2 : #88BAAE;
-$navy3 : #1A546B;
-$navy5 : #2F6175;
-$navy1 : #267D9F;
-$navy4 : #318BAE;
-$navy2 : #38B8EB;
-$red3 : #701114;
-$red5 : #8A1519;
-$red1 : #B11A1F;
-$red4 : #BD484C;
-$red2 : #EB7C80;
+$green3: #0f7a1d;
+$green5: #4fbb5d;
+$green1: #15ad29;
+$green4: #1efa3b;
+$green2: #69fa7c;
+$brown3: #7a3e14;
+$brown5: #80573b;
+$brown1: #cc6821;
+$brown4: #ff8c3b;
+$brown2: #ffaf75;
+$blue3: #0c187d;
+$blue5: #1222b0;
+$blue1: #1930fc;
+$blue4: #4c57bd;
+$blue2: #6574fc;
+$violet3: #54348c;
+$violet5: #6840ad;
+$violet1: #7f4ed4;
+$violet4: #a383db;
+$violet2: #c8b5eb;
+$olive3: #1b4d40;
+$olive5: #1f594b;
+$olive1: #2d806b;
+$olive4: #569585;
+$olive2: #88baae;
+$navy3: #1a546b;
+$navy5: #2f6175;
+$navy1: #267d9f;
+$navy4: #318bae;
+$navy2: #38b8eb;
+$red3: #701114;
+$red5: #8a1519;
+$red1: #b11a1f;
+$red4: #bd484c;
+$red2: #eb7c80;
 
 .abscontainer {
   position: absolute;
@@ -85,13 +85,33 @@ $red2 : #EB7C80;
     border-color: red;
   }
 
-  .date {
+  .fromDate,
+  .toDate,
+  .ymin,
+  .ymax,
+  .y2min,
+  .y2max,
+  .xmin,
+  .xmax {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    margin-left: 3.6rem;
+    background: $graphbg;
     font-size: $dygfontsize;
     color: $labelcolor;
+    padding: 0.2em;
+  }
+
+  .fromDate,
+  .toDate {
+    bottom: 0;
+  }
+
+  .fromDate,
+  .xmin {
+    left: 55px;
+  }
+  .toDate,
+  .xmax {
+    right: 70px;
   }
   .lastTime {
     position: absolute;
@@ -104,30 +124,35 @@ $red2 : #EB7C80;
   .ymax,
   .ymin {
     border: 0px solid salmon;
-    background: $graphbg;
-    position: absolute;
     width: 42px; // dyg y-width: 50px
     left: 4px;
-    font-size: $dygfontsize;
     text-align: right;
-    padding: 0.2em;
-    color: $buttontext;
-    // border-right: 1px solid #969696;
   }
-  .ymax {
-    // border-top: 1px solid #969696;
+  .ymax,
+  .y2max {
     top: 0;
   }
-  .ymin {
-    bottom: 40px;
-    // border-bottom: 1px solid #969696;
+  .ymin,
+  .y2min {
+    bottom: 52px;
   }
-  .ymin.noxlabel {
+  .ymin.noxlabel,
+  .y2min.noxlabel {
     bottom: 1.6em;
+  }
+  .y2min,
+  .y2max {
+    right: 12px;
+    width: 50px;
+    text-align: left;
+  }
+    .xmin,
+  .xmax {
+    bottom: 26px;
   }
 
   .dygraph-legend {
-    background: rgba(100,100,100,.8);
+    background: rgba(100, 100, 100, 0.8);
     padding: 5px;
     text-align: left;
     // text-shadow: 1px 1px $graphbg, -1px 1px $graphbg, 1px -1px $graphbg, -1px -1px $graphbg,
@@ -139,13 +164,13 @@ $red2 : #EB7C80;
     width: auto;
     overflow-x: visible;
     overflow-y: auto;
-    pointer-events: none;
+    // pointer-events: none;
 
     table {
       border-collapse: collapse;
       margin-top: 0.2em;
       tr {
-        pointer-events: auto;
+        // pointer-events: auto;
         cursor: pointer;
         td,
         th {
@@ -155,22 +180,20 @@ $red2 : #EB7C80;
           font-weight: bold;
           border-right-width: 0;
           padding: 0.1em 0.2em;
-          span {
-            color: transparent;
-          }
         }
-        th:hover {
-          font-style: italic;
-        }
+
         td {
           color: black;
           width: 4.5em; // width of string 'undefined'
           border-left-width: 0;
-          padding: 0.1em 0 ;
+          padding: 0.1em 0;
         }
       }
       tr.highlight {
-        background-color: #8E8E8E;
+        background-color: #8e8e8e;
+      }
+      tr:hover {
+        background-color: #8e8e8e;
       }
     }
   }

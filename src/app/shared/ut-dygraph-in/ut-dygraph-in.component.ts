@@ -91,6 +91,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   returnHighlightedRow = new EventEmitter<number>();
 
   public yRange = [null, null];
+  public y2Range = [null, null];
 
   dyGraphOptions = {
     // http://dygraphs.com/options.html
@@ -121,7 +122,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     gridLineColor: '#666666',
     axisLineColor: '#666666',
     axisLineWidth: 1,
-    xAxisHeight: 22, // xlabel is 18 high
+    xAxisHeight: 34, // xlabel is 18 high
     // yRangePad: 200, // spacing for data points inside graph
 
     valueRange: this.yRange,
@@ -589,7 +590,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     // if (this.fetchFromServerIntervalMS > 0) {
     //   this.startUpdate();
     // }
-    this.yRange = this.Dygraph.yAxisRange();
+    const yranges = this.Dygraph.yAxisRanges();
+    this.yRange = yranges[0];
+    this.y2Range = yranges[1];
     // console.log('handleInitialData: calling checkAndFetchOldData');
     // this.checkAndFetchOldData();
     this.setCurrentXrange();
@@ -677,6 +680,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
   unhighlightCallback(event) {
+    this['clearSelection']();
     if (this['numAxes']() < 2) {
       return;
     }
@@ -702,27 +706,29 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   legendFormatter(data) {
     let html = data.xHTML ? data.xHTML + ':' : 'Legend:';
     html += '<table>';
-    if (data.x == null) {
-      // This happens when there's no selection and {legend: 'always'} is set.
-      for (let i = 0; i < data.series.length; i++) {
-        const series = data.series[i];
-        if (!series.isVisible) series.color = 'gray';
-        html += `<tr style='color:${series.color};'><th>${series.dashHTML}</th><th>${series.labelHTML}<span>:</span>&thinsp;</th><td></td></tr>`;
-      }
-      return html + '</table>';
+    const htmlID = this['parent'] ? this['parent']['htmlID'] : '';
+    // console.log(htmlID);
+    function genCallback(label, htmlID) {
+      return (
+        `onmousedown="document['Dygraphs']['${htmlID}'].tVis4Label('${label}');" ` +
+        `onmouseover="document['Dygraphs']['${htmlID}'].selectSeries('${label}');"`
+      );
     }
+
     for (let i = 0; i < data.series.length; i++) {
       const series = data.series[i];
-      // console.log(series);
-
+      const displayedValue = data.x == null ? '' : series.yHTML;
+      const spanvis = data.x == null ? "style='visibility:hidden'" : '';
+      const cls = series.isHighlighted ? 'class="highlight"' : '';
+      const callbacks = genCallback(series.label, htmlID);
       if (!series.isVisible) series.color = 'gray';
-      const cls = series.isHighlighted ? ' class="highlight"' : '';
-      html +=
-        `<tr style='color:${series.color};' ${cls} onmousedown="document['Dygraphs']['` +
-        this['parent']['htmlID'] +
-        `'].tVis4Label('${series.label}')"><th>${series.dashHTML}</th><th>${series.labelHTML}:&thinsp;</th><td>${series.yHTML}</td></tr>`;
+      html += `<tr style='color:${series.color};' ${cls} ${callbacks}><th>${series.dashHTML}</th><th>${series.labelHTML}<span ${spanvis}>:</span>&thinsp;</th><td>${displayedValue}</td></tr>`;
     }
     return html + '</table>';
+  }
+  selectSeries(name: string) {
+    // this.Dygraph.clearSelection();
+    this.Dygraph.setSelection(false, name);
   }
 
   afterZoomCallback(
@@ -1553,6 +1559,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }, 50);
   }
   tVis4Label(label: string) {
+    // console.log('tVis4Label with', label);
     for (let i = 1; i < this.columnLabels.length; i++) {
       const ilabel = this.columnLabels[i];
       if (label == ilabel) {
