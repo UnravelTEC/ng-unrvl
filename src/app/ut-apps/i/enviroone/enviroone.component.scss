@@ -2,13 +2,17 @@
   position: absolute;
   bottom: 2em;
   right: 0;
-  border: 1px solid green;
+  border: 1px solid #666;
   width: 11rem;
   margin: 1rem;
   padding: 1rem;
+   mat-label {
+    color: #999;
+  }
+  .mat-select { background-color: #565656;}
   label {
     display: inline-block;
-    color: rgba(0, 0, 0, 0.54);
+
     text-align: left;
     margin-right: 0.7rem;
     font-weight: 400;

@@ -13,8 +13,8 @@
   height: 100%;
   flex-direction: column;
   display: flex;
-  background-color: #333333;
-  color: #666666;
+  background-color: #1E1E1E;
+  color: #CCC;
 }
 
 .content {

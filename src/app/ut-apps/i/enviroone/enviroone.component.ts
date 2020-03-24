@@ -55,6 +55,7 @@ export class EnvirooneComponent implements OnInit {
     axes: {
       y2: {
         independentTicks: true,
+        axisLabelWidth: 60,
         drawGrid: false
       }
     }
