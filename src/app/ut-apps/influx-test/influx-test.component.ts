@@ -19,6 +19,11 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
   labelstrings: string[];
   https = true;
 
+  /* variables:
+   * colums: *, /regex/
+   * measuerement, eg gas
+   * starttime / range / mean
+  */
   queries = [
     'SELECT mean(*) FROM particulate_matter WHERE time > now() - {{T}} GROUP BY sensor,time(30s);' +
       'SELECT mean(*) FROM gas WHERE time > now() - {{T}} GROUP BY sensor,time(30s);' +
