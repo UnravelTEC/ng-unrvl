@@ -68,10 +68,10 @@ export class EnvirograzComponent implements OnInit {
   };
 
   constructor(
-    private globalSettings: GlobalSettingsService,
+    public globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
-    private h: HelperFunctionsService
+    public h: HelperFunctionsService
   ) {
     this.globalSettings.emitChange({ appName: 'Enviro Graz 000' });
   }

@@ -54,6 +54,7 @@
         [changeTrigger]="changeTrigger"
         [extraDyGraphConfig]="extraDyGraphConfig"
         [startTime]="startTimes['T']"
+        [colors]="h.colors.red"
         YLabel="°C"
         options="false"
         #Temp
@@ -88,6 +89,7 @@
         [changeTrigger]="changeTrigger"
         [extraDyGraphConfig]="extraDyGraphConfig"
         [startTime]="startTimes['H']"
+        [colors]="h.colors.blue"
         YLabel="%"
         options="false"
         #rH
@@ -122,6 +124,7 @@
         [changeTrigger]="changeTrigger"
         [extraDyGraphConfig]="extraDyGraphConfig"
         [startTime]="startTimes['P']"
+        [colors]="h.colors.green"
         YLabel="mbar"
         options="false"
         #P
@@ -230,6 +233,7 @@
         [startTime]="startTimes['PM']"
         YLabel="µg&#8202;/&#8202;m³"
         [backGroundLevels]="globalSettings['graphBackgrounds']['PM_ugpm3']"
+        [colors]="h.colors.brown"
         options="false"
         #PM
       >
@@ -266,6 +270,7 @@
         [startTime]="startTimes['N']"
         YLabel="µg&#8202;/&#8202;m³"
         [backGroundLevels]="globalSettings['graphBackgrounds']['NO2_ugpm3']"
+        [colors]="h.colors.violet"
         options="false"
         #N
       >
