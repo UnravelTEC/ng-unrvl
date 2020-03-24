@@ -11,11 +11,32 @@ export class HelperFunctionsService {
   domainAndApp = '';
   domain = '';
 
+  // sorted in order of usage
+  colors = {
+    blue: ['#1930FC', '#6574FC', '#0C187D', '#4C57BD', '#1222B0'],
+    green: ['#15AD29', '#69FA7C', '#0F7A1D', '#1EFA3B', '#4FBB5D'],
+    brown: ['#CC6821', '#FFAF75', '#7A3E14', '#FF8C3B', '#80573B'],
+    red: ['#B11A1F', '#EB7C80', '#701114', '#BD484C', '#8A1519'],
+    navy: ['#267D9F', '#38B8EB', '#1A546B', '#318BAE', '#2F6175'],
+    violet: ['#7F4ED4', '#C8B5EB', '#54348C', '#A383DB', '#6840AD'],
+    olive: ['#2D806B', '#88BAAE', '#1B4D40', '#569585', '#1F594B']
+  };
+  colorOrder = ['green', 'blue', 'red', 'brown', 'olive', 'navy', 'violet'];
+  colorArray = [];
+
   constructor(private loc: Location) {
     const url = window.location.href;
     const angularRoute = this.loc.path();
     this.domainAndApp = url.replace(angularRoute, '');
     this.domain = this.domainAndApp.replace(/:[0-9]*$/, '').replace(/[?]/, '');
+
+    for (let cWeightI = 0; cWeightI < this.colors.blue.length; cWeightI++) {
+      for (let cOrderI = 0; cOrderI < this.colorOrder.length; cOrderI++) {
+        const colorstr = this.colorOrder[cOrderI];
+        this.colorArray.push(this.colors[colorstr][cWeightI]);
+      }
+    }
+    // console.log('new Colors:', this.colorArray);
   }
 
   getBaseURL() {
@@ -485,15 +506,6 @@ export class HelperFunctionsService {
     }
     return parts[2];
   }
-  // sorted in order of usage
-  colors = {
-    blue: ['#1930FC', '#6574FC', '#0C187D', '#4C57BD', '#1222B0'],
-    green: ['#15AD29', '#69FA7C', '#0F7A1D', '#1EFA3B', '#4FBB5D'],
-    brown: ['#CC6821', '#FFAF75', '#7A3E14', '#FF8C3B', '#80573B'],
-    red: ['#B11A1F', '#EB7C80', '#701114', '#BD484C', '#8A1519'],
-    navy: ['#267D9F', '#38B8EB', '#1A546B', '#318BAE', '#2F6175'],
-    violet: ['#7F4ED4', '#C8B5EB', '#54348C', '#A383DB', '#6840AD'],
-    olive: ['#2D806B', '#88BAAE', '#1B4D40', '#569585', '#1F594B']
-  };
+
   getColors(color: string) {}
 }

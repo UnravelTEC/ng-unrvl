@@ -68,6 +68,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   showDate = true;
   @Input()
   backGroundLevels: Array<[number, string]>;
+  @Input()
+  colors = [];
 
   private backGroundLevelExample = [
     // the color acts for "everything below $value"
@@ -94,7 +96,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     // http://dygraphs.com/options.html
     drawCallback: this.afterDrawCallback,
     zoomCallback: this.afterZoomCallback,
-    clickCallback: this.clickCallback,
+    // clickCallback: this.clickCallback,
 
     // panEdgeFraction: 0.9,
 
@@ -243,9 +245,16 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.toZoom.valueOf()
       ];
       this.dyGraphOptions['labels'] = this.columnLabels;
+      if (this.colors.length) this.dyGraphOptions['colors'] = this.colors;
 
       this.setCurrentXrange();
       this.updateDateWindow();
+      if (this.colors) {
+        this.Dygraph.updateOptions(
+          { colors: this.dyGraphOptions['colors'] },
+          true
+        );
+      }
       this.Dygraph.updateOptions({
         file: this.displayedData,
         labels: this.columnLabels,
@@ -253,6 +262,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         visibility: this.dyGraphOptions.visibility,
         dateWindow: this.dyGraphOptions['dateWindow']
       });
+
       if (this.minimal && this.displayedData.length > 10) {
         const dateOfSecondPt = this.displayedData[1][0].valueOf();
         const fromZoom = this.Dygraph.xAxisRange()[0];
@@ -299,6 +309,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.dyGraphOptions['ylabel'] = this.YLabel;
     this.dyGraphOptions['labels'] = this.columnLabels;
+    if (this.colors) {
+      this.dyGraphOptions['colors'] = this.colors;
+    }
     while (
       this.dyGraphOptions.visibility.length <
       this.columnLabels.length - 1
@@ -522,6 +535,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.updateDateWindow();
 
     this.dyGraphOptions['labels'] = this.columnLabels;
+    // console.log('COLORS:', cloneDeep(this.colors), cloneDeep(this.h.colorArray));
+
+    this.dyGraphOptions['colors'] = this.colors.length
+      ? this.colors
+      : this.h.colorArray;
+
     console.log(cloneDeep(this.dyGraphOptions));
     if (this.columnLabels.length != this.displayedData[0].length) {
       console.error(
@@ -576,16 +595,16 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.setCurrentXrange();
   }
 
-  clickCallback(e, x, points) {
-    console.log('clickCallback');
-    if (this.hasOwnProperty('parent')) {
-      const parent = this['parent'];
-      if (parent.options != 'false') {
-        // do only if user has option to enable it again
-        parent.stopUpdateOnNewData();
-      }
-    }
-  }
+  // clickCallback(e, x, points) {
+  //   console.log('clickCallback');
+  //   if (this.hasOwnProperty('parent')) {
+  //     const parent = this['parent'];
+  //     if (parent.options != 'false') {
+  //       // do only if user has option to enable it again
+  //       parent.stopUpdateOnNewData();
+  //     }
+  //   }
+  // }
 
   highlightCallback(event, x, points, row, seriesName) {
     if (!this.hasOwnProperty('parent')) {
@@ -682,7 +701,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
   legendFormatter(data) {
     let html = data.xHTML ? data.xHTML + ':' : 'Legend:';
-    html += "<table>"
+    html += '<table>';
     if (data.x == null) {
       // This happens when there's no selection and {legend: 'always'} is set.
       for (let i = 0; i < data.series.length; i++) {
@@ -690,7 +709,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         if (!series.isVisible) series.color = 'gray';
         html += `<tr style='color:${series.color};'><th>${series.dashHTML}</th><th>${series.labelHTML}<span>:</span>&thinsp;</th><td></td></tr>`;
       }
-      return html + "</table>";
+      return html + '</table>';
     }
     for (let i = 0; i < data.series.length; i++) {
       const series = data.series[i];
@@ -703,7 +722,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this['parent']['htmlID'] +
         `'].tVis4Label('${series.label}')"><th>${series.dashHTML}</th><th>${series.labelHTML}:&thinsp;</th><td>${series.yHTML}</td></tr>`;
     }
-    return html  + "</table>";
+    return html + '</table>';
   }
 
   afterZoomCallback(
