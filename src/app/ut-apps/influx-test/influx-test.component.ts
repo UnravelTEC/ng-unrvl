@@ -19,20 +19,23 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
   labelstrings: string[];
   https = true;
 
+  queries = [
+    'SELECT mean(*) FROM particulate_matter WHERE time > now() - {{T}} GROUP BY sensor,time(30s);' +
+      'SELECT mean(*) FROM gas WHERE time > now() - {{T}} GROUP BY sensor,time(30s);' +
+      'SELECT mean(*) FROM temperature WHERE time > now() - {{T}} GROUP BY sensor,time(30s);',
+    'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE time > now() - {{T}} GROUP BY sensor,time(30s);',
+    'SELECT LAST(*) FROM "temperature" GROUP BY *;',
+    'SELECT * FROM gas WHERE time > now() - {{T}} GROUP BY *;'
+  ];
+
   // q = 'SELECT * FROM "temperature" LIMIT 3';
-    // q = 'SELECT LAST(sensor_degC),* FROM "temperature" GROUP BY *';
-    // q = 'SELECT LAST(gamma_cps),* FROM "radiation" GROUP BY *';
-    // q = 'SELECT * FROM "temperature" WHERE time > now() - 1m GROUP BY *';
-    // q = 'SELECT * FROM "temperature" LIMIT 3';
-    // q = 'SELECT LAST(*) FROM "temperature" GROUP BY *  ';
-    // q =
-    //   'SELECT * FROM gas WHERE time > now() - ' +
-    //   this.startTime +
-    //   ' GROUP BY *;';
-  q =
-    'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE time > now() - ' +
-    this.startTime +
-    ' GROUP BY sensor,time(30s)';
+  // q = 'SELECT LAST(sensor_degC),* FROM "temperature" GROUP BY *';
+  // q = 'SELECT LAST(gamma_cps),* FROM "radiation" GROUP BY *';
+  // q = 'SELECT * FROM "temperature" WHERE time > now() - 1m GROUP BY *';
+  // q = 'SELECT * FROM "temperature" LIMIT 3';
+  // q =
+
+  q = this.queries[1];
 
   extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 };
 
@@ -70,6 +73,9 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
 
     this.reload();
   }
+  chooseQuery(query) {
+    this.q = query
+  }
 
   reload() {
     this.launchQuery(this.q);
@@ -80,8 +86,8 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
   }
 
   launchQuery(clause: string) {
-
-    const q = this.utHTTP.buildInfluxQuery(clause, 'koffer')
+    const qWithTime = clause.replace(/{{T}}/g, this.startTime);
+    const q = this.utHTTP.buildInfluxQuery(qWithTime);
     console.log('calling', q);
     this.utHTTP
       .getHTTPData(q)
@@ -89,7 +95,7 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
   }
 
   printResult(data: Object) {
-    console.log(cloneDeep (data));
+    console.log(cloneDeep(data));
     let ret = this.utHTTP.parseInfluxData(data);
 
     this.dygLabels = ret['labels'];

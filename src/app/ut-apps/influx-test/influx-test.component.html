@@ -3,7 +3,13 @@
 </h2>
 
 <div style="margin-left:1em;">
-  <h4>Query:</h4>
+  <h4>Queries:</h4>
+  <ul>
+    <li *ngFor="let query of queries">
+      <button (click)="chooseQuery(query)">Use</button><code>{{ query }}</code>
+    </li>
+  </ul>
+  <h4>Current Query:</h4>
   <div>
     <label for="q">Query String</label> ({{ q }})<br />
     <input type="text" id="q" [(ngModel)]="q" name="q" style="width: 90%;" />
