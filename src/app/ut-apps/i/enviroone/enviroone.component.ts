@@ -26,14 +26,21 @@ export class EnvirooneComponent implements OnInit {
     SPS30: true,
     NO2B43F: true
   };
-  colors = { T: 'red', rH: 'blue', P: 'green', PM: 'brown', NO2: 'violet' };
+  physParamColors = {
+    T: 'red',
+    rH: 'blue',
+    P: 'green',
+    PM: 'brown',
+    NO2: 'violet'
+  };
   searchstrings = {
     T: 'temperature',
     rH: 'humidity',
     P: 'pressure',
     PM: 'particulate',
     NO2: 'gas'
-  }
+  };
+  colors = [];
 
   extraDyGraphConfig = {
     connectSeparatedPoints: true,
@@ -252,12 +259,26 @@ export class EnvirooneComponent implements OnInit {
     const labels = ret['labels'];
     const idata = ret['data'];
     let logscale = true;
+    const colorCounters = {};
     for (let c = 1; c < labels.length; c++) {
       const item = labels[c];
-      if (item.match(/NO₂ \(ppm\)/)) {
-        labels[c] = item.replace(/ppm/, 'ppb');
-        for (let r = 0; r < idata.length; r++) {
-          idata[r][c] *= 1000;
+
+      for (const key in this.searchstrings) {
+        if (this.searchstrings.hasOwnProperty(key)) {
+          const str = this.searchstrings[key];
+          if (item.match(str)) {
+            console.log('found', str, 'in', item);
+            const currentColorSet = this.physParamColors[key];
+            const rightColorArray = this.h.colors[currentColorSet];
+            if (colorCounters.hasOwnProperty(currentColorSet)) {
+              const i = (colorCounters[currentColorSet] += 1);
+              this.colors.push(rightColorArray[i % rightColorArray.length]);
+            } else {
+              colorCounters[currentColorSet] = 0;
+              this.colors.push(rightColorArray[0]);
+            }
+            break;
+          }
         }
       }
 
@@ -266,21 +287,18 @@ export class EnvirooneComponent implements OnInit {
           const point = idata[r][c];
           if (point <= 0 && point !== NaN && point !== null) {
             logscale = false;
-            console.log(
-              'found',
-              idata[r][c],
-              'at row',
-              r,
-              'column',
-              c,
-              'of',
-              item
-            );
+            console.log('found', idata[r][c], '@r', r, 'c', c, 'of', item);
             break;
           }
         }
       }
-
+      // NO2: ppm -> ppb
+      if (item.match(/NO₂ \(ppm\)/)) {
+        labels[c] = item.replace(/ppm/, 'ppb');
+        for (let r = 0; r < idata.length; r++) {
+          idata[r][c] *= 1000;
+        }
+      }
       if (item.match(/NO₂ \(µg\/m³\)/)) {
         for (let r = 0; r < idata.length; r++) {
           idata[r][c] = this.h.smoothNO2(idata[r][c]);
