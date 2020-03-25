@@ -199,6 +199,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   public graphWidthPx = 0;
   @Output()
   returnGraphWidthOnChange = new EventEmitter<number>();
+  @Output()
+  returnCurrentZoom = new EventEmitter<number>();
+
   public maxNativeInterval = 0;
 
   public stats = false;
@@ -775,6 +778,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
       //reimplementation of parent.updateXLabel();
       parent.setCurrentXrange();
+      parent.returnCurrentZoom.emit([minDate, maxDate]);
       const xRangeText = parent.currentXrangeText
         ? parent.currentXrangeText
         : parent.startTime;
@@ -1123,34 +1127,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       (this.toZoom.valueOf() - this.fromZoom.valueOf()) / 1000;
     // console.log('currentXrange', this.currentXrange);
     if (!this.minimal) {
-      const currentMS = Math.round((this.currentXrange % 1) * 1000);
-      const textMS = currentMS ? String(currentMS) + 'ms' : '';
-      const currentSeconds = Math.floor(this.currentXrange);
-      const displayedSeconds = currentSeconds % 60;
-      const textSeconds = displayedSeconds
-        ? String(displayedSeconds) + 's '
-        : '';
-
-      const currentMinutes = Math.floor(currentSeconds / 60);
-      const displayedMinutes = currentMinutes % 60;
-      const textMinutes = displayedMinutes
-        ? String(displayedMinutes) + 'm '
-        : '';
-
-      const currentHours = Math.floor(currentMinutes / 60);
-      const displayedHours = currentHours % 24;
-      const textHours = displayedHours ? String(displayedHours) + 'h ' : '';
-
-      const currentDays = Math.floor(currentHours / 24);
-      const textDays = currentDays ? String(currentDays) + 'd ' : '';
-
-      this.currentXrangeText = (
-        textDays +
-        textHours +
-        textMinutes +
-        textSeconds +
-        textMS
-      ).trim();
+      this.currentXrangeText = this.h.createHRTimeString(this.currentXrange)
       this.updateXLabel();
     }
     return this.currentXrange;
@@ -1187,6 +1164,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     ];
     this.fromZoom = dataBeginTime;
     this.toZoom = dataEndTime;
+    this.returnCurrentZoom.emit(this.dyGraphOptions['dateWindow']);
     if (!this.minimal) {
       this.updateFromToPickers();
       // this.checkAndFetchOldData(); // it may be that through moving datewindow after enabling autopan some old data is not there.

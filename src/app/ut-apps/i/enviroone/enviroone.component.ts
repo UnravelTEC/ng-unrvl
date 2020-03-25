@@ -41,7 +41,7 @@ export class EnvirooneComponent implements OnInit {
     NO2: 'gas'
   };
   colors = [];
-  graphWidth = 0;
+  graphWidth = 1500;
   setGraphWidth(width) {
     this.graphWidth = width;
     console.log('new w', width);
@@ -68,8 +68,8 @@ export class EnvirooneComponent implements OnInit {
   labelBlackListT = ['host', 'serial', 'mean_*'];
   graphstyle = {
     position: 'absolute',
-    top: '4em',
-    bottom: '0rem',
+    top: '0.5em',
+    bottom: '0.5rem',
     left: '0.5rem',
     right: '15rem'
   };
@@ -78,6 +78,17 @@ export class EnvirooneComponent implements OnInit {
   public userStartTime = this.startTime;
   public meanS = 30;
   public userMeanS = this.meanS;
+  public fromTime: Date;
+  public toTime: Date;
+  public currentRange: string;
+  updateFromToTimes(timearray) {
+    // console.log(timearray);
+    this.fromTime = new Date(timearray[0]);
+    this.toTime = new Date(timearray[1]);
+    const rangeSeconds = Math.floor((timearray[1] - timearray[0]) / 1000);
+    this.currentRange = this.h.createHRTimeString(rangeSeconds);
+    this.userMeanS = this.calcMean(rangeSeconds);
+  }
   db = 'envirograz000';
   server = 'https://newton.unraveltec.com';
 
@@ -123,13 +134,19 @@ export class EnvirooneComponent implements OnInit {
 
     this.reload();
   }
-  reload() {
+  reload(fromTo = false) {
     this.meanS = this.userMeanS;
     this.startTime = this.userStartTime;
-    const ts = this.startTime;
     const mS = String(this.meanS);
 
     let Tquery = '';
+    const timeQuery = fromTo
+      ? ' time > ' +
+        this.fromTime.valueOf() +
+        'ms AND time < ' +
+        this.toTime.valueOf() +
+        'ms '
+      : ' time > now() - ' + this.startTime + ' ';
     if (
       this.physParamEnabled['T'] &&
       (this.sensorsEnabled['BME280'] || this.sensorsEnabled['EE08'])
@@ -144,9 +161,9 @@ export class EnvirooneComponent implements OnInit {
       Tquery =
         'SELECT mean(*) FROM temperature WHERE (' +
         sensorw +
-        ') AND time > now() - ' +
-        ts +
-        ' GROUP BY sensor,host,time(' +
+        ') AND' +
+        timeQuery +
+        'GROUP BY sensor,host,time(' +
         mS +
         's);';
     }
@@ -166,9 +183,8 @@ export class EnvirooneComponent implements OnInit {
       rHquery =
         'SELECT mean(/rel_percent/) FROM humidity WHERE ' +
         (sensorw ? '(' + sensorw + ') AND ' : '') +
-        ' time > now() - ' +
-        ts +
-        ' GROUP BY sensor,host,time(' +
+        timeQuery +
+        'GROUP BY sensor,host,time(' +
         mS +
         's);';
     }
@@ -176,9 +192,9 @@ export class EnvirooneComponent implements OnInit {
     let pquery = '';
     if (this.physParamEnabled['P'] && this.sensorsEnabled['BME280']) {
       pquery =
-        'SELECT mean(*) FROM pressure WHERE time > now() - ' +
-        ts +
-        ' GROUP BY sensor,host,time(' +
+        'SELECT mean(*) FROM pressure WHERE' +
+        timeQuery +
+        'GROUP BY sensor,host,time(' +
         mS +
         's);';
     }
@@ -208,12 +224,10 @@ export class EnvirooneComponent implements OnInit {
           }
         }
       }
-
       pmquery +=
         (sensorw ? '(' + sensorw + ') AND ' : '') +
-        'time > now() - ' +
-        ts +
-        ' GROUP BY sensor,host,time(' +
+        timeQuery +
+        'GROUP BY sensor,host,time(' +
         mS +
         's);';
     }
@@ -222,9 +236,9 @@ export class EnvirooneComponent implements OnInit {
     if (this.physParamEnabled['NO2'] && this.sensorsEnabled['NO2B43F']) {
       no2query =
         // 'SELECT mean(/NO2_/) FROM gas WHERE time > now() - ' +
-        'SELECT mean(/NO2_ugpm3/) FROM gas WHERE time > now() - ' +
-        ts +
-        ' GROUP BY sensor,host,time(' +
+        'SELECT mean(/NO2_ugpm3/) FROM gas WHERE' +
+        timeQuery +
+        'GROUP BY sensor,host,time(' +
         mS +
         's);';
     }
@@ -232,13 +246,15 @@ export class EnvirooneComponent implements OnInit {
     if (queries) this.launchQuery(queries);
   }
 
+  calcMean(secondsRange) {
+    const divider = Math.floor(secondsRange / this.graphWidth);
+    return divider > 30 ? divider : 30;
+  }
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
-    const divider = rangeSeconds / this.graphWidth;
-    if (divider > 1) {
-      const rounded = Math.floor(divider);
-      this.userMeanS = rounded > 30 ? rounded : 30;
-    }
+
+    this.userMeanS = this.calcMean(rangeSeconds);
+
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
     this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);
     this.reload();

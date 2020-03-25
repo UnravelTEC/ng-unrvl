@@ -1,17 +1,11 @@
-<table style="width: 100%;">
-  <tr>
-    <th style="text-align:left;">
-      <h2>
-        EnviroGraz Werte
-      </h2>
-    </th>
-    <td style="text-align:right; padding-right: 1em;">
-      <a routerLink="/Apps/EnviroGraz000" routerLinkActive="active"
-        >Back to Multi-Graph</a
-      >
-    </td>
-  </tr>
-</table>
+<a
+  id="back"
+  class="icon"
+  routerLink="/Apps/EnviroGraz000"
+  routerLinkActive="active"
+  title="Return to overview"
+  ><mat-icon>fullscreen_exit</mat-icon></a
+>
 
 <app-ut-dygraph-in
   [displayedData]="data"
@@ -24,12 +18,13 @@
   [colors]="colors"
   YLabel="NO2, rH, T, PM"
   (returnGraphWidthOnChange)="setGraphWidth($event)"
+  (returnCurrentZoom)="updateFromToTimes($event)"
   #R
 ></app-ut-dygraph-in>
 
-<form class="settings" (submit)="reload()">
+<form class="settings" (submit)="reload(true)">
   <mat-form-field>
-    <mat-label>Time range</mat-label>
+    <mat-label>Time Presets</mat-label>
     <mat-select
       [(ngModel)]="userStartTime"
       name="startTime"
@@ -44,7 +39,11 @@
       <mat-option value="356d">1 year</mat-option>
     </mat-select>
   </mat-form-field>
-
+  <br />
+  <div>
+    <label>Current Range:</label>
+    <span>{{ currentRange }} </span>
+  </div>
   <br />
   <label for="runningAvgPoints"># Mean Seconds</label><br />
   <input
@@ -56,7 +55,7 @@
     style="width:4em"
   /><br />
   <br />
-  <div>Pixel: {{ graphWidth}}</div>
+  <div>Pixel: {{ graphWidth }}</div>
 
   <table style="border: 1px solid gray; padding: 0.5em;">
     <tr>
