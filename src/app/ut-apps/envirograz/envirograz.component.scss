@@ -19,10 +19,14 @@ table.envirobody {
     position: relative;
     a.fullscreen,
     a.fullscreen:visited {
-      color: black;
+      color: #c7c7c7;;
       position: absolute;
       top: 1em;
       right: 1em;
+    }
+    a.fullsceen:hover,
+    a.fullsceen:visited:hover{
+      color: white;
     }
   }
   td {
