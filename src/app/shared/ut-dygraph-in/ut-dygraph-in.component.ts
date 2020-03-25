@@ -244,20 +244,20 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.dyGraphOptions.visibility.push(true);
       }
 
-      [this.fromZoom, this.toZoom] = this.calculateTimeRange(
-        this.startTime,
-        'now'
-      );
+      // [this.fromZoom, this.toZoom] = this.calculateTimeRange(
+      //   this.startTime,
+      //   'now'
+      // );
 
-      this.dyGraphOptions['dateWindow'] = [
-        this.fromZoom.valueOf(),
-        this.toZoom.valueOf()
-      ];
+      // this.dyGraphOptions['dateWindow'] = [
+      //   this.fromZoom.valueOf(),
+      //   this.toZoom.valueOf()
+      // ];
       this.dyGraphOptions['labels'] = this.columnLabels;
       if (this.colors.length) this.dyGraphOptions['colors'] = this.colors;
 
       this.setCurrentXrange();
-      this.updateDateWindow();
+      // this.updateDateWindow();
       if (this.colors) {
         this.Dygraph.updateOptions(
           { colors: this.dyGraphOptions['colors'] },
@@ -268,8 +268,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         file: this.displayedData,
         labels: this.columnLabels,
         logscale: this.dyGraphOptions.logscale,
-        visibility: this.dyGraphOptions.visibility,
-        dateWindow: this.dyGraphOptions['dateWindow']
+        visibility: this.dyGraphOptions.visibility
+        // dateWindow: this.dyGraphOptions['dateWindow']
       });
 
       if (this.minimal && this.displayedData.length > 10) {
@@ -860,6 +860,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     // }
 
     if (parent && parent.hasOwnProperty('graphWidthPx')) {
+      parent.returnCurrentZoom.emit(xrange);
+
       const area = g.getArea();
       const graphWidthPx = area.w;
       if (parent['graphWidthPx'] !== graphWidthPx) {
@@ -1127,7 +1129,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       (this.toZoom.valueOf() - this.fromZoom.valueOf()) / 1000;
     // console.log('currentXrange', this.currentXrange);
     if (!this.minimal) {
-      this.currentXrangeText = this.h.createHRTimeString(this.currentXrange)
+      this.currentXrangeText = this.h.createHRTimeString(this.currentXrange);
       this.updateXLabel();
     }
     return this.currentXrange;
@@ -1139,7 +1141,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   // initial call (no currentXrange yet set)
   // this.dyGraphOptions['dateWindowEnd'] // from Weih-VO, kick it
   updateDateWindow() {
-    const blankSpaceOnFreshPercentage = 3;
+    const blankSpaceOnFreshPercentage = 0;
 
     const dataEndTime = new Date();
     // this.endTime === 'now' ? new Date() : new Date(this.endTime);
