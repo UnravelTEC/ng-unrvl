@@ -28,6 +28,15 @@ export class EnvirograzComponent implements OnInit {
   multiplicateFactors = [1000];
 
   extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 };
+  extraDyGraphConfigP = {
+    connectSeparatedPoints: true,
+    pointSize: 3,
+    axes: {
+      y: {
+        axisLabelWidth: 60,
+      }
+    }
+  };
   extraDyGraphConfigPM = {
     connectSeparatedPoints: true,
     pointSize: 3,

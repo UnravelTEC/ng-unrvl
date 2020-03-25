@@ -6,10 +6,12 @@
   width: 11rem;
   margin: 1rem;
   padding: 1rem;
-   mat-label {
+  mat-label {
     color: #999;
   }
-  .mat-select { background-color: #565656;}
+  .mat-select {
+    background-color: #565656;
+  }
   label {
     display: inline-block;
 
@@ -47,15 +49,7 @@
     font-size: 20px;
     border: 1px solid rgba(0, 0, 0, 0.54);
   }
-  button {
-    border: 0;
-    border-radius: 0.5em;
-    background: #5cb85c;
-    padding: 0.5em;
-    cursor: pointer;
-    min-width: 2.25em;
-    color: white;
-  }
+
 }
 h2 {
   margin-left: 1em;

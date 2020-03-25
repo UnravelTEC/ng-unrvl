@@ -1,7 +1,11 @@
-$graphbg: #505050;
-$labelcolor: #666666;
-$buttontext: #666666;
+$graphbg: #3f3f3f;
+$mainbg: #1e1e1e;
+$axismainlabelcolor: #8e8e8e;
+$axissublabelcolor: #565656;
+$buttontext: #fff;
 $dygfontsize: 14px;
+$labelcolor: #8e8e8e;
+$editableFormsTextColor: #c7c7c7;
 
 $green3: #0f7a1d;
 $green5: #4fbb5d;
@@ -96,8 +100,10 @@ $red2: #eb7c80;
     position: absolute;
     background: $graphbg;
     font-size: $dygfontsize;
-    color: $labelcolor;
-    padding: 0.2em;
+    color: $editableFormsTextColor;
+    padding: 0.35em;
+    height: 1em;
+    line-height: 1em;
   }
 
   .fromDate,
@@ -112,6 +118,16 @@ $red2: #eb7c80;
   .toDate,
   .xmax {
     right: 70px;
+    text-align: right;
+  }
+  .noy2 {
+    right: 5px; // Dygraph option rightGap
+  }
+  .fromDate,
+  .toDate,
+  .xmin,
+  .xmax {
+    width: 4.3em;
   }
   .lastTime {
     position: absolute;
@@ -124,8 +140,8 @@ $red2: #eb7c80;
   .ymax,
   .ymin {
     border: 0px solid salmon;
-    width: 42px; // dyg y-width: 50px
-    left: 4px;
+    width: 42px; // dyg y-width: 50px + paddings
+    left: 1px;
     text-align: right;
   }
   .ymax,
@@ -142,13 +158,33 @@ $red2: #eb7c80;
   }
   .y2min,
   .y2max {
-    right: 11px;
+    right: 9px;
     width: 50px;
     text-align: left;
   }
-    .xmin,
-  .xmax {
+  .xmin,
+  .xmax,
+  .overlapTickTexthider {
     bottom: 26px;
+  }
+  .overlapTickTexthider {
+    background-color: $mainbg;
+    font-size: $dygfontsize;
+    height: 1em;
+    line-height: 1em;
+    padding: 0.35em;
+    position: absolute;
+    bottom: 26px;
+    border-top: 2px solid $mainbg; // gap between x and label
+  }
+  .overlapTickTexthider.y1 {
+    width: 42px;
+    left: 1px;
+    border-right: 2px solid $mainbg; // gap between y and label
+  }
+  .overlapTickTexthider.y2 {
+    width: 60px;
+    right: 0;
   }
 
   .dygraph-legend {
@@ -169,16 +205,16 @@ $red2: #eb7c80;
     table {
       border-collapse: collapse;
       margin-top: 0.2em;
+      border: 1px solid black;
       tr {
         // pointer-events: auto;
         cursor: pointer;
         td,
         th {
-          border: 1px solid black;
+          border-bottom: 1px solid black;
         }
         th {
           font-weight: bold;
-          border-right-width: 0;
           padding: 0.1em 0.2em;
         }
 
@@ -210,9 +246,12 @@ $red2: #eb7c80;
       text-align: left;
     }
   }
-  .dygraph-label,
+  .dygraph-label {
+    color: $axismainlabelcolor;
+    font-weight: bold;
+  }
   .dygraph-axis-label {
-    color: $labelcolor;
+    color: $axissublabelcolor;
   }
 
   button.toggleOptions {

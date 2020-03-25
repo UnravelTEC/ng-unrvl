@@ -40,6 +40,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     left: 0,
     right: 0
   };
+  private graphBackGroundColor = '#3F3F3F';
+  public yOffset = 0;
+  public yO = '0';
   @Input()
   startTime = '15m'; // prefix m for min, s for seconds, h for hours, d for days
 
@@ -90,8 +93,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Output()
   returnHighlightedRow = new EventEmitter<number>();
 
-  public yRange = [null, null];
-  public y2Range = [null, null];
+  public yRange = [undefined, undefined];
+  public y2Range = [undefined, undefined];
 
   dyGraphOptions = {
     // http://dygraphs.com/options.html
@@ -105,7 +108,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     title: '',
     animatedZooms: true,
     connectSeparatedPoints: false,
-    highlightSeriesBackgroundAlpha: 1,
+    highlightSeriesBackgroundAlpha: 1, // disable
     logscale: false,
     pointSize: 1, // radius
     hideOverlayOnMouseOut: true,
@@ -113,14 +116,14 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       strokeWidth: 3,
       strokeBorderWidth: 1,
       highlightCircleSize: 5,
-      strokeBorderColor: '#505050'
+      strokeBorderColor: this.graphBackGroundColor
     },
     labelsSeparateLines: true,
 
     gridLinePattern: [4, 4],
     gridLineWidth: 1.5,
-    gridLineColor: '#666666',
-    axisLineColor: '#666666',
+    gridLineColor: '#4A4A4A',
+    axisLineColor: '#4A4A4A',
     axisLineWidth: 1,
     xAxisHeight: 34, // xlabel is 18 high
     // yRangePad: 200, // spacing for data points inside graph
@@ -306,6 +309,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     if (this.backGroundLevels) {
       this.dyGraphOptions['backGroundLevels'] = this.backGroundLevels; // option we create ourselves to access without Dygraphs.parent in initial draw call
     }
+
     if (this.enableHighlightCallback) {
       this.dyGraphOptions['highlightCallback'] = this.highlightCallback;
       this.dyGraphOptions['unhighlightCallback'] = this.unhighlightCallback;
@@ -323,6 +327,14 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.updateXLabel();
     this.updateDyGraphOptions();
+    this.yOffset = this.h.getDeep(this.dyGraphOptions, [
+      'axes',
+      'y',
+      'axisLabelWidth'
+    ]);
+    if (this.yOffset) {
+      this.yO = String(this.yOffset - 50);
+    }
 
     if (
       this.dyGraphOptions['dateWindow'] &&
@@ -522,7 +534,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   setYranges() {
     const yranges = this.Dygraph.yAxisRanges();
     this.yRange = yranges[0];
-    this.y2Range = yranges[1];
+    if (yranges[1] && yranges[1].length) {
+      this.y2Range = yranges[1];
+    }
   }
 
   handleInitialData(receivedData: Object) {
@@ -752,7 +766,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       console.log(yRanges[0]);
 
       parent.yRange = yRanges[0];
-      parent.y2Range = yRanges[1];
+      if (yRanges[1] && yRanges[1].length) {
+        parent.y2Range = yRanges[1];
+      }
       parent.updateAverages();
       // parent.fromZoom = new Date(minDate);
       // parent.toZoom = new Date(maxDate);
@@ -801,7 +817,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     const parent = g['parent'];
     const yranges = g.yAxisRanges();
     parent.yRange = yranges[0];
-    parent.y2Range = yranges[1];
+    if (yranges[1] && yranges[1].length) {
+      parent.y2Range = yranges[1];
+    }
 
     const xrange = g.xAxisRange();
     const dw = g.getOption('dateWindow');
@@ -1247,7 +1265,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
   highlightDefaultBackground(canvas, area, g) {
-    canvas.fillStyle = '#505050';
+    if (!g.hasOwnProperty('parent')) return;
+    canvas.fillStyle = g.parent.graphBackGroundColor;
     canvas.fillRect(area.x, area.y, area.w, area.h);
   }
 

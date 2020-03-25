@@ -14,7 +14,19 @@
   flex-direction: column;
   display: flex;
   background-color: #1E1E1E;
-  color: #CCC;
+  color: #C7C7C7;
+
+  ::ng-deep button {
+    border: 2px solid black;
+    background: #565656;
+    padding: 0.5em;
+    cursor: pointer;
+    min-width: 2.25em;
+    color: white;
+  }
+  ::ng-deep button:hover {
+    background-color: #8e8e8e;
+  }
 }
 
 .content {
