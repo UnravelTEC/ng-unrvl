@@ -41,6 +41,11 @@ export class EnvirooneComponent implements OnInit {
     NO2: 'gas'
   };
   colors = [];
+  graphWidth = 0;
+  setGraphWidth(width) {
+    this.graphWidth = width;
+    console.log('new w', width);
+  }
 
   extraDyGraphConfig = {
     connectSeparatedPoints: true,
@@ -229,8 +234,7 @@ export class EnvirooneComponent implements OnInit {
 
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
-    const widthPx = 1600;
-    const divider = rangeSeconds / widthPx;
+    const divider = rangeSeconds / this.graphWidth;
     if (divider > 1) {
       const rounded = Math.floor(divider);
       this.userMeanS = rounded > 30 ? rounded : 30;

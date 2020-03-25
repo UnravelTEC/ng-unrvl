@@ -194,6 +194,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   // public fetchFromServerIntervalReducedMS = this.dataBaseQueryStepMS; //reduced if screen res too low (calculated later)
 
   public graphWidthPx = 0;
+  @Output()
+  returnGraphWidthOnChange = new EventEmitter<number>();
   public maxNativeInterval = 0;
 
   public stats = false;
@@ -517,6 +519,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.min = newdata;
     }
   }
+  setYranges() {
+    const yranges = this.Dygraph.yAxisRanges();
+    this.yRange = yranges[0];
+    this.y2Range = yranges[1];
+  }
 
   handleInitialData(receivedData: Object) {
     if (!this.displayedData.length) {
@@ -590,9 +597,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     // if (this.fetchFromServerIntervalMS > 0) {
     //   this.startUpdate();
     // }
-    const yranges = this.Dygraph.yAxisRanges();
-    this.yRange = yranges[0];
-    this.y2Range = yranges[1];
+    this.setYranges();
     // console.log('handleInitialData: calling checkAndFetchOldData');
     // this.checkAndFetchOldData();
     this.setCurrentXrange();
@@ -747,6 +752,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       console.log(yRanges[0]);
 
       parent.yRange = yRanges[0];
+      parent.y2Range = yRanges[1];
       parent.updateAverages();
       // parent.fromZoom = new Date(minDate);
       // parent.toZoom = new Date(maxDate);
@@ -793,7 +799,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
     const parent = g['parent'];
-    parent.yRange = g.yAxisRange();
+    const yranges = g.yAxisRanges();
+    parent.yRange = yranges[0];
+    parent.y2Range = yranges[1];
 
     const xrange = g.xAxisRange();
     const dw = g.getOption('dateWindow');
@@ -835,6 +843,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       if (parent['graphWidthPx'] !== graphWidthPx) {
         parent['graphWidthPx'] = graphWidthPx;
         console.log('new graph width:', graphWidthPx);
+        parent.returnGraphWidthOnChange.emit(graphWidthPx);
 
         const from = parent['fromZoom'];
         const to = parent['toZoom'];
