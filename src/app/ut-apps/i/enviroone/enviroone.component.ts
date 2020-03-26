@@ -282,6 +282,7 @@ export class EnvirooneComponent implements OnInit {
     const idata = ret['data'];
     let logscale = true;
     const colorCounters = {};
+    const newColors = []
     for (let c = 1; c < labels.length; c++) {
       const item = labels[c];
 
@@ -294,10 +295,10 @@ export class EnvirooneComponent implements OnInit {
             const rightColorArray = this.h.colors[currentColorSet];
             if (colorCounters.hasOwnProperty(currentColorSet)) {
               const i = (colorCounters[currentColorSet] += 1);
-              this.colors.push(rightColorArray[i % rightColorArray.length]);
+              newColors.push(rightColorArray[i % rightColorArray.length]);
             } else {
               colorCounters[currentColorSet] = 0;
-              this.colors.push(rightColorArray[0]);
+              newColors.push(rightColorArray[0]);
             }
             break;
           }
@@ -337,6 +338,7 @@ export class EnvirooneComponent implements OnInit {
     this.startTime = this.userStartTime;
     this.labels = labels;
     this.data = idata;
+    this.colors = newColors;
     console.log(labels);
     console.log(idata);
     this.changeTrigger = !this.changeTrigger;

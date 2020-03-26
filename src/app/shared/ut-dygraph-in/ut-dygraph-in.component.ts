@@ -259,17 +259,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.dyGraphOptions.visibility.push(true);
       }
 
-      // [this.fromZoom, this.toZoom] = this.calculateTimeRange(
-      //   this.startTime,
-      //   'now'
-      // );
-
-      // this.dyGraphOptions['dateWindow'] = [
-      //   this.fromZoom.valueOf(),
-      //   this.toZoom.valueOf()
-      // ];
       this.dyGraphOptions['labels'] = this.columnLabels;
-      if (this.colors.length) this.dyGraphOptions['colors'] = this.colors;
 
       const newDataBeginTime = this.displayedData[0][0];
       const newDataEndTime = this.displayedData[
@@ -295,7 +285,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       }
       this.setCurrentXrange();
       // this.updateDateWindow();
-      if (this.colors) {
+      if (this.colors && this.colors.length) {
+        this.dyGraphOptions['colors'] = this.colors
         this.Dygraph.updateOptions(
           { colors: this.dyGraphOptions['colors'] },
           true
