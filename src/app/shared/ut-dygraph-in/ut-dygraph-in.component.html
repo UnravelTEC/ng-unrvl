@@ -12,10 +12,18 @@ style.padding-bottom="20vh"-->
   <div class="mydygraph-component">
     <div class="graph" id="{{ htmlID }}"></div>
     <div
-      class="mylegend"
-      id="L_{{ htmlID }}"
+      class="legendabscontainer"
       [style.transform]="'translateX(' + yO + 'px)'"
-    ></div>
+    >
+      <div class="legendrelcontainer">
+        <div
+          class="mylegend"
+          id="L_{{ htmlID }}"
+          (wheel)="$event.stopPropagation()"
+        ></div>
+      </div>
+    </div>
+
     <div
       class="fromDate"
       *ngIf="showDate == true"
@@ -26,6 +34,7 @@ style.padding-bottom="20vh"-->
     <div
       class="toDate {{ y2Range[1] === undefined ? 'noy2' : '' }}"
       *ngIf="showDate == true"
+      [style.transform]="'translateX(-' + y2O + 'px)'"
     >
       {{ toZoom | date: 'shortDate' }}
     </div>
@@ -33,7 +42,10 @@ style.padding-bottom="20vh"-->
       class="overlapTickTexthider y1"
       [style.transform]="'translateX(' + yO + 'px)'"
     ></div>
-    <div class="overlapTickTexthider y2"></div>
+    <div
+      class="overlapTickTexthider y2"
+      [style.transform]="'translateX(-' + y2O + 'px)'"
+    ></div>
 
     <div *ngIf="noData == true && !minimal" class="info nodata">
       No data to display.
@@ -74,6 +86,7 @@ style.padding-bottom="20vh"-->
     <div
       class="y2min {{ XLabel == '' ? 'noxlabel' : '' }}"
       *ngIf="dyGraphOptions['drawAxis'] !== false && y2Range[0] !== undefined"
+      [style.transform]="'translateX(-' + y2O + 'px)'"
     >
       {{ y2Range[0] | number: '1.0-2' }}
     </div>
@@ -87,6 +100,7 @@ style.padding-bottom="20vh"-->
     <div
       class="y2max"
       *ngIf="dyGraphOptions['drawAxis'] !== false && y2Range[1] !== undefined"
+      [style.transform]="'translateX(-' + y2O + 'px)'"
     >
       {{ y2Range[1] | number: '1.0-2' }}
     </div>
@@ -100,6 +114,7 @@ style.padding-bottom="20vh"-->
     <div
       class="xmax {{ y2Range[1] === undefined ? 'noy2' : '' }}"
       *ngIf="dyGraphOptions['drawAxis'] !== false"
+      [style.transform]="'translateX(-' + y2O + 'px)'"
     >
       {{ toZoom | date: 'shortTime' }}
     </div>

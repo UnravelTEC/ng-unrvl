@@ -117,7 +117,7 @@ $red2: #eb7c80;
   }
   .toDate,
   .xmax {
-    right: 70px;
+    right: 60px;
     text-align: right;
   }
   .noy2 {
@@ -158,8 +158,8 @@ $red2: #eb7c80;
   }
   .y2min,
   .y2max {
-    right: 9px;
-    width: 50px;
+    right: 7px;
+    width: 42px;
     text-align: left;
   }
   .xmin,
@@ -187,26 +187,53 @@ $red2: #eb7c80;
     right: 0;
   }
 
-  .dygraph-legend, .mylegend {
+  .legendabscontainer {
+    position: absolute;
+    top: 5px;
+    left: 61px; // y-w(50) + 5px margin + 5px padding + 1px axis-width
+    bottom: 67px; // 52 (bttom of graph)+ 5px own padding + 2x5px legend-padding
+    right: 5px;
+    flex-direction: column;
+    display: flex;
+    pointer-events: none;
+    .legendrelcontainer {
+      height: 100%;
+      position: relative;
+      flex: 1;
+      // width: 100%;
+      // width: auto;
+      pointer-events: none;
+    }
+  }
+  .dygraph-legend,
+  .mylegend {
     font-size: $dygfontsize;
     background: rgba(100, 100, 100, 0.8);
     padding: 5px;
     text-align: left;
     position: absolute !important;
-    top: 5px !important;
-    left: 61px !important; // y-w(50) + 5px margin + 5px padding + 1px axis-width
-    // bottom: 3em;
-    width: auto;
+    top: 0px !important;
+    left: 0px !important; // y-w(50) + 5px margin + 5px padding + 1px axis-width
     overflow-x: visible;
+
+    max-height: 100%;
     overflow-y: auto;
-    // pointer-events: none;
+    pointer-events: auto;
+    position: relative;
+    div.header {
+      position: fixed;
+      top: 0;
+      padding: 5px;
+      z-index: 10;
+      background-color: #5d5d5d; // picked from graph-background + legend-bg
+    }
 
     table {
       border-collapse: collapse;
-      margin-top: 0.2em;
+      margin-top: 1.5em;
       border: 1px solid black;
+
       tr {
-        // pointer-events: auto;
         cursor: pointer;
         td,
         th {

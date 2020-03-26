@@ -41,8 +41,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     right: 0
   };
   private graphBackGroundColor = '#3F3F3F';
-  public yOffset = 0;
   public yO = '0';
+  public y2O = '0';
   @Input()
   startTime = '15m'; // prefix m for min, s for seconds, h for hours, d for days
 
@@ -123,8 +123,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     gridLinePattern: [4, 4],
     gridLineWidth: 1.5,
     gridLineColor: '#4A4A4A',
-    axisLineColor: '#4A4A4A',
-    axisLineWidth: 1,
+    axisLineColor: 'yellow',
+    axisLineWidth: 0.001,
     xAxisHeight: 34, // xlabel is 18 high
     // yRangePad: 200, // spacing for data points inside graph
 
@@ -343,13 +343,23 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.updateXLabel();
     this.updateDyGraphOptions();
-    this.yOffset = this.h.getDeep(this.dyGraphOptions, [
+    const yOffset = this.h.getDeep(this.dyGraphOptions, [
       'axes',
       'y',
       'axisLabelWidth'
     ]);
-    if (this.yOffset) {
-      this.yO = String(this.yOffset - 50);
+    if (yOffset) {
+      this.yO = String(yOffset - 50);
+      console.log('yOffset:', this.yO);
+    }
+    const y2Offset = this.h.getDeep(this.dyGraphOptions, [
+      'axes',
+      'y2',
+      'axisLabelWidth'
+    ]);
+    if (y2Offset) {
+      this.y2O = String(y2Offset - 50);
+      console.log('y2Offset:', this.y2O);
     }
 
     if (
@@ -740,7 +750,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     });
   }
   legendFormatter(data) {
-    let html = data.xHTML ? data.xHTML + ':' : 'Legend:';
+    // let html = '<table>';
+    // html += '<tr><th colspan="3" class="header">' + (data.xHTML ? data.xHTML + ':' : 'Legend:') + '</th></tr>';
+    let html =
+      '<div class="header">Legend: ' +
+      (data.xHTML ? ' values @ ' + data.xHTML : '') +
+      '</div>';
     html += '<table>';
     const htmlID = this['parent'] ? this['parent']['htmlID'] : '';
     // console.log(htmlID);
@@ -753,8 +768,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     for (let i = 0; i < data.series.length; i++) {
       const series = data.series[i];
-      const displayedValue = data.x == null ? '' : series.yHTML;
-      const spanvis = data.x == null ? "style='visibility:hidden'" : '';
+      const displayedValue = !series.hasOwnProperty('yHTML')
+        ? ''
+        : series.yHTML;
+      const spanvis =
+        data.x == null || !series.hasOwnProperty('yHTML')
+          ? "style='visibility:hidden'"
+          : '';
       const cls = series.isHighlighted ? 'class="highlight"' : '';
       const callbacks = genCallback(series.label, htmlID);
       if (!series.isVisible) series.color = 'gray';
