@@ -151,6 +151,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input()
   public displayedData = [];
+  @Input()
+  public dataReset = false;
   public lastValue = undefined;
   public lastValues = [];
 
@@ -269,6 +271,28 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.dyGraphOptions['labels'] = this.columnLabels;
       if (this.colors.length) this.dyGraphOptions['colors'] = this.colors;
 
+      const newDataBeginTime = this.displayedData[0][0];
+      const newDataEndTime = this.displayedData[
+        this.displayedData.length - 1
+      ][0];
+      if (
+        newDataBeginTime.valueOf() != this.dataBeginTime.valueOf() ||
+        newDataEndTime.valueOf() != this.dataEndTime.valueOf()
+      ) {
+        this.dataReset = true;
+      }
+      if (this.dataReset) {
+        console.log('data reset, restore viewport');
+        this.dataBeginTime = newDataBeginTime;
+        this.fromZoom = this.dataBeginTime;
+        this.dataEndTime = newDataEndTime;
+        this.toZoom = this.dataEndTime;
+        this.dyGraphOptions['dateWindow'] = [
+          this.dataBeginTime.valueOf(),
+          this.dataEndTime.valueOf()
+        ];
+        this.dataReset = false;
+      }
       this.setCurrentXrange();
       // this.updateDateWindow();
       if (this.colors) {
@@ -281,8 +305,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         file: this.displayedData,
         labels: this.columnLabels,
         logscale: this.dyGraphOptions.logscale,
-        visibility: this.dyGraphOptions.visibility
-        // dateWindow: this.dyGraphOptions['dateWindow']
+        visibility: this.dyGraphOptions.visibility,
+        dateWindow: this.dyGraphOptions['dateWindow']
       });
 
       if (this.minimal && this.displayedData.length > 10) {
