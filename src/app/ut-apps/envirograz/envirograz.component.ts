@@ -99,6 +99,7 @@ export class EnvirograzComponent implements OnInit {
   ];
 
   ngOnInit() {
+    this.globalSettings.emitChange({ fullscreen: true });
     this.reload();
   }
   reload() {

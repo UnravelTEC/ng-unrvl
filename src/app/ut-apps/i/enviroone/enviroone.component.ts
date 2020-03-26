@@ -110,6 +110,7 @@ export class EnvirooneComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.globalSettings.emitChange({ fullscreen: true });
     const lsMean = this.localStorage.get(this.appName + 'userMeanS');
     if (lsMean) {
       this.userMeanS = lsMean;
