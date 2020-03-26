@@ -182,6 +182,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   public running = false;
   public optionsOpen = false;
+  public legendContentVisible = true;
   public updateOnNewData = true;
 
   public panAmount = 0.5;
@@ -286,7 +287,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.setCurrentXrange();
       // this.updateDateWindow();
       if (this.colors && this.colors.length) {
-        this.dyGraphOptions['colors'] = this.colors
+        this.dyGraphOptions['colors'] = this.colors;
         this.Dygraph.updateOptions(
           { colors: this.dyGraphOptions['colors'] },
           true
@@ -781,15 +782,21 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       }
     });
   }
+  toggleLegendContent() {
+    this.legendContentVisible = !this.legendContentVisible;
+  }
   legendFormatter(data) {
     // let html = '<table>';
     // html += '<tr><th colspan="3" class="header">' + (data.xHTML ? data.xHTML + ':' : 'Legend:') + '</th></tr>';
+    const htmlID = this['parent'] ? this['parent']['htmlID'] : '';
+    const toggleSymbol =
+      this['parent'] && this['parent'].legendContentVisible ? '×' : '+';
     let html =
       '<div class="header">Legend: ' +
       (data.xHTML ? ' values @ ' + data.xHTML : '') +
-      '</div>';
+      `</div><div class="legendToggle" onclick="document['Dygraphs']['${htmlID}'].toggleLegendContent()">${toggleSymbol}</div>`;
     html += '<table>';
-    const htmlID = this['parent'] ? this['parent']['htmlID'] : '';
+
     // console.log(htmlID);
     function genCallback(label, htmlID) {
       return (

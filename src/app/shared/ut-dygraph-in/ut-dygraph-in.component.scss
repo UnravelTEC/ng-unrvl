@@ -203,6 +203,17 @@ $red2: #eb7c80;
       // width: 100%;
       // width: auto;
       pointer-events: none;
+      .legendToggle {
+        position: absolute;
+        font-size: 1.2em;
+        top: 0;
+        right: 5px;
+        cursor: pointer;
+      }
+      .legendToggle:hover {
+        font-weight: bold;
+        color: white;
+      }
     }
   }
   .dygraph-legend,
@@ -257,6 +268,13 @@ $red2: #eb7c80;
       tr:hover {
         background-color: #8e8e8e;
       }
+    }
+  }
+  .mylegend.cthide {
+    width: 20em;
+    height: 1.2em;
+    table {
+      display: none;
     }
   }
 

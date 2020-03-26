@@ -17,10 +17,11 @@ style.padding-bottom="20vh"-->
     >
       <div class="legendrelcontainer">
         <div
-          class="mylegend"
+          class="mylegend {{ this.legendContentVisible ? '' : 'cthide'}}"
           id="L_{{ htmlID }}"
           (wheel)="$event.stopPropagation()"
         ></div>
+        <!-- <div class="legendToggle" (click)="toggleLegend()">x</div> -->
       </div>
     </div>
 
@@ -122,7 +123,6 @@ style.padding-bottom="20vh"-->
 
   <div *ngIf="options == true && optionsOpen == true" class="optionsarea">
     <div class="options">
-
       <form class="subbox">
         <h5>Data</h5>
         <small style="float: left;">
@@ -137,7 +137,6 @@ style.padding-bottom="20vh"-->
           <mat-icon>delete_forever</mat-icon>
         </button>
       </form>
-
 
       <form class="subbox">
         <h5>Pan / Jump</h5>
