@@ -706,7 +706,17 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     // console.log(seriesName, axis);
 
     // console.log(event, x, row, points);
-    const DygDiv = event.path[1];
+    let DygDiv;
+    if (!event['path']) {
+      // firefox
+      // console.log(
+      //   'no path, but',
+      //   event['target']['parentElement']['parentElement']
+      // );
+      DygDiv = event['target']['parentElement']['parentElement'].firstChild;
+    } else {
+      DygDiv = event.path[1];
+    }
     // console.log(event, DygDiv);
 
     let y1axis = undefined,
@@ -756,7 +766,14 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     // console.log('unhighlight');
     // console.log(event);
-    const children = event.path[1].childNodes;
+    let DygDiv;
+    if (!event['path']) {
+      // firefox
+      DygDiv = event['target']['parentElement']['parentElement'].firstChild;
+    } else {
+      DygDiv = event.path[1];
+    }
+    const children = DygDiv.childNodes;
     ['dygraph-ylabel', 'dygraph-y2label'].forEach(cssclass => {
       for (const key in children) {
         if (
