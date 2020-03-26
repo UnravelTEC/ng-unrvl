@@ -51,6 +51,23 @@ export class PmhistComponent implements OnInit {
   public userStartTime = this.startTime;
   public meanS = 30;
   public userMeanS = this.meanS;
+  public fromTime: Date;
+  public toTime: Date;
+  public currentRange: string;
+  updateFromToTimes(timearray) {
+    // console.log(timearray);
+    this.fromTime = new Date(timearray[0]);
+    this.toTime = new Date(timearray[1]);
+    const rangeSeconds = Math.floor((timearray[1] - timearray[0]) / 1000);
+    this.currentRange = this.h.createHRTimeString(rangeSeconds);
+    this.userMeanS = this.calcMean(rangeSeconds);
+  }
+  graphWidth = 1500;
+  setGraphWidth(width) {
+    this.graphWidth = width;
+    console.log('new w', width);
+  }
+
   db = 'envirograz000';
   server = 'https://newton.unraveltec.com';
 
@@ -142,11 +159,19 @@ export class PmhistComponent implements OnInit {
     }
     this.reload();
   }
-  reload() {
+  reload(fromTo = false) {
     this.meanS = this.userMeanS;
     this.startTime = this.userStartTime;
     const ts = this.startTime;
     const mS = String(this.meanS);
+
+    const timeQuery = fromTo
+      ? ' time > ' +
+        this.fromTime.valueOf() +
+        'ms AND time < ' +
+        this.toTime.valueOf() +
+        'ms '
+      : ' time > now() - ' + this.startTime + ' ';
 
     let pmquery = '';
     if (this.sensorsEnabled['OPC-N3'] || this.sensorsEnabled['SPS30']) {
@@ -164,8 +189,7 @@ export class PmhistComponent implements OnInit {
 
       pmquery +=
         (sensorw ? '(' + sensorw + ') AND ' : '') +
-        'time > now() - ' +
-        ts +
+        timeQuery +
         ' GROUP BY sensor,host,time(' +
         mS +
         's);';
@@ -173,7 +197,10 @@ export class PmhistComponent implements OnInit {
 
     this.launchQuery(pmquery);
   }
-
+  calcMean(secondsRange) {
+    const divider = Math.floor(secondsRange / this.graphWidth);
+    return divider > 30 ? divider : 30;
+  }
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
     const widthPx = 1600;

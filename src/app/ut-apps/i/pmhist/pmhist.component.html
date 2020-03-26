@@ -27,6 +27,8 @@
   YLabel="Particle Count (&#8202;#&#8202;/&#8202;cm³&#8202;)"
   enableHighlightCallback="true"
   (returnHighlightedRow)="handleHighlightCallback($event)"
+  (returnGraphWidthOnChange)="setGraphWidth($event)"
+  (returnCurrentZoom)="updateFromToTimes($event)"
   #R
 ></app-ut-dygraph-in>
 
@@ -95,7 +97,7 @@
 
   <br />-->
   <div style="width: 100%; text-align: right;">
-    <button (click)="reload()">
+    <button (click)="reload(true)">
       Reload
     </button>
   </div>
