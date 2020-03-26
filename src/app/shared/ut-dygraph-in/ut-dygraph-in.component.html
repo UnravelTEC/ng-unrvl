@@ -122,23 +122,6 @@ style.padding-bottom="20vh"-->
 
   <div *ngIf="options == true && optionsOpen == true" class="optionsarea">
     <div class="options">
-      <!--
-      <form class="subbox">
-        <h5>Fetching interval</h5>
-        <label for="fetchFromServerIntervalMS"></label>
-        <input
-          type="text"
-          id="fetchFromServerIntervalMS"
-          name="fetchFromServerIntervalMS"
-          [(ngModel)]="fetchFromServerIntervalMS"
-          style="width:4em"
-        />
-        <span class="unit">ms</span>
-        <button (click)="toggleFetching()" [class]="running">
-          <mat-icon *ngIf="running">pause_circle_outline</mat-icon>
-          <mat-icon *ngIf="!running">play_circle_outline</mat-icon>
-        </button>
-      </form> -->
 
       <form class="subbox">
         <h5>Data</h5>
@@ -149,107 +132,12 @@ style.padding-bottom="20vh"-->
               ? 0
               : displayedData.length * (displayedData[0].length - 1)
           }}<br />
-
-          <label for="retainDataInfinitely">
-            retain &infin;:
-          </label>
-          <input
-            type="checkbox"
-            name="retainDataInfinitely"
-            id="retainDataInfinitely"
-            [(ngModel)]="retainDataInfinitely"
-          />
         </small>
         <button (click)="resetData()">
           <mat-icon>delete_forever</mat-icon>
         </button>
       </form>
 
-      <!-- <form class="subbox">
-        <h5>Autopan</h5>
-        <button (click)="toggleAutoPan()">
-          {{ updateOnNewData ? 'disable' : 'enable' }}
-        </button>
-      </form> -->
-
-      <!-- <div class="subbox">
-        <div class="time">
-          <h5>From:</h5>
-          <mat-form-field>
-            <input
-              matInput
-              [matDatepicker]="pickerF"
-              [formControl]="fromFormDate"
-              (dateChange)="fromDatePickerChanged($event)"
-              [max]="dataEndTime"
-            />
-            <mat-datepicker-toggle
-              matSuffix
-              [for]="pickerF"
-            ></mat-datepicker-toggle>
-            <mat-datepicker #pickerF></mat-datepicker>
-          </mat-form-field>
-          <small>{{ fromZoom | date: 'yyyy-MM-dd' }}</small>
-          <br />
-
-          <span>{{ fromZoom | date: 'HH:mm:ss' }}</span>
-        </div>
-      </div> -->
-
-      <form class="subbox">
-        <h5>Display Range: {{ currentXrangeText }}</h5>
-        <select
-          [(ngModel)]="zoomValue"
-          (ngModelChange)="changeRange($event)"
-          id="zoomValue"
-          name="zoomValue"
-          style="width:4em"
-        >
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="5" selected="selected">5</option>
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="30">30</option>
-        </select>
-        <select
-          [(ngModel)]="zoomMultiplicator"
-          (ngModelChange)="changeRange($event)"
-          id="zoomMultiplicator"
-          name="zoomMultiplicator"
-          style="width:6em"
-        >
-          <option value="1">sec</option>
-          <option value="60" selected="selected">min</option>
-          <option value="3600">hours</option>
-          <option value="68400">days</option>
-          <option value="2592000">months</option>
-          <option value="31536000">years</option>
-        </select>
-      </form>
-
-      <!-- <div class="subbox">
-        <div class="time">
-          <h5>To:</h5>
-          <mat-form-field>
-            <input
-              matInput
-              [matDatepicker]="pickerT"
-              [formControl]="toFormDate"
-              (dateChange)="toDatePickerChanged($event)"
-              [max]="dataEndTime"
-              [min]="fromZoom"
-            />
-            <mat-datepicker-toggle
-              matSuffix
-              [for]="pickerT"
-            ></mat-datepicker-toggle>
-            <mat-datepicker #pickerT></mat-datepicker>
-          </mat-form-field>
-          <br />
-          <span>{{ toZoom | date: 'HH:mm:ss' }}</span>
-        </div>
-      </div> -->
 
       <form class="subbox">
         <h5>Pan / Jump</h5>
