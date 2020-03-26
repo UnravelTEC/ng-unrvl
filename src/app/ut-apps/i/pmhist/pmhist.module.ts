@@ -7,6 +7,7 @@ import { UtDygraphInModule } from '../../../shared/ut-dygraph-in/ut-dygraph-in.m
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { ChartsModule } from 'ng2-charts';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   imports: [
@@ -14,6 +15,7 @@ import { ChartsModule } from 'ng2-charts';
     PmhistRoutingModule,
     UtDygraphInModule,
     MatSelectModule,
+    MatIconModule,
     FormsModule,
     ChartsModule,
   ],

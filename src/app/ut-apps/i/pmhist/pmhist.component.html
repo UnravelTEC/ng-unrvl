@@ -6,8 +6,12 @@
       </h2>
     </th>
     <td style="text-align:right; padding-right: 1em;">
-      <a routerLink="/Apps/EnviroGraz000" routerLinkActive="active"
-        >Back to Multi-Graph</a
+      <a
+        routerLink="/Apps/EnviroGraz000"
+        routerLinkActive="active"
+        class="icon"
+        title="Return to overview"
+        ><mat-icon>fullscreen_exit</mat-icon></a
       >
     </td>
   </tr>
@@ -70,7 +74,7 @@
     style="width:4em"
   /><br />
   <br />
-  <table style="border: 1px solid gray; padding: 0.5em;">
+  <!-- <table style="border: 1px solid gray; padding: 0.5em;">
     <tr>
       <th colspan="2">Sensors</th>
     </tr>
@@ -89,8 +93,10 @@
     </tr>
   </table>
 
-  <br />
-  <button (click)="reload()">
-    Reload
-  </button>
+  <br />-->
+  <div style="width: 100%; text-align: right;">
+    <button (click)="reload()">
+      Reload
+    </button>
+  </div>
 </div>

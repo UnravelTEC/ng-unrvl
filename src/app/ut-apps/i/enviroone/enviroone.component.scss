@@ -1,3 +1,6 @@
+$bordercolor: #666666;
+$labelcolor: #999;
+
 .settings {
   position: absolute;
   bottom: 2em;
@@ -21,6 +24,9 @@
     font-size: 14px;
     ￼line-height: 1.125;
     ￼font-family: Roboto, 'Helvetica Neue', sans-serif;
+  }
+  .cRange {
+    font-size: 14px;
   }
   table {
     border-collapse: separate;

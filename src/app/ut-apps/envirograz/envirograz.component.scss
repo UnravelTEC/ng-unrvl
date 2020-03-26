@@ -1,3 +1,6 @@
+$bordercolor: #666666;
+$labelcolor: #999;
+
 table.envirobody {
   height: 100%;
   width: 100%;
@@ -14,18 +17,18 @@ table.envirobody {
   th {
     padding: 0.5rem 0;
     height: 6vh;
-    border-left: 1px solid gray;
+    border-left: 1px solid $bordercolor;
     width: 32%;
     position: relative;
     a.fullscreen,
     a.fullscreen:visited {
-      color: #c7c7c7;;
+      color: #c7c7c7;
       position: absolute;
       top: 1em;
       right: 1em;
     }
     a.fullsceen:hover,
-    a.fullsceen:visited:hover{
+    a.fullsceen:visited:hover {
       color: white;
     }
   }
@@ -39,9 +42,15 @@ table.envirobody {
       width: 11rem;
       margin: 1rem;
       padding: 1rem;
+      mat-label {
+        color: $labelcolor;
+      }
+      .mat-select {
+        background-color: #565656;
+      }
       label {
         display: inline-block;
-        color: rgba(0, 0, 0, 0.54);
+        color: $labelcolor;
         text-align: right;
         margin-right: 0.7rem;
         font-weight: 400;
@@ -49,12 +58,11 @@ table.envirobody {
         ￼line-height: 1.125;
         ￼font-family: Roboto, 'Helvetica Neue', sans-serif;
       }
-      input[type='text'] {
-        padding: 0.3em;
-        // border-radius: 0.5em;
-        font-size: 20px;
-        border: 1px solid rgba(0, 0, 0, 0.54);
-      }
+
+    }
+    a, a:visited {
+      color: #c7c7c7;
+      // text-decoration: none;
     }
   }
   th:first-child,
@@ -62,7 +70,7 @@ table.envirobody {
     border-left: 0;
   }
   tr:first-child + tr td {
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid $bordercolor;
   }
   .val {
     position: absolute;

@@ -1,35 +1,29 @@
+$bordercolor: #666666;
+$labelcolor: #999;
+
 .settings {
   position: absolute;
   bottom: 2em;
   right: 0;
-  border: 1px solid green;
+  border: 1px solid #666;
   width: 11rem;
   margin: 1rem;
   padding: 1rem;
+  mat-label {
+    color: $labelcolor;
+  }
+  .mat-select {
+    background-color: #565656;
+  }
   label {
     display: inline-block;
-    color: rgba(0, 0, 0, 0.54);
+    color: $labelcolor;
     text-align: right;
     margin-right: 0.7rem;
     font-weight: 400;
     font-size: 16px;
     ￼line-height: 1.125;
     ￼font-family: Roboto, 'Helvetica Neue', sans-serif;
-  }
-  input[type='text'] {
-    padding: 0.3em;
-    // border-radius: 0.5em;
-    font-size: 20px;
-    border: 1px solid rgba(0, 0, 0, 0.54);
-  }
-  button {
-    border: 0;
-    border-radius: 0.5em;
-    background: #5cb85c;
-    padding: 0.5em;
-    cursor: pointer;
-    min-width: 2.25em;
-    color: white;
   }
 }
 h2 {
@@ -49,4 +43,10 @@ h2 {
     // background: blue;
     position: relative;
   }
+}
+.icon {
+  color: #c7c7c7;
+}
+.icon:hover {
+  color: white;
 }
