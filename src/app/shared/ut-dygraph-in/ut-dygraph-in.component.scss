@@ -187,12 +187,11 @@ $red2: #eb7c80;
     right: 0;
   }
 
-  .dygraph-legend {
+  .dygraph-legend, .mylegend {
+    font-size: $dygfontsize;
     background: rgba(100, 100, 100, 0.8);
     padding: 5px;
     text-align: left;
-    // text-shadow: 1px 1px $graphbg, -1px 1px $graphbg, 1px -1px $graphbg, -1px -1px $graphbg,
-    //   2px 2px $graphbg, -2px 2px $graphbg, 2px -2px $graphbg, -2px -2px $graphbg;
     position: absolute !important;
     top: 5px !important;
     left: 61px !important; // y-w(50) + 5px margin + 5px padding + 1px axis-width

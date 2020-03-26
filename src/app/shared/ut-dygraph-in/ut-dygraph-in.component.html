@@ -7,9 +7,15 @@ style.padding-bottom="20vh"-->
   [style.bottom]="style.bottom"
   [style.left]="style.left"
   [style.right]="style.right"
+  (wheel)="onWheel($event)"
 >
   <div class="mydygraph-component">
     <div class="graph" id="{{ htmlID }}"></div>
+    <div
+      class="mylegend"
+      id="L_{{ htmlID }}"
+      [style.transform]="'translateX(' + yO + 'px)'"
+    ></div>
     <div
       class="fromDate"
       *ngIf="showDate == true"

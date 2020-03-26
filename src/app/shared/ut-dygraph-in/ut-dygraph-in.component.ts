@@ -221,6 +221,19 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     this.updateGraph();
   }
+  onWheel(ev) {
+    console.log(ev);
+    if (ev.deltaY != 0) {
+      this.zoom(ev.deltaY > 0 ? 1.25 : 0.66);
+    }
+
+    if (ev.deltaX != 0) {
+      const oldPan = this.panAmount;
+      this.panAmount = 0.05;
+      this.pan(ev.deltaX > 0 ? 'forward' : 'back');
+      this.panAmount = oldPan;
+    }
+  }
 
   getXLabel() {
     const xRangeText = this.currentXrangeText ? this.currentXrangeText : '??';
@@ -353,6 +366,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       document['Dygraphs'] = [];
     }
     document['Dygraphs'][this.htmlID] = this;
+    this.dyGraphOptions['labelsDiv'] = 'L_' + this.htmlID;
 
     // console.log(this.startTime, this.endTime);
 
@@ -1388,12 +1402,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.Dygraph.updateOptions({
       dateWindow: [newFrom, newTo]
     });
-    if (factor > 1) {
-      this.checkAndFetchOldData();
-    }
-    this.retainDataInfinitely = true;
+    // if (factor > 1) {
+    //   this.checkAndFetchOldData();
+    // }
+    // this.retainDataInfinitely = true;
     this.setCurrentXrange();
-    this.updateFromToPickers();
+    // this.updateFromToPickers();
   }
   updateYlogscale() {
     this.Dygraph.updateOptions({
