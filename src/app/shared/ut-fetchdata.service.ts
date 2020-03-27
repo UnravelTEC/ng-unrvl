@@ -141,9 +141,21 @@ export class UtFetchdataService {
     return false;
   }
 
+  influxTimeString(param1: any, param2: Date = undefined) {
+    if (param2) {
+      return (
+        ' time > ' +
+        param1.valueOf() +
+        'ms AND time < ' +
+        param2.valueOf() +
+        'ms '
+      );
+    }
+    return ' time > now() - ' + param1 + ' ';
+  }
   buildInfluxQuery(
     clause: string,
-    database? : string,
+    database?: string,
     serverstring?: string,
     epoch = 'ms'
   ) {

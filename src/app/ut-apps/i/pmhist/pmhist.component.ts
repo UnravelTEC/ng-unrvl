@@ -162,16 +162,11 @@ export class PmhistComponent implements OnInit {
   reload(fromTo = false) {
     this.meanS = this.userMeanS;
     this.startTime = this.userStartTime;
-    const ts = this.startTime;
     const mS = String(this.meanS);
 
     const timeQuery = fromTo
-      ? ' time > ' +
-        this.fromTime.valueOf() +
-        'ms AND time < ' +
-        this.toTime.valueOf() +
-        'ms '
-      : ' time > now() - ' + this.startTime + ' ';
+    ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
+    : this.utHTTP.influxTimeString(this.startTime);
 
     let pmquery = '';
     if (this.sensorsEnabled['OPC-N3'] || this.sensorsEnabled['SPS30']) {

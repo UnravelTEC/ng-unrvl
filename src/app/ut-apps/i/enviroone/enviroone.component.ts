@@ -142,12 +142,8 @@ export class EnvirooneComponent implements OnInit {
 
     let Tquery = '';
     const timeQuery = fromTo
-      ? ' time > ' +
-        this.fromTime.valueOf() +
-        'ms AND time < ' +
-        this.toTime.valueOf() +
-        'ms '
-      : ' time > now() - ' + this.startTime + ' ';
+      ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
+      : this.utHTTP.influxTimeString(this.startTime);
     if (
       this.physParamEnabled['T'] &&
       (this.sensorsEnabled['BME280'] || this.sensorsEnabled['EE08'])
@@ -282,7 +278,7 @@ export class EnvirooneComponent implements OnInit {
     const idata = ret['data'];
     let logscale = true;
     const colorCounters = {};
-    const newColors = []
+    const newColors = [];
     for (let c = 1; c < labels.length; c++) {
       const item = labels[c];
 
