@@ -33,7 +33,7 @@ export class EnvirograzComponent implements OnInit {
     pointSize: 3,
     axes: {
       y: {
-        axisLabelWidth: 60,
+        axisLabelWidth: 60
       }
     }
   };
@@ -105,20 +105,24 @@ export class EnvirograzComponent implements OnInit {
   reload() {
     this.meanS = this.userMeanS;
     this.startTime = this.userStartTime;
+    const timeQuery = this.utHTTP.influxTimeString(this.startTime);
     this.launchQuery(
-      "SELECT mean(*) FROM temperature WHERE (sensor='EE08' OR sensor='BME280') AND time > now() - " +
-        this.startTime +
-        ' GROUP BY sensor,time(' +
-        String(this.meanS) +
-        's)',
+      this.utHTTP.influxMeanQuery(
+        'temperature',
+        timeQuery,
+        { sensor: ['EE08', 'BME280'] },
+        this.meanS
+      ),
       'T'
     );
     this.launchQuery(
-      'SELECT mean(/rel_percent/) FROM humidity WHERE time > now() - ' +
-        this.startTime +
-        ' GROUP BY sensor,time(' +
-        String(this.meanS) +
-        's)',
+      this.utHTTP.influxMeanQuery(
+        'humidity',
+        timeQuery,
+        {sensor: []},
+        this.meanS,
+        '/rel_percent/'
+      ),
       'H'
     );
     this.launchQuery(

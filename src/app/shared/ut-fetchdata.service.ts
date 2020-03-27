@@ -183,7 +183,7 @@ export class UtFetchdataService {
             }
           }
           whereClause += ') AND ';
-        } else if (andobj) {
+        } else if (andobj && andobj.length) {
           whereClause += key + " = '" + andobj + "' AND ";
         }
       }

@@ -37,7 +37,7 @@ export class GlobalSettingsService implements OnInit {
       [50, 'rgba(0, 128, 0, 0.35)'], // light green
       [100, 'rgba(255, 255, 0, 0.35)'], // yellow
       [250, 'rgba(255, 166, 0, 0.35)'], // orange
-      [500, 'rgba(255, 0, 0, 0.35)'] // red
+      [50000, 'rgba(255, 0, 0, 0.35)'] // red
     ],
     NO2_ugpm3: [
       [0.01, 'white'],
