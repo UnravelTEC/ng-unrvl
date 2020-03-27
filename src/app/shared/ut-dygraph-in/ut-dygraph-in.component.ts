@@ -670,6 +670,65 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   //     }
   //   }
   // }
+  getSeriesAxis(seriesName) {
+    const axisVal = this.h.getDeep(this.dyGraphOptions, [
+      'series',
+      seriesName,
+      'axis'
+    ]);
+    return axisVal ? axisVal : 'y1';
+  }
+  getAxisElements(dygDiv) {
+    let y1axis = undefined,
+      y2axis = undefined;
+    const children = dygDiv.childNodes;
+    for (const key in children) {
+      if (y1axis && y2axis) {
+        break;
+      }
+      if (children.hasOwnProperty(key)) {
+        const element = children[key];
+        if (
+          element.firstChild &&
+          element.firstChild.firstChild &&
+          element.firstChild.firstChild['className']
+        ) {
+          const destchild = element.firstChild.firstChild;
+          const childclass = destchild['className'];
+          if (!y1axis && childclass.search('dygraph-ylabel') > -1) {
+            y1axis = destchild;
+            continue;
+          }
+          if (!y2axis && childclass.search('dygraph-y2label') > -1) {
+            // console.log('found y2');
+            y2axis = destchild;
+          }
+        }
+      }
+    }
+    return [y1axis, y2axis];
+  }
+  setAxisHighlight(seriesName) {
+    // console.log(event, x, row, points);
+    const DygDiv = document.getElementById(this.htmlID).firstChild;
+    const axes = this.getAxisElements(DygDiv);
+    let y1axis = axes[0],
+      y2axis = axes[1];
+
+    const axis = this.getSeriesAxis(seriesName);
+    const shadow = '0 0 1em orange, 0 0 0.2em orange';
+    if (axis == 'y1') {
+      y1axis.style.textShadow = shadow;
+      y2axis.style.textShadow = 'none';
+      y1axis.style.opacity = 1;
+      y2axis.style.opacity = 0.5;
+    } else {
+      y2axis.style.textShadow = shadow;
+      y1axis.style.textShadow = 'none';
+      y2axis.style.opacity = 1;
+      y1axis.style.opacity = 0.5;
+    }
+  }
 
   highlightCallback(event, x, points, row, seriesName) {
     if (!this.hasOwnProperty('parent')) {
@@ -684,87 +743,16 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     if (this['numAxes']() < 2) {
       return;
     }
-
-    let axis = 'y1';
-    if (
-      parent['dyGraphOptions'] &&
-      parent['dyGraphOptions']['series'] &&
-      parent['dyGraphOptions']['series'][seriesName] &&
-      parent['dyGraphOptions']['series'][seriesName]['axis'] &&
-      parent['dyGraphOptions']['series'][seriesName]['axis'] == 'y2'
-    ) {
-      axis = 'y2';
-    }
-    // console.log(seriesName, axis);
-
-    // console.log(event, x, row, points);
-    let DygDiv;
-    if (!event['path']) {
-      // firefox
-      // console.log(
-      //   'no path, but',
-      //   event['target']['parentElement']['parentElement']
-      // );
-      DygDiv = event['target']['parentElement']['parentElement'].firstChild;
-    } else {
-      DygDiv = event.path[1];
-    }
-    // console.log(event, DygDiv);
-
-    let y1axis = undefined,
-      y2axis = undefined;
-    const children = DygDiv.childNodes;
-    for (const key in children) {
-      if (y1axis && y2axis) {
-        break;
-      }
-      if (children.hasOwnProperty(key)) {
-        const element = children[key];
-        if (
-          element.firstChild &&
-          element.firstChild.firstChild &&
-          element.firstChild.firstChild.className
-        ) {
-          const destchild = element.firstChild.firstChild;
-          const childclass = destchild.className;
-          if (!y1axis && childclass.search('dygraph-ylabel') > -1) {
-            y1axis = destchild;
-            continue;
-          }
-          if (!y2axis && childclass.search('dygraph-y2label') > -1) {
-            // console.log('found y2');
-            y2axis = destchild;
-          }
-        }
-      }
-    }
-    const shadow = '0 0 1em orange, 0 0 0.2em orange';
-    if (axis == 'y1') {
-      y1axis.style.textShadow = shadow;
-      y2axis.style.textShadow = 'none';
-      y1axis.style.opacity = 1;
-      y2axis.style.opacity = 0.5;
-    } else {
-      y2axis.style.textShadow = shadow;
-      y1axis.style.textShadow = 'none';
-      y2axis.style.opacity = 1;
-      y1axis.style.opacity = 0.5;
-    }
+    parent.setAxisHighlight(seriesName);
   }
   unhighlightCallback(event) {
     this['clearSelection']();
-    if (this['numAxes']() < 2) {
+    if (this['numAxes']() < 2 || !this['parent']) {
       return;
     }
     // console.log('unhighlight');
     // console.log(event);
-    let DygDiv;
-    if (!event['path']) {
-      // firefox
-      DygDiv = event['target']['parentElement']['parentElement'].firstChild;
-    } else {
-      DygDiv = event.path[1];
-    }
+    const DygDiv = document.getElementById(this['parent'].htmlID).firstChild;
     const children = DygDiv.childNodes;
     ['dygraph-ylabel', 'dygraph-y2label'].forEach(cssclass => {
       for (const key in children) {
@@ -772,11 +760,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           children.hasOwnProperty(key) &&
           children[key].firstChild &&
           children[key].firstChild.firstChild &&
-          children[key].firstChild.firstChild.className &&
-          children[key].firstChild.firstChild.className.search(cssclass) > -1
+          children[key].firstChild.firstChild['className'] &&
+          children[key].firstChild.firstChild['className'].search(cssclass) > -1
         ) {
-          children[key].firstChild.firstChild.style.textShadow = 'none';
-          children[key].firstChild.firstChild.style.opacity = 1;
+          children[key].firstChild.firstChild['style'].textShadow = 'none';
+          children[key].firstChild.firstChild['style'].opacity = 1;
           break;
         }
       }
@@ -790,7 +778,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     // html += '<tr><th colspan="3" class="header">' + (data.xHTML ? data.xHTML + ':' : 'Legend:') + '</th></tr>';
     const htmlID = this['parent'] ? this['parent']['htmlID'] : '';
     const toggleSymbol =
-      this['parent'] && this['parent'].legendContentVisible ? '×' : '+';
+      this['parent'] && this['parent'].legendContentVisible ? '▲' : '▼';
     let html =
       '<div class="header">Legend: ' +
       (data.xHTML ? ' values @ ' + data.xHTML : '') +
@@ -824,6 +812,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   selectSeries(name: string) {
     // this.Dygraph.clearSelection();
     this.Dygraph.setSelection(false, name);
+    if (this.Dygraph.numAxes() < 2) {
+      return;
+    }
+    this.setAxisHighlight(name);
   }
 
   afterZoomCallback(
