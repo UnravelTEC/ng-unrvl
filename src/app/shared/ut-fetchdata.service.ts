@@ -153,6 +153,53 @@ export class UtFetchdataService {
     }
     return ' time > now() - ' + param1 + ' ';
   }
+
+  /*
+  @ param tagfilter = { 'sensor': ['SDS011', 'SPS30'] } // OR
+  tagfilter = { 'sensor': 'BME280', // AND
+                'id': '0x77'] }
+  */
+
+  influxMeanQuery(
+    from: string,
+    timeQuery: string,
+    tagfilter: Object = {},
+    mean_s = 30,
+    select = '*'
+  ) {
+    let q = 'SELECT mean(' + select + ') FROM ' + from;
+
+    let whereClause = '';
+    for (const key in tagfilter) {
+      if (tagfilter.hasOwnProperty(key)) {
+        const andobj = tagfilter[key];
+        if (Array.isArray(andobj) && andobj.length) {
+          whereClause += '(';
+          for (let i = 0; i < andobj.length; i++) {
+            const value = andobj[i];
+            whereClause += key + " = '" + value + "'";
+            if (i + 1 != andobj.length) {
+              whereClause += ' OR ';
+            }
+          }
+          whereClause += ') AND ';
+        } else if (andobj) {
+          whereClause += key + " = '" + andobj + "' AND ";
+        }
+      }
+    }
+    whereClause += timeQuery;
+
+    let groupBy = ' GROUP BY ';
+    for (const key in tagfilter) {
+      if (tagfilter.hasOwnProperty(key)) {
+        groupBy += key + ',';
+      }
+    }
+    groupBy += 'host,time(' + String(mean_s) + 's)';
+    q += ' WHERE ' + whereClause + groupBy + ';';
+    return q;
+  }
   buildInfluxQuery(
     clause: string,
     database?: string,

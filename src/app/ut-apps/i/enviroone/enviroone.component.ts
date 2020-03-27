@@ -135,111 +135,82 @@ export class EnvirooneComponent implements OnInit {
 
     this.reload();
   }
+  isAnySensorEnabled(sarray: Array<string>) {
+    for (const sensor of sarray) {
+      if (this.sensorsEnabled[sensor]) return true;
+    }
+    return false;
+  }
+  enabledSensors(sarray: Array<string>) {
+    const onSensors = [];
+    sarray.forEach(sensor => {
+      if (this.sensorsEnabled[sensor]) onSensors.push(sensor);
+    });
+    return onSensors;
+  }
   reload(fromTo = false) {
     this.meanS = this.userMeanS;
     this.startTime = this.userStartTime;
     const mS = String(this.meanS);
 
-    let Tquery = '';
     const timeQuery = fromTo
       ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
       : this.utHTTP.influxTimeString(this.startTime);
-    if (
-      this.physParamEnabled['T'] &&
-      (this.sensorsEnabled['BME280'] || this.sensorsEnabled['EE08'])
-    ) {
-      let sensorw = '',
-        s;
-      for (s of ['BME280', 'EE08']) {
-        if (this.sensorsEnabled[s]) {
-          sensorw += (sensorw ? ' OR ' : '') + "sensor='" + s + "'";
-        }
-      }
-      Tquery =
-        'SELECT mean(*) FROM temperature WHERE (' +
-        sensorw +
-        ') AND' +
-        timeQuery +
-        'GROUP BY sensor,host,time(' +
-        mS +
-        's);';
+
+    let queries = '';
+
+    const Tsensors = ['BME280', 'EE08'];
+    if (this.physParamEnabled['T'] && this.isAnySensorEnabled(Tsensors)) {
+      queries += this.utHTTP.influxMeanQuery(
+        'temperature',
+        timeQuery,
+        { sensor: this.enabledSensors(Tsensors) },
+        this.meanS
+      );
     }
 
-    let rHquery = '';
-    if (
-      this.physParamEnabled['rH'] &&
-      (this.sensorsEnabled['BME280'] || this.sensorsEnabled['EE08'])
-    ) {
-      let sensorw = '',
-        s;
-      for (s of ['BME280', 'EE08']) {
-        if (this.sensorsEnabled[s]) {
-          sensorw += (sensorw ? ' OR ' : '') + "sensor='" + s + "'";
-        }
-      }
-      rHquery =
-        'SELECT mean(/rel_percent/) FROM humidity WHERE ' +
-        (sensorw ? '(' + sensorw + ') AND ' : '') +
-        timeQuery +
-        'GROUP BY sensor,host,time(' +
-        mS +
-        's);';
+    const rHsensors = ['BME280', 'EE08'];
+    if (this.physParamEnabled['rH'] && this.isAnySensorEnabled(rHsensors)) {
+      queries += this.utHTTP.influxMeanQuery(
+        'humidity',
+        timeQuery,
+        { sensor: this.enabledSensors(rHsensors) },
+        this.meanS,
+        '/rel_percent/'
+      );
     }
 
-    let pquery = '';
     if (this.physParamEnabled['P'] && this.sensorsEnabled['BME280']) {
-      pquery =
-        'SELECT mean(*) FROM pressure WHERE' +
-        timeQuery +
-        'GROUP BY sensor,host,time(' +
-        mS +
-        's);';
+      queries += this.utHTTP.influxMeanQuery(
+        'pressure',
+        timeQuery,
+        { sensor: undefined }, // to use in group by
+        this.meanS
+      );
     }
 
-    let pmquery = '';
-    if (
-      this.physParamEnabled['PM'] &&
-      (this.sensorsEnabled['OPC-N3'] ||
-        this.sensorsEnabled['SDS011'] ||
-        this.sensorsEnabled['SPS30'])
-    ) {
-      pmquery =
-        'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE ';
-
-      let sensorw = '';
-      if (
-        !(
-          this.sensorsEnabled['OPC-N3'] &&
-          this.sensorsEnabled['SDS011'] &&
-          this.sensorsEnabled['SPS30']
-        )
-      ) {
-        let s;
-        for (s of ['OPC-N3', 'SDS011', 'SPS30']) {
-          if (this.sensorsEnabled[s]) {
-            sensorw += (sensorw ? ' OR ' : '') + "sensor='" + s + "'";
-          }
-        }
-      }
-      pmquery +=
-        (sensorw ? '(' + sensorw + ') AND ' : '') +
-        timeQuery +
-        'GROUP BY sensor,host,time(' +
-        mS +
-        's);';
+    const PMsensors = ['OPC-N3', 'SDS011', 'SPS30'];
+    if (this.physParamEnabled['PM'] && this.isAnySensorEnabled(PMsensors)) {
+      queries += this.utHTTP.influxMeanQuery(
+        'particulate_matter',
+        timeQuery,
+        { sensor: this.enabledSensors(PMsensors) },
+        this.meanS,
+        '/p(1|2.5|10)_ugpm3/'
+      );
     }
 
-    let no2query = '';
     if (this.physParamEnabled['NO2'] && this.sensorsEnabled['NO2B43F']) {
-      no2query =
-        // 'SELECT mean(/NO2_/) FROM gas WHERE time > now() - ' +
-        'SELECT mean(/NO2_ugpm3/) FROM gas WHERE' +
-        timeQuery +
-        'GROUP BY sensor,host,time(' +
-        mS +
-        's);';
+      queries += this.utHTTP.influxMeanQuery(
+        'gas',
+        timeQuery,
+        {},
+        this.meanS,
+        '/NO2_ugpm3/'
+      );
     }
-    const queries = Tquery + rHquery + pquery + pmquery + no2query;
+
+    // console.log('TQ:', queries);
     if (queries) this.launchQuery(queries);
   }
 
