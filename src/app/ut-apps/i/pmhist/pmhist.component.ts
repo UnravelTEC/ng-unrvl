@@ -162,35 +162,20 @@ export class PmhistComponent implements OnInit {
   reload(fromTo = false) {
     this.meanS = this.userMeanS;
     this.startTime = this.userStartTime;
-    const mS = String(this.meanS);
 
     const timeQuery = fromTo
     ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
     : this.utHTTP.influxTimeString(this.startTime);
 
-    let pmquery = '';
-    if (this.sensorsEnabled['OPC-N3'] || this.sensorsEnabled['SPS30']) {
-      pmquery = 'SELECT mean(/_ppcm3|_ugpm3/) FROM particulate_matter WHERE ';
-
-      let sensorw = '';
-      if (!(this.sensorsEnabled['OPC-N3'] && this.sensorsEnabled['SPS30'])) {
-        let s;
-        for (s of ['OPC-N3', 'SPS30']) {
-          if (this.sensorsEnabled[s]) {
-            sensorw += (sensorw ? ' OR ' : '') + "sensor='" + s + "'";
-          }
-        }
-      }
-
-      pmquery +=
-        (sensorw ? '(' + sensorw + ') AND ' : '') +
-        timeQuery +
-        ' GROUP BY sensor,host,time(' +
-        mS +
-        's);';
-    }
-
-    this.launchQuery(pmquery);
+    this.launchQuery(
+      this.utHTTP.influxMeanQuery(
+        'particulate_matter',
+        timeQuery,
+        { sensor: ['OPC-N3'] },
+        this.meanS,
+        '/_ppcm3|_ugpm3/'
+      )
+    );
   }
   calcMean(secondsRange) {
     const divider = Math.floor(secondsRange / this.graphWidth);
@@ -277,7 +262,6 @@ export class PmhistComponent implements OnInit {
     this.data = newData;
     // console.log(cloneDeep(this.dygLabels));
     this.startTime = this.userStartTime;
-    // this.changeTrigger = !this.changeTrigger;
     if (this.data && this.data.length) {
       const points = []; // { yval: float, name: }
       const lastrow = this.data[this.data.length - 1];

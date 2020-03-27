@@ -119,7 +119,7 @@ export class EnvirograzComponent implements OnInit {
       this.utHTTP.influxMeanQuery(
         'humidity',
         timeQuery,
-        {sensor: []},
+        { sensor: [] },
         this.meanS,
         '/rel_percent/'
       ),
