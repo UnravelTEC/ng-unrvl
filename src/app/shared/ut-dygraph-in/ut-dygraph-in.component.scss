@@ -226,7 +226,7 @@ $red2: #ff7f88;
     top: 0px !important;
     left: 0px !important; // y-w(50) + 5px margin + 5px padding + 1px axis-width
     overflow-x: visible;
-
+    min-width: 20em;
     max-height: 100%;
     overflow-y: auto;
     pointer-events: auto;
