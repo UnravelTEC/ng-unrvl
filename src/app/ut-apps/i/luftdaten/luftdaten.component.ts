@@ -52,7 +52,7 @@ export class LuftdatenComponent implements OnInit {
     right: '15rem'
   };
 
-  public startTime = '6h';
+  public startTime = '7d';
   public userStartTime = this.startTime;
   public meanS = 300;
   public userMeanS = this.meanS;
