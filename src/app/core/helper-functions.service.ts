@@ -13,13 +13,13 @@ export class HelperFunctionsService {
 
   // sorted in order of usage
   colors = {
-    blue: ['#1930FC', '#6574FC', '#0C187D', '#4C57BD', '#1222B0'],
-    green: ['#15AD29', '#69FA7C', '#0F7A1D', '#1EFA3B', '#4FBB5D'],
-    brown: ['#CC6821', '#FFAF75', '#7A3E14', '#FF8C3B', '#80573B'],
-    red: ['#B11A1F', '#EB7C80', '#701114', '#BD484C', '#8A1519'],
-    navy: ['#267D9F', '#38B8EB', '#1A546B', '#318BAE', '#2F6175'],
-    violet: ['#7F4ED4', '#C8B5EB', '#54348C', '#A383DB', '#6840AD'],
-    olive: ['#2D806B', '#88BAAE', '#1B4D40', '#569585', '#1F594B']
+    blue: ['#0000FF', '#6883FF', '#000055', '#394CFF', '#000094'],
+    green: ['#008D0A', '#69F97B', '#002402', '#1EF93A', '#023C0A'],
+    brown: ['#FF5B00', '#FFDD73', '#561D0B', '#FF9C06', '#883A06'],
+    red: ['#E10000', '#FF7F88', '#520000', '#F81E25', '#990000'],
+    navy: ['#0061A6', '#00D9FF', '#001341', '#007CC2', '#002C54'],
+    violet: ['#842BFF', '#FFEBFF', '#2B0069', '#C78DFF', '#470994'],
+    olive: ['#00805C', '#8CE2CD', '#002913', '#37A389', '#003C24']
   };
   colorOrder = ['green', 'blue', 'red', 'brown', 'olive', 'navy', 'violet'];
   colorArray = [];
@@ -37,6 +37,38 @@ export class HelperFunctionsService {
       }
     }
     // console.log('new Colors:', this.colorArray);
+  }
+  /**
+   * @param labels Array of labels
+   * @param searchToColor Object { 'searchstring' : '$color' } - color from h.colors
+   */
+
+  getColorsforLabels(
+    labels: Array<string>,
+    searchToColor: Object
+  ): Array<string> {
+    const newColors = [];
+    const colorCounters = {};
+    for (let c = 1; c < labels.length; c++) {
+      const item = labels[c];
+      for (const searchstring in searchToColor) {
+        if (searchToColor.hasOwnProperty(searchstring)) {
+          if (item.match(searchstring)) {
+            const colorset = searchToColor[searchstring];
+            const rightColorArray = this.colors[colorset];
+            if (!colorCounters.hasOwnProperty(colorset)) {
+              colorCounters[colorset] = 0;
+              newColors.push(rightColorArray[0]);
+            } else {
+              const i = (colorCounters[colorset] += 1);
+              newColors.push(rightColorArray[i % rightColorArray.length]);
+            }
+            break;
+          }
+        }
+      }
+    }
+    return newColors;
   }
 
   getBaseURL() {
@@ -507,7 +539,8 @@ export class HelperFunctionsService {
     return parts[2];
   }
 
-  createHRTimeString(seconds) { // human-readable
+  createHRTimeString(seconds) {
+    // human-readable
     const currentMS = Math.round((seconds % 1) * 1000);
     const textMS = currentMS ? String(currentMS) + 'ms' : '';
     const currentSeconds = Math.floor(seconds);
