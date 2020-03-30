@@ -11,28 +11,6 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./luftdaten.component.scss']
 })
 export class LuftdatenComponent implements OnInit {
-  physParamEnabled = {
-    T: true,
-    rH: true,
-    P: true,
-    PM: true
-  };
-  sensorsEnabled = {
-    BME280: true,
-    SDS011: true
-  };
-  physParamColors = {
-    T: 'red',
-    rH: 'blue',
-    P: 'green',
-    PM: 'brown'
-  };
-  searchstrings = {
-    T: 'temperature',
-    rH: 'humidity',
-    P: 'pressure',
-    PM: 'particulate'
-  };
   colorMappings = {
     temperature: 'red',
     humidity: 'blue',
@@ -117,20 +95,6 @@ export class LuftdatenComponent implements OnInit {
     if (lsStartTime) {
       this.userStartTime = lsStartTime;
     }
-    const filter = this.router.snapshot.queryParamMap.get('filter');
-    // const chosenfilter = this.filters[filter];
-    if (filter && this.physParamEnabled.hasOwnProperty(filter)) {
-      for (const key in this.physParamEnabled) {
-        if (this.physParamEnabled.hasOwnProperty(key)) {
-          this.physParamEnabled[key] = key == filter ? true : false;
-        }
-      }
-    }
-    // if (this.physParamEnabled['PM']) {
-    //   this.extraDyGraphConfig.logscale = true;
-    // }
-    console.log('filter', filter);
-
     this.reload();
   }
   reload(fromTo = false) {
