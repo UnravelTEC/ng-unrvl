@@ -145,9 +145,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   };
 
   public fromZoom: Date;
-  public fromFormDate = new FormControl(new Date());
   public toZoom: Date;
-  public toFormDate = new FormControl(new Date());
 
   @Input()
   public displayedData = [];
@@ -245,10 +243,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       ? 'Time (&#8202;' + xRangeText + '&#8202;)'
       : this.XLabel;
   }
-  updateXLabel() {
+  updateXLabel(update = true) {
     this.dyGraphOptions['xlabel'] = this.getXLabel();
     if (this.Dygraph) {
-      this.Dygraph.updateOptions({ xlabel: this.dyGraphOptions['xlabel'] });
+      this.Dygraph.updateOptions(
+        { xlabel: this.dyGraphOptions['xlabel'] },
+        !update
+      );
     }
   }
   updateGraph() {
@@ -404,27 +405,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     this.waitForData();
 
-    // console.log(
-    //   'dataEndTime ' + (this.dataEndTime.valueOf() / 1000).toString(),
-    //   'range: ',
-    //   (this.dataEndTime.valueOf() - this.dataBeginTime.valueOf()) / 1000,
-    //   's'
-    // );
-
-    // this.queryEndPoint = this.constructQueryEndpoint();
-
-    // this.utFetchdataService
-    //   .getRange(
-    //     this.queryString,
-    //     this.dataBeginTime,
-    //     this.dataEndTime,
-    //     this.dataBaseQueryStepMS,
-    //     this.queryEndPoint
-    //   )
-    //   .subscribe(
-    //     (displayedData: Object) => this.handleInitialData(displayedData),
-    //     error => this.handlePrometheusErrors(error)
-    //   );
   }
 
   ngOnDestroy() {
@@ -449,71 +429,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.dyGraphOptions[key] = this.extraDyGraphConfig[key];
       }
     }
-  }
-
-  // parse new labels
-  // fill resortedPData array -> output
-  // update this.columnLabels -> member var
-  // add new labels to oldLabels&
-  syncNewToOldLabels(promData, oldData, oldLabels) {
-    const debugflag = false;
-    const receivedDataset = {}; // labelstring : data[] foreach series
-
-    // update labels
-    this.debugFun(['old labels:', oldLabels], debugflag);
-    const newLabels = [];
-    let dataThere = false;
-    for (let seriesNr = 0; seriesNr < promData.length; seriesNr++) {
-      const series = promData[seriesNr];
-      const newLabelString = this.h.createLabelString(
-        series['metric'],
-        this.labelBlackList
-      );
-      newLabels.push(newLabelString);
-
-      if (series['values'].length) {
-        dataThere = true;
-      }
-      receivedDataset[newLabelString] = series['values'];
-    }
-    if (!dataThere) {
-      console.log('all data columns received empty');
-      return undefined;
-    }
-
-    this.debugFun(['new labels:', newLabels], debugflag);
-
-    const resortedPData = []; // in the order of this.displayedData
-
-    resortedPData.push(['Timestamp']); // dummy to have indices the same
-
-    for (let i = 0; i < newLabels.length; i++) {
-      const currentNewLabelString = newLabels[i];
-      const oldIndex = oldLabels.indexOf(currentNewLabelString);
-      if (oldIndex === -1) {
-        // update old data with up to now with NaN
-        oldData.forEach(element => {
-          element.push(NaN);
-        });
-        resortedPData[oldLabels.length] =
-          receivedDataset[currentNewLabelString];
-        oldLabels.push(currentNewLabelString);
-        this.columnLabels[oldLabels.length - 2] = this.h.getDeep(promData, [
-          i,
-          'metric'
-        ]);
-        console.log('columnlabels now:', cloneDeep(this.columnLabels));
-        this.debugFun(['added new label, result:', oldLabels], debugflag);
-        // this.dyGraphOptions.visibility.push(true);
-      } else {
-        resortedPData[oldIndex] = receivedDataset[currentNewLabelString];
-      }
-      // Note: it may be the case that resortedPData has empty indices!!
-    }
-    this.debugFun(['old labels after:', oldLabels], debugflag);
-    this.debugFun(['resortedPData:', resortedPData, oldLabels], debugflag); // should be resorted to indices like in oldLabels
-
-    return resortedPData;
   }
 
   updateLastValueMembers(dataset) {
@@ -593,8 +508,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     // console.log('handleInitialData: received Data:', cloneDeep(receivedData));
 
-    // this.updateDataSet(receivedData);
-
     this.updateAverages();
 
     this.updateDateWindow();
@@ -651,12 +564,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.initialDataLength = this.currentXrange;
     console.log('this.initialDataLength', this.initialDataLength);
 
-    // if (this.fetchFromServerIntervalMS > 0) {
-    //   this.startUpdate();
-    // }
     this.setYranges();
     // console.log('handleInitialData: calling checkAndFetchOldData');
-    // this.checkAndFetchOldData();
     this.setCurrentXrange();
   }
 
@@ -833,6 +742,19 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       const parent = this['parent'];
       console.log(yRanges[0]);
 
+      console.log(
+        'change in XRange',
+        Math.floor(minDate),
+        parent.fromZoom.valueOf(),
+        Math.floor(maxDate),
+        parent.toZoom.valueOf()
+      );
+      if (
+        Math.floor(minDate) != parent.fromZoom.valueOf() ||
+        Math.floor(maxDate) != parent.toZoom.valueOf()
+      ) {
+        console.log('change');
+      }
       parent.yRange = yRanges[0];
       if (yRanges[1] && yRanges[1].length) {
         parent.y2Range = yRanges[1];
@@ -842,21 +764,21 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       // parent.toZoom = new Date(maxDate);
 
       //reimplementation of parent.updateXLabel();
-      parent.setCurrentXrange();
+      parent.setCurrentXrange(false);
       parent.returnCurrentZoom.emit([minDate, maxDate]);
-      const xRangeText = parent.currentXrangeText
-        ? parent.currentXrangeText
-        : parent.startTime;
-      parent.dyGraphOptions.xlabel =
-        parent.XLabel === undefined
-          ? 'Time (' + xRangeText + ')'
-          : parent.XLabel;
+      // const xRangeText = parent.currentXrangeText
+      //   ? parent.currentXrangeText
+      //   : parent.startTime;
+      // parent.dyGraphOptions.xlabel =
+      //   parent.XLabel === undefined
+      //     ? 'Time (' + xRangeText + ')'
+      //     : parent.XLabel;
       // console.log('new xlabel:', parent.dyGraphOptions.xlabel);
 
-      parent.Dygraph.updateOptions(
-        { xlabel: parent.dyGraphOptions.xlabel },
-        true
-      ); //this.upd… gives TS error
+      // parent.Dygraph.updateOptions(
+      //   { xlabel: parent.dyGraphOptions.xlabel },
+      //   true
+      // ); //this.upd… gives TS error
     } else {
       console.error('afterZoom: No parent');
     }
@@ -891,38 +813,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     const xrange = g.xAxisRange();
-    const dw = g.getOption('dateWindow');
     const from = xrange[0];
     const to = xrange[1];
     if (debugflag) {
+      const dw = g.getOption('dateWindow');
       console.log('xr:', from, to, 'dw:', dw[0], dw[1]);
     }
-    // if (!from || !to) {
-    //   console.error('after Draw error: from/to NaN');
-    //   // g.resetZoom(); //DONT do, infinite loop!
-
-    //   if (dw[0] === dw[1]) {
-    //     console.error('dateWindow the same');
-    //   }
-    //   if (debugflag) {
-    //     console.log(dw);
-    //   }
-    //   if (!g.hasOwnProperty('modified')) {
-    //     g['modified'] = 1;
-    //   } else {
-    //     g['modified'] = g['modified'] + 1;
-    //     if (g['modified'] < 10) {
-    //       console.log('afterDraw: redraw with dw');
-
-    //       g.updateOptions({ dateWindow: dw });
-    //       if (debugflag) {
-    //         console.log('reset dateWindow');
-    //       }
-    //     }
-    //   }
-
-    //   return;
-    // }
 
     if (parent && parent.hasOwnProperty('graphWidthPx')) {
       parent.returnCurrentZoom.emit(xrange);
@@ -933,31 +829,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         parent['graphWidthPx'] = graphWidthPx;
         console.log('new graph width:', graphWidthPx);
         parent.returnGraphWidthOnChange.emit(graphWidthPx);
-
-        const from = parent['fromZoom'];
-        const to = parent['toZoom'];
-        const deltaTimeMS = to.valueOf() - from.valueOf(); // / 1000;
-
-        const neededInterval = 0;
-
-        const maxFetchFrequency = parent['fetchFromServerIntervalMS'];
-        const maxDBqueryStep = parent['dataBaseQueryStepMS'];
-
-        const dataPointsInRange = deltaTimeMS / maxDBqueryStep;
-        const minDatapointsPerPx = Math.floor(dataPointsInRange / graphWidthPx);
-
-        if (minDatapointsPerPx >= 2) {
-          parent['fetchFromServerIntervalReducedMS'] = Math.floor(
-            parent['dataBaseQueryStepMS'] * minDatapointsPerPx
-          );
-        }
-
-        // should affect download of?
-        // only historical data
-        // fetching new data
-
-        parent['maxNativeInterval'] = minDatapointsPerPx;
-        // console.log(parent['graphWidthPx']);
       }
     }
 
@@ -976,58 +847,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
       parent.fromZoom = new Date(from);
       parent.toZoom = new Date(to);
-      parent.fromFormDate = new FormControl(parent.fromZoom);
-      parent.toFormDate = new FormControl(parent.toZoom);
 
-      parent.updateAverages();
-
-      if (percentXFirst > 0) {
-        parent.checkAndFetchOldData();
+      if (parent.optionsOpen) {
+        parent.updateAverages();
       }
     }
   }
 
-  // checkAndFetchOldData() {
-  //   if (!this.running) {
-  //     console.log('not running, dont checkAndFetchOldData');
-  //     return;
-  //   }
-  //   // if (!this.displayedData.length) {
-  //   //   this.noData = true;
-  //   //   return;
-  //   // }
-  //   const from = this.fromZoom.valueOf();
-  //   const missing_ms = this.dataBeginTime.valueOf() - from;
-  //   // console.log(
-  //   //   'checkAndFetchOldData diff [ms]:',
-  //   //   missing_ms,
-  //   //   this.whoami(),
-  //   //   'from',
-  //   //   this.fromZoom,
-  //   //   'dataBegin',
-  //   //   this.dataBeginTime
-  //   // );
-
-  //   // const earliestDataDate = this.displayedData.length
-  //   //   ? this.displayedData[0][0]
-  //   //   : new Date().valueOf();
-  //   //console.log('from:', from, 'earliest', earliestDataDate);
-
-  //   if (missing_ms > this.getQueryStep()) {
-  //     this.fetchOldData(this.fromZoom, this.dataBeginTime);
-  //   }
-  // }
-
   startUpdate() {
     console.error('startUpdate called, BAD');
-    return;
-    // this.lastReset = undefined;
-    // // if (1 == 1) return;
-    // this.intervalSubscription = interval().subscribe(counter => {
-    //   // this.fetchFromServerIntervalMS
-    //   // this.fetchNewData();
-    // });
-    // this.running = true;
   }
   stopUpdate() {
     if (this.intervalSubscription) {
@@ -1041,14 +869,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
   stopUpdateOnNewData() {
     this.updateOnNewData = false;
-  }
-
-  updateFromToPickers() {
-    if (this.minimal) {
-      return;
-    }
-    this.fromFormDate = new FormControl(this.fromZoom);
-    this.toFormDate = new FormControl(this.toZoom);
   }
 
   calculateAverage(from?: Date, targetArray = this.displayedData) {
@@ -1184,7 +1004,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.visibleAverage = sum / this.visibleAverages.length;
   }
 
-  setCurrentXrange() {
+  setCurrentXrange(update = true) {
     if (!this.toZoom || !this.fromZoom) {
       this.currentXrange = 0;
       console.log('setCurrentXrange() unsuccessful');
@@ -1195,7 +1015,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     // console.log('currentXrange', this.currentXrange);
     if (!this.minimal) {
       this.currentXrangeText = this.h.createHRTimeString(this.currentXrange);
-      this.updateXLabel();
+      this.updateXLabel(update);
     }
     return this.currentXrange;
   }
@@ -1232,10 +1052,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.fromZoom = dataBeginTime;
     this.toZoom = dataEndTime;
     this.returnCurrentZoom.emit(this.dyGraphOptions['dateWindow']);
-    if (!this.minimal) {
-      this.updateFromToPickers();
-      // this.checkAndFetchOldData(); // it may be that through moving datewindow after enabling autopan some old data is not there.
-    }
   }
 
   resetData() {
@@ -1249,14 +1065,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.dataEndTime = this.toZoom;
 
     this.Dygraph.updateOptions({ file: this.displayedData });
-  }
-
-  getQueryStep() {
-    return undefined;
-    // const dataBaseQueryStepMS = this.downloadFullResolution
-    //   ? this.dataBaseQueryStepMS
-    //   : this.fetchFromServerIntervalReducedMS;
-    // return dataBaseQueryStepMS;
   }
 
   whoami() {
@@ -1415,7 +1223,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     });
 
     this.setCurrentXrange();
-    this.updateFromToPickers();
 
     // console.log([
     //   'resetZoom:',
@@ -1432,7 +1239,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.toZoom = new Date(xRange[1]);
     this.setCurrentXrange();
     this.retainDataInfinitely = true;
-    this.updateFromToPickers();
   }
   zoom(factor: number) {
     this.stopUpdateOnNewData();
@@ -1453,12 +1259,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.Dygraph.updateOptions({
       dateWindow: [newFrom, newTo]
     });
-    // if (factor > 1) {
-    //   this.checkAndFetchOldData();
-    // }
-    // this.retainDataInfinitely = true;
+
     this.setCurrentXrange();
-    // this.updateFromToPickers();
   }
   updateYlogscale() {
     this.Dygraph.updateOptions({
@@ -1496,19 +1298,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       startDate = new Date(startTime);
     }
 
-    // if (reducePoints) {
-    //   const difference = endDate.valueOf() - startDate.valueOf();
-    //   if (difference / this.fetchFromServerIntervalMS > this.maxPointsToFetch) {
-    //     console.log(
-    //       'more than ' + this.maxPointsToFetch + ' points requested, reducing'
-    //     );
-    //     const maxStartDateValue =
-    //       endDate.valueOf() -
-    //       this.fetchFromServerIntervalMS * this.maxPointsToFetch;
-    //     startDate = new Date(maxStartDateValue);
-    //   }
-    // }
-
     return [startDate, endDate];
   }
 
@@ -1525,7 +1314,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.fromZoom = startDate;
     this.toZoom = endDate;
     this.setCurrentXrange();
-    this.updateFromToPickers();
     this.retainDataInfinitely = true;
     this.Dygraph.updateOptions({
       dateWindow: [startDate.valueOf(), endDate.valueOf()]
@@ -1580,51 +1368,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     });
     return sum / item_count;
   }
-  getAverages(time = '1m') {}
 
-  fromDatePickerChanged($event) {
-    const newDate = $event['value'];
-    console.log('fromDatePickerChanged:', newDate, newDate.valueOf());
-
-    const toSetDate = new Date(newDate.valueOf());
-    toSetDate.setHours(this.fromZoom.getHours());
-    toSetDate.setMinutes(this.fromZoom.getMinutes());
-    toSetDate.setSeconds(this.fromZoom.getSeconds());
-    toSetDate.setMilliseconds(this.fromZoom.getMilliseconds());
-
-    const wasRunning = this.updateOnNewData;
-    if (wasRunning) {
-      this.stopUpdateOnNewData();
-    }
-    this.fromZoom = toSetDate;
-    this.setCurrentXrange();
-    this.Dygraph.updateOptions({
-      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
-    });
-    if (wasRunning) {
-      this.startUpdateOnNewData();
-    }
-    this.retainDataInfinitely = true;
-    console.log('fromDatePickerChanged: calling checkAndFetchOldData');
-    this.checkAndFetchOldData();
-  }
-  toDatePickerChanged($event) {
-    const newTo = $event['value'];
-
-    const toSetDate = new Date(newTo.valueOf());
-    toSetDate.setHours(this.toZoom.getHours());
-    toSetDate.setMinutes(this.toZoom.getMinutes());
-    toSetDate.setSeconds(this.toZoom.getSeconds());
-    toSetDate.setMilliseconds(this.toZoom.getMilliseconds());
-
-    this.toZoom = toSetDate;
-    this.stopUpdateOnNewData();
-    this.setCurrentXrange();
-    this.Dygraph.updateOptions({
-      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
-    });
-    this.retainDataInfinitely = true;
-  }
   toggleStats() {
     this.stats = !this.stats;
     setTimeout(() => {
