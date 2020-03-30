@@ -258,6 +258,11 @@ const appRoutes: Routes = [
       './ut-apps/i/pmhist/pmhist.module#PmhistModule'
   },
   {
+    path: 'Apps/I/Luftdaten',
+    loadChildren:
+      './ut-apps/i/luftdaten/luftdaten.module#LuftdatenModule'
+  },
+  {
     path: '',
     redirectTo: 'Dashboard',
     pathMatch: 'full'

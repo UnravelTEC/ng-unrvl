@@ -6,40 +6,40 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-enviroone',
-  templateUrl: './enviroone.component.html',
-  styleUrls: ['./enviroone.component.scss']
+  selector: 'app-luftdaten',
+  templateUrl: './luftdaten.component.html',
+  styleUrls: ['./luftdaten.component.scss']
 })
-export class EnvirooneComponent implements OnInit {
+export class LuftdatenComponent implements OnInit {
   physParamEnabled = {
     T: true,
     rH: true,
     P: true,
-    PM: true,
-    NO2: true
+    PM: true
   };
   sensorsEnabled = {
     BME280: true,
-    EE08: true,
-    'OPC-N3': true,
-    SDS011: true,
-    SPS30: true,
-    NO2B43F: true
+    SDS011: true
   };
   physParamColors = {
     T: 'red',
     rH: 'blue',
     P: 'green',
-    PM: 'brown',
-    NO2: 'violet'
+    PM: 'brown'
   };
   searchstrings = {
     T: 'temperature',
     rH: 'humidity',
     P: 'pressure',
-    PM: 'particulate',
-    NO2: 'gas'
+    PM: 'particulate'
   };
+  colorMappings = {
+    temperature: 'red',
+    humidity: 'blue',
+    pressure: 'green',
+    SDS011: 'brown'
+  };
+
   colors = [];
   graphWidth = 1500;
   setGraphWidth(width) {
@@ -52,7 +52,7 @@ export class EnvirooneComponent implements OnInit {
     pointSize: 3,
     logscale: false,
     series: {
-      'pressure sensor: BME280, pressure (hPa)': {
+      'BME280 (pressure)': {
         axis: 'y2'
       }
     },
@@ -65,7 +65,7 @@ export class EnvirooneComponent implements OnInit {
       }
     }
   };
-  labelBlackListT = ['host', 'serial', 'mean_*'];
+  labelBlackListT = ['particulate_matter', 'mean_*']; // ['host', 'serial', 'mean_*'];
   graphstyle = {
     position: 'absolute',
     top: '0.5em',
@@ -76,7 +76,7 @@ export class EnvirooneComponent implements OnInit {
 
   public startTime = '6h';
   public userStartTime = this.startTime;
-  public meanS = 30;
+  public meanS = 300;
   public userMeanS = this.meanS;
   public fromTime: Date;
   public toTime: Date;
@@ -89,16 +89,15 @@ export class EnvirooneComponent implements OnInit {
     this.currentRange = this.h.createHRTimeString(rangeSeconds);
     this.userMeanS = this.calcMean(rangeSeconds);
   }
-  db = 'envirograz000';
+  db = 'luftdaten';
   server = 'https://newton.unraveltec.com';
 
   labels = [];
   data = [];
 
-  appName = 'Enviro Graph';
+  appName = 'Luftdaten Sensor Node';
 
   changeTrigger = true;
-
   constructor(
     private globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
@@ -110,7 +109,6 @@ export class EnvirooneComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.globalSettings.emitChange({ fullscreen: true });
     const lsMean = this.localStorage.get(this.appName + 'userMeanS');
     if (lsMean) {
       this.userMeanS = lsMean;
@@ -128,89 +126,29 @@ export class EnvirooneComponent implements OnInit {
         }
       }
     }
-    if (this.physParamEnabled['PM']) {
-      this.extraDyGraphConfig.logscale = true;
-    }
+    // if (this.physParamEnabled['PM']) {
+    //   this.extraDyGraphConfig.logscale = true;
+    // }
     console.log('filter', filter);
 
     this.reload();
   }
-  isAnySensorEnabled(sarray: Array<string>) {
-    for (const sensor of sarray) {
-      if (this.sensorsEnabled[sensor]) return true;
-    }
-    return false;
-  }
-  enabledSensors(sarray: Array<string>) {
-    const onSensors = [];
-    sarray.forEach(sensor => {
-      if (this.sensorsEnabled[sensor]) onSensors.push(sensor);
-    });
-    return onSensors;
-  }
   reload(fromTo = false) {
     this.meanS = this.userMeanS;
     this.startTime = this.userStartTime;
-    const mS = String(this.meanS);
 
     const timeQuery = fromTo
       ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
       : this.utHTTP.influxTimeString(this.startTime);
 
-    let queries = '';
+    let queries = this.utHTTP.influxMeanQuery(
+      'particulate_matter',
+      timeQuery,
+      {},
+      this.meanS,
+      '/BME|SDS/'
+    );
 
-    const Tsensors = ['BME280', 'EE08'];
-    if (this.physParamEnabled['T'] && this.isAnySensorEnabled(Tsensors)) {
-      queries += this.utHTTP.influxMeanQuery(
-        'temperature',
-        timeQuery,
-        { sensor: this.enabledSensors(Tsensors) },
-        this.meanS
-      );
-    }
-
-    const rHsensors = ['BME280', 'EE08'];
-    if (this.physParamEnabled['rH'] && this.isAnySensorEnabled(rHsensors)) {
-      queries += this.utHTTP.influxMeanQuery(
-        'humidity',
-        timeQuery,
-        { sensor: this.enabledSensors(rHsensors) },
-        this.meanS,
-        '/rel_percent/'
-      );
-    }
-
-    if (this.physParamEnabled['P'] && this.sensorsEnabled['BME280']) {
-      queries += this.utHTTP.influxMeanQuery(
-        'pressure',
-        timeQuery,
-        { sensor: undefined }, // to use in group by
-        this.meanS
-      );
-    }
-
-    const PMsensors = ['OPC-N3', 'SDS011', 'SPS30'];
-    if (this.physParamEnabled['PM'] && this.isAnySensorEnabled(PMsensors)) {
-      queries += this.utHTTP.influxMeanQuery(
-        'particulate_matter',
-        timeQuery,
-        { sensor: this.enabledSensors(PMsensors) },
-        this.meanS,
-        '/p(1|2.5|10)_ugpm3/'
-      );
-    }
-
-    if (this.physParamEnabled['NO2'] && this.sensorsEnabled['NO2B43F']) {
-      queries += this.utHTTP.influxMeanQuery(
-        'gas',
-        timeQuery,
-        {},
-        this.meanS,
-        '/NO2_ugpm3/'
-      );
-    }
-
-    // console.log('TQ:', queries);
     if (queries) this.launchQuery(queries);
   }
 
@@ -234,82 +172,37 @@ export class EnvirooneComponent implements OnInit {
 
     this.utHTTP
       // .getHTTPData(q)
-      .getHTTPData(q, 'grazweb', '.RaVNaygexThM')
+      .getHTTPData(q, 'luftweb', 'YQ9xYNKWk4Pqkmr0')
       .subscribe((data: Object) => this.handleData(data));
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
   }
-
   handleData(data: Object) {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('parsed', ret);
     const labels = ret['labels'];
     const idata = ret['data'];
-
-    let logscale = true;
-    const colorCounters = {};
-    const newColors = [];
     for (let c = 1; c < labels.length; c++) {
       const item = labels[c];
-
-      for (const key in this.searchstrings) {
-        if (this.searchstrings.hasOwnProperty(key)) {
-          const str = this.searchstrings[key];
-          if (item.match(str)) {
-            console.log('found', str, 'in', item);
-            const currentColorSet = this.physParamColors[key];
-            const rightColorArray = this.h.colors[currentColorSet];
-            if (colorCounters.hasOwnProperty(currentColorSet)) {
-              const i = (colorCounters[currentColorSet] += 1);
-              newColors.push(rightColorArray[i % rightColorArray.length]);
-            } else {
-              colorCounters[currentColorSet] = 0;
-              newColors.push(rightColorArray[0]);
-            }
-            break;
-          }
+      if (item.match(/pressure/)) {
+        for (let r = 0; r < idata.length; r++) {
+          idata[r][c] /= 100;
         }
       }
-
-      if (logscale == true) {
-        for (let r = 0; r < idata.length; r++) {
-          const point = idata[r][c];
-          if (point <= 0 && point !== NaN && point !== null) {
-            logscale = false;
-            console.log('found', idata[r][c], '@r', r, 'c', c, 'of', item);
-            break;
-          }
-        }
+      if (item.match(/P1/)) {
+        labels[c] = item.replace(/P1/, 'PM10').replace(/SDS/, 'SDS011');
       }
-      // NO2: ppm -> ppb
-      if (item.match(/NO₂ \(ppm\)/)) {
-        labels[c] = item.replace(/ppm/, 'ppb');
-        for (let r = 0; r < idata.length; r++) {
-          idata[r][c] *= 1000;
-        }
-      }
-      if (item.match(/NO₂ \(µg\/m³\)/)) {
-        for (let r = 0; r < idata.length; r++) {
-          idata[r][c] = this.h.smoothNO2(idata[r][c]);
-        }
+      if (item.match(/P2/)) {
+        labels[c] = item.replace(/P2/, 'PM2.5').replace(/SDS/, 'SDS011');
       }
     }
-    // console.log(cloneDeep(this.dygLabels));
-    if (logscale) {
-      console.log('scale: log');
-      this.extraDyGraphConfig.logscale = logscale;
-    } else {
-      console.log('scale: lin');
-    }
+    this.colors = this.h.getColorsforLabels(labels, this.colorMappings);
     this.startTime = this.userStartTime;
     this.labels = labels;
     this.data = idata;
-    this.colors = newColors;
     console.log(labels);
     console.log(idata);
-    this.changeTrigger = !this.changeTrigger;
-    this.changeTrigger = !this.changeTrigger;
   }
 }
