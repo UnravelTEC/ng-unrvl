@@ -67,6 +67,7 @@ export class PmhistComponent implements OnInit {
     this.graphWidth = width;
     console.log('new w', width);
   }
+  currentres = 0;
 
   db = 'envirograz000';
   server = 'https://newton.unraveltec.com';
@@ -176,6 +177,7 @@ export class PmhistComponent implements OnInit {
         '/_ppcm3|_ugpm3/'
       )
     );
+    this.currentres = this.meanS;
   }
   calcMean(secondsRange) {
     const divider = Math.floor(secondsRange / this.graphWidth);

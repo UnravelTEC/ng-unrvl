@@ -11,8 +11,10 @@ table.envirobody {
   h3 {
     margin: 0;
     display: inline-block;
-
     padding: 0;
+  }
+  th[colspan="2"] > h3 {
+    margin-left: 11rem;
   }
   th {
     padding: 0.5rem 0;
@@ -38,29 +40,35 @@ table.envirobody {
     width: 100%;
     height: 50%;
     .settings {
-      border: 1px solid #666;
-      width: 11rem;
-      margin: 1rem;
-      padding: 1rem;
-      mat-label {
-        color: $labelcolor;
+      margin-top: -4em;
+      div.section {
+        border: 1px solid #666;
+        width: 11rem;
+        margin: 1rem;
+        padding: 1rem;
+        mat-label {
+          color: $labelcolor;
+        }
+        h3 {
+          margin-bottom: 0.6em;
+        }
+        .mat-select {
+          background-color: #565656;
+        }
+        label {
+          display: inline-block;
+          color: $labelcolor;
+          text-align: right;
+          margin-right: 0.7rem;
+          font-weight: 400;
+          font-size: 16px;
+          ￼line-height: 1.125;
+          ￼font-family: Roboto, 'Helvetica Neue', sans-serif;
+        }
       }
-      .mat-select {
-        background-color: #565656;
-      }
-      label {
-        display: inline-block;
-        color: $labelcolor;
-        text-align: right;
-        margin-right: 0.7rem;
-        font-weight: 400;
-        font-size: 16px;
-        ￼line-height: 1.125;
-        ￼font-family: Roboto, 'Helvetica Neue', sans-serif;
-      }
-
     }
-    a, a:visited {
+    a,
+    a:visited {
       color: #c7c7c7;
       // text-decoration: none;
     }

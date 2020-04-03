@@ -5,25 +5,35 @@ $labelcolor: #999;
   position: absolute;
   bottom: 2em;
   right: 0;
-  border: 1px solid #666;
-  width: 11rem;
-  margin: 1rem;
-  padding: 1rem;
-  mat-label {
-    color: $labelcolor;
-  }
-  .mat-select {
-    background-color: #565656;
-  }
-  label {
-    display: inline-block;
-    color: $labelcolor;
-    text-align: right;
-    margin-right: 0.7rem;
-    font-weight: 400;
-    font-size: 16px;
-    ￼line-height: 1.125;
-    ￼font-family: Roboto, 'Helvetica Neue', sans-serif;
+  margin: 0;
+  padding: 0;
+  top: 2rem;
+  overflow-y: auto;
+
+  div.section {
+    border: 1px solid #666;
+    width: 11rem;
+    margin: 1rem;
+    padding: 1rem;
+    h3 {
+      margin-top: 0;
+    }
+    mat-label {
+      color: $labelcolor;
+    }
+    .mat-select {
+      background-color: #565656;
+    }
+    label {
+      display: inline-block;
+      color: $labelcolor;
+      text-align: right;
+      margin-right: 0.7rem;
+      font-weight: 400;
+      font-size: 16px;
+      ￼line-height: 1.125;
+      ￼font-family: Roboto, 'Helvetica Neue', sans-serif;
+    }
   }
 }
 h2 {

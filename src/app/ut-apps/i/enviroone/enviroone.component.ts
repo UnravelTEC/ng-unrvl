@@ -77,6 +77,7 @@ export class EnvirooneComponent implements OnInit {
   public startTime = '6h';
   public userStartTime = this.startTime;
   public meanS = 30;
+  public currentres = 0;
   public userMeanS = this.meanS;
   public fromTime: Date;
   public toTime: Date;
@@ -150,6 +151,7 @@ export class EnvirooneComponent implements OnInit {
   }
   reload(fromTo = false) {
     this.meanS = this.userMeanS;
+    this.currentres = this.meanS;
     this.startTime = this.userStartTime;
     const mS = String(this.meanS);
 

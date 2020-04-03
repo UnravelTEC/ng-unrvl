@@ -49,6 +49,7 @@ export class EnvirograzComponent implements OnInit {
   changeTrigger = true;
   public startTime = '1h';
   public userStartTime = this.startTime;
+  public currentres = 0;
   public meanS = 10;
   public userMeanS = this.meanS;
   db = 'envirograz000';
@@ -109,6 +110,7 @@ export class EnvirograzComponent implements OnInit {
   }
   reload() {
     this.meanS = this.userMeanS;
+    this.currentres = this.meanS;
     this.startTime = this.userStartTime;
     const timeQuery = this.utHTTP.influxTimeString(this.startTime);
     this.launchQuery(
