@@ -75,6 +75,11 @@ export class EnvirograzComponent implements OnInit {
     PM: this.startTime,
     N: this.startTime
   };
+  graphWidth = 1000;
+  setGraphWidth(width) {
+    this.graphWidth = width;
+    console.log('new w', width);
+  }
 
   constructor(
     public globalSettings: GlobalSettingsService,
@@ -150,14 +155,15 @@ export class EnvirograzComponent implements OnInit {
       'N'
     );
   }
+  calcMean(secondsRange) {
+    const divider = Math.floor(secondsRange / this.graphWidth);
+    return divider > 30 ? divider : 30;
+  }
 
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
-    const widthPx = 600;
-    const divider = rangeSeconds / widthPx;
-    if (divider > 1) {
-      this.userMeanS = Math.floor(divider);
-    }
+    this.userMeanS = this.calcMean(rangeSeconds);
+    this.reload();
   }
 
   launchQuery(clause: string, id: string) {

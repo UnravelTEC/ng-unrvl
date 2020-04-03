@@ -176,6 +176,7 @@
         [backGroundLevels]="globalSettings['graphBackgrounds']['PM_ugpm3']"
         [colors]="h.colors.brown"
         options="false"
+        (returnGraphWidthOnChange)="setGraphWidth($event)"
         #PM
       >
       </app-ut-dygraph-in>
