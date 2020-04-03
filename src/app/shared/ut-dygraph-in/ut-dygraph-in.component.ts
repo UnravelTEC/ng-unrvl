@@ -545,6 +545,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
+    this.checkAndUpdateGraphWidth()
     this.setYranges();
   }
 
@@ -746,6 +747,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       console.log(clonetext);
     }
   }
+  checkAndUpdateGraphWidth() {
+    const area = this.Dygraph.getArea();
+    const graphWidthPx = area.w;
+    if (this.graphWidthPx !== graphWidthPx) {
+      this.graphWidthPx = graphWidthPx;
+      console.log('new graph width:', graphWidthPx);
+      this.returnGraphWidthOnChange.emit(graphWidthPx);
+    }
+  }
 
   afterDrawCallback(g: Dygraph, isOInitial: boolean) {
     const debugflag = true;
@@ -788,14 +798,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     parent.returnCurrentZoom.emit([from, to]);
-
-    const area = g.getArea();
-    const graphWidthPx = area.w;
-    if (parent['graphWidthPx'] !== graphWidthPx) {
-      parent['graphWidthPx'] = graphWidthPx;
-      console.log('new graph width:', graphWidthPx);
-      parent.returnGraphWidthOnChange.emit(graphWidthPx);
-    }
+    parent.checkAndUpdateGraphWidth();
 
     if (parent.optionsOpen) {
       parent.updateAverages();
