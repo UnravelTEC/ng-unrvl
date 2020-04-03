@@ -648,27 +648,36 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       }
     });
   }
-  toggleLegendContent() {
+  toggleLegendContent(id = '') {
     this.legendContentVisible = !this.legendContentVisible;
+    if (id) {
+      const classList = document.getElementById('L_' + id).classList;
+      if (classList.contains('cthide')) {
+        classList.remove('cthide');
+      } else {
+        classList.add('cthide');
+      }
+    }
   }
   legendFormatter(data) {
     // let html = '<table>';
     // html += '<tr><th colspan="3" class="header">' + (data.xHTML ? data.xHTML + ':' : 'Legend:') + '</th></tr>';
     const htmlID = this['parent'] ? this['parent']['htmlID'] : '';
-    const toggleSymbol =
-      this['parent'] && this['parent'].legendContentVisible ? '▲' : '▼';
+    const toggleScript = htmlID
+      ? `onclick="document['Dygraphs']['${htmlID}'].toggleLegendContent('${htmlID}')"`
+      : '';
     let html =
       '<div class="header">Legend: ' +
       (data.xHTML ? ' values @ ' + data.xHTML : '') +
-      `</div><div class="legendToggle" onclick="document['Dygraphs']['${htmlID}'].toggleLegendContent()">${toggleSymbol}</div>`;
+      `</div><div class="legendToggle" ${toggleScript} title="click to toggle legend">&nbsp;</div>`;
     html += '<table>';
 
     // console.log(htmlID);
     function genCallback(label, htmlID) {
-      return (
-        `onmousedown="document['Dygraphs']['${htmlID}'].tVis4Label('${label}');" ` +
-        `onmouseover="document['Dygraphs']['${htmlID}'].selectSeries('${label}');"`
-      );
+      return htmlID
+        ? `onmousedown="document['Dygraphs']['${htmlID}'].tVis4Label('${label}');" ` +
+            `onmouseover="document['Dygraphs']['${htmlID}'].selectSeries('${label}');"`
+        : '';
     }
 
     for (let i = 0; i < data.series.length; i++) {
@@ -1022,8 +1031,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
   highlightDefaultBackground(canvas, area, g) {
-    if (!g.hasOwnProperty('parent')) return;
-    canvas.fillStyle = g.parent.graphBackGroundColor;
+    const graphbg = g.hasOwnProperty('parent')
+      ? g.parent.graphBackGroundColor
+      : '#3F3F3F';
+    canvas.fillStyle = graphbg;
     canvas.fillRect(area.x, area.y, area.w, area.h);
   }
 

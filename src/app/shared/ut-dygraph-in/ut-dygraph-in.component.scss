@@ -206,9 +206,14 @@ $red2: #ff7f88;
       .legendToggle {
         position: absolute;
         font-size: 1.2em;
+        min-width: 20em;
+        text-align: right;
         top: 0;
         right: 5px;
         cursor: pointer;
+      }
+      .legendToggle::after {
+        content: "▲";
       }
       .legendToggle:hover {
         font-weight: bold;
@@ -230,7 +235,6 @@ $red2: #ff7f88;
     max-height: 100%;
     overflow-y: auto;
     pointer-events: auto;
-    position: relative;
     div.header {
       position: fixed;
       top: 0;
@@ -275,6 +279,9 @@ $red2: #ff7f88;
     height: 1.2em;
     table {
       display: none;
+    }
+    .legendToggle::after {
+      content: "▼";
     }
   }
 
