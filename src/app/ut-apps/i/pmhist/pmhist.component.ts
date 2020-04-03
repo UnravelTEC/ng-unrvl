@@ -183,13 +183,10 @@ export class PmhistComponent implements OnInit {
   }
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
-    const widthPx = 1600;
-    const divider = rangeSeconds / widthPx;
-    if (divider > 1) {
-      this.userMeanS = Math.floor(divider);
-    }
+    this.userMeanS = this.calcMean(rangeSeconds);
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
     this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);
+    this.reload();
   }
 
   launchQuery(clause: string) {

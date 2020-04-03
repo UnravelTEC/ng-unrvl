@@ -121,7 +121,7 @@
   </tr>
   <tr>
     <td class="pm" colspan="2">
-      <div class="settings">
+      <form class="settings" (submit)="reload()">
         <mat-form-field>
           <mat-label>Time range</mat-label>
           <mat-select
@@ -150,11 +150,11 @@
         /><br />
         <br />
         <div style="width: 100%; text-align: right;">
-          <button (click)="reload()">
+          <button type="submit">
             Reload
           </button>
         </div>
-      </div>
+      </form>
       <!-- <p>
         <a routerLink="/Apps/I/EnviroOne" routerLinkActive="active"
           >Single Graph</a

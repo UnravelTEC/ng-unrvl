@@ -47,7 +47,7 @@
   </div>
 </div>
 
-<div class="settings">
+<form class="settings" (submit)="reload()">
   <mat-form-field>
     <mat-label>Time range</mat-label>
     <mat-select
@@ -97,8 +97,8 @@
 
   <br />-->
   <div style="width: 100%; text-align: right;">
-    <button (click)="reload(true)">
+    <button type="submit">
       Reload
     </button>
   </div>
-</div>
+</form>
