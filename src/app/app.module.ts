@@ -268,6 +268,11 @@ const appRoutes: Routes = [
       './ut-apps/i/allsens/allsens.module#AllsensModule'
   },
   {
+    path: 'Apps/I/Anysens',
+    loadChildren:
+      './ut-apps/i/anysens/anysens.module#AnysensModule'
+  },
+  {
     path: '',
     redirectTo: 'Dashboard',
     pathMatch: 'full'
