@@ -263,6 +263,11 @@ const appRoutes: Routes = [
       './ut-apps/i/luftdaten/luftdaten.module#LuftdatenModule'
   },
   {
+    path: 'Apps/I/Allsens',
+    loadChildren:
+      './ut-apps/i/allsens/allsens.module#AllsensModule'
+  },
+  {
     path: '',
     redirectTo: 'Dashboard',
     pathMatch: 'full'
