@@ -23,6 +23,12 @@
     cursor: pointer;
     min-width: 2.25em;
     color: white;
+    .mat-icon {
+      margin: 0;
+      margin-bottom: -10px;
+      margin-top: -10px;
+      transform: translateY(6px);
+    }
   }
   ::ng-deep button:hover {
     background-color: #8e8e8e;
