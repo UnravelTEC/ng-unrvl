@@ -24,6 +24,8 @@ export class HelperFunctionsService {
   colorOrder = ['green', 'blue', 'red', 'brown', 'olive', 'navy', 'violet'];
   colorArray = [];
 
+  defaultColorMappings = {};
+
   constructor(private loc: Location) {
     const url = window.location.href;
     const angularRoute = this.loc.path();
@@ -36,6 +38,13 @@ export class HelperFunctionsService {
         this.colorArray.push(this.colors[colorstr][cWeightI]);
       }
     }
+    this.defaultColorMappings = { // define here to calm down TS
+      temperature: 'red',
+      humidity: 'blue',
+      pressure: 'green',
+      particulate_matter: 'brown',
+      gas: 'violet'
+    };
     // console.log('new Colors:', this.colorArray);
   }
   /**
@@ -45,7 +54,7 @@ export class HelperFunctionsService {
 
   getColorsforLabels(
     labels: Array<string>,
-    searchToColor: Object
+    searchToColor = this.defaultColorMappings
   ): Array<string> {
     const newColors = [];
     const colorCounters = {};
