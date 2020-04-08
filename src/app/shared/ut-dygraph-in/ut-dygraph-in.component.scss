@@ -255,12 +255,13 @@ $red2: #ff7f88;
           border-bottom: 1px solid black;
         }
         th {
-          font-weight: bold;
+          font-weight: normal;
           padding: 0.1em 0.2em;
+          color: $editableFormsTextColor;
         }
 
         td {
-          color: black;
+          color: $editableFormsTextColor;
           width: 4.5em; // width of string 'undefined'
           border-left-width: 0;
           padding: 0.1em 0;
@@ -268,6 +269,9 @@ $red2: #ff7f88;
       }
       tr.highlight {
         background-color: #8e8e8e;
+        th, td {
+          color: $mainbg;
+        }
       }
       tr:hover {
         background-color: #8e8e8e;
