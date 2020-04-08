@@ -82,8 +82,6 @@ export class RadiationComponent implements OnInit {
 
   launchQuery(clause: string) {
     const q = this.utHTTP.buildInfluxQuery(clause, 'koffer')
-    console.log('new query:', q);
-
     this.utHTTP
       // .getHTTPData(q)
       .getHTTPData(q, 'utweb', 'kJImNSmq1m84py7jhaGq')

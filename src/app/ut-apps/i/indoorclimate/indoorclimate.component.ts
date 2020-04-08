@@ -86,7 +86,7 @@ export class IndoorclimateComponent implements OnInit {
     );
     this.launchQuery(
       // "SELECT mean(/H2O|humidity|dewPoint/) FROM humidity WHERE sensor='SCD30|DS18B20' AND time > now() - " +
-      "SELECT mean(/H2O|humidity|dewPoint/) FROM humidity WHERE time > now() - " +
+      'SELECT mean(/H2O|humidity|dewPoint/) FROM humidity WHERE time > now() - ' +
         this.startTime +
         ' GROUP BY sensor,time(' +
         String(this.meanS) +
@@ -122,20 +122,9 @@ export class IndoorclimateComponent implements OnInit {
 
   launchQuery(clause: string, id: string) {
     const q = this.utHTTP.buildInfluxQuery(clause, undefined, undefined, 's');
-    console.log('new query:', q);
-    if (this.globalSettings.server.influxuser) {
-      this.utHTTP
-        .getHTTPData(
-          q,
-          this.globalSettings.server.influxuser,
-          this.globalSettings.server.influxpass
-        )
-        .subscribe((data: Object) => this.handleData(data, id));
-    } else {
-      this.utHTTP
-        .getHTTPData(q)
-        .subscribe((data: Object) => this.handleData(data, id));
-    }
+    this.utHTTP
+      .getHTTPData(q)
+      .subscribe((data: Object) => this.handleData(data, id));
   }
 
   handleData(data: Object, id: string) {

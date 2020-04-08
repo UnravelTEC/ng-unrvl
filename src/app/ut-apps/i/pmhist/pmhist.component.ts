@@ -193,10 +193,7 @@ export class PmhistComponent implements OnInit {
 
   launchQuery(clause: string) {
     const q = this.utHTTP.buildInfluxQuery(clause, this.db, this.server);
-    console.log('new query:', q);
-
     this.utHTTP
-      // .getHTTPData(q)
       .getHTTPData(q, 'grazweb', '.RaVNaygexThM')
       .subscribe((data: Object) => this.handleData(data));
   }

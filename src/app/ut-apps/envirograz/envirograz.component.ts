@@ -170,7 +170,6 @@ export class EnvirograzComponent implements OnInit {
 
   launchQuery(clause: string, id: string) {
     const q = this.utHTTP.buildInfluxQuery(clause, this.db, this.server);
-    console.log('new query:', q);
 
     this.utHTTP
       .getHTTPData(q, 'grazweb', '.RaVNaygexThM')

@@ -26,6 +26,8 @@ export class UtFetchdataService {
     user = this.globalSettingsService.server.influxuser,
     pass = this.globalSettingsService.server.influxpass
   ) {
+    console.log('getHTTPData:', thisurl, user, pass);
+
     if (thisurl.startsWith('https') && thisurl.search(/\/influxdb\//)) {
       const httpOptions = {
         headers: new HttpHeaders({

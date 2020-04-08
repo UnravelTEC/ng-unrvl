@@ -93,7 +93,6 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
   launchQuery(clause: string) {
     const qWithTime = clause.replace(/{{T}}/g, this.startTime);
     const q = this.utHTTP.buildInfluxQuery(qWithTime);
-    console.log('calling', q);
     this.utHTTP
       .getHTTPData(q)
       .subscribe((data: Object) => this.printResult(data));

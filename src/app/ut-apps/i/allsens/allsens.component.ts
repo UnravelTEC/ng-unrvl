@@ -26,10 +26,7 @@ export class AllsensComponent implements OnInit {
 
   launchQuery(clause: string) {
     const q = this.utHTTP.buildInfluxQuery(clause);
-    console.log('new query:', q);
-
     this.utHTTP
-      // .getHTTPData(q)
       .getHTTPData(q)
       .subscribe((data: Object) => this.handleData(data));
   }
