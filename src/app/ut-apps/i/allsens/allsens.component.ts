@@ -10,8 +10,9 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
 })
 export class AllsensComponent implements OnInit {
   measurements = [];
-  sensors = [];
-  hosts = []
+  sensors = {}; // BME: ['temperature','pressure']
+  hosts = [];
+
   constructor(
     private globalSettings: GlobalSettingsService,
     private utHTTP: UtFetchdataService,
@@ -44,8 +45,11 @@ export class AllsensComponent implements OnInit {
         this.measurements.push(measurement);
       }
       const sensor = seri.match(/sensor=([-A-Za-z0-9]*)/);
-      if (sensor && sensor[1] && !this.sensors.includes(sensor[1])) {
-        this.sensors.push(sensor[1]);
+      if (sensor && sensor[1]) {
+        const sname = sensor[1];
+        if (!this.sensors[sname]) this.sensors[sname] = [];
+        if (!this.sensors[sname].includes(measurement))
+          this.sensors[sname].push(measurement);
       }
       const host = seri.match(/host=([-A-Za-z0-9]*)/);
       if (host && host[1] && !this.hosts.includes(host[1])) {

@@ -1,7 +1,7 @@
 <a
   id="back"
   class="icon"
-  routerLink="/Apps/EnviroGraz000"
+  [routerLink]="'/Apps/I/' + referrer"
   routerLinkActive="active"
   title="Return to overview"
   ><mat-icon>fullscreen_exit</mat-icon></a
@@ -23,7 +23,6 @@
 ></app-ut-dygraph-in>
 
 <form class="settings" (submit)="reload(true)">
-  <!-- <div>Pixel: {{ graphWidth }}</div> -->
   <div class="section">
     <h3>Current Dataset:</h3>
     <label>Resolution:</label><br />
@@ -67,6 +66,7 @@
 
     <div style="width: 100%; text-align: right;">
       <button type="submit">
+        <mat-icon>refresh</mat-icon>
         Reload
       </button>
     </div>

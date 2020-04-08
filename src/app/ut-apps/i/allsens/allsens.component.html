@@ -1,24 +1,51 @@
-<p>
-  allsens works!
-</p>
+<div class="abody">
+  <h2>Hosts</h2>
+  <ul>
+    <li *ngFor="let h of hosts">
+      {{ h }}
+    </li>
+  </ul>
 
-<h4>Hosts</h4>
-<ul>
-  <li *ngFor="let h of hosts">
-    {{ h }}
-  </li>
-</ul>
+  <h2>Measurements</h2>
+  <table>
+    <tr *ngFor="let m of measurements">
+      <td>
+      <a
+        routerLink="/Apps/I/Anysens"
+        [queryParams]="{ measurement: m }"
+        routerLinkActive="active"
+        >{{ m }}</a
+      ></td>
+    </tr>
+  </table>
 
-<h4>Measurements</h4>
-<ul>
-  <li *ngFor="let m of measurements">
-    {{ m }}
-  </li>
-</ul>
-
-<h4>Sensors</h4>
-<ul>
-  <li *ngFor="let s of sensors">
-    {{ s }}
-  </li>
-</ul>
+  <h2>Sensors</h2>
+  <table class="sensors">
+    <tr>
+      <th>
+        Sensor Name
+      </th>
+      <th>
+        Parameters
+      </th>
+    </tr>
+    <tr *ngFor="let s of sensors | keyvalue">
+      <td>
+        <a
+          routerLink="/Apps/I/Anysens"
+          [queryParams]="{ sensor: s.key, measurement: s.value.join(',') }"
+          routerLinkActive="active"
+          >{{ s.key }}</a
+        ></td>
+      <td>
+        <span *ngFor="let m of s.value">
+          <a
+            routerLink="/Apps/I/Anysens"
+            [queryParams]="{ sensor: s.key, measurement: m }"
+            routerLinkActive="active"
+          >{{ m }}</a
+          >&nbsp;</span>
+      </td>
+    </tr>
+  </table>
+</div>

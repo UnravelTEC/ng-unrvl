@@ -11,35 +11,6 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./anysens.component.scss']
 })
 export class AnysensComponent implements OnInit {
-  physParamEnabled = {
-    T: true,
-    rH: true,
-    P: true,
-    PM: true,
-    NO2: true
-  };
-  sensorsEnabled = {
-    BME280: true,
-    EE08: true,
-    'OPC-N3': true,
-    SDS011: true,
-    SPS30: true,
-    NO2B43F: true
-  };
-  physParamColors = {
-    T: 'red',
-    rH: 'blue',
-    P: 'green',
-    PM: 'brown',
-    NO2: 'violet'
-  };
-  searchstrings = {
-    T: 'temperature',
-    rH: 'humidity',
-    P: 'pressure',
-    PM: 'particulate',
-    NO2: 'gas'
-  };
   colors = [];
   graphWidth = 1500;
   setGraphWidth(width) {
@@ -101,6 +72,7 @@ export class AnysensComponent implements OnInit {
   measurement = 'temperature';
   sensor = '';
   host = '';
+  referrer = 'Allsens';
 
   constructor(
     private globalSettings: GlobalSettingsService,
@@ -113,7 +85,6 @@ export class AnysensComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.globalSettings.emitChange({ fullscreen: true });
     const lsMean = this.localStorage.get(this.appName + 'userMeanS');
     if (lsMean) {
       this.userMeanS = lsMean;
@@ -123,26 +94,19 @@ export class AnysensComponent implements OnInit {
       this.userStartTime = lsStartTime;
     }
 
-    ['host', 'measurement', 'sensor'].forEach(element => {
+    ['host', 'measurement', 'sensor', 'referrer'].forEach(element => {
       const thing = this.router.snapshot.queryParamMap.get(element);
-      if (thing) this[element] = thing;
+      if (thing) {
+        //   if (thing.search(',') > -1) {
+        //     this[element] = thing.split(',');
+        //   }
+        this[element] = thing;
+      }
     });
 
     this.reload();
   }
-  isAnySensorEnabled(sarray: Array<string>) {
-    for (const sensor of sarray) {
-      if (this.sensorsEnabled[sensor]) return true;
-    }
-    return false;
-  }
-  enabledSensors(sarray: Array<string>) {
-    const onSensors = [];
-    sarray.forEach(sensor => {
-      if (this.sensorsEnabled[sensor]) onSensors.push(sensor);
-    });
-    return onSensors;
-  }
+
   reload(fromTo = false) {
     this.meanS = this.userMeanS;
     this.currentres = this.meanS;
@@ -152,75 +116,26 @@ export class AnysensComponent implements OnInit {
       ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
       : this.utHTTP.influxTimeString(this.startTime);
 
-    let queries = '';
     let params = { sensor: [] };
     if (this.sensor) {
-      params['sensor'] = [this.sensor];
+      if (Array.isArray(this.sensor)) {
+        params['sensor'] = this.sensor;
+      } else {
+        params['sensor'] = [this.sensor];
+      }
     }
     if (this.host) {
       params['host'] = this.host;
     }
 
-    queries += this.utHTTP.influxMeanQuery(
+    const queries = this.utHTTP.influxMeanQuery(
       this.measurement,
       timeQuery,
       params,
       this.meanS
     );
 
-    // const Tsensors = ['BME280', 'EE08'];
-    // if (this.physParamEnabled['T'] && this.isAnySensorEnabled(Tsensors)) {
-    //   queries += this.utHTTP.influxMeanQuery(
-    //     'temperature',
-    //     timeQuery,
-    //     { sensor: this.enabledSensors(Tsensors) },
-    //     this.meanS
-    //   );
-    // }
-
-    // const rHsensors = ['BME280', 'EE08'];
-    // if (this.physParamEnabled['rH'] && this.isAnySensorEnabled(rHsensors)) {
-    //   queries += this.utHTTP.influxMeanQuery(
-    //     'humidity',
-    //     timeQuery,
-    //     { sensor: this.enabledSensors(rHsensors) },
-    //     this.meanS,
-    //     '/rel_percent/'
-    //   );
-    // }
-
-    // if (this.physParamEnabled['P'] && this.sensorsEnabled['BME280']) {
-    //   queries += this.utHTTP.influxMeanQuery(
-    //     'pressure',
-    //     timeQuery,
-    //     { sensor: undefined }, // to use in group by
-    //     this.meanS
-    //   );
-    // }
-
-    // const PMsensors = ['OPC-N3', 'SDS011', 'SPS30'];
-    // if (this.physParamEnabled['PM'] && this.isAnySensorEnabled(PMsensors)) {
-    //   queries += this.utHTTP.influxMeanQuery(
-    //     'particulate_matter',
-    //     timeQuery,
-    //     { sensor: this.enabledSensors(PMsensors) },
-    //     this.meanS,
-    //     '/p(1|2.5|10)_ugpm3/'
-    //   );
-    // }
-
-    // if (this.physParamEnabled['NO2'] && this.sensorsEnabled['NO2B43F']) {
-    //   queries += this.utHTTP.influxMeanQuery(
-    //     'gas',
-    //     timeQuery,
-    //     {},
-    //     this.meanS,
-    //     '/NO2_ugpm3/'
-    //   );
-    // }
-
-    // console.log('TQ:', queries);
-    if (queries) this.launchQuery(queries);
+    this.launchQuery(queries);
   }
 
   calcMean(secondsRange) {
@@ -238,12 +153,8 @@ export class AnysensComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
-    const q = this.utHTTP.buildInfluxQuery(clause);
-    console.log('new query:', q);
-
     this.utHTTP
-      // .getHTTPData(q)
-      .getHTTPData(q)
+      .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
       .subscribe((data: Object) => this.handleData(data));
   }
   saveMean(param) {
@@ -258,29 +169,9 @@ export class AnysensComponent implements OnInit {
     const idata = ret['data'];
 
     let logscale = true;
-    const colorCounters = {};
-    const newColors = [];
+    const newColors = this.h.getColorsforLabels(labels);
     for (let c = 1; c < labels.length; c++) {
       const item = labels[c];
-
-      for (const key in this.searchstrings) {
-        if (this.searchstrings.hasOwnProperty(key)) {
-          const str = this.searchstrings[key];
-          if (item.match(str)) {
-            console.log('found', str, 'in', item);
-            const currentColorSet = this.physParamColors[key];
-            const rightColorArray = this.h.colors[currentColorSet];
-            if (colorCounters.hasOwnProperty(currentColorSet)) {
-              const i = (colorCounters[currentColorSet] += 1);
-              newColors.push(rightColorArray[i % rightColorArray.length]);
-            } else {
-              colorCounters[currentColorSet] = 0;
-              newColors.push(rightColorArray[0]);
-            }
-            break;
-          }
-        }
-      }
 
       if (logscale == true) {
         for (let r = 0; r < idata.length; r++) {
