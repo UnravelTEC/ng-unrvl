@@ -328,7 +328,7 @@ export class GlobalSettingsService implements OnInit {
         );
     }
     this.server.influxdb = this.localStorage.get('influxdb');
-    const isPublicServer = this.server.serverName == 'newton.unraveltec.com';
+    const isPublicServer = this.server.serverName.endsWith('.unraveltec.com');
     if (!this.server.influxdb) {
       // this.server.influxdb = isPublicServer ? 'public' : 'telegraf';
       this.server.influxdb = isPublicServer ? 'koffer' : 'telegraf';
