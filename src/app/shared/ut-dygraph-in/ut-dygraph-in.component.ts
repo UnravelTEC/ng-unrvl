@@ -104,7 +104,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     animatedZooms: true,
     connectSeparatedPoints: false,
     highlightSeriesBackgroundAlpha: 1, // disable
-    logscale: false,
     pointSize: 1, // radius
     hideOverlayOnMouseOut: true,
     highlightSeriesOpts: {
@@ -280,7 +279,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.Dygraph.updateOptions({
         file: this.displayedData,
         labels: this.columnLabels,
-        logscale: this.dyGraphOptions.logscale,
         visibility: this.dyGraphOptions.visibility,
         dateWindow: this.dyGraphOptions['dateWindow']
       });
@@ -545,7 +543,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    this.checkAndUpdateGraphWidth()
+    this.checkAndUpdateGraphWidth();
     this.setYranges();
   }
 
@@ -1086,10 +1084,21 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       dateWindow: [newFrom, newTo]
     });
   }
-  updateYlogscale() {
+  switchLogScale(axis = 'y1') {
+    if (!this.dyGraphOptions.hasOwnProperty('axes')) {
+      this.dyGraphOptions['axes'] = {};
+    }
+    let axisob = this.dyGraphOptions['axes'];
+    let y = axis == 'y2' ? 'y2' : 'y';
+    if (!axisob.hasOwnProperty(y)) {
+      axisob[y] = {};
+    }
+
+    axisob[y]['logscale'] = axisob[y]['logscale'] ? false : true;
     this.Dygraph.updateOptions({
-      logscale: this.dyGraphOptions.logscale
+      axes: this.dyGraphOptions['axes']
     });
+    console.log('new axes:', this.dyGraphOptions['axes']);
   }
   toggleLegend() {
     if (this.dyGraphOptions.legend == 'always') {

@@ -119,6 +119,56 @@ style.padding-bottom="20vh"-->
     >
       {{ toZoom | date: 'shortTime' }}
     </div>
+    <div class="logbuttons" *ngIf="options == true">
+      <div class="logy y1" (click)="switchLogScale()">
+        <div
+          class="{{
+            dyGraphOptions['axes'] &&
+            dyGraphOptions['axes']['y'] &&
+            dyGraphOptions['axes']['y']['logscale']
+              ? 'active'
+              : ''
+          }}"
+        >
+          log
+        </div>
+        <div
+          class="{{
+            dyGraphOptions['axes'] &&
+            dyGraphOptions['axes']['y'] &&
+            dyGraphOptions['axes']['y']['logscale']
+              ? ''
+              : 'active'
+          }}"
+        >
+          lin
+        </div>
+      </div>
+      <div
+        class="logy y2"
+        *ngIf="dyGraphOptions['drawAxis'] !== false && y2Range[1] !== undefined"
+        (click)="switchLogScale('y2')"
+      >
+        <div class="{{
+          dyGraphOptions['axes'] &&
+          dyGraphOptions['axes']['y2'] &&
+          dyGraphOptions['axes']['y2']['logscale']
+            ? 'active'
+            : ''
+        }}">
+          log
+        </div>
+        <div class="{{
+          dyGraphOptions['axes'] &&
+          dyGraphOptions['axes']['y2'] &&
+          dyGraphOptions['axes']['y2']['logscale']
+            ? ''
+            : 'active'
+        }}">
+          lin
+        </div>
+      </div>
+    </div>
   </div>
 
   <div *ngIf="options == true && optionsOpen == true" class="optionsarea">
@@ -169,18 +219,6 @@ style.padding-bottom="20vh"-->
           >UTC
           <input type="checkbox" name="UTC" id="UTC" [(ngModel)]="exportUTC" />
         </label>
-      </form>
-
-      <form class="subbox">
-        <h5>Y linearity</h5>
-        <label for="log">Logarithmic</label>
-        <input
-          type="checkbox"
-          name="logarithmic"
-          id="log"
-          [(ngModel)]="dyGraphOptions.logscale"
-          (change)="updateYlogscale()"
-        />
       </form>
 
       <form class="subbox">

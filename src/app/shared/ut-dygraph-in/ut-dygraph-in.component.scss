@@ -1,8 +1,14 @@
 $graphbg: #3f3f3f;
 $mainbg: #1e1e1e;
+
 $axismainlabelcolor: #8e8e8e;
 $axissublabelcolor: #565656;
+
 $buttontext: #fff;
+$buttontextinactive: #666666;
+$buttonactivebg: #8e8e8e;
+$buttoninactivebg: #373737;
+
 $dygfontsize: 14px;
 $labelcolor: #8e8e8e;
 $editableFormsTextColor: #c7c7c7;
@@ -96,7 +102,8 @@ $red2: #ff7f88;
   .y2min,
   .y2max,
   .xmin,
-  .xmax {
+  .xmax,
+  .logy {
     position: absolute;
     background: $graphbg;
     font-size: $dygfontsize;
@@ -138,7 +145,8 @@ $red2: #ff7f88;
     color: $labelcolor;
   }
   .ymax,
-  .ymin {
+  .ymin,
+  .logy.y1 {
     border: 0px solid salmon;
     width: 42px; // dyg y-width: 50px + paddings
     left: 1px;
@@ -157,7 +165,8 @@ $red2: #ff7f88;
     bottom: 1.6em;
   }
   .y2min,
-  .y2max {
+  .y2max,
+  .logy.y2 {
     right: 7px;
     width: 42px;
     text-align: left;
@@ -166,6 +175,36 @@ $red2: #ff7f88;
   .xmax,
   .overlapTickTexthider {
     bottom: 26px;
+  }
+  .logy.y1,
+  .logy.y2 {
+    width: 20px;
+    height: 0;
+    top: 29px;
+    padding: 0;
+    cursor: pointer;
+    div {
+      padding: 0.35em 0.35em 0 0.35em; // to rm "g" bottom height increase
+      line-height: 1em;
+      width: 20px;
+      display: inline-block;
+      text-align: center;
+      height: 20px;
+      background-color: $buttoninactivebg;
+      color: $buttontextinactive;
+    }
+    div.active,
+    div:hover {
+      background-color: $buttonactivebg;
+      color: $buttontext;
+    }
+
+    div:first-child {
+      margin-bottom: -0.20em;
+    }
+    div + div {
+      padding-top: 0.1em;
+    }
   }
   .overlapTickTexthider {
     background-color: $mainbg;
@@ -213,7 +252,7 @@ $red2: #ff7f88;
         cursor: pointer;
       }
       .legendToggle::after {
-        content: "▲";
+        content: '▲';
       }
       .legendToggle:hover {
         font-weight: bold;
@@ -269,7 +308,8 @@ $red2: #ff7f88;
       }
       tr.highlight {
         background-color: #8e8e8e;
-        th, td {
+        th,
+        td {
           color: $mainbg;
         }
       }
@@ -285,7 +325,7 @@ $red2: #ff7f88;
       display: none;
     }
     .legendToggle::after {
-      content: "▼";
+      content: '▼';
     }
   }
 
