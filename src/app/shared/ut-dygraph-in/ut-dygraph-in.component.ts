@@ -65,6 +65,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   showDate = true;
   @Input()
+  showLogscaleSwitcher = true;
+  @Input()
   backGroundLevels: Array<[number, string]>;
   @Input()
   colors = [];
@@ -121,6 +123,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     axisLineWidth: 0.001,
     xAxisHeight: 34, // xlabel is 18 high
     // yRangePad: 200, // spacing for data points inside graph
+    logscale: true, // must be true, otherwise we cant enable it for y/y2
+    axes: {
+      y: {
+        logscale: false
+      },
+      y2: {
+        logscale: false
+      }
+    },
 
     valueRange: this.yRange,
     legend: <any>'always', // also 'never' possible
@@ -279,6 +290,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.Dygraph.updateOptions({
         file: this.displayedData,
         labels: this.columnLabels,
+        axes: this.dyGraphOptions.axes,
         visibility: this.dyGraphOptions.visibility,
         dateWindow: this.dyGraphOptions['dateWindow']
       });
@@ -404,6 +416,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     for (const key in this.extraDyGraphConfig) {
       if (this.extraDyGraphConfig.hasOwnProperty(key)) {
+        // if (key == 'logscale') {
+        //   if (this.dyGraphOptions.axes['y']) {
+        //     this.dyGraphOptions.axes['y']['logscale'] = true;
+        //   } else {
+        //     this.dyGraphOptions.axes['y'] = { logscale: true };
+        //   }
+        // }
         this.dyGraphOptions[key] = this.extraDyGraphConfig[key];
       }
     }
@@ -608,6 +627,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   highlightCallback(event, x, points, row, seriesName) {
+    // note: do not use log scale, dygraph does return only displayed data (no values == 0)
     if (!this.hasOwnProperty('parent')) {
       console.error('highlightCallback: No parent');
       return;
@@ -690,8 +710,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           : '';
       const cls = series.isHighlighted ? 'class="highlight"' : '';
       const callbacks = genCallback(series.label, htmlID);
-      if (!series.isVisible) series.color = 'gray';
-      html += `<tr style='color:${series.color};' ${cls} ${callbacks}><th>${series.dashHTML}</th><th>${series.labelHTML}<span ${spanvis}>:</span>&thinsp;</th><td>${displayedValue}</td></tr>`;
+      const textcolor = series.isVisible ? '' : ' style="color:gray" '
+      html += `<tr style='color:${series.color};' ${cls} ${callbacks}><th${textcolor}>${series.dashHTML}</th><th${textcolor}>${series.labelHTML}<span ${spanvis}>:</span>&thinsp;</th><td>${displayedValue}</td></tr>`;
     }
     return html + '</table>';
   }
@@ -1084,10 +1104,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       dateWindow: [newFrom, newTo]
     });
   }
+
+  //note: if logscale not globally set, no logscale graphs are displayed
   switchLogScale(axis = 'y1') {
-    if (!this.dyGraphOptions.hasOwnProperty('axes')) {
-      this.dyGraphOptions['axes'] = {};
-    }
     let axisob = this.dyGraphOptions['axes'];
     let y = axis == 'y2' ? 'y2' : 'y';
     if (!axisob.hasOwnProperty(y)) {
@@ -1098,7 +1117,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.Dygraph.updateOptions({
       axes: this.dyGraphOptions['axes']
     });
-    console.log('new axes:', this.dyGraphOptions['axes']);
+    console.log(
+      'new logscale:',
+      axis,
+      axisob[y]['logscale'],
+      this.dyGraphOptions['axes']
+    );
   }
   toggleLegend() {
     if (this.dyGraphOptions.legend == 'always') {

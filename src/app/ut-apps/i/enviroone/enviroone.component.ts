@@ -50,7 +50,7 @@ export class EnvirooneComponent implements OnInit {
   extraDyGraphConfig = {
     connectSeparatedPoints: true,
     pointSize: 3,
-    logscale: false,
+    logscale: true,
     series: {
       'pressure sensor: BME280, pressure (hPa)': {
         axis: 'y2'
@@ -58,10 +58,14 @@ export class EnvirooneComponent implements OnInit {
     },
     y2label: 'Atmospheric Pressure (hPa)',
     axes: {
+      y: {
+        logscale: false
+      },
       y2: {
         independentTicks: true,
         axisLabelWidth: 60,
-        drawGrid: false
+        drawGrid: false,
+        logscale: false
       }
     }
   };

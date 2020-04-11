@@ -119,7 +119,7 @@ style.padding-bottom="20vh"-->
     >
       {{ toZoom | date: 'shortTime' }}
     </div>
-    <div class="logbuttons" *ngIf="options == true">
+    <div class="logbuttons" *ngIf="options == true && showLogscaleSwitcher == true">
       <div class="logy y1" (click)="switchLogScale()">
         <div
           class="{{
