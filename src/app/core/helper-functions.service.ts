@@ -26,6 +26,22 @@ export class HelperFunctionsService {
 
   defaultColorMappings = {};
 
+  avgPresets = [
+    { '15m': 900 },
+    { '30m': 1800 },
+    { '1h': 3600 },
+    { '1d': 86400 },
+    { '7d': 604800 },
+    { '30d': 2592000 }
+  ];
+  keys(o) {
+    // for use in htmls
+    return Object.keys(o);
+  }
+  vals(o) {
+    return Object.values(o);
+  }
+
   constructor(private loc: Location) {
     const url = window.location.href;
     const angularRoute = this.loc.path();
@@ -38,7 +54,8 @@ export class HelperFunctionsService {
         this.colorArray.push(this.colors[colorstr][cWeightI]);
       }
     }
-    this.defaultColorMappings = { // define here to calm down TS
+    this.defaultColorMappings = {
+      // define here to calm down TS
       temperature: 'red',
       humidity: 'blue',
       pressure: 'green',

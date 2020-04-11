@@ -26,7 +26,7 @@
   <!-- <div>Pixel: {{ graphWidth }}</div> -->
   <div class="section">
     <h3>Current Dataset:</h3>
-    <label>Resolution:</label><br />
+    <label>Resolution:</label>
     <span class="cRange">{{ currentres }}s</span><br />
 
     <label>Current Range:</label>
@@ -92,14 +92,25 @@
       </mat-select>
     </mat-form-field>
     <br />
-    <label for="runningAvgPoints"># Mean Seconds</label><br />
+
+    <label>Average Period</label>
+    <div class="avgbuttons">
+      <button
+        *ngFor="let t of h.avgPresets"
+        (click)="setAvg(h.vals(t)[0])"
+        type="button"
+      >
+        {{ h.keys(t)[0] }}
+      </button>
+    </div>
+    <label for="runningAvgPoints">Seconds</label><br />
     <input
       type="text"
       id="runningAvgPoints"
       name="runningAvgPoints"
       [(ngModel)]="userMeanS"
       (ngModelChange)="saveMean($event)"
-      style="width:4em"
+      style="width:5em"
     /><br />
     <br />
 

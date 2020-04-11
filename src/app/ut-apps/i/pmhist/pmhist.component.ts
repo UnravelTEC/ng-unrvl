@@ -197,6 +197,10 @@ export class PmhistComponent implements OnInit {
       .getHTTPData(q, 'grazweb', '.RaVNaygexThM')
       .subscribe((data: Object) => this.handleData(data));
   }
+  setAvg(t) {
+    this.userMeanS = t;
+    this.saveMean(t);
+  }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
   }
