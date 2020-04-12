@@ -345,6 +345,12 @@ $red2: #ff7f88;
     color: $axismainlabelcolor;
     font-weight: 600;
   }
+  .y1 .dygraph-ylabel, .y2 .dygraph-y2label {
+    text-shadow: 0 0 1em orange, 0 0 0.2em orange
+  }
+  .y2 .dygraph-ylabel, .y1 .dygraph-y2label {
+    opacity: 0.5;
+  }
   .dygraph-axis-label {
     color: $axissublabelcolor;
   }

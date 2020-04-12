@@ -586,4 +586,20 @@ export class HelperFunctionsService {
 
     return (textDays + textHours + textMinutes + textSeconds + textMS).trim();
   }
+
+  deepCopyInto(firstObj, secondObj) {
+    for (const key in secondObj) {
+      if (secondObj.hasOwnProperty(key)) {
+        const element = secondObj[key];
+        if (typeof element !== 'object' || element === null) {
+          firstObj[key] = element;
+        } else {
+          if (!firstObj.hasOwnProperty(key))
+            firstObj[key] = { noooooo: 'noooooo' }; // hack to create nonempty obj
+          this.deepCopyInto(firstObj[key], element);
+          delete firstObj['noooooo'];
+        }
+      }
+    }
+  }
 }
