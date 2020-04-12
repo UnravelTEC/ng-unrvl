@@ -50,7 +50,6 @@ export class EnvirooneComponent implements OnInit {
   extraDyGraphConfig = {
     connectSeparatedPoints: true,
     pointSize: 3,
-    logscale: true,
     series: {
       'pressure sensor: BME280, pressure (hPa)': {
         axis: 'y2'
@@ -62,10 +61,7 @@ export class EnvirooneComponent implements OnInit {
         logscale: false
       },
       y2: {
-        independentTicks: true,
-        axisLabelWidth: 60,
-        drawGrid: false,
-        logscale: false
+        axisLabelWidth: 60
       }
     }
   };
@@ -134,7 +130,7 @@ export class EnvirooneComponent implements OnInit {
       }
     }
     if (this.physParamEnabled['PM']) {
-      this.extraDyGraphConfig.logscale = true;
+      this.extraDyGraphConfig.axes.y.logscale = true;
     }
     console.log('filter', filter);
 
@@ -307,7 +303,7 @@ export class EnvirooneComponent implements OnInit {
     // console.log(cloneDeep(this.dygLabels));
     if (logscale) {
       console.log('scale: log');
-      this.extraDyGraphConfig.logscale = logscale;
+      this.extraDyGraphConfig.axes.y.logscale = logscale;
     } else {
       console.log('scale: lin');
     }
