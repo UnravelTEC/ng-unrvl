@@ -306,15 +306,12 @@ $red2: #ff7f88;
           padding: 0.1em 0;
         }
       }
-      tr.highlight {
+      tr.highlight, tr:hover {
         background-color: #8e8e8e;
         th,
         td {
           color: $mainbg;
         }
-      }
-      tr:hover {
-        background-color: #8e8e8e;
       }
     }
   }
@@ -345,7 +342,7 @@ $red2: #ff7f88;
     color: $axismainlabelcolor;
     font-weight: 600;
   }
-  .y1 .dygraph-ylabel, .y2 .dygraph-y2label {
+  .y1 .dygraph-ylabel, .y2 .dygraph-y2label { // axis highlight
     text-shadow: 0 0 1em orange, 0 0 0.2em orange
   }
   .y2 .dygraph-ylabel, .y1 .dygraph-y2label {
