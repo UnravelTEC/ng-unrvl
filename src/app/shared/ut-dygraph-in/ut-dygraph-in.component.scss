@@ -201,7 +201,7 @@ $red2: #ff7f88;
     }
 
     div:first-child {
-      margin-bottom: -0.20em;
+      margin-bottom: -0.2em;
     }
     div + div {
       padding-top: 0.1em;
@@ -307,7 +307,8 @@ $red2: #ff7f88;
           padding: 0.1em 0;
         }
       }
-      tr.highlight, tr:hover {
+      tr.highlight,
+      tr:hover {
         background-color: #8e8e8e;
         th,
         td {
@@ -343,10 +344,15 @@ $red2: #ff7f88;
     color: $axismainlabelcolor;
     font-weight: 600;
   }
-  .y1 .dygraph-ylabel, .y2 .dygraph-y2label { // axis highlight
-    text-shadow: 0 0 1em orange, 0 0 0.2em orange
+  .y1 .dygraph-ylabel,
+  .y2 .dygraph-y2label {
+    // axis highlight
+    text-shadow: 0 0 1em orange, 0 0 0.2em orange;
   }
-  .y2 .dygraph-ylabel, .y1 .dygraph-y2label {
+  .y2 .dygraph-ylabel,
+  .y1 .dygraph-y2label,
+  .y2 .dygraph-axis-label-y1,
+  .y1 .dygraph-axis-label-y2 {
     opacity: 0.5;
   }
   .dygraph-axis-label {
