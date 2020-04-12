@@ -358,24 +358,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.updateXLabel();
     this.updateDyGraphOptions();
-    const yOffset = this.h.getDeep(this.dyGraphOptions, [
-      'axes',
-      'y',
-      'axisLabelWidth'
-    ]);
-    if (yOffset) {
-      this.yO = String(yOffset - 50);
-      console.log('yOffset:', this.yO);
-    }
-    const y2Offset = this.h.getDeep(this.dyGraphOptions, [
-      'axes',
-      'y2',
-      'axisLabelWidth'
-    ]);
-    if (y2Offset) {
-      this.y2O = String(y2Offset - 50);
-      console.log('y2Offset:', this.y2O);
-    }
 
     if (
       this.dyGraphOptions['dateWindow'] &&
@@ -429,6 +411,25 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.dyGraphOptions.logscale =
       this.dyGraphOptions.axes.y.logscale ||
       this.dyGraphOptions.axes.y2.logscale;
+
+    const yOffset = this.h.getDeep(this.dyGraphOptions, [
+      'axes',
+      'y',
+      'axisLabelWidth'
+    ]);
+    if (yOffset) {
+      this.yO = String(yOffset - 50);
+      console.log('yOffset:', this.yO);
+    }
+    const y2Offset = this.h.getDeep(this.dyGraphOptions, [
+      'axes',
+      'y2',
+      'axisLabelWidth'
+    ]);
+    if (y2Offset) {
+      this.y2O = String(y2Offset - 50);
+      console.log('y2Offset:', this.y2O);
+    }
   }
 
   updateLastValueMembers(dataset) {

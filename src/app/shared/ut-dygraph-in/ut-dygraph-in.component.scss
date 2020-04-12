@@ -167,9 +167,10 @@ $red2: #ff7f88;
   .y2min,
   .y2max,
   .logy.y2 {
-    right: 7px;
-    width: 42px;
+    right: 0;
+    width: 49px;
     text-align: left;
+    border-right: 0px solid $graphbg; // used to "expand" inte left
   }
   .xmin,
   .xmax,
@@ -178,7 +179,7 @@ $red2: #ff7f88;
   }
   .logy.y1,
   .logy.y2 {
-    width: 20px;
+    width: 30px; // 20+paddings
     height: 0;
     top: 29px;
     padding: 0;

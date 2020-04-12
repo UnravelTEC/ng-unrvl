@@ -61,7 +61,7 @@ export class EnvirooneComponent implements OnInit {
         logscale: false
       },
       y2: {
-        axisLabelWidth: 60
+        independentTicks: true, // default opt here to have a filled object to access later
       }
     }
   };
@@ -298,6 +298,9 @@ export class EnvirooneComponent implements OnInit {
         for (let r = 0; r < idata.length; r++) {
           idata[r][c] = this.h.smoothNO2(idata[r][c]);
         }
+      }
+      if (item.match(/pressure/)) {
+        this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60
       }
     }
     // console.log(cloneDeep(this.dygLabels));

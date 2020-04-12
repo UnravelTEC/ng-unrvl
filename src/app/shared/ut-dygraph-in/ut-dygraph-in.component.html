@@ -87,7 +87,7 @@ style.padding-bottom="20vh"-->
     <div
       class="y2min {{ XLabel == '' ? 'noxlabel' : '' }}"
       *ngIf="dyGraphOptions['drawAxis'] !== false && y2Range[0] !== undefined"
-      [style.transform]="'translateX(-' + y2O + 'px)'"
+      [style.border-right-width]="y2O + 'px'"
     >
       {{ y2Range[0] | number: '1.0-2' }}
     </div>
@@ -101,7 +101,7 @@ style.padding-bottom="20vh"-->
     <div
       class="y2max"
       *ngIf="dyGraphOptions['drawAxis'] !== false && y2Range[1] !== undefined"
-      [style.transform]="'translateX(-' + y2O + 'px)'"
+      [style.border-right-width]="y2O + 'px'"
     >
       {{ y2Range[1] | number: '1.0-2' }}
     </div>
