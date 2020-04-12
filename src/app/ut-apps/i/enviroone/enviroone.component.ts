@@ -104,7 +104,7 @@ export class EnvirooneComponent implements OnInit {
     private globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
-    private h: HelperFunctionsService,
+    public h: HelperFunctionsService,
     private router: ActivatedRoute
   ) {
     this.globalSettings.emitChange({ appName: this.appName });

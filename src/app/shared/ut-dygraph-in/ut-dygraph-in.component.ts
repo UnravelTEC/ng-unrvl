@@ -94,7 +94,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   public y2Range = [undefined, undefined];
 
   private gridlineActiveWidth = 1.5;
-  private gridlineInactiveWidth = 0.1;
+  private gridlineInactiveWidth = 0.0001;
+  private gridlineActiveColor = '#4A4A4A';
+  private gridlineInactiveColor = this.graphBackGroundColor;
+
 
   dyGraphOptions = {
     // http://dygraphs.com/options.html
@@ -121,7 +124,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     gridLinePattern: [4, 4],
     gridLineWidth: this.gridlineActiveWidth,
-    gridLineColor: '#4A4A4A',
+    gridLineColor: this.gridlineActiveColor,
     axisLineColor: 'yellow',
     axisLineWidth: 0.001,
     xAxisHeight: 34, // xlabel is 18 high
@@ -137,6 +140,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       y2: {
         logscale: false,
         gridLineWidth: this.gridlineInactiveWidth,
+        gridLineColor: this.gridlineInactiveColor,
         drawGrid: true,
         independentTicks: true
       }
@@ -635,16 +639,20 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     if (grid == 'y1') {
       // this.dyGraphOptions.axes.y['drawGrid'] = true;
       // this.dyGraphOptions.axes.y2['drawGrid'] = false;
-      this.dyGraphOptions.axes.y['gridLineWidth'] = this.gridlineActiveWidth;
+      this.dyGraphOptions.axes.y['gridLineWidth'] = this.gridlineActiveWidth; // width doesn't work in chrome
+      this.dyGraphOptions.axes.y['gridLineColor'] = this.gridlineActiveColor // use color for chrome
       this.dyGraphOptions.axes.y2['gridLineWidth'] = this.gridlineInactiveWidth;
+      this.dyGraphOptions.axes.y2['gridLineColor'] = this.gridlineInactiveColor
     } else {
       // this.dyGraphOptions.axes.y['drawGrid'] = false;
       // this.dyGraphOptions.axes.y2['drawGrid'] = true; // note: enabling drawGrid y2 again doesn't work, dunno why - use linewidth
       this.dyGraphOptions.axes.y['gridLineWidth'] = this.gridlineInactiveWidth;
+      this.dyGraphOptions.axes.y['gridLineColor'] = this.gridlineInactiveColor
       this.dyGraphOptions.axes.y2['gridLineWidth'] = this.gridlineActiveWidth;
+      this.dyGraphOptions.axes.y2['gridLineColor'] = this.gridlineActiveColor
     }
     this.Dygraph.updateOptions({ axes: this.dyGraphOptions.axes });
-    // console.log('new grid:', grid, this.dyGraphOptions.axes);
+    console.log('new grid:', grid, this.dyGraphOptions.axes);
   }
 
   highlightCallback(event, x, points, row, seriesName) {

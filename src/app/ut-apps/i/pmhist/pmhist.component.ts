@@ -33,7 +33,6 @@ export class PmhistComponent implements OnInit {
     axes: {
       y2: {
         independentTicks: true,
-        drawGrid: false
         // note: do not use log scale, dygraph does return only displayed data (no values == 0)
       }
     }
@@ -139,7 +138,7 @@ export class PmhistComponent implements OnInit {
     private globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
-    private h: HelperFunctionsService
+    public h: HelperFunctionsService
   ) {
     this.globalSettings.emitChange({ appName: this.appName });
     for (let i = 0; i < 24; i++) {
