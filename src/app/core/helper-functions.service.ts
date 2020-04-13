@@ -323,17 +323,20 @@ export class HelperFunctionsService {
     return labelString;
   }
 
-  exportCSV(data, labels, utc = true) {
+  exportCSV(data, labels, utc = true, missing = true) {
     // header
     const separator = '\t';
     const linebreak = '\n';
-    const dummyDate = new Date();
     console.log('utc:', utc);
 
     let header = '';
     if (labels.length === 0 || data.length === 0) {
       alert('no data to export');
       return;
+    }
+    let step = 1000;
+    if (data.length > 1) {
+      step = data[1][0].valueOf() - data[0][0].valueOf();
     }
     for (let i = 0; i < labels.length; i++) {
       const element = labels[i];
@@ -356,24 +359,37 @@ export class HelperFunctionsService {
     header += linebreak;
 
     let csvbody = '';
-    for (let i = 0; i < data.length; i++) {
-      const row = data[i];
+    function parseRow(row) {
+      let line = '';
       for (let column = 0; column < row.length; column++) {
         const element = row[column];
-        if (column > 0) {
-          csvbody += separator;
-        }
         if (column === 0) {
-          csvbody += element.valueOf() / 1000;
-          csvbody +=
-            separator + (utc ? element.toUTCString() : element.toString());
+          line += String(element.valueOf() / 1000) + separator;
+          line += utc ? element.toUTCString() : element.toString();
         } else {
-          csvbody += String(element);
+          line += separator + String(element);
         }
       }
-      csvbody += linebreak;
+      return line + linebreak;
     }
-    // values
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i];
+      csvbody += parseRow(row);
+
+      // gap detection
+      if (i > 2 && i < data.length - 1) {
+        let currentTS = row[0].valueOf();
+        let nextTS = data[i + 1][0].valueOf();
+        while (currentTS + step < nextTS) {
+          currentTS += step;
+          const row = [new Date(currentTS)];
+          for (let c = 1; c < labels.length; c++) {
+            row.push(null);
+          }
+          csvbody += parseRow(row);
+        }
+      }
+    }
 
     const csv = header + csvbody;
     // console.log(csv);
