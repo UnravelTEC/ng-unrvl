@@ -95,15 +95,19 @@ style.padding-bottom="20vh"-->
       class="xmin"
       *ngIf="dyGraphOptions['drawAxis'] !== false"
       [style.transform]="'translateX(' + yO + 'px)'"
+      (click)="pan('back')"
     >
       {{ fromZoom | date: 'shortTime' }}
+      <b class="{{ options == true ? '' : 'hide' }}">&lt;</b>
     </div>
     <div
       class="xmax {{ y2Range[1] === undefined ? 'noy2' : '' }}"
       *ngIf="dyGraphOptions['drawAxis'] !== false"
       [style.transform]="'translateX(-' + y2O + 'px)'"
+      (click)="pan('forward')"
     >
       {{ toZoom | date: 'shortTime' }}
+      <b class="{{ options == true ? '' : 'hide' }}">&gt;</b>
     </div>
     <div
       class="fromDate"
