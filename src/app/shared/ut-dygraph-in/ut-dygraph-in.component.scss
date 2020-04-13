@@ -111,6 +111,7 @@ $red2: #ff7f88;
     padding: 0.35em;
     height: 1em;
     line-height: 1em;
+    cursor: default;
   }
 
   .fromDate,
@@ -369,6 +370,7 @@ $red2: #ff7f88;
   .dygraph-label {
     color: $axismainlabelcolor;
     font-weight: 600;
+    cursor: default;
   }
   .y1 .dygraph-ylabel,
   .y2 .dygraph-y2label {
@@ -383,6 +385,7 @@ $red2: #ff7f88;
   }
   .dygraph-axis-label {
     color: $axissublabelcolor;
+    cursor: default;
   }
 
   button.toggleOptions {
