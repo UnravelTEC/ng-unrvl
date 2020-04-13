@@ -98,7 +98,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   private gridlineActiveColor = '#4A4A4A';
   private gridlineInactiveColor = this.graphBackGroundColor;
 
-
   dyGraphOptions = {
     // http://dygraphs.com/options.html
     drawCallback: this.afterDrawCallback,
@@ -163,7 +162,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   };
 
   public fromZoom: Date;
+  public fromFormDate = new FormControl(new Date());
   public toZoom: Date;
+  public toFormDate = new FormControl(new Date());
+  public pickerEndDate = new Date();
 
   @Input()
   public displayedData = [];
@@ -640,16 +642,16 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       // this.dyGraphOptions.axes.y['drawGrid'] = true;
       // this.dyGraphOptions.axes.y2['drawGrid'] = false;
       this.dyGraphOptions.axes.y['gridLineWidth'] = this.gridlineActiveWidth; // width doesn't work in chrome
-      this.dyGraphOptions.axes.y['gridLineColor'] = this.gridlineActiveColor // use color for chrome
+      this.dyGraphOptions.axes.y['gridLineColor'] = this.gridlineActiveColor; // use color for chrome
       this.dyGraphOptions.axes.y2['gridLineWidth'] = this.gridlineInactiveWidth;
-      this.dyGraphOptions.axes.y2['gridLineColor'] = this.gridlineInactiveColor
+      this.dyGraphOptions.axes.y2['gridLineColor'] = this.gridlineInactiveColor;
     } else {
       // this.dyGraphOptions.axes.y['drawGrid'] = false;
       // this.dyGraphOptions.axes.y2['drawGrid'] = true; // note: enabling drawGrid y2 again doesn't work, dunno why - use linewidth
       this.dyGraphOptions.axes.y['gridLineWidth'] = this.gridlineInactiveWidth;
-      this.dyGraphOptions.axes.y['gridLineColor'] = this.gridlineInactiveColor
+      this.dyGraphOptions.axes.y['gridLineColor'] = this.gridlineInactiveColor;
       this.dyGraphOptions.axes.y2['gridLineWidth'] = this.gridlineActiveWidth;
-      this.dyGraphOptions.axes.y2['gridLineColor'] = this.gridlineActiveColor
+      this.dyGraphOptions.axes.y2['gridLineColor'] = this.gridlineActiveColor;
     }
     this.Dygraph.updateOptions({ axes: this.dyGraphOptions.axes });
     console.log('new grid:', grid, this.dyGraphOptions.axes);
@@ -836,6 +838,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     const [from, to] = g.xAxisRange();
     parent.fromZoom = new Date(from);
     parent.toZoom = new Date(to);
+    parent.updateFromToPickers();
+
     const newXrange = (to - from) / 1000;
     if (newXrange != parent.currentXrange) {
       parent.currentXrange = newXrange;
@@ -854,6 +858,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     if (parent.optionsOpen) {
       parent.updateAverages();
     }
+  }
+  updateFromToPickers() {
+    if (this.minimal) {
+      return;
+    }
+    this.fromFormDate = new FormControl(this.fromZoom);
+    this.toFormDate = new FormControl(this.toZoom);
   }
 
   calculateAverage(from?: Date, targetArray = this.displayedData) {
@@ -1295,5 +1306,33 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.dyGraphOptions.visibility[i] = true;
       }
     }
+  }
+  fromDatePickerChanged($event) {
+    const newFrom = $event['value'];
+
+    const toSetDate = new Date(newFrom.valueOf());
+    toSetDate.setHours(this.fromZoom.getHours());
+    toSetDate.setMinutes(this.fromZoom.getMinutes());
+    toSetDate.setSeconds(this.fromZoom.getSeconds());
+    toSetDate.setMilliseconds(this.fromZoom.getMilliseconds());
+
+    this.fromZoom = toSetDate;
+    this.Dygraph.updateOptions({
+      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
+    });
+  }
+  toDatePickerChanged($event) {
+    const newTo = $event['value'];
+
+    const toSetDate = new Date(newTo.valueOf());
+    toSetDate.setHours(this.toZoom.getHours());
+    toSetDate.setMinutes(this.toZoom.getMinutes());
+    toSetDate.setSeconds(this.toZoom.getSeconds());
+    toSetDate.setMilliseconds(this.toZoom.getMilliseconds());
+
+    this.toZoom = toSetDate;
+    this.Dygraph.updateOptions({
+      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
+    });
   }
 }

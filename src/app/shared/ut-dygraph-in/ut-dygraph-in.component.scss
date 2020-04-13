@@ -116,8 +116,31 @@ $red2: #ff7f88;
   .fromDate,
   .toDate {
     bottom: 0;
+    cursor: pointer;
+    mat-form-field {
+      width: 5.1em;
+      height: 1em;
+      margin-top: -0.35em;
+      font-family: inherit;
+      .mat-form-field-underline,
+      .mat-form-field-suffix button.mat-icon-button,
+      .mat-form-field-prefix button.mat-icon-button {
+        display: none;
+      }
+      input {
+        cursor: pointer;
+      }
+    }
+    mat-form-field.mat-form-field-appearance-legacy .mat-form-field-infix {
+      padding: 0;
+      border-top: 0;
+    }
   }
-
+  .fromDate:hover,
+  .toDate:hover {
+    background-color: $buttonactivebg;
+    color: $buttontext;
+  }
   .fromDate,
   .xmin {
     left: 55px;
@@ -126,6 +149,9 @@ $red2: #ff7f88;
   .xmax {
     right: 60px;
     text-align: right;
+    mat-form-field input {
+      text-align: right;
+    }
   }
   .noy2 {
     right: 5px; // Dygraph option rightGap
@@ -134,7 +160,7 @@ $red2: #ff7f88;
   .toDate,
   .xmin,
   .xmax {
-    width: 4.3em;
+    width: 5.1em;
   }
   .lastTime {
     position: absolute;

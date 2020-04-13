@@ -26,20 +26,6 @@ style.padding-bottom="20vh"-->
     </div>
 
     <div
-      class="fromDate"
-      *ngIf="showDate == true"
-      [style.transform]="'translateX(' + yO + 'px)'"
-    >
-      {{ fromZoom | date: 'shortDate' }}
-    </div>
-    <div
-      class="toDate {{ y2Range[1] === undefined ? 'noy2' : '' }}"
-      *ngIf="showDate == true"
-      [style.transform]="'translateX(-' + y2O + 'px)'"
-    >
-      {{ toZoom | date: 'shortDate' }}
-    </div>
-    <div
       class="overlapTickTexthider y1"
       [style.transform]="'translateX(' + yO + 'px)'"
     ></div>
@@ -119,7 +105,53 @@ style.padding-bottom="20vh"-->
     >
       {{ toZoom | date: 'shortTime' }}
     </div>
-    <div class="logbuttons" *ngIf="options == true && showLogscaleSwitcher == true">
+    <div
+      class="fromDate"
+      *ngIf="showDate == true"
+      [style.transform]="'translateX(' + yO + 'px)'"
+      (click)="pickerF.open()"
+    >
+      <mat-form-field>
+        <input
+          matInput
+          [matDatepicker]="pickerF"
+          [formControl]="fromFormDate"
+          (dateChange)="fromDatePickerChanged($event)"
+          [max]="pickerEndDate"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="pickerF"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #pickerF></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div
+      class="toDate {{ y2Range[1] === undefined ? 'noy2' : '' }}"
+      *ngIf="showDate == true"
+      [style.transform]="'translateX(-' + y2O + 'px)'"
+      (click)="pickerT.open()"
+    >
+      <mat-form-field>
+        <input
+          matInput
+          [matDatepicker]="pickerT"
+          [formControl]="toFormDate"
+          (dateChange)="toDatePickerChanged($event)"
+          [max]="pickerEndDate"
+          [min]="fromZoom"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="pickerT"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #pickerT></mat-datepicker>
+      </mat-form-field>
+    </div>
+    <div
+      class="logbuttons"
+      *ngIf="options == true && showLogscaleSwitcher == true"
+    >
       <div class="logy y1" (click)="switchLogScale()">
         <div
           class="{{
@@ -149,22 +181,26 @@ style.padding-bottom="20vh"-->
         *ngIf="dyGraphOptions['drawAxis'] !== false && y2Range[1] !== undefined"
         (click)="switchLogScale('y2')"
       >
-        <div class="{{
-          dyGraphOptions['axes'] &&
-          dyGraphOptions['axes']['y2'] &&
-          dyGraphOptions['axes']['y2']['logscale']
-            ? 'active'
-            : ''
-        }}">
+        <div
+          class="{{
+            dyGraphOptions['axes'] &&
+            dyGraphOptions['axes']['y2'] &&
+            dyGraphOptions['axes']['y2']['logscale']
+              ? 'active'
+              : ''
+          }}"
+        >
           log
         </div>
-        <div class="{{
-          dyGraphOptions['axes'] &&
-          dyGraphOptions['axes']['y2'] &&
-          dyGraphOptions['axes']['y2']['logscale']
-            ? ''
-            : 'active'
-        }}">
+        <div
+          class="{{
+            dyGraphOptions['axes'] &&
+            dyGraphOptions['axes']['y2'] &&
+            dyGraphOptions['axes']['y2']['logscale']
+              ? ''
+              : 'active'
+          }}"
+        >
           lin
         </div>
       </div>
