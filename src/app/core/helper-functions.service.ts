@@ -27,6 +27,8 @@ export class HelperFunctionsService {
   defaultColorMappings = {};
 
   avgPresets = [
+    { '1m': 60 },
+    { '5m': 300 },
     { '15m': 900 },
     { '30m': 1800 },
     { '1h': 3600 },
