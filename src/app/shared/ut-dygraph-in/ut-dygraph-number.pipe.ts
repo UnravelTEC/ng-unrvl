@@ -4,7 +4,7 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'dygNr'
 })
 export class dygNrPipe implements PipeTransform {
-  transform(value: number | string, locale?: string): string {
+  transform(value: number | string): string {
     let myval = Number(value);
     let digits = 2;
     let result = '';
