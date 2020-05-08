@@ -1,8 +1,14 @@
 $graphbg: #3f3f3f;
 $mainbg: #1e1e1e;
+
 $axismainlabelcolor: #8e8e8e;
 $axissublabelcolor: #565656;
+
 $buttontext: #fff;
+$buttontextinactive: #666666;
+$buttonactivebg: #8e8e8e;
+$buttoninactivebg: #373737;
+
 $dygfontsize: 14px;
 $labelcolor: #8e8e8e;
 $editableFormsTextColor: #c7c7c7;
@@ -96,7 +102,8 @@ $red2: #ff7f88;
   .y2min,
   .y2max,
   .xmin,
-  .xmax {
+  .xmax,
+  .logy {
     position: absolute;
     background: $graphbg;
     font-size: $dygfontsize;
@@ -109,8 +116,31 @@ $red2: #ff7f88;
   .fromDate,
   .toDate {
     bottom: 0;
+    cursor: pointer;
+    mat-form-field {
+      width: 5.1em;
+      height: 1em;
+      margin-top: -0.35em;
+      font-family: inherit;
+      .mat-form-field-underline,
+      .mat-form-field-suffix button.mat-icon-button,
+      .mat-form-field-prefix button.mat-icon-button {
+        display: none;
+      }
+      input {
+        cursor: pointer;
+      }
+    }
+    mat-form-field.mat-form-field-appearance-legacy .mat-form-field-infix {
+      padding: 0;
+      border-top: 0;
+    }
   }
-
+  .fromDate:hover,
+  .toDate:hover {
+    background-color: $buttonactivebg;
+    color: $buttontext;
+  }
   .fromDate,
   .xmin {
     left: 55px;
@@ -119,6 +149,9 @@ $red2: #ff7f88;
   .xmax {
     right: 60px;
     text-align: right;
+    mat-form-field input {
+      text-align: right;
+    }
   }
   .noy2 {
     right: 5px; // Dygraph option rightGap
@@ -127,7 +160,7 @@ $red2: #ff7f88;
   .toDate,
   .xmin,
   .xmax {
-    width: 4.3em;
+    width: 5.1em;
   }
   .lastTime {
     position: absolute;
@@ -138,7 +171,8 @@ $red2: #ff7f88;
     color: $labelcolor;
   }
   .ymax,
-  .ymin {
+  .ymin,
+  .logy.y1 {
     border: 0px solid salmon;
     width: 42px; // dyg y-width: 50px + paddings
     left: 1px;
@@ -157,15 +191,47 @@ $red2: #ff7f88;
     bottom: 1.6em;
   }
   .y2min,
-  .y2max {
-    right: 7px;
-    width: 42px;
+  .y2max,
+  .logy.y2 {
+    right: 0;
+    width: 49px;
     text-align: left;
+    border-right: 0px solid $graphbg; // used to "expand" inte left
   }
   .xmin,
   .xmax,
   .overlapTickTexthider {
     bottom: 26px;
+  }
+  .logy.y1,
+  .logy.y2 {
+    width: 30px; // 20+paddings
+    height: 0;
+    top: 29px;
+    padding: 0;
+    cursor: pointer;
+    div {
+      padding: 0.35em 0.35em 0 0.35em; // to rm "g" bottom height increase
+      line-height: 1em;
+      width: 20px;
+      display: inline-block;
+      text-align: center;
+      height: 20px;
+      background-color: $buttoninactivebg;
+      color: $buttontextinactive;
+    }
+    div.active,
+    div:hover {
+      background-color: $buttonactivebg;
+      color: $buttontext;
+    }
+
+    div:first-child {
+      margin-bottom: -0.2em;
+    }
+    div + div {
+      padding-top: 0.1em;
+    }
   }
   .overlapTickTexthider {
     background-color: $mainbg;
@@ -213,7 +279,7 @@ $red2: #ff7f88;
         cursor: pointer;
       }
       .legendToggle::after {
-        content: "▲";
+        content: '▲';
       }
       .legendToggle:hover {
         font-weight: bold;
@@ -255,22 +321,25 @@ $red2: #ff7f88;
           border-bottom: 1px solid black;
         }
         th {
-          font-weight: bold;
+          font-weight: normal;
           padding: 0.1em 0.2em;
+          color: $editableFormsTextColor;
         }
 
         td {
-          color: black;
+          color: $editableFormsTextColor;
           width: 4.5em; // width of string 'undefined'
           border-left-width: 0;
           padding: 0.1em 0;
         }
       }
-      tr.highlight {
-        background-color: #8e8e8e;
-      }
+      tr.highlight,
       tr:hover {
         background-color: #8e8e8e;
+        th,
+        td {
+          color: $mainbg;
+        }
       }
     }
   }
@@ -281,7 +350,7 @@ $red2: #ff7f88;
       display: none;
     }
     .legendToggle::after {
-      content: "▼";
+      content: '▼';
     }
   }
 
@@ -300,6 +369,17 @@ $red2: #ff7f88;
   .dygraph-label {
     color: $axismainlabelcolor;
     font-weight: 600;
+  }
+  .y1 .dygraph-ylabel,
+  .y2 .dygraph-y2label {
+    // axis highlight
+    text-shadow: 0 0 1em orange, 0 0 0.2em orange;
+  }
+  .y2 .dygraph-ylabel,
+  .y1 .dygraph-y2label,
+  .y2 .dygraph-axis-label-y1,
+  .y1 .dygraph-axis-label-y2 {
+    opacity: 0.5;
   }
   .dygraph-axis-label {
     color: $axissublabelcolor;

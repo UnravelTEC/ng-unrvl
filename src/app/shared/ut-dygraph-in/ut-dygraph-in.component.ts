@@ -65,6 +65,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   showDate = true;
   @Input()
+  showLogscaleSwitcher = true;
+  @Input()
   backGroundLevels: Array<[number, string]>;
   @Input()
   colors = [];
@@ -91,6 +93,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   public yRange = [undefined, undefined];
   public y2Range = [undefined, undefined];
 
+  private gridlineActiveWidth = 1.5;
+  private gridlineInactiveWidth = 0.0001;
+  private gridlineActiveColor = '#4A4A4A';
+  private gridlineInactiveColor = this.graphBackGroundColor;
+
   dyGraphOptions = {
     // http://dygraphs.com/options.html
     drawCallback: this.afterDrawCallback,
@@ -104,7 +111,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     animatedZooms: true,
     connectSeparatedPoints: false,
     highlightSeriesBackgroundAlpha: 1, // disable
-    logscale: false,
     pointSize: 1, // radius
     hideOverlayOnMouseOut: true,
     highlightSeriesOpts: {
@@ -116,14 +122,30 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     labelsSeparateLines: true,
 
     gridLinePattern: [4, 4],
-    gridLineWidth: 1.5,
-    gridLineColor: '#4A4A4A',
+    gridLineWidth: this.gridlineActiveWidth,
+    gridLineColor: this.gridlineActiveColor,
     axisLineColor: 'yellow',
     axisLineWidth: 0.001,
     xAxisHeight: 34, // xlabel is 18 high
     // yRangePad: 200, // spacing for data points inside graph
+    logscale: true, // must be true, otherwise we cant enable it for y/y2
+    axes: {
+      y: {
+        logscale: false,
+        drawGrid: true,
+        gridLineWidth: this.gridlineActiveWidth,
+        independentTicks: true
+      },
+      y2: {
+        logscale: false,
+        gridLineWidth: this.gridlineInactiveWidth,
+        gridLineColor: this.gridlineInactiveColor,
+        drawGrid: true,
+        independentTicks: true
+      }
+    },
 
-    valueRange: this.yRange,
+    // valueRange: this.yRange,
     legend: <any>'always', // also 'never' possible
     visibility: []
   };
@@ -140,7 +162,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   };
 
   public fromZoom: Date;
+  public fromFormDate = new FormControl(new Date());
   public toZoom: Date;
+  public toFormDate = new FormControl(new Date());
+  public pickerEndDate = new Date();
 
   @Input()
   public displayedData = [];
@@ -192,6 +217,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   returnCurrentZoom = new EventEmitter<number>();
 
   public stats = false;
+
+  private activeYAxis = 'y1';
 
   Dygraph: Dygraph;
 
@@ -280,7 +307,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.Dygraph.updateOptions({
         file: this.displayedData,
         labels: this.columnLabels,
-        logscale: this.dyGraphOptions.logscale,
+        axes: this.dyGraphOptions.axes,
         visibility: this.dyGraphOptions.visibility,
         dateWindow: this.dyGraphOptions['dateWindow']
       });
@@ -321,19 +348,14 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     } else {
       this.dyGraphOptions['legendFormatter'] = this.legendFormatter;
     }
-    if (this.backGroundLevels) {
-      this.dyGraphOptions['backGroundLevels'] = this.backGroundLevels; // option we create ourselves to access without Dygraphs.parent in initial draw call
-    }
 
     if (this.enableHighlightCallback) {
       this.dyGraphOptions['highlightCallback'] = this.highlightCallback;
       this.dyGraphOptions['unhighlightCallback'] = this.unhighlightCallback;
     }
     this.dyGraphOptions['ylabel'] = this.YLabel;
-    this.dyGraphOptions['labels'] = this.columnLabels;
-    if (this.colors) {
-      this.dyGraphOptions['colors'] = this.colors;
-    }
+    // this.dyGraphOptions['labels'] = this.columnLabels;
+
     while (
       this.dyGraphOptions.visibility.length <
       this.columnLabels.length - 1
@@ -342,24 +364,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.updateXLabel();
     this.updateDyGraphOptions();
-    const yOffset = this.h.getDeep(this.dyGraphOptions, [
-      'axes',
-      'y',
-      'axisLabelWidth'
-    ]);
-    if (yOffset) {
-      this.yO = String(yOffset - 50);
-      console.log('yOffset:', this.yO);
-    }
-    const y2Offset = this.h.getDeep(this.dyGraphOptions, [
-      'axes',
-      'y2',
-      'axisLabelWidth'
-    ]);
-    if (y2Offset) {
-      this.y2O = String(y2Offset - 50);
-      console.log('y2Offset:', this.y2O);
-    }
 
     if (
       this.dyGraphOptions['dateWindow'] &&
@@ -404,10 +408,33 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         }
       }
     }
-    for (const key in this.extraDyGraphConfig) {
-      if (this.extraDyGraphConfig.hasOwnProperty(key)) {
-        this.dyGraphOptions[key] = this.extraDyGraphConfig[key];
-      }
+
+    // console.log('old:', cloneDeep(this.dyGraphOptions));
+    // console.log('with:', cloneDeep(this.extraDyGraphConfig));
+    this.h.deepCopyInto(this.dyGraphOptions, this.extraDyGraphConfig);
+    // console.log('result', cloneDeep(this.dyGraphOptions));
+
+    this.dyGraphOptions.logscale =
+      this.dyGraphOptions.axes.y.logscale ||
+      this.dyGraphOptions.axes.y2.logscale;
+
+    const yOffset = this.h.getDeep(this.dyGraphOptions, [
+      'axes',
+      'y',
+      'axisLabelWidth'
+    ]);
+    if (yOffset) {
+      this.yO = String(yOffset - 50);
+      console.log('yOffset:', this.yO);
+    }
+    const y2Offset = this.h.getDeep(this.dyGraphOptions, [
+      'axes',
+      'y2',
+      'axisLabelWidth'
+    ]);
+    if (y2Offset) {
+      this.y2O = String(y2Offset - 50);
+      console.log('y2Offset:', this.y2O);
     }
   }
 
@@ -498,10 +525,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.dyGraphOptions['labels'] = this.columnLabels;
     // console.log('COLORS:', cloneDeep(this.colors), cloneDeep(this.h.colorArray));
 
-    this.dyGraphOptions['colors'] = this.colors.length
-      ? this.colors
-      : this.h.colorArray;
-
     console.log(cloneDeep(this.dyGraphOptions));
     if (this.columnLabels.length != this.displayedData[0].length) {
       console.error(
@@ -512,6 +535,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       );
       return;
     }
+    this.dyGraphOptions['colors'] = this.colors.length
+      ? this.colors
+      : this.h.colorArray;
+    if (this.backGroundLevels) {
+      this.dyGraphOptions['backGroundLevels'] = this.backGroundLevels; // option we create ourselves to access without Dygraphs.parent in initial draw call
+    }
+    this.updateDyGraphOptions();
 
     this.waiting = false;
     while (
@@ -523,8 +553,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     console.log(
       'creating Dyg',
       this.htmlID,
-      this.displayedData,
-      this.dyGraphOptions
+      cloneDeep(this.displayedData),
+      cloneDeep(this.dyGraphOptions)
     );
 
     this.Dygraph = new Dygraph(
@@ -545,7 +575,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    this.checkAndUpdateGraphWidth()
+    this.checkAndUpdateGraphWidth();
     this.setYranges();
   }
 
@@ -588,28 +618,47 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     return [y1axis, y2axis];
   }
   setAxisHighlight(seriesName) {
-    // console.log(event, x, row, points);
-    const DygDiv = document.getElementById(this.htmlID).firstChild;
-    const axes = this.getAxisElements(DygDiv);
-    let y1axis = axes[0],
-      y2axis = axes[1];
-
     const axis = this.getSeriesAxis(seriesName);
-    const shadow = '0 0 1em orange, 0 0 0.2em orange';
-    if (axis == 'y1') {
-      y1axis.style.textShadow = shadow;
-      y2axis.style.textShadow = 'none';
-      y1axis.style.opacity = 1;
-      y2axis.style.opacity = 0.5;
-    } else {
-      y2axis.style.textShadow = shadow;
-      y1axis.style.textShadow = 'none';
-      y2axis.style.opacity = 1;
-      y1axis.style.opacity = 0.5;
+    if (axis == this.activeYAxis) {
+      return;
     }
+    this.activeYAxis = axis;
+    // console.log(event, x, row, points);
+    const classList = document.getElementById(this.htmlID).classList;
+    this.activateGrid(axis);
+    if (axis == 'y1') {
+      classList.add('y1');
+      classList.remove('y2');
+    } else {
+      classList.add('y2');
+      classList.remove('y1');
+    }
+  }
+  activateGrid(grid = 'y1') {
+    const yRanges = this.Dygraph.yAxisRanges();
+    this.dyGraphOptions.axes.y['valueRange'] = yRanges[0];
+    this.dyGraphOptions.axes.y2['valueRange'] = yRanges[1];
+    if (grid == 'y1') {
+      // this.dyGraphOptions.axes.y['drawGrid'] = true;
+      // this.dyGraphOptions.axes.y2['drawGrid'] = false;
+      this.dyGraphOptions.axes.y['gridLineWidth'] = this.gridlineActiveWidth; // width doesn't work in chrome
+      this.dyGraphOptions.axes.y['gridLineColor'] = this.gridlineActiveColor; // use color for chrome
+      this.dyGraphOptions.axes.y2['gridLineWidth'] = this.gridlineInactiveWidth;
+      this.dyGraphOptions.axes.y2['gridLineColor'] = this.gridlineInactiveColor;
+    } else {
+      // this.dyGraphOptions.axes.y['drawGrid'] = false;
+      // this.dyGraphOptions.axes.y2['drawGrid'] = true; // note: enabling drawGrid y2 again doesn't work, dunno why - use linewidth
+      this.dyGraphOptions.axes.y['gridLineWidth'] = this.gridlineInactiveWidth;
+      this.dyGraphOptions.axes.y['gridLineColor'] = this.gridlineInactiveColor;
+      this.dyGraphOptions.axes.y2['gridLineWidth'] = this.gridlineActiveWidth;
+      this.dyGraphOptions.axes.y2['gridLineColor'] = this.gridlineActiveColor;
+    }
+    this.Dygraph.updateOptions({ axes: this.dyGraphOptions.axes });
+    console.log('new grid:', grid, this.dyGraphOptions.axes);
   }
 
   highlightCallback(event, x, points, row, seriesName) {
+    // note: do not use log scale, dygraph does return only displayed data (no values == 0)
     if (!this.hasOwnProperty('parent')) {
       console.error('highlightCallback: No parent');
       return;
@@ -631,23 +680,27 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     // console.log('unhighlight');
     // console.log(event);
-    const DygDiv = document.getElementById(this['parent'].htmlID).firstChild;
-    const children = DygDiv.childNodes;
-    ['dygraph-ylabel', 'dygraph-y2label'].forEach(cssclass => {
-      for (const key in children) {
-        if (
-          children.hasOwnProperty(key) &&
-          children[key].firstChild &&
-          children[key].firstChild.firstChild &&
-          children[key].firstChild.firstChild['className'] &&
-          children[key].firstChild.firstChild['className'].search(cssclass) > -1
-        ) {
-          children[key].firstChild.firstChild['style'].textShadow = 'none';
-          children[key].firstChild.firstChild['style'].opacity = 1;
-          break;
-        }
-      }
-    });
+    const classList = document.getElementById(this['parent'].htmlID).classList;
+    classList.remove('y1');
+    classList.remove('y2');
+
+    // const DygDiv = document.getElementById(this['parent'].htmlID).firstChild;
+    // const children = DygDiv.childNodes;
+    // ['dygraph-ylabel', 'dygraph-y2label'].forEach(cssclass => {
+    //   for (const key in children) {
+    //     if (
+    //       children.hasOwnProperty(key) &&
+    //       children[key].firstChild &&
+    //       children[key].firstChild.firstChild &&
+    //       children[key].firstChild.firstChild['className'] &&
+    //       children[key].firstChild.firstChild['className'].search(cssclass) > -1
+    //     ) {
+    //       children[key].firstChild.firstChild['style'].textShadow = 'none';
+    //       children[key].firstChild.firstChild['style'].opacity = 1;
+    //       break;
+    //     }
+    //   }
+    // });
   }
   toggleLegendContent(id = '') {
     this.legendContentVisible = !this.legendContentVisible;
@@ -692,8 +745,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           : '';
       const cls = series.isHighlighted ? 'class="highlight"' : '';
       const callbacks = genCallback(series.label, htmlID);
-      if (!series.isVisible) series.color = 'gray';
-      html += `<tr style='color:${series.color};' ${cls} ${callbacks}><th>${series.dashHTML}</th><th>${series.labelHTML}<span ${spanvis}>:</span>&thinsp;</th><td>${displayedValue}</td></tr>`;
+      const textcolor = series.isVisible ? '' : ' style="color:gray" ';
+      html += `<tr style='color:${series.color};' ${cls} ${callbacks}><th${textcolor}>${series.dashHTML}</th><th${textcolor}>${series.labelHTML}<span ${spanvis}>:</span>&thinsp;</th><td>${displayedValue}</td></tr>`;
     }
     return html + '</table>';
   }
@@ -785,6 +838,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     const [from, to] = g.xAxisRange();
     parent.fromZoom = new Date(from);
     parent.toZoom = new Date(to);
+    parent.updateFromToPickers();
+
     const newXrange = (to - from) / 1000;
     if (newXrange != parent.currentXrange) {
       parent.currentXrange = newXrange;
@@ -803,6 +858,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     if (parent.optionsOpen) {
       parent.updateAverages();
     }
+  }
+  updateFromToPickers() {
+    if (this.minimal) {
+      return;
+    }
+    this.fromFormDate = new FormControl(this.fromZoom);
+    this.toFormDate = new FormControl(this.toZoom);
   }
 
   calculateAverage(from?: Date, targetArray = this.displayedData) {
@@ -1086,10 +1148,26 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       dateWindow: [newFrom, newTo]
     });
   }
-  updateYlogscale() {
+
+  //note: if logscale not globally set, no logscale graphs are displayed
+  switchLogScale(axis = 'y1') {
+    let axisob = this.dyGraphOptions['axes'];
+    let y = axis == 'y2' ? 'y2' : 'y';
+    if (!axisob.hasOwnProperty(y)) {
+      axisob[y] = {};
+    }
+
+    axisob[y]['logscale'] = axisob[y]['logscale'] ? false : true;
     this.Dygraph.updateOptions({
-      logscale: this.dyGraphOptions.logscale
+      logscale: axisob.y.logscale || axisob.y2.logscale,
+      axes: this.dyGraphOptions['axes']
     });
+    console.log(
+      'new logscale:',
+      axis,
+      axisob[y]['logscale'],
+      this.dyGraphOptions['axes']
+    );
   }
   toggleLegend() {
     if (this.dyGraphOptions.legend == 'always') {
@@ -1228,5 +1306,33 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.dyGraphOptions.visibility[i] = true;
       }
     }
+  }
+  fromDatePickerChanged($event) {
+    const newFrom = $event['value'];
+
+    const toSetDate = new Date(newFrom.valueOf());
+    toSetDate.setHours(this.fromZoom.getHours());
+    toSetDate.setMinutes(this.fromZoom.getMinutes());
+    toSetDate.setSeconds(this.fromZoom.getSeconds());
+    toSetDate.setMilliseconds(this.fromZoom.getMilliseconds());
+
+    this.fromZoom = toSetDate;
+    this.Dygraph.updateOptions({
+      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
+    });
+  }
+  toDatePickerChanged($event) {
+    const newTo = $event['value'];
+
+    const toSetDate = new Date(newTo.valueOf());
+    toSetDate.setHours(this.toZoom.getHours());
+    toSetDate.setMinutes(this.toZoom.getMinutes());
+    toSetDate.setSeconds(this.toZoom.getSeconds());
+    toSetDate.setMilliseconds(this.toZoom.getMilliseconds());
+
+    this.toZoom = toSetDate;
+    this.Dygraph.updateOptions({
+      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
+    });
   }
 }

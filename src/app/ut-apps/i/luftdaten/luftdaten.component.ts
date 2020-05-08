@@ -39,7 +39,6 @@ export class LuftdatenComponent implements OnInit {
       y2: {
         independentTicks: true,
         axisLabelWidth: 60,
-        drawGrid: false
       }
     }
   };

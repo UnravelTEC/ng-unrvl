@@ -30,9 +30,8 @@ export class AnysensComponent implements OnInit {
     y2label: 'Atmospheric Pressure (hPa)',
     axes: {
       y2: {
-        independentTicks: true,
-        axisLabelWidth: 60,
-        drawGrid: false
+        independentTicks: true, // default opt here to have a filled object to access later
+        // axisLabelWidth: 60, // set on demand
       }
     }
   };
@@ -194,6 +193,9 @@ export class AnysensComponent implements OnInit {
         for (let r = 0; r < idata.length; r++) {
           idata[r][c] = this.h.smoothNO2(idata[r][c]);
         }
+      }
+      if (item.match(/pressure/)) {
+        this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60
       }
     }
     // console.log(cloneDeep(this.dygLabels));

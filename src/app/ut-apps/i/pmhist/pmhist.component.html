@@ -24,6 +24,7 @@
   [changeTrigger]="changeTrigger"
   [extraDyGraphConfig]="extraDyGraphConfig"
   [startTime]="startTime"
+  showLogscaleSwitcher="false"
   YLabel="Particle Count (&#8202;#&#8202;/&#8202;cm³&#8202;)"
   enableHighlightCallback="true"
   (returnHighlightedRow)="handleHighlightCallback($event)"
@@ -50,8 +51,11 @@
 <form class="settings" (submit)="reload()">
   <div class="section">
     <h3>Current Dataset:</h3>
-    <label>Resolution:</label><br />
-    <p>{{ currentres }}s</p>
+    <label>Resolution:</label>
+    <span>{{ currentres }}s</span>
+
+    <label>Current Range:</label>
+    <span class="cRange">{{ currentRange }} </span>
   </div>
   <div class="section">
     <h3>New Query:</h3>
@@ -73,14 +77,24 @@
     </mat-form-field>
 
     <br />
-    <label for="runningAvgPoints"># Mean Seconds</label><br />
+    <label>Average Period</label>
+    <div class="avgbuttons">
+      <button
+        *ngFor="let t of h.avgPresets"
+        (click)="setAvg(h.vals(t)[0])"
+        type="button"
+      >
+        {{ h.keys(t)[0] }}
+      </button>
+    </div>
+    <label for="runningAvgPoints">Seconds</label><br />
     <input
       type="text"
       id="runningAvgPoints"
       name="runningAvgPoints"
       [(ngModel)]="userMeanS"
       (ngModelChange)="saveMean($event)"
-      style="width:4em"
+      style="width:5em"
     /><br />
     <br />
     <!-- <table style="border: 1px solid gray; padding: 0.5em;">

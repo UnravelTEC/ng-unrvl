@@ -33,10 +33,9 @@ export class PmhistComponent implements OnInit {
     axes: {
       y2: {
         independentTicks: true,
-        drawGrid: false
+        // note: do not use log scale, dygraph does return only displayed data (no values == 0)
       }
     }
-    // logscale: true
   };
   labelBlackListT = ['host', 'serial', 'particulate_matter', 'mean_*'];
   graphstyle = {
@@ -139,7 +138,7 @@ export class PmhistComponent implements OnInit {
     private globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
-    private h: HelperFunctionsService
+    public h: HelperFunctionsService
   ) {
     this.globalSettings.emitChange({ appName: this.appName });
     for (let i = 0; i < 24; i++) {
@@ -165,8 +164,8 @@ export class PmhistComponent implements OnInit {
     this.startTime = this.userStartTime;
 
     const timeQuery = fromTo
-    ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
-    : this.utHTTP.influxTimeString(this.startTime);
+      ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
+      : this.utHTTP.influxTimeString(this.startTime);
 
     this.launchQuery(
       this.utHTTP.influxMeanQuery(
@@ -196,6 +195,10 @@ export class PmhistComponent implements OnInit {
     this.utHTTP
       .getHTTPData(q, 'grazweb', '.RaVNaygexThM')
       .subscribe((data: Object) => this.handleData(data));
+  }
+  setAvg(t) {
+    this.userMeanS = t;
+    this.saveMean(t);
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -235,23 +238,23 @@ export class PmhistComponent implements OnInit {
     const newOrder = [NaN].concat(pms, pns);
     // console.log('newOrder', newOrder);
     const newLabels = [oldLabels[0]]; // Date stays
-    const newIndices = [0]
+    const newIndices = [0];
     for (let c = 1; c < newOrder.length; c++) {
       const index = newOrder[c]['index'];
-      newLabels.push(oldLabels[index])
+      newLabels.push(oldLabels[index]);
       newIndices.push(index);
     }
     // console.log('newLabels', newLabels);
-    const oldData = ret['data']
+    const oldData = ret['data'];
     const newData = [];
     for (let rowindex = 0; rowindex < oldData.length; rowindex++) {
       const oldRow = oldData[rowindex];
-      const newRow = []
+      const newRow = [];
       for (let c = 0; c < newIndices.length; c++) {
         const index = newIndices[c];
-        newRow.push(oldRow[index])
+        newRow.push(oldRow[index]);
       }
-      newData.push(newRow)
+      newData.push(newRow);
     }
 
     this.labels = newLabels;

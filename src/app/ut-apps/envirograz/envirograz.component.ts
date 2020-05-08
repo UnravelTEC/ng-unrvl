@@ -40,7 +40,11 @@ export class EnvirograzComponent implements OnInit {
   extraDyGraphConfigPM = {
     connectSeparatedPoints: true,
     pointSize: 3,
-    logscale: true
+    axes: {
+      y: {
+        logscale: true
+      }
+    }
   };
 
   isNaN(a) {

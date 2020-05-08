@@ -1,3 +1,10 @@
+$mainbg: #1E1E1E;
+$buttontext: #fff;
+$buttontextinactive: #666666;
+$buttonbg: #565656;
+$buttonactivebg: #8E8E8E;
+$buttoninactivebg:#373737;
+
 * {
   font-family: Helvetica, Arial, sans-serif;
   margin: 0;
@@ -13,16 +20,16 @@
   height: 100%;
   flex-direction: column;
   display: flex;
-  background-color: #1E1E1E;
+  background-color: $mainbg;
   color: #C7C7C7;
 
   ::ng-deep button {
     border: 2px solid black;
-    background: #565656;
+    background: $buttonbg;
     padding: 0.5em;
     cursor: pointer;
     min-width: 2.25em;
-    color: white;
+    color: $buttontext;
     .mat-icon {
       margin: 0;
       margin-bottom: -10px;
@@ -31,7 +38,7 @@
     }
   }
   ::ng-deep button:hover {
-    background-color: #8e8e8e;
+    background-color: $buttonactivebg;
   }
   ::ng-deep input[type='text'] {
     padding: 0.3em;

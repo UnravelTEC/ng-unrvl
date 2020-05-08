@@ -50,7 +50,6 @@ export class EnvirooneComponent implements OnInit {
   extraDyGraphConfig = {
     connectSeparatedPoints: true,
     pointSize: 3,
-    logscale: false,
     series: {
       'pressure sensor: BME280, pressure (hPa)': {
         axis: 'y2'
@@ -58,10 +57,11 @@ export class EnvirooneComponent implements OnInit {
     },
     y2label: 'Atmospheric Pressure (hPa)',
     axes: {
+      y: {
+        logscale: false
+      },
       y2: {
-        independentTicks: true,
-        axisLabelWidth: 60,
-        drawGrid: false
+        independentTicks: true, // default opt here to have a filled object to access later
       }
     }
   };
@@ -104,7 +104,7 @@ export class EnvirooneComponent implements OnInit {
     private globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
-    private h: HelperFunctionsService,
+    public h: HelperFunctionsService,
     private router: ActivatedRoute
   ) {
     this.globalSettings.emitChange({ appName: this.appName });
@@ -130,7 +130,7 @@ export class EnvirooneComponent implements OnInit {
       }
     }
     if (this.physParamEnabled['PM']) {
-      this.extraDyGraphConfig.logscale = true;
+      this.extraDyGraphConfig.axes.y.logscale = true;
     }
     console.log('filter', filter);
 
@@ -237,6 +237,10 @@ export class EnvirooneComponent implements OnInit {
       .getHTTPData(q, 'grazweb', '.RaVNaygexThM')
       .subscribe((data: Object) => this.handleData(data));
   }
+  setAvg(t) {
+    this.userMeanS = t;
+    this.saveMean(t);
+  }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
   }
@@ -295,11 +299,14 @@ export class EnvirooneComponent implements OnInit {
           idata[r][c] = this.h.smoothNO2(idata[r][c]);
         }
       }
+      if (item.match(/pressure/)) {
+        this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60
+      }
     }
     // console.log(cloneDeep(this.dygLabels));
     if (logscale) {
       console.log('scale: log');
-      this.extraDyGraphConfig.logscale = logscale;
+      this.extraDyGraphConfig.axes.y.logscale = logscale;
     } else {
       console.log('scale: lin');
     }

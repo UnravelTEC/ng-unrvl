@@ -26,6 +26,22 @@ export class HelperFunctionsService {
 
   defaultColorMappings = {};
 
+  avgPresets = [
+    { '15m': 900 },
+    { '30m': 1800 },
+    { '1h': 3600 },
+    { '1d': 86400 },
+    { '7d': 604800 },
+    { '30d': 2592000 }
+  ];
+  keys(o) {
+    // for use in htmls
+    return Object.keys(o);
+  }
+  vals(o) {
+    return Object.values(o);
+  }
+
   constructor(private loc: Location) {
     const url = window.location.href;
     const angularRoute = this.loc.path();
@@ -38,7 +54,8 @@ export class HelperFunctionsService {
         this.colorArray.push(this.colors[colorstr][cWeightI]);
       }
     }
-    this.defaultColorMappings = { // define here to calm down TS
+    this.defaultColorMappings = {
+      // define here to calm down TS
       temperature: 'red',
       humidity: 'blue',
       pressure: 'green',
@@ -306,17 +323,20 @@ export class HelperFunctionsService {
     return labelString;
   }
 
-  exportCSV(data, labels, utc = true) {
+  exportCSV(data, labels, utc = true, missing = true) {
     // header
     const separator = '\t';
     const linebreak = '\n';
-    const dummyDate = new Date();
     console.log('utc:', utc);
 
     let header = '';
     if (labels.length === 0 || data.length === 0) {
       alert('no data to export');
       return;
+    }
+    let step = 1000;
+    if (data.length > 1) {
+      step = data[1][0].valueOf() - data[0][0].valueOf();
     }
     for (let i = 0; i < labels.length; i++) {
       const element = labels[i];
@@ -339,24 +359,37 @@ export class HelperFunctionsService {
     header += linebreak;
 
     let csvbody = '';
-    for (let i = 0; i < data.length; i++) {
-      const row = data[i];
+    function parseRow(row) {
+      let line = '';
       for (let column = 0; column < row.length; column++) {
         const element = row[column];
-        if (column > 0) {
-          csvbody += separator;
-        }
         if (column === 0) {
-          csvbody += element.valueOf() / 1000;
-          csvbody +=
-            separator + (utc ? element.toUTCString() : element.toString());
+          line += String(element.valueOf() / 1000) + separator;
+          line += utc ? element.toUTCString() : element.toString();
         } else {
-          csvbody += String(element);
+          line += separator + String(element);
         }
       }
-      csvbody += linebreak;
+      return line + linebreak;
     }
-    // values
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i];
+      csvbody += parseRow(row);
+
+      // gap detection
+      if (i > 2 && i < data.length - 1) {
+        let currentTS = row[0].valueOf();
+        let nextTS = data[i + 1][0].valueOf();
+        while (currentTS + step < nextTS) {
+          currentTS += step;
+          const row = [new Date(currentTS)];
+          for (let c = 1; c < labels.length; c++) {
+            row.push(null);
+          }
+          csvbody += parseRow(row);
+        }
+      }
+    }
 
     const csv = header + csvbody;
     // console.log(csv);
@@ -568,5 +601,21 @@ export class HelperFunctionsService {
     const textDays = currentDays ? String(currentDays) + 'd ' : '';
 
     return (textDays + textHours + textMinutes + textSeconds + textMS).trim();
+  }
+
+  deepCopyInto(firstObj, secondObj) {
+    for (const key in secondObj) {
+      if (secondObj.hasOwnProperty(key)) {
+        const element = secondObj[key];
+        if (typeof element !== 'object' || element === null) {
+          firstObj[key] = element;
+        } else {
+          if (!firstObj.hasOwnProperty(key))
+            firstObj[key] = { noooooo: 'noooooo' }; // hack to create nonempty obj
+          this.deepCopyInto(firstObj[key], element);
+          delete firstObj['noooooo'];
+        }
+      }
+    }
   }
 }
