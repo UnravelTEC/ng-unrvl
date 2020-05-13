@@ -1,0 +1,31 @@
+according to https://update.angular.io/
+
+https://update.angular.io/#6.0:7.0
+
+(did not do anything:
+root@:  npm install -g rxjs-tslint
+  npm install -g "tslint@^5.0.0"
+  npm install -g "typescript@>=2.1.0"
+rxjs-5-to-6-migrate -p src/tsconfig.app.json
+)
+
+ng update @angular/cli@7
+
+maybe downgrade before:
+  npm i @angular/animations@6.1.9
+
+ng update @angular/common@7
+
+
+https://update.angular.io/#7.2:8.0l2
+
+ng update @angular/cli@8 @angular/core@8
+
+Error: codelyzer blocks installation
+  in package.json, replace ~ with ^ for it
+  npm install codelyzer
+ng update @angular/cli@8 @angular/core@8
+
+ng update @angular/cdk@8
+  The Angular CLI requires a minimum Node.js version of either v10.13 or v12.0.
+
