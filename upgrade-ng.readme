@@ -29,3 +29,11 @@ ng update @angular/cli@8 @angular/core@8
 ng update @angular/cdk@8
   The Angular CLI requires a minimum Node.js version of either v10.13 or v12.0.
 
+according to https://linuxize.com/post/how-to-install-node-js-on-debian-10/
+  curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
+  ati nodejs
+  npm install -g npm
+
+npm install ng2-charts@latest
+
+
