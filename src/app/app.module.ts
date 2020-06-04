@@ -17,7 +17,7 @@ registerLocaleData(localeDe, 'de');
 
 const appRoutes: Routes = [
   {
-    path: 'Settings',
+    path: 'BRGHSettings',
     loadChildren: () => import('./ut-settings/ut-settings.module').then(m => m.UtSettingsModule)
   },
   {
@@ -274,13 +274,14 @@ const appRoutes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'Dashboard',
+    redirectTo: 'Apps/I/IndoorClimate',
     pathMatch: 'full'
   },
   {
     path: '**',
-    loadChildren: () => import('./ut-dashboard/ut-dashboard.module').then(m => m.UtDashboardModule)
-  }
+    loadChildren:
+      () => import('./ut-apps/i/indoorclimate/indoorclimate.module').then(m => m.IndoorclimateModule)
+  },
 ];
 
 @NgModule({

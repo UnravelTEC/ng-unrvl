@@ -15,10 +15,10 @@ export class AppComponent implements OnInit {
   prod = environment.production;
   restMsg = '';
 
-  public topBarHidden = false;
-  public footerHidden = false;
+  public topBarHidden = true;
+  public footerHidden = true;
 
-  public appName = 'Home';
+  public appName = 'Indoor Air Quality';
 
   public cursor = 'auto';
   gap_right = '0px';

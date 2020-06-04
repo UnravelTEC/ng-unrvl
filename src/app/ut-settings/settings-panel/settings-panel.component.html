@@ -167,18 +167,4 @@
       </div>
     </section>
   </section>
-
-  <section id="links">
-    <!-- <a
-      *ngIf="globalSettingsService.server.type == 'Tricorder'"
-      href="{{ oldIFPath }}"
-      >Old Interface</a
-    > -->
-    <a
-      *ngIf="globalSettingsService.server.prometheus"
-      href="{{ prometheusPath }}"
-      >Prometheus Admin Interface</a
-    >
-    <!-- Small Bug: correct Prometheus IF link not displayed on initial load -->
-  </section>
 </div>
