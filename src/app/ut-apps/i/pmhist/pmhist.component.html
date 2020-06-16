@@ -1,0 +1,126 @@
+<table style="width: 100%;">
+  <tr>
+    <th style="text-align:left;">
+      <h2>
+        {{ appName }}
+      </h2>
+    </th>
+    <td style="text-align:right; padding-right: 1em;">
+      <a
+        routerLink="/Apps/EnviroGraz000"
+        routerLinkActive="active"
+        class="icon"
+        title="Return to overview"
+        ><mat-icon>fullscreen_exit</mat-icon></a
+      >
+    </td>
+  </tr>
+</table>
+
+<app-ut-dygraph-in
+  [displayedData]="data"
+  [columnLabels]="labels"
+  [style]="graphstyle"
+  [changeTrigger]="changeTrigger"
+  [extraDyGraphConfig]="extraDyGraphConfig"
+  [startTime]="startTime"
+  showLogscaleSwitcher="false"
+  YLabel="Particle Count (&#8202;#&#8202;/&#8202;cm³&#8202;)"
+  enableHighlightCallback="true"
+  (returnHighlightedRow)="handleHighlightCallback($event)"
+  (returnGraphWidthOnChange)="setGraphWidth($event)"
+  (returnCurrentZoom)="updateFromToTimes($event)"
+  #R
+></app-ut-dygraph-in>
+
+<div class="chartabs">
+  <div class="chart">
+    <canvas
+      baseChart
+      [datasets]="barChartData"
+      [labels]="barChartLabels"
+      [options]="barChartOptions"
+      [legend]="barChartLegend"
+      [chartType]="barChartType"
+      [colors]="chartColors"
+    >
+    </canvas>
+  </div>
+</div>
+
+<form class="settings" (submit)="reload()">
+  <div class="section">
+    <h3>Current Dataset:</h3>
+    <label>Resolution:</label>
+    <span>{{ currentres }}s</span>
+
+    <label>Current Range:</label>
+    <span class="cRange">{{ currentRange }} </span>
+  </div>
+  <div class="section">
+    <h3>New Query:</h3>
+    <mat-form-field>
+      <mat-label>Time range</mat-label>
+      <mat-select
+        [(ngModel)]="userStartTime"
+        name="startTime"
+        (ngModelChange)="changeMean($event)"
+      >
+        <mat-option value="15m">15 min.</mat-option>
+        <mat-option value="1h" selected="selected"> 1h</mat-option>
+        <mat-option value="6h">6 h</mat-option>
+        <mat-option value="24h">24 h</mat-option>
+        <mat-option value="7d">1 week</mat-option>
+        <mat-option value="30d">1 month</mat-option>
+        <mat-option value="356d">1 year</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <br />
+    <label>Average Period</label>
+    <div class="avgbuttons">
+      <button
+        *ngFor="let t of h.avgPresets"
+        (click)="setAvg(h.vals(t)[0])"
+        type="button"
+      >
+        {{ h.keys(t)[0] }}
+      </button>
+    </div>
+    <label for="runningAvgPoints">Seconds</label><br />
+    <input
+      type="text"
+      id="runningAvgPoints"
+      name="runningAvgPoints"
+      [(ngModel)]="userMeanS"
+      (ngModelChange)="saveMean($event)"
+      style="width:5em"
+    /><br />
+    <br />
+    <!-- <table style="border: 1px solid gray; padding: 0.5em;">
+    <tr>
+      <th colspan="2">Sensors</th>
+    </tr>
+    <tr *ngFor="let sensor of sensorsEnabled | keyvalue">
+      <td>
+        <label for="en_{{ sensor.key }}">{{ sensor.key }}</label>
+      </td>
+      <td>
+        <input
+          type="checkbox"
+          name="en_{{ sensor.key }}"
+          id="en_{{ sensor.key }}"
+          [(ngModel)]="sensorsEnabled[sensor.key]"
+        />
+      </td>
+    </tr>
+  </table>
+
+  <br />-->
+    <div style="width: 100%; text-align: right;">
+      <button type="submit">
+        Reload
+      </button>
+    </div>
+  </div>
+</form>

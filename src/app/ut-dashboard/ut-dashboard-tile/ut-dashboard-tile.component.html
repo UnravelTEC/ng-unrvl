@@ -1,5 +1,21 @@
-<a routerLink="{{ path }}" routerLinkActive="active">
-  <br />
-  <div class="app-preview"><img src="{{icon}}" /></div>
-  <h3>{{ title }}</h3>
+<a
+  routerLink="{{ path }}"
+  routerLinkActive="active"
+  [ngStyle]="{backgroundColor: getBg()}"
+>
+  <table>
+    <tr>
+      <th>&nbsp;</th>
+    </tr>
+    <tr>
+      <th class="app-preview">
+        <img src="/assets/{{ icon }}" />
+      </th>
+    </tr>
+    <tr>
+      <th>
+        {{ title }}
+      </th>
+    </tr>
+  </table>
 </a>

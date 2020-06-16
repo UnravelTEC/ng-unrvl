@@ -4,6 +4,7 @@ import { interval, Subscription } from 'rxjs';
 
 import { HelperFunctionsService } from '../core/helper-functions.service';
 import { GlobalSettingsService } from '../core/global-settings.service';
+import { MqttService } from '../core/mqtt.service';
 
 @Component({
   selector: 'app-top-bar',
@@ -26,7 +27,8 @@ export class TopBarComponent implements OnInit {
 
   constructor(
     private h: HelperFunctionsService,
-    private gss: GlobalSettingsService
+    private gss: GlobalSettingsService,
+    private mqtt: MqttService
   ) {}
 
   ngOnInit() {

@@ -118,3 +118,37 @@ T - no graph, only bar
 
 O3 - büro, aussen?
 NO2
+
+# Tiles
+
+module.ts
+  add
+    imports: UtDygraphInModule, UtBargaugeMinModule
+    exports: [TileLoadComponent]
+
+ut-dashboard.module.ts
+  add TileLoadModule to imports
+
+component.ts
+  add   ,'../tiles.scss' to styleUrls:
+  add onDestroy handler
+    1. Zeile import OnInit, OnDestroy
+    class implements OnInit, OnDestroy
+    ngOnDestroy()
+
+
+## Top bar todos
+
+mqtt messages / s (for last 10 msgs)
+mqtt delay (avg of last 10 msgs)
+
+load indicator
+disk usage indicator ... sollte eher sein, wieviel Laufzeit noch in der DB Platz hat
+ram indicator?
+
+## chart.js
+
+npm install --save --save-exact ng2-charts@2.0.3 # this version works with ng6, the newer one only with ng8
+npm install --save chart.js
+
+

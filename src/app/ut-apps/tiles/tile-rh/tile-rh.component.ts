@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { colors } from '../../../shared/colors';
+import { MqttService } from '../../../core/mqtt.service';
+import { HelperFunctionsService } from '../../../core/helper-functions.service';
 
 @Component({
   selector: 'app-tile-rh',
@@ -14,6 +16,9 @@ export class TileRhComponent implements OnInit {
 
   @Input()
   width = 100;
+  fontsize_px = String(this.width/9) + 'px';
+
+  extraDyGraphConfig = { logscale: false, valueRange: [0, 100] };
 
   highlights =
     '[ {"from": 0, "to": 30, "color": "red"}, \
@@ -33,9 +38,74 @@ export class TileRhComponent implements OnInit {
     [60, colors.bg.yellow],
     [95, colors.bg.orange],
     [100, colors.bg.red]
-
   ];
-  constructor() {}
 
-  ngOnInit() {}
+  private mqttRequest = {
+    topic: '+/sensors/+/humidity',
+    tagFilters: undefined,
+    valueFilters: ['humidity_rel_percent'],
+    callBack: (obj: Object) => this.update(obj)
+  };
+
+  private sensorPriority = ['BME280', 'SCD30'];
+  private receivedSensors = {
+    /* NoSensor: true*/
+  }; // only one sensor is "true" - this is the chosen one, all others are false.
+
+  changeTrigger = false;
+  triggerChange() {
+    this.changeTrigger = !this.changeTrigger;
+  }
+
+  constructor(private mqtt: MqttService, private h: HelperFunctionsService) {}
+
+  ngOnInit() {
+    this.mqtt.request(this.mqttRequest);
+    this.triggerChange();
+  }
+  ngOnDestroy() {
+    this.mqtt.unsubscribeTopic(this.mqttRequest.topic);
+  }
+
+  sensorFilter(msg): boolean {
+    const currentSensor = this.h.getSensorFromTopic(msg['topic']);
+    this.h.addNewReceivedSensorToFilter(
+      currentSensor,
+      this.receivedSensors,
+      this.sensorPriority
+    );
+
+    return this.receivedSensors[currentSensor];
+  }
+
+  update(msg: Object) {
+    const value = this.h.getDeep(msg, [
+      'values',
+      this.mqttRequest.valueFilters[0]
+    ]);
+    // console.log(msg);
+
+    if (value >= 0 && this.sensorFilter(msg)) {
+      this.cleanInitValues();
+      this.dygData.push([new Date(msg['UTS'] * 1000), value]);
+      this.value = value;
+      this.triggerChange();
+    }
+  }
+
+  dygLabels = ['Date', 'CO₂'];
+
+  private initDataValue = 0.042;
+  dygData = [
+    [new Date(new Date().valueOf() - 1), this.initDataValue],
+    [new Date(), this.initDataValue]
+  ];
+  cleanInitValues() {
+    if (
+      this.dygData.length === 2 &&
+      this.dygData[0][1] === this.initDataValue
+    ) {
+      this.dygData.shift();
+    }
+  }
 }

@@ -9,6 +9,8 @@ import { TileCo2Module } from '../ut-apps/tiles/tile-co2/tile-co2.module';
 import { TileRadiationModule } from '../ut-apps/tiles/tile-radiation/tile-radiation.module';
 import { TileRhModule } from '../ut-apps/tiles/tile-rh/tile-rh.module';
 import { TilePmModule } from '../ut-apps/tiles/tile-pm/tile-pm.module';
+import { TileLoadModule } from '../ut-apps/tiles/tile-load/tile-load.module';
+import { TileUvModule } from '../ut-apps/tiles/tile-uv/tile-uv.module';
 
 @NgModule({
   imports: [
@@ -18,7 +20,9 @@ import { TilePmModule } from '../ut-apps/tiles/tile-pm/tile-pm.module';
     TileCo2Module,
     TileRadiationModule,
     TileRhModule,
-    TilePmModule
+    TilePmModule,
+    TileLoadModule,
+    TileUvModule
   ],
   declarations: [DashboardComponent, UtDashboardTileComponent]
 })

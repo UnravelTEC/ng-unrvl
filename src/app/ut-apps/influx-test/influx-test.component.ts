@@ -1,109 +1,136 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { cloneDeep } from 'lodash-es';
+import { LocalStorageService } from '../../core/local-storage.service';
 
 @Component({
   selector: 'app-influx-test',
   templateUrl: './influx-test.component.html',
   styleUrls: ['./influx-test.component.scss']
 })
-export class InfluxTestComponent implements OnInit {
-  influxresponse: String;
+export class InfluxTestComponent implements OnInit, OnDestroy {
+  private appName = 'influx-test';
 
-  public sensorData = {};
-  public sensorDataExample = {
-    myBME: {
-      temperature_degC: {
-        index: {
-          value: 25.5,
-          tags: { id: '0x77' }
-        }
-      },
+  public startTime = '15m';
+  influxresponse: string;
+  influxquery: string;
+  labelstrings: string[];
+  https = true;
 
-      pressure_hPA: {
-        index: {
-          value: 900,
-          tags: { id: '0x77' }
-        }
-      },
-      humidity_rel_percent: {
-        index: {
-          value: 42,
-          tags: { id: '0x77' }
-        }
-      }
-    }
-  };
-
-  public dygData = [
-    [new Date(new Date().valueOf() - 1000), 1],
-    [new Date(), 2]
+  /* variables:
+   * colums: *, /regex/
+   * measuerement, eg gas
+   * starttime / range / mean
+  */
+  queries = [
+    'SELECT mean(*) FROM particulate_matter WHERE time > now() - {{T}} GROUP BY sensor,time(30s);' +
+      'SELECT mean(*) FROM gas WHERE time > now() - {{T}} GROUP BY sensor,time(30s);' +
+      'SELECT mean(*) FROM temperature WHERE time > now() - {{T}} GROUP BY sensor,time(30s);',
+    'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE time > now() - {{T}} GROUP BY sensor,time(30s);',
+    'SELECT LAST(*) FROM "temperature" GROUP BY *;',
+    'SELECT * FROM gas WHERE time > now() - {{T}} GROUP BY *;'
   ];
-  public dygLabels = ['Date','influx'];
+
+  // q = 'SELECT * FROM "temperature" LIMIT 3';
+  // q = 'SELECT LAST(sensor_degC),* FROM "temperature" GROUP BY *';
+  // q = 'SELECT LAST(gamma_cps),* FROM "radiation" GROUP BY *';
+  // q = 'SELECT * FROM "temperature" WHERE time > now() - 1m GROUP BY *';
+  // q = 'SELECT * FROM "temperature" LIMIT 3';
+  // q =
+
+  q = this.queries[1];
+
+  extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 };
+
+  public dygLabels = [];
+  public dygData = [];
+
   changeTrigger = true;
+  showResultText = false;
+
+  private variablesToSave = [
+    // 'queryString',
+    // 'dataBaseQueryStepMS',
+    'startTime',
+    'showResultText',
+    'q'
+    // 'endTime'
+  ];
 
   constructor(
+    private localStorage: LocalStorageService,
     private globalSettings: GlobalSettingsService,
     private h: HelperFunctionsService,
     private utHTTP: UtFetchdataService
   ) {
-    this.globalSettings.emitChange({ appName: 'influx-test' });
+    this.globalSettings.emitChange({ appName: this.appName });
+    // this.row2[2] = 1.2;
+    // this.row2[3] = 0.8;
+    // this.row4[2] = 2.2;
+    // this.row4[3] = 1.1;
+    // this.dygDataStr = JSON.stringify(this.dygData);
   }
   ngOnInit() {
+    this.loadSettings();
     //let call = 'http://' + this.globalSettings.getHostName() + '.lan:8086/ping';
-    let q: String;
-    q = 'SELECT * FROM "temperature" LIMIT 3';
-    q = 'SELECT LAST(sensor_degC),* FROM "temperature" GROUP BY *';
-    q = 'SELECT LAST(gamma_cps),* FROM "radiation" GROUP BY *';
-    q = 'SELECT * FROM "radiation" WHERE time > now() - 1m GROUP BY *';
 
-    let server = this.globalSettings.server.baseurl;
-    server = server.replace(/:80$/, '');
-    server = server.replace(/:443$/, '');
+    this.reload();
+  }
+  chooseQuery(query) {
+    this.q = query
+  }
 
-    let call = server + '/influxdb/query?db=telegraf&epoch=ms&q=' + q;
-    console.log('calling', call);
+  reload() {
+    this.launchQuery(this.q);
+  }
 
+  ngOnDestroy() {
+    this.saveSettings();
+  }
+
+  launchQuery(clause: string) {
+    const qWithTime = clause.replace(/{{T}}/g, this.startTime);
+    const q = this.utHTTP.buildInfluxQuery(qWithTime);
     this.utHTTP
-      .getHTTPData(call)
+      .getHTTPData(q)
       .subscribe((data: Object) => this.printResult(data));
-
-    console.log('baseurl:', this.globalSettings.server.baseurl);
-
-    console.log(server);
   }
 
   printResult(data: Object) {
-    console.log(data);
-    const dataarray = this.h.getDeep(data, ['results', 0, 'series']);
-    if (dataarray && dataarray.length == 1) {
-      const dataset = dataarray[0];
+    console.log(cloneDeep(data));
+    let ret = this.utHTTP.parseInfluxData(data);
+
+    this.dygLabels = ret['labels'];
+    console.log(cloneDeep(this.dygLabels));
+
+    this.dygData = ret['data'];
+    console.log(cloneDeep(this.dygData));
+
+    // this.changeTrigger = !this.changeTrigger;
+
+    if (this.dygData.length) {
+      const dataset = data['results'][0]['series'][0];
       const metric = dataset.name;
 
-      let cns = {}; //  column-names
-      for (let colnr = 0; colnr < dataset.columns.length; colnr++) {
-        const colname = dataset.columns[colnr];
-        cns[colname] = colnr;
-      }
-
-      for (let i = 0; i < dataset.values.length; i++) {
-        const row = dataset.values[i];
-        const ts = row[cns['time']];
-        row[cns['time']] = new Date(ts);
-      }
       this.influxresponse =
         'metric: ' + metric + '\n' + JSON.stringify(data, undefined, 2);
-      this.dygLabels = cloneDeep(dataset.columns);
-      this.dygData = dataset.values;
-      console.log(this.dygLabels, this.dygData);
-
-      this.changeTrigger = !this.changeTrigger;
-    } else {
-      console.error('#series != 1: ', dataarray && dataarray.length);
-      this.influxresponse =
-        '#series != 1\n' + JSON.stringify(data, undefined, 2);
     }
+  }
+  loadSettings() {
+    let valueInLocalStorage;
+    this.variablesToSave.forEach(elementName => {
+      valueInLocalStorage = this.localStorage.get(this.appName + elementName);
+      if (valueInLocalStorage) {
+        this[elementName] = valueInLocalStorage;
+      }
+    });
+  }
+  saveSettings() {
+    this.variablesToSave.forEach(elementName => {
+      this.localStorage.set(this.appName + elementName, this[elementName]);
+    });
+    // alert('save ok');
   }
 }

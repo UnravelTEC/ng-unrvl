@@ -1,3 +1,23 @@
 .relcontainer div.tilebox div.graphabs {
   top: 70%;
 }
+
+table {
+  margin-left: 0.5em;
+  th {
+    font-size: 80%;
+  }
+  td {
+    text-align: center;
+    font-size: 80%;
+  }
+}
+
+h2.one {
+  text-align: left;
+  margin-top: 0;
+}
+.relcontainer div.tilebox h2 {
+  margin-top: 0;
+  margin-bottom: 0.4em;
+}

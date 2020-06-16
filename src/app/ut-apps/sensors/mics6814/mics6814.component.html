@@ -75,5 +75,28 @@
         </table>
       </td>
     </tr>
+    <tr>
+      <th>&nbsp;</th>
+    </tr>
+    <tr>
+      <th>Enable/Disable Sensor</th>
+    </tr>
+    <tr>
+      <td>
+        Status:
+        {{
+          mics_enable === undefined
+            ? 'unknown'
+            : mics_enable === true
+            ? 'active'
+            : 'off'
+        }}
+      </td>
+    </tr>
+    <tr>
+      <td>
+          <button (click)="toggleMics()" class="onbtn">{{ mics_enable === true ? 'Disable' : 'Enable' }}</button>
+      </td>
+    </tr>
   </table>
 </div>

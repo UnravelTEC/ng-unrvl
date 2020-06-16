@@ -21,6 +21,7 @@ export class PmComponent implements OnInit {
   dataSeriesLabels = ['PM (µg/m³)'];
   labelBlackList = ['__name__', 'interval'];
   startTime = '15m';
+  extraDyGraphConfig = { includeZero: true };
 
   constructor(
     private localStorage: LocalStorageService,

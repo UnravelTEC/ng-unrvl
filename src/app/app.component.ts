@@ -8,7 +8,7 @@ import { GlobalSettingsService } from './core/global-settings.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
   title = 'SDARS - Sensor Data Access and Retrieval System';
@@ -21,6 +21,7 @@ export class AppComponent implements OnInit {
   public appName = 'Home';
 
   public cursor = 'auto';
+  gap_right = '0px';
 
   public hostName = 'ng-unrvl';
 
@@ -48,7 +49,8 @@ export class AppComponent implements OnInit {
         if (obj['TricorderLocal'] === true) {
           this.cursor = 'none';
           this.toggleFooter(false);
-          alert('Welcome to Tricorder');
+          // alert('Welcome to Tricorder');
+          this.gap_right = '20px'; // bug in Raspi display/browser in portrait mode
         } else {
           this.toggleFooter(true);
           this.cursor = 'auto';

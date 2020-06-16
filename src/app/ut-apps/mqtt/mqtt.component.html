@@ -8,7 +8,19 @@
   ({{ disconnects }})
 </div>
 
-<div>Topic: {{ topic }}</div>
+<div>
+  Topic:
+  <!-- <input
+    type="text"
+    id="topic"
+    name="topic"
+    [(ngModel)]="topic"
+    style="width:4em"
+  />{{ topic }} -->
+</div>
+<button (click)="stop()">
+  Stop
+</button>
 
 <div>
   <h3>Latest MQTT messages:</h3>
@@ -32,7 +44,7 @@
   </table>
 </div>
 
-<div class="testgraph">
+<!-- <div class="testgraph">
   <app-ut-dygraph-in
     [style]="graphstyle"
     [displayedData]="dygData"
@@ -41,8 +53,8 @@
     #graph
   >
   </app-ut-dygraph-in>
-</div>
-
+</div> -->
+<!--
 <h3>Data:</h3>
 <table class="outer">
   <tr *ngFor="let sensor of sensorData | keyvalue">
@@ -71,4 +83,4 @@
       </table>
     </td>
   </tr>
-</table>
+</table> -->

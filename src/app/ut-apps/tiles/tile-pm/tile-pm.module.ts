@@ -3,14 +3,14 @@ import { CommonModule } from '@angular/common';
 
 import { TilePmRoutingModule } from './tile-pm-routing.module';
 import { TilePmComponent } from './tile-pm.component';
-import { UtDygraphModule } from '../../../shared/ut-dygraph/ut-dygraph.module';
 import { UtBargaugeMinModule } from '../../../shared/ut-bargauge-min/ut-bargauge-min.module';
+import { UtDygraphInModule } from '../../../shared/ut-dygraph-in/ut-dygraph-in.module';
 
 @NgModule({
   imports: [
     CommonModule,
     TilePmRoutingModule,
-    UtDygraphModule,
+    UtDygraphInModule,
     UtBargaugeMinModule
   ],
   declarations: [TilePmComponent],

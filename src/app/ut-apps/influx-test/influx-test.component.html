@@ -2,44 +2,59 @@
   Influx values:
 </h2>
 
-<pre>{{ influxresponse }}</pre>
+<div style="margin-left:1em;">
+  <h4>Queries:</h4>
+  <ul>
+    <li *ngFor="let query of queries">
+      <button (click)="chooseQuery(query)">Use</button><code>{{ query }}</code>
+    </li>
+  </ul>
+  <h4>Current Query:</h4>
+  <div>
+    <label for="q">Query String</label> ({{ q }})<br />
+    <input type="text" id="q" [(ngModel)]="q" name="q" style="width: 90%;" />
+  </div>
+
+  <!-- <label for="startTime">Query Time Range:</label>
+<input type="text" id="startTime" [(ngModel)]="startTime" name="startTime" /> -->
+  <!-- <label for="https">HTTPS</label>&nbsp;
+  <input type="checkbox" name="https" id="https" [(ngModel)]="https" />
+  &nbsp;&nbsp; -->
+  <button type="submit" (click)="reload()">Go!</button>
+  <pre>{{ influxquery }}</pre>
+</div>
+
+<h4>Response:</h4>
+<h5>Columns:</h5>
+<ol>
+  <li *ngFor="let label of labelstrings">{{ label }}</li>
+</ol>
+<hr />
+<label for="showResultText">Show JSON</label>
+<input
+  type="checkbox"
+  name="showResultText"
+  id="showResultText"
+  [(ngModel)]="showResultText"
+/>
+<pre *ngIf="showResultText" style="max-height: 50vh; overflow:scroll">{{
+  influxresponse
+}}</pre>
 
 <div class="testgraph">
   <app-ut-dygraph-in
     [displayedData]="dygData"
     [columnLabels]="dygLabels"
     [changeTrigger]="changeTrigger"
+    [extraDyGraphConfig]="extraDyGraphConfig"
     #graph
   >
   </app-ut-dygraph-in>
 </div>
-<!-- [style]="graphstyle" -->
 
-<table class="outer">
-  <tr *ngFor="let sensor of sensorData | keyvalue">
-    <th>
-      {{ sensor.key }}
-    </th>
-    <td>
-      <table>
-        <tr *ngFor="let metric of sensor.value | keyvalue">
-          <th>
-            {{ metric.key }}
-          </th>
-          <td>
-            <table>
-              <tr *ngFor="let dataset of metric.value | keyvalue">
-                <th>
-                  {{ dataset.key }}
-                </th>
-                <td>
-                  {{ dataset.value.value | number: '1.0-6' }}
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>
+<!-- <pre>{{ dygDataStr }}</pre> -->
+
+<!-- [style]="graphstyle"
+
+[startTime]="startTime"
+-->

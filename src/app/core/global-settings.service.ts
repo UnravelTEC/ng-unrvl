@@ -12,17 +12,55 @@ import { HttpClient } from '@angular/common/http';
 export class GlobalSettingsService implements OnInit {
   private hostName = 'uninitialized';
 
+  public graphBackgrounds = {
+    CO2_ppm: [
+      // the color acts for "everything below $value"
+      [0.01, 'white'], // first one not used
+      [415, 'rgba(0, 128, 0, 0.678)'], // green
+      [600, 'rgba(0, 128, 0, 0.35)'], // light green
+      [1000, 'rgba(255, 255, 0, 0.35)'], // yellow
+      [1500, 'rgba(255, 166, 0, 0.35)'], // orange
+      [20000, 'rgba(255, 0, 0, 0.35)'] // red
+    ],
+    VOC_ppm: [
+      // the color acts for "everything below $value"
+      [0.0001, 'white'], // first one not used
+      [0.06, 'rgba(0, 128, 0, 0.678)'], // green
+      [0.2, 'rgba(0, 128, 0, 0.35)'], // light green
+      [0.6, 'rgba(255, 255, 0, 0.35)'], // yellow
+      [2, 'rgba(255, 166, 0, 0.35)'], // orange
+      [2000, 'rgba(255, 0, 0, 0.35)'] // red
+    ],
+    PM_ugpm3: [
+      [0.01, 'white'],
+      [25, 'rgba(0, 128, 0, 0.678)'], // green
+      [50, 'rgba(0, 128, 0, 0.35)'], // light green
+      [100, 'rgba(255, 255, 0, 0.35)'], // yellow
+      [250, 'rgba(255, 166, 0, 0.35)'], // orange
+      [50000, 'rgba(255, 0, 0, 0.35)'] // red
+    ],
+    NO2_ugpm3: [
+      [0.01, 'white'],
+      [40, 'rgba(0, 128, 0, 0.678)'], // green Jahresgrenzwert
+      [80, 'rgba(0, 128, 0, 0.35)'], // light green Vorsorgegrenzwert 60-Minuten-Mittelwert
+      [200, 'rgba(255, 255, 0, 0.35)'], // yellow 1h-Mittel-Grenzwert Außen
+      [250, 'rgba(255, 166, 0, 0.35)'], // orange 1h-Mittel Gefahrengrenzwert f Innenräume
+      [400, 'rgba(255, 0, 0, 0.35)'] // red Alarmschwelle
+    ]
+  };
+
   public defaultPrometheusPath = '/prometheus/api/v1/';
   public defaultPrometheusPort = undefined; // '80'; // later switch to default port
   private defaultAPIPath = '/api/';
-  private fallbackEndpoint = 'https://scpunraveltec2.tugraz.at';
+  private fallbackEndpoint = 'https://newton.unraveltec.com';
   private fallbackPrometheusEndpoint =
     this.fallbackEndpoint + this.defaultPrometheusPath;
-  private fallbackAPI = this.fallbackEndpoint + 'api/';
+  private fallbackAPI = this.fallbackEndpoint + '/api/';
 
   public server = {
     baseurl: '',
     serverName: '', // pure IP or hostname w/o protocol/port
+    protocol: '', // https or http
     architecture: undefined,
     type: 'unknown', // Tricorder || PublicServer
     hostname: 'uninitialized',
@@ -32,13 +70,19 @@ export class GlobalSettingsService implements OnInit {
     sensors: [],
     prometheus: undefined, // String
     databaseStatus: 'unknown', // db status: up, down, unknown, waiting
-    api: undefined
+    api: undefined,
+    influxdb: '',
+    influxuser: '',
+    influxpass: '',
+    prometheusEnabled: true
   };
   public client = {
     type: 'unknown', // local || web
     protocol: 'unknown', // http || https
     mobile: false
   };
+
+  public networkStatus: Object;
 
   // for local javascript client IPs:
   private RTCPeerConnection =
@@ -83,6 +127,7 @@ export class GlobalSettingsService implements OnInit {
   ngOnInit() {
     this.reloadSettings();
 
+    // for local javascript client IPs:
     // if (this.RTCPeerConnection) {
     //   var rtc = new RTCPeerConnection({ iceServers: [] });
     //   if (1 || window['mozRTCPeerConnection']) {
@@ -124,12 +169,17 @@ export class GlobalSettingsService implements OnInit {
         // http://tools.ietf.org/html/rfc4566#section-5.7
         var parts = line.split(' '),
           addr = parts[2];
-          this.updateLocalAddresses(addr);
+        this.updateLocalAddresses(addr);
       }
     });
   }
-  updateLocalAddresses(addr) {
+  updateLocalAddresses(addr) {}
 
+  stripProtPort(input: string) {
+    input = input.replace(/^http[s]*:\/\//, '');
+    input = input.replace(/:\d+$/, '');
+    input = input.replace(/\/$/, '');
+    return input;
   }
 
   // we do not need to handle localhost in a special case - covered by $baseurl
@@ -167,10 +217,7 @@ export class GlobalSettingsService implements OnInit {
         servername = servername.substr(0, -1);
       }
       this.server.baseurl = servername;
-      servername = servername.replace(/^http[s]*:\/\//, '');
-      servername = servername.replace(/:80$/, '');
-      servername = servername.replace(/:443$/, '');
-      this.server.serverName = servername;
+      this.server.serverName = this.stripProtPort(servername);
 
       let prometheusPath = this.h.getDeep(localStoredServer, [
         'prometheusPath',
@@ -199,9 +246,7 @@ export class GlobalSettingsService implements OnInit {
           prometheusProtocol = prometheusProtocol + '://';
         }
       }
-      let protAndHost = servername.startsWith('http')
-        ? servername
-        : prometheusProtocol + servername;
+      let protAndHost = prometheusProtocol + this.server.serverName;
 
       this.server.prometheus = protAndHost + prometheusPort + prometheusPath;
 
@@ -233,9 +278,8 @@ export class GlobalSettingsService implements OnInit {
           apiProtocol = apiProtocol + '://';
         }
       }
-      protAndHost = servername.startsWith('http')
-        ? servername
-        : apiProtocol + servername;
+      this.server.protocol = apiProtocol;
+      protAndHost = apiProtocol + this.server.serverName;
 
       this.server.api = protAndHost + apiPort + apiPath;
 
@@ -250,6 +294,9 @@ export class GlobalSettingsService implements OnInit {
     } else {
       // see if an API i there
       const firstURL = this.h.getBaseURL();
+      this.server.serverName = this.stripProtPort(firstURL);
+      this.server.protocol = firstURL.startsWith('https://') ? 'https://' : 'http://';
+      this.server.prometheus = firstURL + this.defaultPrometheusPath;
       console.log('No settings in LocalStorage, try our webendpoint', firstURL);
 
       this.http
@@ -280,9 +327,27 @@ export class GlobalSettingsService implements OnInit {
           }
         );
     }
+    this.server.influxdb = this.localStorage.get('influxdb');
+    const isPublicServer = this.server.serverName.endsWith('.unraveltec.com');
+    if (!this.server.influxdb) {
+      // this.server.influxdb = isPublicServer ? 'public' : 'telegraf';
+      this.server.influxdb = isPublicServer ? 'koffer' : 'telegraf';
+    }
+    this.server.influxuser = this.localStorage.get('influxuser');
+    if (!this.server.influxuser && isPublicServer) {
+      this.server.influxuser = 'public';
+    }
+    this.server.influxpass = this.localStorage.get('influxpass');
+    if (!this.server.influxpass && isPublicServer) {
+      this.server.influxpass = 'unravelit42.14153';
+    }
   }
 
   checkForPrometheus(baseurl, path) {
+    if (this.server.prometheusEnabled == false) {
+      return;
+    }
+
     const prometheusTestQuery = 'query?query=scrape_samples_scraped';
     this.http.get(baseurl + path + prometheusTestQuery).subscribe(
       (data: Object) => {
@@ -295,9 +360,10 @@ export class GlobalSettingsService implements OnInit {
           ', 5s to next try.'
         );
         this.server.databaseStatus = 'down';
-        setTimeout(() => {
-          this.checkForPrometheus(baseurl, path);
-        }, 5 * 1000);
+        this.server.prometheusEnabled = false;
+        // setTimeout(() => {
+        //   this.checkForPrometheus(baseurl, path);
+        // }, 5 * 1000);
       }
     );
   }
@@ -309,7 +375,12 @@ export class GlobalSettingsService implements OnInit {
       this.server.databaseStatus = 'up';
       this.emitChange({ Prometheus: this.server.prometheus });
 
-      console.log('SUCCESS: prometheus found on endpoint', endpoint);
+      console.log(
+        'SUCCESS: prometheus found on endpoint',
+        endpoint,
+        'path',
+        endpath
+      );
 
       this.checkIfTricorder();
     } else {

@@ -145,6 +145,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public toFormDate = new FormControl(new Date());
 
   public displayedData = [];
+  public firstDerivation = [];
   public lastValue = undefined;
   public lastValues = [];
 
@@ -162,10 +163,12 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public visibleStdDev: number;
   public stdDevs: number[] = [];
   public visibleStdDevs: number[] = [];
+  public firstDerivationAvgs: number[] = [];
   public min = Infinity;
   public max = -Infinity;
 
   public noData = false;
+  public runOldData = true;
   public waiting = true;
   public error: string = undefined;
 
@@ -262,7 +265,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       this.overrideDateWindow[1] = this.dyGraphOptions['dateWindow'][1];
     }
 
-    // this.displayedData = [[undefined, null]];
     this.htmlID = 'graph_' + (Math.random() + 1).toString();
 
     console.log(this.startTime, this.endTime);
@@ -281,6 +283,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     );
 
     this.queryEndPoint = this.constructQueryEndpoint();
+    // console.log('endpoint constructed:', this.queryEndPoint);
 
     this.utFetchdataService
       .getRange(
@@ -646,6 +649,11 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
     if (validRows) {
       this.updateLastValueMembers(dataSet);
+      if (!this.minimal) {
+        const devResults = this.h.calc1stDev(dataSet);
+        this.firstDerivation = devResults['devs'];
+        this.firstDerivationAvgs = devResults['avgs'];
+      }
       this.dataEndTime = dataSet[dataSet.length - 1][0];
     }
 
@@ -661,7 +669,28 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
       dataset[dataset.length - 1]
     ) {
       const lastrow = dataset[dataset.length - 1];
-      this.lastValues = lastrow;
+      // if (this.queryString.startsWith("particulate_matter_ugpm3")) {
+      //   console.log("last", lastrow);
+      // }
+
+      for (let i = 0; i < lastrow.length; i++) {
+        const element = lastrow[i];
+        if (element !== undefined && !isNaN(element)) {
+          this.lastValues[i] = element;
+          // if (this.queryString.startsWith("particulate_matter_ugpm3")) {
+          //   console.log(i, lastrow[i]);
+          // }
+        }
+        if (this.lastValues[i] === undefined || isNaN(this.lastValues[i])) {
+          for (let row = dataset.length - 1; row >= 0; row--) {
+            const lastval = dataset[row][i];
+            if (!isNaN(lastval)) {
+              this.lastValues[i] = lastval;
+              break;
+            }
+          }
+        }
+      }
       this.lastValue = NaN;
       let nrValidElements = 0;
       let sum = 0;
@@ -744,6 +773,20 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     }
     this.yRange = this.Dygraph.yAxisRange();
     // console.log('handleInitialData: calling checkAndFetchOldData');
+    this.checkAndFetchOldData();
+  }
+  handleResettedData(receivedData: Object) {
+    console.log('handleResettedData received', cloneDeep(receivedData));
+
+    this.updateDataSet(receivedData);
+    this.updateAverages();
+    this.updateDateWindow();
+    if (this.runningAvgPoints) {
+      this.Dygraph.adjustRoll(this.runningAvgPoints);
+    }
+    this.yRange = this.Dygraph.yAxisRange();
+    console.log('handleResettedData: started oldUpdate');
+    this.Dygraph.updateOptions({ file: this.displayedData });
     this.checkAndFetchOldData();
   }
 
@@ -1349,7 +1392,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
       console.log('fetchNewData: no previous data found');
       console.log('------------------------------------');
+<<<<<<< HEAD
 
+=======
+>>>>>>> develop
       this.requestsUnderway--;
 
       const fromNum = this.fromZoom.valueOf();
@@ -1793,6 +1839,10 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.resetData();
     this.fetchNewData();
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> develop
   toggleAutoPan() {
     if (this.updateOnNewData) {
       this.stopUpdateOnNewData();

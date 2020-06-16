@@ -4,7 +4,7 @@ nav {
   justify-content: space-between;
   flex-wrap: wrap;
   align-items: center;
-  width: 100vw;
+  width: 100%;
   background: rgb(49, 86, 105);
 }
 nav > * {
@@ -28,15 +28,17 @@ nav em {
 #db .unkown {
   color: gray;
 }
-#db .up {
+#db .up, #mqtt .connected {
   color: white;
 }
-#db .down {
+#db .down, #mqtt .lost, #mqtt .failed {
   color: red;
 }
-#db .waiting {
+#db .waiting, #mqtt .connecting, #mqtt .init {
   color: yellow;
 }
+
+
 
 nav a:hover {
   background: rgb(201, 201, 207);

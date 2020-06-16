@@ -1,0 +1,123 @@
+<a
+  id="back"
+  class="icon"
+  routerLink="/Apps/EnviroGraz000"
+  routerLinkActive="active"
+  title="Return to overview"
+  ><mat-icon>fullscreen_exit</mat-icon></a
+>
+
+<app-ut-dygraph-in
+  [displayedData]="data"
+  [columnLabels]="labels"
+  [style]="graphstyle"
+  [changeTrigger]="changeTrigger"
+  [extraDyGraphConfig]="extraDyGraphConfig"
+  [startTime]="startTime"
+  enableHighlightCallback="true"
+  [colors]="colors"
+  YLabel="NO2, rH, T, PM"
+  (returnGraphWidthOnChange)="setGraphWidth($event)"
+  (returnCurrentZoom)="updateFromToTimes($event)"
+  #R
+></app-ut-dygraph-in>
+
+<form class="settings" (submit)="reload(true)">
+  <!-- <div>Pixel: {{ graphWidth }}</div> -->
+  <div class="section">
+    <h3>Current Dataset:</h3>
+    <label>Resolution:</label>
+    <span class="cRange">{{ currentres }}s</span><br />
+
+    <label>Current Range:</label>
+    <span class="cRange">{{ currentRange }} </span>
+  </div>
+  <div class="section">
+    <h3>New Query:</h3>
+
+    <table style="border: 1px solid gray; padding: 0.5em;">
+      <tr>
+        <th colspan="2">Parameters</th>
+      </tr>
+      <tr *ngFor="let param of physParamEnabled | keyvalue">
+        <td>
+          <input
+            type="checkbox"
+            name="en_{{ param.key }}"
+            id="en_{{ param.key }}"
+            [(ngModel)]="physParamEnabled[param.key]"
+          />
+        </td>
+        <td>
+          <label for="en_{{ param.key }}">{{ param.key }}</label>
+        </td>
+      </tr>
+    </table>
+
+    <br />
+    <table style="border: 1px solid gray; padding: 0.5em;">
+      <tr>
+        <th colspan="2">Sensors</th>
+      </tr>
+      <tr *ngFor="let sensor of sensorsEnabled | keyvalue">
+        <td>
+          <input
+            type="checkbox"
+            name="en_{{ sensor.key }}"
+            id="en_{{ sensor.key }}"
+            [(ngModel)]="sensorsEnabled[sensor.key]"
+          />
+        </td>
+        <td>
+          <label for="en_{{ sensor.key }}">{{ sensor.key }}</label>
+        </td>
+      </tr>
+    </table>
+
+    <br />
+    <mat-form-field>
+      <mat-label>Show range from now</mat-label>
+      <mat-select
+        [(ngModel)]="userStartTime"
+        name="startTime"
+        (ngModelChange)="changeMean($event)"
+      >
+        <mat-option value="15m">15 min.</mat-option>
+        <mat-option value="1h" selected="selected"> 1h</mat-option>
+        <mat-option value="6h">6 h</mat-option>
+        <mat-option value="24h">24 h</mat-option>
+        <mat-option value="7d">1 week</mat-option>
+        <mat-option value="30d">1 month</mat-option>
+        <mat-option value="356d">1 year</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <br />
+
+    <label>Average Period</label>
+    <div class="avgbuttons">
+      <button
+        *ngFor="let t of h.avgPresets"
+        (click)="setAvg(h.vals(t)[0])"
+        type="button"
+      >
+        {{ h.keys(t)[0] }}
+      </button>
+    </div>
+    <label for="runningAvgPoints">Seconds</label><br />
+    <input
+      type="text"
+      id="runningAvgPoints"
+      name="runningAvgPoints"
+      [(ngModel)]="userMeanS"
+      (ngModelChange)="saveMean($event)"
+      style="width:5em"
+    /><br />
+    <br />
+
+    <div style="width: 100%; text-align: right;">
+      <button type="submit">
+        Reload
+      </button>
+    </div>
+  </div>
+</form>
