@@ -20,8 +20,8 @@ $buttoninactivebg:#373737;
   height: 100%;
   flex-direction: column;
   display: flex;
-  background-color: $mainbg;
-  color: #C7C7C7;
+  background-color: white; // $mainbg;
+  color: black; // #C7C7C7;
 
   ::ng-deep button {
     border: 2px solid black;

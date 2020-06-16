@@ -173,7 +173,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   public error: string = undefined;
 
   public running = false;
-  public runOldData = true;
   public optionsOpen = false;
   public updateOnNewData = true;
 
@@ -790,21 +789,6 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.checkAndFetchOldData();
   }
 
-  handleResettedData(receivedData: Object) {
-    console.log('handleResettedData received', cloneDeep(receivedData));
-
-    this.updateDataSet(receivedData);
-    this.updateAverages();
-    this.updateDateWindow();
-    if (this.runningAvgPoints) {
-      this.Dygraph.adjustRoll(this.runningAvgPoints);
-    }
-    this.yRange = this.Dygraph.yAxisRange();
-    console.log('handleResettedData: started oldUpdate');
-    this.Dygraph.updateOptions({ file: this.displayedData });
-    this.checkAndFetchOldData();
-  }
-
   clickCallback(e, x, points) {
     console.log('clickCallback');
     if (this.hasOwnProperty('parent')) {
@@ -1392,10 +1376,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
 
       console.log('fetchNewData: no previous data found');
       console.log('------------------------------------');
-<<<<<<< HEAD
 
-=======
->>>>>>> develop
       this.requestsUnderway--;
 
       const fromNum = this.fromZoom.valueOf();
@@ -1839,10 +1820,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
     this.resetData();
     this.fetchNewData();
   }
-<<<<<<< HEAD
-=======
 
->>>>>>> develop
   toggleAutoPan() {
     if (this.updateOnNewData) {
       this.stopUpdateOnNewData();

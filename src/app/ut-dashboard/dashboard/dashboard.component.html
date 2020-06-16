@@ -1,4 +1,4 @@
-<div id="panel">
+<div class="panel">
   <app-ut-dashboard-tile title="Galion ViF" path="/Apps/Galion-Vif"></app-ut-dashboard-tile>
   <app-ut-dashboard-tile title="ViF" path="/Apps/vif"></app-ut-dashboard-tile>
   <app-ut-dashboard-tile title="Galion IES" path="/Apps/IES"></app-ut-dashboard-tile>
@@ -12,7 +12,7 @@
 </div>
 <hr>
 <h2>Sensors</h2>
-<div id="panel">
+<div class="panel">
   <app-ut-dashboard-tile title="Sensor Overview" path="/Apps/Sensors"></app-ut-dashboard-tile>
   <app-ut-dashboard-tile title="Alphasense" path="/Apps/Sensors/Alphasense-gas"></app-ut-dashboard-tile>
   <app-ut-dashboard-tile title="TGS 5141" path="/Apps/Sensors/TGS5141"></app-ut-dashboard-tile>
@@ -23,7 +23,7 @@
 </div>
 <hr>
 <h2>System</h2>
-<div id="panel">
+<div class="panel">
   <app-ut-dashboard-tile title="Dygraph Playground" path="/Apps/Dygraph-Playground"></app-ut-dashboard-tile>
   <app-ut-dashboard-tile title="All Temperatures" path="/Apps/Temperatures"></app-ut-dashboard-tile>
 <!--
@@ -49,108 +49,107 @@
   <hr /> -->
 </div>
 
-  <h2>Influx Apps</h2>
-  <div class="panel">
+<h2>Influx Apps</h2>
+<div class="panel">
 
-    <app-ut-dashboard-tile title="Indoor Room Climate" path="/Apps/I/IndoorClimate"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Radioactivity" path="/Apps/I/Radiation"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Air Pressure" path="/Apps/I/Pressure"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Core Temps" path="/Apps/I/CPU"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Influx Playground" path="/Apps/Influx-Test"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Flickermeter" path="/Apps/Flicker"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Luftdaten Node" path="/Apps/I/Luftdaten"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="All Sensors" path="/Apps/I/Allsens"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Indoor Room Climate" path="/Apps/I/IndoorClimate"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Radioactivity" path="/Apps/I/Radiation"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Air Pressure" path="/Apps/I/Pressure"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Core Temps" path="/Apps/I/CPU"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Influx Playground" path="/Apps/Influx-Test"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Flickermeter" path="/Apps/Flicker"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Luftdaten Node" path="/Apps/I/Luftdaten"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="All Sensors" path="/Apps/I/Allsens"></app-ut-dashboard-tile>
 
-    <a>Temperature</a>
-    <a>Humidity</a>
-    <a>EMP Events</a>
+  <a>Temperature</a>
+  <a>Humidity</a>
+  <a>EMP Events</a>
 
-  </div>
-  <hr>
-  <h2>MQTT Apps</h2>
-  <div class="panel">
-    <app-ut-dashboard-tile title="MQTT Test" path="/Apps/MQTT-Test"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="PM Analyzer" path="/Apps/PM-Analyzer"></app-ut-dashboard-tile>
+</div>
+<hr>
+<h2>MQTT Apps</h2>
+<div class="panel">
+  <app-ut-dashboard-tile title="MQTT Test" path="/Apps/MQTT-Test"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="PM Analyzer" path="/Apps/PM-Analyzer"></app-ut-dashboard-tile>
 
-  </div>
-  <hr>
-  <h2>Prometheus Apps</h2>
-  <div class="panel">
-    <!-- <app-ut-dashboard-tile title="Air Quality" path="/Apps/Airquality"></app-ut-dashboard-tile> -->
-    <!-- <app-ut-dashboard-tile title="Indoor Air Quality" path="/Apps/IAQ"></app-ut-dashboard-tile> -->
-    <app-ut-dashboard-tile title="CO₂" path="/Apps/CO2"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Particulate Matter" path="/Apps/PM"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Air Pressure" path="/Apps/PressureGraph"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="rel. Humidity / T" path="/Apps/rHT"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Humidity Analyzer" path="/Apps/Humidity"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="VOC" path="/Apps/voc"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="CO₂-Meter" path="/Apps/CO2-graph"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="UV Radiation" path="/Apps/UV"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Loudness" path="/Apps/loudness"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Radioactivity Demo" path="/Apps/gamma"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="NoIR Camera" path="/Apps/noir"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Colorimeter" path="/Apps/Sensors/TCS34725"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Ozone Level" path="/Apps/Ozone"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="External Temp. Probe" path="/Apps/Sensors/DS18B20"></app-ut-dashboard-tile>
-
-
-
-    <!-- <app-ut-dashboard-tile title="Air Composition" path="/Apps/Atmosphere"></app-ut-dashboard-tile> -->
-    <a>UV Camera</a>
-    <a>Heat Camera</a>
-    <a>Weather Station</a>
-    <a>GPS</a>
-    <a>Electromagnetic Spectrum</a>
-    <a>Spectrometer</a>
-    <a>Magnetometer</a>
-    <a>Accelerometer</a>
-  </div>
-  <hr>
-  <h2>Sensors</h2>
-  <div class="panel">
-    <app-ut-dashboard-tile title="Sensor Overview" path="/Apps/Sensors"></app-ut-dashboard-tile>
-
-    <app-ut-dashboard-tile bg="#FFF" title="MPU9250 9-DOF" path="/Apps/Sensors/MPU9250" icon="manufacturers/invensense.png"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile bg="#FFF" title="BME280 Environmental" path="/Apps/Sensors/BME280" icon="manufacturers/Bosch.svg"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile bg="#FFF" title="SCD30 NDIR CO₂" path="/Apps/Sensors/SCD30" icon="manufacturers/sensirion.png"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile bg="#FFF" title="DS18B20 Temperature" path="/Apps/Sensors/DS18B20" icon="manufacturers/Maxim_Integrated.svg"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile bg="#FFF" title="MiCS6814 Gas" path="/Apps/Sensors/MICS6814" icon="manufacturers/SGX.jpg"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile bg="#FFF" title="TCS34725 Color" path="/Apps/Sensors/TCS34725" icon="manufacturers/Ams.svg"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile bg="#FFF" title="TSL2561 Brightness" path="/Apps/Sensors/TSL2561" icon="manufacturers/Ams.svg"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile bg="#FFF" title="VEML6075 UVA&thinsp;/&thinsp;B" path="/Apps/UV" icon="manufacturers/Vishay.svg"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile bg="#FFF" title="SGP30 VOC&thinsp;/&thinsp;eCO₂" path="/Apps/Sensors/SGP30" icon="manufacturers/sensirion.png"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile bg="#FFF" title="SPS30 Particulate Matter" path="/Apps/Sensors/SPS30" icon="manufacturers/sensirion.png"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile bg="#FFF" title="Type 5 Radiation" path="/Apps/Sensors/TYPE5" icon="manufacturers/radiationwatch.png"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile bg="#FFF" title="NoIR Camera" path="/Apps/noir" icon="manufacturers/Raspberry_Pi.svg"></app-ut-dashboard-tile>
-
-    <app-ut-dashboard-tile bg="#FFF" title="DGS-O3968-042 O₃&thinsp;/&thinsp;NO₂" path="/Apps/Ozone" icon="manufacturers/spec-sensors.png"></app-ut-dashboard-tile>
-
-    <app-ut-dashboard-tile bg="#FFF" title="Alphasense NO2-B43F" path="/Apps/Sensors/NO2-B43F" icon="manufacturers/alphasense.png"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile bg="#FFF" title="Alphasense Gas" path="/Apps/Sensors/Alphasense-gas" icon="manufacturers/alphasense.png"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile bg="#FFF" title="TGS 5141 CO" path="/Apps/Sensors/TGS5141" icon="manufacturers/figaro.png"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile bg="#FFF" title="IDT SGAS H₂" path="/Apps/Sensors/SGAS" icon="manufacturers/idt.jpg"></app-ut-dashboard-tile>
-  </div>
-  <hr>
-  <h2>System</h2>
-  <div class="panel">
-    <app-ut-dashboard-tile title="System stats" path="/Apps/System"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Dygraph Playground" path="/Apps/Dygraph-Playground"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="All Temperatures" path="/Apps/Temperatures"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Power usage" path="/Apps/Power"></app-ut-dashboard-tile>
-  </div>
-  <hr>
-  <h2>Tools</h2>
-  <div class="panel">
-    <!-- <app-ut-dashboard-tile title="EnviroGraz Box 0" path="/Apps/EnviroGraz0"></app-ut-dashboard-tile> -->
-    <app-ut-dashboard-tile title="ADCs" path="/Apps/ADC"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="ADC Differential" path="/Apps/ADC-Diff"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Galion Single-Sensor" path="/Apps/Galion"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Galion ViF" path="/Apps/Galion-Vif"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Galion IES" path="/Apps/IES"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Capsi ViF" path="/Apps/vif"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="VOC (raw)" path="/Apps/voc-raw"></app-ut-dashboard-tile>
+</div>
+<hr>
+<h2>Prometheus Apps</h2>
+<div class="panel">
+  <!-- <app-ut-dashboard-tile title="Air Quality" path="/Apps/Airquality"></app-ut-dashboard-tile> -->
+  <!-- <app-ut-dashboard-tile title="Indoor Air Quality" path="/Apps/IAQ"></app-ut-dashboard-tile> -->
+  <app-ut-dashboard-tile title="CO₂" path="/Apps/CO2"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Particulate Matter" path="/Apps/PM"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Air Pressure" path="/Apps/PressureGraph"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="rel. Humidity / T" path="/Apps/rHT"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Humidity Analyzer" path="/Apps/Humidity"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="VOC" path="/Apps/voc"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="CO₂-Meter" path="/Apps/CO2-graph"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="UV Radiation" path="/Apps/UV"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Loudness" path="/Apps/loudness"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Radioactivity Demo" path="/Apps/gamma"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="NoIR Camera" path="/Apps/noir"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Colorimeter" path="/Apps/Sensors/TCS34725"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Ozone Level" path="/Apps/Ozone"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="External Temp. Probe" path="/Apps/Sensors/DS18B20"></app-ut-dashboard-tile>
 
 
-  <!-- <app-ut-dashboard-tile title="Weihnachtsvorlesung" path="/Apps/Weihnachtsvorlesung"></app-ut-dashboard-tile> -->
-  </div>
+
+  <!-- <app-ut-dashboard-tile title="Air Composition" path="/Apps/Atmosphere"></app-ut-dashboard-tile> -->
+  <a>UV Camera</a>
+  <a>Heat Camera</a>
+  <a>Weather Station</a>
+  <a>GPS</a>
+  <a>Electromagnetic Spectrum</a>
+  <a>Spectrometer</a>
+  <a>Magnetometer</a>
+  <a>Accelerometer</a>
+</div>
+<hr>
+<h2>Sensors</h2>
+<div class="panel">
+  <app-ut-dashboard-tile title="Sensor Overview" path="/Apps/Sensors"></app-ut-dashboard-tile>
+
+  <app-ut-dashboard-tile bg="#FFF" title="MPU9250 9-DOF" path="/Apps/Sensors/MPU9250" icon="manufacturers/invensense.png"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile bg="#FFF" title="BME280 Environmental" path="/Apps/Sensors/BME280" icon="manufacturers/Bosch.svg"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile bg="#FFF" title="SCD30 NDIR CO₂" path="/Apps/Sensors/SCD30" icon="manufacturers/sensirion.png"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile bg="#FFF" title="DS18B20 Temperature" path="/Apps/Sensors/DS18B20" icon="manufacturers/Maxim_Integrated.svg"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile bg="#FFF" title="MiCS6814 Gas" path="/Apps/Sensors/MICS6814" icon="manufacturers/SGX.jpg"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile bg="#FFF" title="TCS34725 Color" path="/Apps/Sensors/TCS34725" icon="manufacturers/Ams.svg"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile bg="#FFF" title="TSL2561 Brightness" path="/Apps/Sensors/TSL2561" icon="manufacturers/Ams.svg"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile bg="#FFF" title="VEML6075 UVA&thinsp;/&thinsp;B" path="/Apps/UV" icon="manufacturers/Vishay.svg"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile bg="#FFF" title="SGP30 VOC&thinsp;/&thinsp;eCO₂" path="/Apps/Sensors/SGP30" icon="manufacturers/sensirion.png"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile bg="#FFF" title="SPS30 Particulate Matter" path="/Apps/Sensors/SPS30" icon="manufacturers/sensirion.png"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile bg="#FFF" title="Type 5 Radiation" path="/Apps/Sensors/TYPE5" icon="manufacturers/radiationwatch.png"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile bg="#FFF" title="NoIR Camera" path="/Apps/noir" icon="manufacturers/Raspberry_Pi.svg"></app-ut-dashboard-tile>
+
+  <app-ut-dashboard-tile bg="#FFF" title="DGS-O3968-042 O₃&thinsp;/&thinsp;NO₂" path="/Apps/Ozone" icon="manufacturers/spec-sensors.png"></app-ut-dashboard-tile>
+
+  <app-ut-dashboard-tile bg="#FFF" title="Alphasense NO2-B43F" path="/Apps/Sensors/NO2-B43F" icon="manufacturers/alphasense.png"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile bg="#FFF" title="Alphasense Gas" path="/Apps/Sensors/Alphasense-gas" icon="manufacturers/alphasense.png"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile bg="#FFF" title="TGS 5141 CO" path="/Apps/Sensors/TGS5141" icon="manufacturers/figaro.png"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile bg="#FFF" title="IDT SGAS H₂" path="/Apps/Sensors/SGAS" icon="manufacturers/idt.jpg"></app-ut-dashboard-tile>
+</div>
+<hr>
+<h2>System</h2>
+<div class="panel">
+  <app-ut-dashboard-tile title="System stats" path="/Apps/System"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Dygraph Playground" path="/Apps/Dygraph-Playground"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="All Temperatures" path="/Apps/Temperatures"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Power usage" path="/Apps/Power"></app-ut-dashboard-tile>
+</div>
+<hr>
+<h2>Tools</h2>
+<div class="panel">
+  <!-- <app-ut-dashboard-tile title="EnviroGraz Box 0" path="/Apps/EnviroGraz0"></app-ut-dashboard-tile> -->
+  <app-ut-dashboard-tile title="ADCs" path="/Apps/ADC"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="ADC Differential" path="/Apps/ADC-Diff"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Galion Single-Sensor" path="/Apps/Galion"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Galion ViF" path="/Apps/Galion-Vif"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Galion IES" path="/Apps/IES"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="Capsi ViF" path="/Apps/vif"></app-ut-dashboard-tile>
+  <app-ut-dashboard-tile title="VOC (raw)" path="/Apps/voc-raw"></app-ut-dashboard-tile>
+
+
+<!-- <app-ut-dashboard-tile title="Weihnachtsvorlesung" path="/Apps/Weihnachtsvorlesung"></app-ut-dashboard-tile> -->
 </div>
