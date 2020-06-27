@@ -121,15 +121,15 @@ style.padding-bottom="20vh"-->
 
       <form class="subbox">
         <h5>History fetch</h5>
-        <button (click)="toggleHistoryFetching()" [class]="running">
+        <button (click)="toggleHistoryFetching()">
           <mat-icon *ngIf="runOldData">pause_circle_outline</mat-icon>
           <mat-icon *ngIf="!runOldData">play_circle_outline</mat-icon>
         </button>
       </form>
-
+      <!-- [class]="running ? ''" -->
       <form class="subbox">
         <h5>Current fetch</h5>
-        <button (click)="toggleFetching()" [class]="running">
+        <button (click)="toggleFetching()">
           <mat-icon *ngIf="running">pause_circle_outline</mat-icon>
           <mat-icon *ngIf="!running">play_circle_outline</mat-icon>
         </button>

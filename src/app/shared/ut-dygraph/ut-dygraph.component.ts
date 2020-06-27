@@ -1796,6 +1796,8 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   toggleOptions() {
     this.optionsOpen = !this.optionsOpen;
     setTimeout(() => {
+      console.log('toggleOptions Action');
+
       this.Dygraph.resize(undefined, undefined);
     }, 150);
   }
