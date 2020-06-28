@@ -198,7 +198,7 @@ export class UtFetchdataService {
         groupBy += key + ',';
       }
     }
-    groupBy += 'host,time(' + String(mean_s) + 's)';
+    groupBy += 'host,id,time(' + String(mean_s) + 's)';
     q += ' WHERE ' + whereClause + groupBy + ';';
     return q;
   }
@@ -317,6 +317,9 @@ export class UtFetchdataService {
           colname = colname.replace(/p([0-9.]*)_ugpm3$/, 'pm$1 (µg/m³)');
           colname = colname.replace(/ugpm3$/, 'µg/m³');
           colname = colname.replace(/gpm3$/, 'g/m³');
+          colname = colname.replace(/degps$/, '°/s');
+          colname = colname.replace(/mps2$/, 'm/s²');
+          colname = colname.replace(/uT$/, 'µT');
           colname = colname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm');
           colname = colname.replace(/H2O_/, 'H₂O_');
           colname = colname.replace(/CO2_/, 'CO₂_');
