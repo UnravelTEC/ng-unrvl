@@ -217,7 +217,10 @@ const appRoutes: Routes = [
     path: 'Apps/EnviroGraz000',
     loadChildren: () => import('./ut-apps/envirograz/envirograz.module').then(m => m.EnvirograzModule)
   },
-
+  {
+    path: 'Apps/I/Bimbox001',
+    loadChildren: () => import('./ut-apps/i/bimbox/bimbox.module').then(m => m.BimboxModule)
+  },
   {
     path: 'Apps/System',
     loadChildren: () => import('./ut-apps/system/system.module').then(m => m.SystemModule)
