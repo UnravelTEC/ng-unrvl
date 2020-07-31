@@ -1,0 +1,8 @@
+<div
+  class="map-container"
+  leaflet
+  [leafletOptions]="options"
+  (leafletMapReady)="onMapReady($event)"
+  (leafletMapZoomEnd)="onMapZoomEnd($event)"
+  id="main-map"
+></div>

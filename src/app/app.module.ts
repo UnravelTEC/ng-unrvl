@@ -369,6 +369,11 @@ const appRoutes: Routes = [
       import('./ut-apps/i/pmhist/pmhist.module').then((m) => m.PmhistModule),
   },
   {
+    path: 'Apps/I/GPS',
+    loadChildren: () =>
+      import('./ut-apps/i/gps/gps.module').then((m) => m.GpsModule),
+  },
+  {
     path: 'Apps/I/Luftdaten',
     loadChildren: () =>
       import('./ut-apps/i/luftdaten/luftdaten.module').then(
