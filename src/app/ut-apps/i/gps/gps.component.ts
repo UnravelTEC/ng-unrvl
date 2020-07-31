@@ -3,6 +3,7 @@ import { GlobalSettingsService } from '../../../core/global-settings.service';
 import { LocalStorageService } from '../../../core/local-storage.service';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
+import { geoJSON } from 'leaflet';
 
 @Component({
   selector: 'app-gps',
@@ -63,16 +64,20 @@ export class GpsComponent implements OnInit {
   sensor = '';
   host = '';
 
-  constructor(private globalSettings: GlobalSettingsService,
+  constructor(
+    private globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
-    private h: HelperFunctionsService) {
+    private h: HelperFunctionsService
+  ) {
     this.globalSettings.emitChange({ appName: 'GPS' });
   }
 
-  ngOnInit(): void {this.reload();}
+  ngOnInit(): void {
+    this.reload();
+  }
 
-  public layers = []
+  public layers = [];
 
   reload() {
     this.meanS = this.userMeanS;
@@ -100,14 +105,21 @@ export class GpsComponent implements OnInit {
     const labels = ret['labels'];
     const idata = ret['data'];
 
-    let line = {
-      type: 'LineString',
-      coordinates: [],
+    let line: GeoJSON.Feature<any> = {
+      type: 'Feature' as const,
+      properties: {},
+      geometry: {
+        type: 'LineString',
+        coordinates: [],
+      },
     };
     for (let i = 0; i < idata.length; i++) {
       const element = idata[i];
-      line.coordinates.push([element[1], element[2]])
+      if (element[1] == 0 || element[2] == 0) continue;
+      line.geometry.coordinates.push([element[2], element[1]]);
     }
+    this.layers[0] = geoJSON(line);
+    console.log('layers:', this.layers);
 
     this.startTime = this.userStartTime;
     this.labels = labels;

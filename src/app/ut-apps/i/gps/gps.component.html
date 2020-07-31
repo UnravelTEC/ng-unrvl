@@ -6,11 +6,12 @@
   [layers]="layers"
   ></app-map>
   <!-- [options]="options"
+
  (map$)="receiveMap($event)"
  (zoom$)="receiveZoom($event)"
 --></div>
 
-<form class="settings" (submit)="reload(true)">
+<form class="settings" (submit)="reload()">
   <div class="section">
     <h3>Current Dataset:</h3>
     <label>Resolution:</label><br />
@@ -32,6 +33,8 @@
       >
         <mat-option value="15m">15 min.</mat-option>
         <mat-option value="1h" selected="selected"> 1h</mat-option>
+        <mat-option value="2h">2 h</mat-option>
+        <mat-option value="3h">3 h</mat-option>
         <mat-option value="6h">6 h</mat-option>
         <mat-option value="24h">24 h</mat-option>
         <mat-option value="7d">1 week</mat-option>

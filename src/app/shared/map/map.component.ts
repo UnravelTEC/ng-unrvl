@@ -7,8 +7,14 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import { latLng, Map, MapOptions, tileLayer, ZoomAnimEvent } from 'leaflet';
-
+import {
+  latLng,
+  Map,
+  MapOptions,
+  tileLayer,
+  ZoomAnimEvent,
+  geoJSON,
+} from 'leaflet';
 
 @Component({
   selector: 'app-map',
@@ -19,7 +25,21 @@ import { latLng, Map, MapOptions, tileLayer, ZoomAnimEvent } from 'leaflet';
 export class MapComponent implements OnInit, OnDestroy {
   @Output() map$: EventEmitter<Map> = new EventEmitter();
   @Output() zoom$: EventEmitter<number> = new EventEmitter();
-  @Input() layers: [];
+  geojsonObj: GeoJSON.Feature<any> = {
+    type: 'Feature' as const,
+    properties: {},
+    geometry: {
+      type: 'LineString',
+      coordinates: [
+        [15.421154166666666, 47.09932516666667],
+        [15.421522, 47.102269666666665],
+        [15.421682833333334, 47.1025895],
+      ]
+    }
+  };
+
+  geojsonlayer = geoJSON(this.geojsonObj);
+  @Input() layers = [this.geojsonlayer];
   @Input() z = 12;
   @Input() x = 15.5;
   @Input() y = 47;
