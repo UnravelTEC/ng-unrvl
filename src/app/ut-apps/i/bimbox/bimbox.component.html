@@ -1,0 +1,222 @@
+<table class="envirobody">
+  <colgroup>
+    <col />
+    <col />
+    <col />
+  </colgroup>
+  <tr>
+    <th>
+      <h3>
+        Temperature, Humidity
+      </h3>
+      <!-- <a
+        routerLink="/Apps/I/EnviroOne"
+        [queryParams]="{ filter: 'T' }"
+        routerLinkActive="active"
+        class="fullscreen"
+        title="Fullscreen"
+        ><mat-icon>settings_overscan</mat-icon></a
+      > -->
+    </th>
+    <th>
+      <h3>
+        Wind Speed
+      </h3>
+      <!-- <a
+        routerLink="/Apps/I/EnviroOne"
+        [queryParams]="{ filter: 'rH' }"
+        routerLinkActive="active"
+        class="fullscreen"
+        title="Fullscreen"
+        ><mat-icon>settings_overscan</mat-icon></a
+      > -->
+    </th>
+    <th>
+      <h3>
+        Barometric Pressure
+      </h3>
+      <!-- <a
+        routerLink="/Apps/I/EnviroOne"
+        [queryParams]="{ filter: 'P' }"
+        routerLinkActive="active"
+        class="fullscreen"
+        title="Fullscreen"
+        ><mat-icon>settings_overscan</mat-icon></a
+      > -->
+    </th>
+  </tr>
+  <tr>
+    <td class="T">
+      <app-ut-dygraph-in
+        [displayedData]="data['T']"
+        [columnLabels]="labels['T']"
+        [style]="graphstyle"
+        [changeTrigger]="changeTrigger"
+        [extraDyGraphConfig]="extraDyGraphConfig"
+        [startTime]="startTimes['T']"
+        [colors]="['#0000FF','#E10000']"
+        YLabel="°C"
+        options="false"
+        #Temp
+      >
+      </app-ut-dygraph-in>
+      <!-- [colors]="h.colors.red" -->
+    </td>
+    <td class="rH">
+      <app-ut-dygraph-in
+        [displayedData]="data['H']"
+        [columnLabels]="labels['H']"
+        [style]="graphstyle"
+        [changeTrigger]="changeTrigger"
+        [extraDyGraphConfig]="extraDyGraphConfig"
+        [startTime]="startTimes['H']"
+        [colors]="['#FFDD73']"
+        YLabel="km&#8202;/&#8202;h"
+        options="false"
+        #rH
+      >
+      </app-ut-dygraph-in>
+    </td>
+    <td class="P">
+      <app-ut-dygraph-in
+        [displayedData]="data['P']"
+        [columnLabels]="labels['P']"
+        [style]="graphstyle"
+        [changeTrigger]="changeTrigger"
+        [extraDyGraphConfig]="extraDyGraphConfigP"
+        [startTime]="startTimes['P']"
+        [colors]="h.colors.green"
+        YLabel="mbar"
+        options="false"
+        #P
+      ></app-ut-dygraph-in>
+    </td>
+  </tr>
+  <tr>
+    <th>
+      <h3>
+        GPS
+      </h3>
+    </th>
+    <th>
+      <h3>
+        Particulate Matter
+      </h3>
+      <!-- <a
+        routerLink="/Apps/I/EnviroOne"
+        [queryParams]="{ filter: 'PM' }"
+        routerLinkActive="active"
+        class="fullscreen"
+        title="Fullscreen"
+        ><mat-icon>settings_overscan</mat-icon></a
+      > -->
+      <!-- <a
+        routerLink="/Apps/I/Pmhist"
+        routerLinkActive="active"
+        class="fullscreen"
+        style="margin-right: 3em;"
+        ><mat-icon>equalizer</mat-icon
+        ><span style="display: inline-block; transform: translateY(-0.25em); margin-left: 0.5em;"
+          >PM Histogram</span
+        ></a
+      > -->
+    </th>
+    <th>
+      <h3>
+        Nitrogen Dioxide
+      </h3>
+      <!-- <a
+        routerLink="/Apps/I/EnviroOne"
+        [queryParams]="{ filter: 'NO2' }"
+        routerLinkActive="active"
+        class="fullscreen"
+        title="Fullscreen"
+        ><mat-icon>settings_overscan</mat-icon></a
+      > -->
+    </th>
+  </tr>
+  <tr>
+    <td>
+      <form class="settings" (submit)="reload()">
+        <div class="section">
+          <h3>Current Data:</h3>
+          <label>Resolution:</label><br />
+          <span class="cRange">{{ currentres }}s</span><br />
+        </div>
+        <div class="section">
+          <h3>New Query:</h3>
+          <mat-form-field>
+            <mat-label>Time range</mat-label>
+            <mat-select
+              [(ngModel)]="userStartTime"
+              name="startTime"
+              (ngModelChange)="changeMean($event)"
+            >
+              <mat-option value="15m">15 min.</mat-option>
+              <mat-option value="1h" selected="selected"> 1h</mat-option>
+              <mat-option value="6h">6 h</mat-option>
+              <mat-option value="24h">24 h</mat-option>
+              <mat-option value="7d">1 week</mat-option>
+              <mat-option value="30d">1 month</mat-option>
+              <mat-option value="356d">1 year</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <br />
+          <label for="runningAvgPoints"># Mean Seconds</label><br />
+          <input
+            type="text"
+            id="runningAvgPoints"
+            name="runningAvgPoints"
+            [(ngModel)]="userMeanS"
+            style="width: 4em;"
+          /><br />
+          <br />
+          <div style="width: 100%; text-align: right;">
+            <button type="submit">
+              Reload
+            </button>
+          </div>
+        </div>
+      </form>
+      <!-- <p>
+        <a routerLink="/Apps/I/EnviroOne" routerLinkActive="active"
+          >Single Graph</a
+        >
+      </p> -->
+    </td>
+    <td>
+      <app-ut-dygraph-in
+        [displayedData]="data['PM']"
+        [columnLabels]="labels['PM']"
+        [style]="graphstyle"
+        [changeTrigger]="changeTrigger"
+        [extraDyGraphConfig]="extraDyGraphConfigPM"
+        [startTime]="startTimes['PM']"
+        YLabel="µg&#8202;/&#8202;m³"
+        [backGroundLevels]="globalSettings['graphBackgrounds']['PM_ugpm3']"
+        [colors]="h.colors.brown"
+        options="false"
+        (returnGraphWidthOnChange)="setGraphWidth($event)"
+        #PM
+      >
+      </app-ut-dygraph-in>
+    </td>
+    <td class="NO2">
+      <app-ut-dygraph-in
+        [displayedData]="data['N']"
+        [columnLabels]="labels['N']"
+        [style]="graphstyle"
+        [changeTrigger]="changeTrigger"
+        [extraDyGraphConfig]="extraDyGraphConfig"
+        [startTime]="startTimes['N']"
+        YLabel="µg&#8202;/&#8202;m³"
+        [backGroundLevels]="globalSettings['graphBackgrounds']['NO2_ugpm3']"
+        [colors]="h.colors.violet"
+        options="false"
+        #N
+      >
+      </app-ut-dygraph-in>
+    </td>
+  </tr>
+</table>
