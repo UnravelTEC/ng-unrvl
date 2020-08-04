@@ -48,7 +48,7 @@ export class GalionComponent implements OnInit {
 
   dataSeriesLabels = ['Galion'];
   labelBlackList = ['__name__', 'interval', 'featureset', 'serial','id','adc'];
-  labelBlackListHT = ['interval', 'sensor', 'featureset', 'serial','id'];
+  labelBlackListHT = ['interval', 'featureset', 'serial','id'];
   startTime = '15m';
 
   constructor(private globalSettings: GlobalSettingsService) {
