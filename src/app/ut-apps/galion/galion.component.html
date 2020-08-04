@@ -16,19 +16,19 @@
 <div id="innerappbody">
   <table>
     <tr>
-      <th>BME280 Environmental</th>
-      <th>SCD30 NDIR CO₂</th>
-      <th>SGP30&#8202;/&#8202;iAQ-Core VOC&#8202;/&#8202;eCO₂</th>
+      <th>T, rH</th>
+      <th>SPS30 Particulate Matter</th>
+      <th>SGPnx VOC&#8202;/&#8202;eCO₂</th>
     </tr>
     <tr>
       <td>
         <app-ut-dygraph
-          queryString="pressure_hPa"
+          queryString='{__name__=~"temperature_degC",sensor=~"MAX6675|SCD30|DS18B20|BME280"}'
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
           [dataSeriesLabels]="dataSeriesLabels"
           [labelBlackList]="labelBlackList"
-          YLabel="Atmospheric Pressure (hPa)"
+          YLabel="Temperature (°C)"
           [style]="graphstyle_p"
           [startTime]="startTime"
           [extraDyGraphConfig]="extraDyGraphConfig"
@@ -37,12 +37,12 @@
         ></app-ut-dygraph>
 
         <app-ut-dygraph
-          queryString='{__name__=~"humidity_rel_percent|temperature_degC",sensor="BME280"}'
+          queryString='{__name__="humidity_rel_percent"}'
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
           [dataSeriesLabels]="dataSeriesLabels"
           [labelBlackList]="labelBlackListHT"
-          YLabel="Temperature (°C), relative Humidity (%)"
+          YLabel="relative Humidity (%)"
           [style]="graphstyle_HT"
           [startTime]="startTime"
           [extraDyGraphConfig]="extraDyGraphConfig"
@@ -52,12 +52,12 @@
       </td>
       <td>
         <app-ut-dygraph
-          queryString='gas_ppm{sensor="SCD30",gas="CO2"}'
+          queryString='particulate_matter_ugpm3'
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
           [dataSeriesLabels]="dataSeriesLabels"
           [labelBlackList]="labelBlackList"
-          YLabel="NDIR CO₂"
+          YLabel="Particulate Matter (µg&#8202;/&#8202;m³)"
           [style]="graphstyle_scd30"
           [startTime]="startTime"
           [extraDyGraphConfig]="extraDyGraphConfig"
@@ -67,7 +67,7 @@
       </td>
       <td>
         <app-ut-dygraph
-          queryString='{__name__=~"sgp30_raw|gas_ohm"}'
+          queryString='{__name__=~"sgp30_raw|gas_V",sensor=~"SGP30|SGP4X"}'
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
           [dataSeriesLabels]="dataSeriesLabels"
@@ -94,7 +94,7 @@
           [dataBaseQueryStepMS]="step"
           [dataSeriesLabels]="dataSeriesLabels"
           [labelBlackList]="labelBlackList"
-          YLabel="Volt"
+          YLabel="Voltage (V)"
           [style]="graphstyle_dgs"
           [startTime]="startTime"
           [extraDyGraphConfig]="extraDyGraphConfig"
@@ -120,7 +120,7 @@
       </td>
       <td>
         <app-ut-dygraph
-          queryString='gas_V{sensor=~"TGS5141|SGAS"}'
+          queryString='gas_V{sensor=~"TGS5141|SGAS|TGS8100"}'
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
           [dataSeriesLabels]="dataSeriesLabels"
