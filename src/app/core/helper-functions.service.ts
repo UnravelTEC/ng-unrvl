@@ -409,12 +409,31 @@ export class HelperFunctionsService {
     FileSaver.saveAs(blob, name);
   }
   exportGeojson(geojsondata) {
-    const name =
-      formatDate('startDate', 'yyyy-MM-dd_HH.mm.ss', 'en-uk') +
-      '-' +
-      formatDate('endDate', 'HH.mm.ss', 'en-uk') +
-      '.csv';
-    FileSaver.saveAs(geojsondata, name);
+    console.log('exporting', geojsondata);
+
+    if (!geojsondata['type']) {
+      alert('geojson data not valid');
+      return;
+    }
+    let name = 'date_unknown.geojson';
+    if (geojsondata.features && geojsondata.features.length) {
+      name =
+        formatDate(
+          geojsondata.features[0].properties.date,
+          'yyyy-MM-dd_HH.mm.ss',
+          'en-uk'
+        ) +
+        '-' +
+        formatDate(
+          geojsondata.features[geojsondata.features.length - 1].properties.date,
+          'yyyy-MM-dd_HH.mm.ss',
+          'en-uk'
+        ) +
+        '.geojson';
+    }
+
+    const blob = new Blob([JSON.stringify(geojsondata)], { type: 'text/geojson' });
+    FileSaver.saveAs(blob, name);
   }
 
   isString(x) {

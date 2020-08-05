@@ -16,6 +16,7 @@ export class GpsComponent implements OnInit {
   public appName = 'GPS';
 
   public displayed_line = {};
+  public displayed_points = {};
 
   public startTime = '1h';
   public userStartTime = this.startTime;
@@ -118,7 +119,6 @@ export class GpsComponent implements OnInit {
       features: [],
     };
 
-
     for (let i = 0; i < idata.length; i++) {
       const element = idata[i];
       if (element[1] == 0 || element[2] == 0) continue;
@@ -134,6 +134,7 @@ export class GpsComponent implements OnInit {
       points.features.push(point);
     }
     this.displayed_line = line;
+    this.displayed_points = points;
     const geojsonMarkerOptions = {
       radius: 3,
       fillColor: '#ff780080',
@@ -157,6 +158,6 @@ export class GpsComponent implements OnInit {
     console.log(idata);
   }
   exportGeojson() {
-    this.h.exportGeojson(this.displayed_line);
+    this.h.exportGeojson(this.displayed_points);
   }
 }
