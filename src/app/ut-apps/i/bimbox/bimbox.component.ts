@@ -3,12 +3,12 @@ import { GlobalSettingsService } from '../../../core/global-settings.service';
 import { LocalStorageService } from '../../../core/local-storage.service';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
-import { stringify } from 'querystring';
+import { geoJSON, circleMarker } from 'leaflet';
 
 @Component({
   selector: 'app-bimbox',
   templateUrl: './bimbox.component.html',
-  styleUrls: ['./bimbox.component.scss']
+  styleUrls: ['./bimbox.component.scss'],
 })
 export class BimboxComponent implements OnInit {
   graphstyle = {
@@ -16,14 +16,14 @@ export class BimboxComponent implements OnInit {
     top: '0',
     bottom: '0.5rem',
     left: '0.5rem',
-    right: '1rem'
+    right: '1rem',
   };
   graphstylePM = {
     position: 'absolute',
     top: '0',
     bottom: '0.5rem',
     left: '15rem',
-    right: '0.5rem'
+    right: '0.5rem',
   };
   multiplicateFactors = [1000];
 
@@ -33,18 +33,18 @@ export class BimboxComponent implements OnInit {
     pointSize: 3,
     axes: {
       y: {
-        axisLabelWidth: 60
-      }
-    }
+        axisLabelWidth: 60,
+      },
+    },
   };
   extraDyGraphConfigPM = {
     connectSeparatedPoints: true,
     pointSize: 3,
     axes: {
       y: {
-        logscale: true
-      }
-    }
+        logscale: true,
+      },
+    },
   };
 
   isNaN(a) {
@@ -64,21 +64,25 @@ export class BimboxComponent implements OnInit {
     H: {},
     P: {},
     PM: {},
-    N: {}
+    N: {},
+    G: {},
   };
   data = {
     T: [],
     H: [],
     P: [],
     PM: [],
-    N: []
+    N: [],
+    G: [],
   };
+  public gpslayers = [];
+
   startTimes = {
     T: this.startTime,
     H: this.startTime,
     P: this.startTime,
     PM: this.startTime,
-    N: this.startTime
+    N: this.startTime,
   };
   graphWidth = 1000;
   setGraphWidth(width) {
@@ -105,7 +109,7 @@ export class BimboxComponent implements OnInit {
     'id',
     'host',
     'mean_*',
-    'mean'
+    'mean',
   ];
 
   ngOnInit() {
@@ -161,6 +165,14 @@ export class BimboxComponent implements OnInit {
         's)',
       'N'
     );
+    this.launchQuery(
+      'SELECT FIRST(/lat|lon/) FROM location WHERE time > now() - ' +
+        this.startTime +
+        ' GROUP BY sensor,time(' +
+        String(this.meanS) +
+        's)',
+      'G'
+    );
   }
   calcMean(secondsRange) {
     const divider = Math.floor(secondsRange / this.graphWidth);
@@ -195,9 +207,27 @@ export class BimboxComponent implements OnInit {
     if (id == 'H') {
       const Ndata = this.data['H'];
       for (let r = 0; r < Ndata.length; r++) {
-        Ndata[r][1] = Ndata[r][1] * 3,6; // mps to km/h
+        (Ndata[r][1] = Ndata[r][1] * 3), 6; // mps to km/h
       }
     }
+    if (id == 'G') {
+      const geojsonMarkerOptions = {
+        radius: 3,
+        fillColor: '#0000ff80',
+        color: '#0000ff',
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8,
+      };
+      console.log('GPS!');
+      this.gpslayers[0] = geoJSON(this.h.influx2geojsonPoints(ret['data']), {
+        pointToLayer: function (feature, latlng) {
+          return circleMarker(latlng, geojsonMarkerOptions);
+        },
+        onEachFeature: this.h.leafletPopup,
+      });
+    }
+
     // console.log(cloneDeep(this.dygLabels));
     this.startTimes[id] = this.userStartTime;
     this.changeTrigger = !this.changeTrigger;

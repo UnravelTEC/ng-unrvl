@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { BimboxRoutingModule } from './bimbox-routing.module';
 import { BimboxComponent } from './bimbox.component';
+import { MapModule } from '../../../shared/map/map.module';
 import { MatSelectModule } from '@angular/material/select';
 import { UtDygraphModule } from '../../../shared/ut-dygraph/ut-dygraph.module';
 import { FormsModule } from '@angular/forms';
@@ -15,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
     BimboxRoutingModule,
     UtDygraphModule,
     UtDygraphInModule,
+    MapModule,
     MatSelectModule,
     MatIconModule,
     FormsModule

@@ -118,6 +118,25 @@ export class HelperFunctionsService {
     }
     return obj;
   }
+  influx2geojsonPoints(data): GeoJSON.FeatureCollection<any> {
+    let points: GeoJSON.FeatureCollection<any> = {
+      type: 'FeatureCollection',
+      features: [],
+    };
+    for (let i = 0; i < data.length; i++) {
+      const element = data[i];
+      const point: GeoJSON.Feature<any> = {
+        type: 'Feature' as const,
+        properties: { date: element[0] },
+        geometry: {
+          type: 'Point',
+          coordinates: [element[2], element[1]],
+        },
+      };
+      points.features.push(point);
+    }
+    return points;
+  }
 
   parseToSeconds(inputString: string): number {
     if (
@@ -432,7 +451,9 @@ export class HelperFunctionsService {
         '.geojson';
     }
 
-    const blob = new Blob([JSON.stringify(geojsondata)], { type: 'text/geojson' });
+    const blob = new Blob([JSON.stringify(geojsondata)], {
+      type: 'text/geojson',
+    });
     FileSaver.saveAs(blob, name);
   }
 

@@ -54,7 +54,7 @@
         [changeTrigger]="changeTrigger"
         [extraDyGraphConfig]="extraDyGraphConfig"
         [startTime]="startTimes['T']"
-        [colors]="['#0000FF','#E10000']"
+        [colors]="['#0000FF', '#E10000']"
         YLabel="°C"
         options="false"
         #Temp
@@ -184,6 +184,9 @@
           >Single Graph</a
         >
       </p> -->
+      <div class="mapcontainer">
+        <app-map [x]="15.438" [y]="47.0707" [z]="12" [layers]="gpslayers"></app-map>
+      </div>
     </td>
     <td>
       <app-ut-dygraph-in
