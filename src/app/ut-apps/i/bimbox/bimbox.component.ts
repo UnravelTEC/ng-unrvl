@@ -205,12 +205,12 @@ export class BimboxComponent implements OnInit {
     console.log(id, 'received', ret);
     this.labels[id] = ret['labels'];
     this.data[id] = ret['data'];
-    if (id == 'N') {
-      const Ndata = this.data['N'];
-      for (let r = 0; r < Ndata.length; r++) {
-        Ndata[r][1] = this.h.smoothNO2(Ndata[r][1]);
-      }
-    }
+    // if (id == 'N') {
+    //   const Ndata = this.data['N'];
+    //   for (let r = 0; r < Ndata.length; r++) {
+    //     Ndata[r][1] = this.h.smoothNO2(Ndata[r][1]);
+    //   }
+    // }
     if (id == 'H') {
       const Ndata = this.data['H'];
       for (let r = 0; r < Ndata.length; r++) {
