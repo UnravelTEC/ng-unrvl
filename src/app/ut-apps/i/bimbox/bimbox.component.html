@@ -10,7 +10,7 @@
         Temperature
         <a
           routerLink="/Apps/I/Enviromap"
-          [queryParams]="{ measurement: 'temperature' }"
+          [queryParams]="{ measurement: 'temperature', id: 'i2c-7_0x76' }"
           routerLinkActive="active"
           title="Fullscreen"
           ><mat-icon>map</mat-icon></a
@@ -43,7 +43,7 @@
       </h3>
       <a
         routerLink="/Apps/I/Enviromap"
-        [queryParams]="{ measurement: 'pressure' }"
+        [queryParams]="{ measurement: 'pressure', id: 'i2c-7_0x76', value: 'air_hPa' }"
         routerLinkActive="active"
         class="fullscreen"
         title="Fullscreen"
@@ -110,7 +110,7 @@
       </h3>
       <a
         routerLink="/Apps/I/Enviromap"
-        [queryParams]="{ measurement: 'particulate_matter' }"
+        [queryParams]="{ measurement: 'particulate_matter', value: '/_ugpm3/' }"
         routerLinkActive="active"
         class="fullscreen"
         title="Fullscreen"
@@ -133,7 +133,7 @@
       </h3>
       <a
         routerLink="/Apps/I/Enviromap"
-        [queryParams]="{ measurement: 'gas' }"
+        [queryParams]="{ measurement: 'gas', value: '/NO2_/' }"
         routerLinkActive="active"
         class="fullscreen"
         title="Fullscreen"
