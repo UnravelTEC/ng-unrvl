@@ -51,8 +51,11 @@ export class EnviromapComponent implements OnInit {
     console.log('new w', width);
   }
 
+  public displayed_points = {};
+  public layers = [];
+
   measurement = 'temperature';
-  sensor = 'BME280';
+  sensor = '';
   host = '';
   referrer = 'Bimbox001';
   id = '';
@@ -82,12 +85,15 @@ export class EnviromapComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    ['host', 'measurement', 'sensor', 'referrer', 'id', 'value'].forEach((element) => {
-      const thing = this.router.snapshot.queryParamMap.get(element);
-      if (thing) {
-        this[element] = thing;
+    ['host', 'measurement', 'sensor', 'referrer', 'id', 'value'].forEach(
+      (element) => {
+        const thing = this.router.snapshot.queryParamMap.get(element);
+        if (thing) {
+          this[element] = thing;
+        }
       }
-    });
+    );
+    this.userMeanS = this.calcMean(this.h.parseToSeconds(this.startTime));
     this.reload();
   }
   reload(fromTo = false) {
@@ -127,7 +133,7 @@ export class EnviromapComponent implements OnInit {
 
   calcMean(secondsRange) {
     const divider = Math.floor(secondsRange / this.graphWidth);
-    return divider > 30 ? divider : 30;
+    return divider > 1 ? divider : 1;
   }
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);

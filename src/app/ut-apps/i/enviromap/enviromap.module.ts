@@ -7,6 +7,7 @@ import { UtDygraphInModule } from '../../../shared/ut-dygraph-in/ut-dygraph-in.m
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
+import { MapModule } from '../../../shared/map/map.module';
 
 
 @NgModule({
@@ -15,6 +16,7 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     EnviromapRoutingModule,
     UtDygraphInModule,
+    MapModule,
     MatSelectModule,
     MatIconModule,
     FormsModule
