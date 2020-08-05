@@ -3,7 +3,7 @@ import { GlobalSettingsService } from '../../../core/global-settings.service';
 import { LocalStorageService } from '../../../core/local-storage.service';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
-import { geoJSON } from 'leaflet';
+import { geoJSON, circleMarker } from 'leaflet';
 
 @Component({
   selector: 'app-gps',
@@ -113,12 +113,41 @@ export class GpsComponent implements OnInit {
         coordinates: [],
       },
     };
+    let points: GeoJSON.FeatureCollection<any> = {
+      type: 'FeatureCollection',
+      features: [],
+    };
+
+
     for (let i = 0; i < idata.length; i++) {
       const element = idata[i];
       if (element[1] == 0 || element[2] == 0) continue;
       line.geometry.coordinates.push([element[2], element[1]]);
+      const point: GeoJSON.Feature<any> = {
+        type: 'Feature' as const,
+        properties: { date: element[0] },
+        geometry: {
+          type: 'Point',
+          coordinates: [element[2], element[1]],
+        },
+      };
+      points.features.push(point);
     }
-    this.layers[0] = geoJSON(line);
+    this.displayed_line = line;
+    const geojsonMarkerOptions = {
+      radius: 3,
+      fillColor: '#ff780080',
+      color: '#ff7800',
+      weight: 1,
+      opacity: 1,
+      fillOpacity: 0.8,
+    };
+    this.layers[0] = geoJSON(points, {
+      pointToLayer: function (feature, latlng) {
+        return circleMarker(latlng, geojsonMarkerOptions);
+      },
+      onEachFeature: this.h.leafletPopup,
+    });
     console.log('layers:', this.layers);
 
     this.startTime = this.userStartTime;
@@ -126,5 +155,8 @@ export class GpsComponent implements OnInit {
     this.data = idata;
     console.log(labels);
     console.log(idata);
+  }
+  exportGeojson() {
+    this.h.exportGeojson(this.displayed_line);
   }
 }

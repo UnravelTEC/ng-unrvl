@@ -18,7 +18,9 @@
     <span class="cRange">{{ currentres }}s</span><br />
 
     <label>Current Range:</label><br />
-    <span class="cRange">{{ currentRange }} </span>
+    <span class="cRange">{{ currentRange }} </span><br
+    >
+    Download <a (click)="exportGeojson()">geojson</a>
   </div>
   <div class="section">
     <h3>New Query:</h3>
@@ -61,4 +63,5 @@
       </button>
     </div>
   </div>
+
 </form>

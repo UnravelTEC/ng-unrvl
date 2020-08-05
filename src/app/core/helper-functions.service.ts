@@ -5,7 +5,7 @@ import * as FileSaver from 'file-saver';
 import { cloneDeep } from 'lodash-es';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HelperFunctionsService {
   domainAndApp = '';
@@ -19,7 +19,7 @@ export class HelperFunctionsService {
     red: ['#E10000', '#FF7F88', '#520000', '#F81E25', '#990000'],
     navy: ['#0061A6', '#00D9FF', '#001341', '#007CC2', '#002C54'],
     violet: ['#842BFF', '#FFEBFF', '#2B0069', '#C78DFF', '#470994'],
-    olive: ['#00805C', '#8CE2CD', '#002913', '#37A389', '#003C24']
+    olive: ['#00805C', '#8CE2CD', '#002913', '#37A389', '#003C24'],
   };
   colorOrder = ['green', 'blue', 'red', 'brown', 'olive', 'navy', 'violet'];
   colorArray = [];
@@ -34,7 +34,7 @@ export class HelperFunctionsService {
     { '1h': 3600 },
     { '1d': 86400 },
     { '7d': 604800 },
-    { '30d': 2592000 }
+    { '30d': 2592000 },
   ];
   keys(o) {
     // for use in htmls
@@ -62,7 +62,7 @@ export class HelperFunctionsService {
       humidity: 'blue',
       pressure: 'green',
       particulate_matter: 'brown',
-      gas: 'violet'
+      gas: 'violet',
     };
     // console.log('new Colors:', this.colorArray);
   }
@@ -276,7 +276,7 @@ export class HelperFunctionsService {
 
       let isInBlackList = false;
       if (labelBlackList) {
-        labelBlackList.forEach(item => {
+        labelBlackList.forEach((item) => {
           if (key == item) {
             isInBlackList = true;
           }
@@ -407,6 +407,14 @@ export class HelperFunctionsService {
       formatDate(endDate, 'HH.mm.ss', 'en-uk') +
       '.csv';
     FileSaver.saveAs(blob, name);
+  }
+  exportGeojson(geojsondata) {
+    const name =
+      formatDate('startDate', 'yyyy-MM-dd_HH.mm.ss', 'en-uk') +
+      '-' +
+      formatDate('endDate', 'HH.mm.ss', 'en-uk') +
+      '.csv';
+    FileSaver.saveAs(geojsondata, name);
   }
 
   isString(x) {
@@ -618,6 +626,31 @@ export class HelperFunctionsService {
           delete firstObj['noooooo'];
         }
       }
+    }
+  }
+
+  leafletPopup(feature, layer) {
+    const timeFormatOptions = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    };
+    // does this feature have a property named popupContent?
+    if (feature.properties) {
+      let text = '<table>';
+      for (let [key, value] of Object.entries(feature.properties)) {
+        const v =
+          key == 'date'
+            ? value['toLocaleDateString']('de-DE', timeFormatOptions)
+            : value;
+        text += '<tr><th>' + key + ':</th><td>' + v + '</td></tr>';
+      }
+      text += '</table>';
+      layer.bindPopup(text);
     }
   }
 }
