@@ -13,7 +13,7 @@ table.envirobody {
     display: inline-block;
     padding: 0;
   }
-  th[colspan="2"] > h3 {
+  th[colspan='2'] > h3 {
     margin-left: 11rem;
   }
   th {
@@ -22,6 +22,18 @@ table.envirobody {
     border-left: 1px solid $bordercolor;
     width: 32%;
     position: relative;
+    h3 {
+      a,
+      a:visited {
+        position: relative;
+        top:0.3em;
+        color: #c7c7c7;
+      }
+      a:hover,
+      a:visited:hover {
+        color: white;
+      }
+    }
     a.fullscreen,
     a.fullscreen:visited {
       color: #c7c7c7;

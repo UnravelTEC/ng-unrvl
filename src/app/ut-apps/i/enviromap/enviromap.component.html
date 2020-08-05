@@ -1,0 +1,22 @@
+<a
+  id="back"
+  class="icon"
+  [routerLink]="'/Apps/I/' + referrer"
+  routerLinkActive="active"
+  title="Return to overview"
+  ><mat-icon>fullscreen_exit</mat-icon></a
+>
+
+<app-ut-dygraph-in
+  [displayedData]="data"
+  [columnLabels]="labels"
+  [style]="graphstyle"
+  [extraDyGraphConfig]="extraDyGraphConfig"
+  [startTime]="startTime"
+  enableHighlightCallback="true"
+  [colors]="colors"
+  [YLabel]="measurement"
+  (returnGraphWidthOnChange)="setGraphWidth($event)"
+  (returnCurrentZoom)="updateFromToTimes($event)"
+  #R
+></app-ut-dygraph-in>

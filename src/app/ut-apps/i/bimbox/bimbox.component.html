@@ -7,42 +7,48 @@
   <tr>
     <th>
       <h3>
-        Temperature, Humidity
+        Temperature
+        <a
+          routerLink="/Apps/I/Enviromap"
+          [queryParams]="{ measurement: 'temperature' }"
+          routerLinkActive="active"
+          title="Fullscreen"
+          ><mat-icon>map</mat-icon></a
+        >,&nbsp;&nbsp;&nbsp;&nbsp; Humidity
+        <a
+          routerLink="/Apps/I/Enviromap"
+          [queryParams]="{ measurement: 'humidity', id: 'i2c-7_0x76', value: 'H2O_rel_percent' }"
+          routerLinkActive="active"
+          title="Fullscreen"
+          ><mat-icon>map</mat-icon></a
+        >
       </h3>
-      <!-- <a
-        routerLink="/Apps/I/EnviroOne"
-        [queryParams]="{ filter: 'T' }"
-        routerLinkActive="active"
-        class="fullscreen"
-        title="Fullscreen"
-        ><mat-icon>settings_overscan</mat-icon></a
-      > -->
     </th>
     <th>
       <h3>
         Wind Speed
       </h3>
-      <!-- <a
-        routerLink="/Apps/I/EnviroOne"
-        [queryParams]="{ filter: 'rH' }"
+      <a
+        routerLink="/Apps/I/Enviromap"
+        [queryParams]="{ measurement: 'movement' }"
         routerLinkActive="active"
         class="fullscreen"
         title="Fullscreen"
-        ><mat-icon>settings_overscan</mat-icon></a
-      > -->
+        ><mat-icon>map</mat-icon></a
+      >
     </th>
     <th>
       <h3>
         Barometric Pressure
       </h3>
-      <!-- <a
-        routerLink="/Apps/I/EnviroOne"
-        [queryParams]="{ filter: 'P' }"
+      <a
+        routerLink="/Apps/I/Enviromap"
+        [queryParams]="{ measurement: 'pressure' }"
         routerLinkActive="active"
         class="fullscreen"
         title="Fullscreen"
-        ><mat-icon>settings_overscan</mat-icon></a
-      > -->
+        ><mat-icon>map</mat-icon></a
+      >
     </th>
   </tr>
   <tr>
@@ -102,14 +108,14 @@
       <h3>
         Particulate Matter
       </h3>
-      <!-- <a
-        routerLink="/Apps/I/EnviroOne"
-        [queryParams]="{ filter: 'PM' }"
+      <a
+        routerLink="/Apps/I/Enviromap"
+        [queryParams]="{ measurement: 'particulate_matter' }"
         routerLinkActive="active"
         class="fullscreen"
         title="Fullscreen"
-        ><mat-icon>settings_overscan</mat-icon></a
-      > -->
+        ><mat-icon>map</mat-icon></a
+      >
       <!-- <a
         routerLink="/Apps/I/Pmhist"
         routerLinkActive="active"
@@ -125,14 +131,14 @@
       <h3>
         Nitrogen Dioxide
       </h3>
-      <!-- <a
-        routerLink="/Apps/I/EnviroOne"
-        [queryParams]="{ filter: 'NO2' }"
+      <a
+        routerLink="/Apps/I/Enviromap"
+        [queryParams]="{ measurement: 'gas' }"
         routerLinkActive="active"
         class="fullscreen"
         title="Fullscreen"
-        ><mat-icon>settings_overscan</mat-icon></a
-      > -->
+        ><mat-icon>map</mat-icon></a
+      >
     </th>
   </tr>
   <tr>
@@ -180,12 +186,17 @@
         </div>
       </form>
       <!-- <p>
-        <a routerLink="/Apps/I/EnviroOne" routerLinkActive="active"
+        <a routerLink="/Apps/I/Enviromap" routerLinkActive="active"
           >Single Graph</a
         >
       </p> -->
       <div class="mapcontainer">
-        <app-map [x]="15.438" [y]="47.0707" [z]="12" [layers]="gpslayers"></app-map>
+        <app-map
+          [x]="15.438"
+          [y]="47.0707"
+          [z]="12"
+          [layers]="gpslayers"
+        ></app-map>
       </div>
     </td>
     <td>

@@ -364,6 +364,13 @@ const appRoutes: Routes = [
       ),
   },
   {
+    path: 'Apps/I/Enviromap',
+    loadChildren: () =>
+      import('./ut-apps/i/enviromap/enviromap.module').then(
+        (m) => m.EnviromapModule
+      ),
+  },
+  {
     path: 'Apps/I/Pmhist',
     loadChildren: () =>
       import('./ut-apps/i/pmhist/pmhist.module').then((m) => m.PmhistModule),

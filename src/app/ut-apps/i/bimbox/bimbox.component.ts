@@ -4,6 +4,7 @@ import { LocalStorageService } from '../../../core/local-storage.service';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
 import { geoJSON, circleMarker } from 'leaflet';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-bimbox',
@@ -94,7 +95,8 @@ export class BimboxComponent implements OnInit {
     public globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
-    public h: HelperFunctionsService
+    public h: HelperFunctionsService,
+    private router: ActivatedRoute
   ) {
     this.globalSettings.emitChange({ appName: 'BimBox 001' });
   }
@@ -114,6 +116,11 @@ export class BimboxComponent implements OnInit {
 
   ngOnInit() {
     this.globalSettings.emitChange({ fullscreen: true });
+    const starttime = this.router.snapshot.queryParamMap.get('t');
+    if (starttime && this.h.parseToSeconds(starttime) > 0) {
+      this.userStartTime = starttime;
+      this.changeMean(starttime);
+    }
     this.reload();
   }
   reload() {
