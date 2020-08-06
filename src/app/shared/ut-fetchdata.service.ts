@@ -311,22 +311,22 @@ export class UtFetchdataService {
             colname = colname.replace(/^mean_/, '');
           }
 
-          colname = colname.replace(/percent$/, '%');
-          colname = colname.replace(/_%/, '-%');
-          colname = colname.replace(/degC$/, '°C');
-          colname = colname.replace(/p([0-9.]*)_ugpm3$/, 'pm$1 (µg/m³)');
-          colname = colname.replace(/ugpm3$/, 'µg/m³');
-          colname = colname.replace(/gpm3$/, 'g/m³');
-          colname = colname.replace(/degps$/, '°/s');
-          colname = colname.replace(/mps2$/, 'm/s²');
-          colname = colname.replace(/uT$/, 'µT');
-          colname = colname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm');
           colname = colname.replace(/H2O_/, 'H₂O_');
           colname = colname.replace(/CO2_/, 'CO₂_');
           colname = colname.replace(/NO2_/, 'NO₂_');
           colname = colname.replace(/O3_/, 'O₃_');
           colname = colname.replace(/NH3_/, 'NH₃_');
           colname = colname.replace(/H2_/, 'H₂_');
+          colname = colname.replace(/percent$/, '%');
+          colname = colname.replace(/_%/, '-%');
+          colname = colname.replace(/degC$/, '°C');
+          colname = colname.replace(/p([0-9.]*)_ugpm3$/, 'pm$1 (µg / m³)'); //spaces in () are thin-spaces
+          colname = colname.replace(/_ugpm3$/, ' (µg / m³)');
+          colname = colname.replace(/gpm3$/, 'g/m³');
+          colname = colname.replace(/degps$/, '°/s');
+          colname = colname.replace(/mps2$/, 'm/s²');
+          colname = colname.replace(/uT$/, 'µT');
+          colname = colname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm');
           colname = colname.replace(/dewPoint/, 'dew point');
           colname = colname.replace(/_(\S+)$/, ' ($1)');
           const collabel = colname

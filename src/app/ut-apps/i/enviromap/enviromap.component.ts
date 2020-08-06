@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { GlobalSettingsService } from '../../../core/global-settings.service';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
+import { geoJSON, circleMarker } from 'leaflet';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -37,7 +38,7 @@ export class EnviromapComponent implements OnInit {
       },
     },
   };
-  labelBlackListT = ['host', 'serial', 'mean_*'];
+  labelBlackListT = ['host', 'serial', 'mean_*', 'id', 'sensor'];
   graphstyle = {
     position: 'absolute',
     top: '70%',
@@ -51,9 +52,6 @@ export class EnviromapComponent implements OnInit {
     console.log('new w', width);
   }
 
-  public displayed_points = {};
-  public layers = [];
-
   measurement = 'temperature';
   sensor = '';
   host = '';
@@ -66,6 +64,9 @@ export class EnviromapComponent implements OnInit {
 
   labels = [];
   data = [];
+  gpsdata = [];
+  public displayed_points = {};
+  public layers = [];
 
   public startTime = '2h';
   public userStartTime = this.startTime;
@@ -120,13 +121,23 @@ export class EnviromapComponent implements OnInit {
       params['id'] = this.id;
     }
 
-    const queries = this.utHTTP.influxMeanQuery(
-      this.measurement,
-      timeQuery,
-      params,
-      this.meanS,
-      this.value
-    );
+    let queries =
+      this.utHTTP.influxMeanQuery(
+        this.measurement,
+        timeQuery,
+        params,
+        this.meanS,
+        this.value
+      ) +
+      this.utHTTP.influxMeanQuery(
+        'location',
+        timeQuery,
+        {},
+        this.meanS,
+        '/lat|lon/'
+      );
+    // 'SELECT lat,lon FROM location WHERE ' +
+    // timeQuery;
 
     this.launchQuery(queries);
   }
@@ -183,11 +194,6 @@ export class EnviromapComponent implements OnInit {
           idata[r][c] *= 1000;
         }
       }
-      // if (item.match(/NO₂ \(µg\/m³\)/)) { // done in backend
-      //   for (let r = 0; r < idata.length; r++) {
-      //     idata[r][c] = this.h.smoothNO2(idata[r][c]);
-      //   }
-      // }
       if (item.match(/pressure/)) {
         this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
       }
@@ -200,8 +206,56 @@ export class EnviromapComponent implements OnInit {
       console.log('scale: lin');
     }
     this.startTime = this.userStartTime;
-    this.labels = labels;
-    this.data = idata;
+
+    const geojsonMarkerOptions = {
+      radius: 3,
+      fillColor: '#0000ff80',
+      color: '#0000ff',
+      weight: 1,
+      opacity: 1,
+      fillOpacity: 0.8,
+    };
+
+    const graphlabels = [];
+    const maplabels = ['Date', 'location lat', 'location lat'];
+    const graphdata = [];
+    const mapdata = [];
+    let latlabelpos: number, lonlabelpos: number;
+    for (let i = 0; i < labels.length; i++) {
+      const element = labels[i];
+      if (element == 'location lat') {
+        latlabelpos = i;
+      } else if (element == 'location lon') {
+        lonlabelpos = i;
+      } else {
+        graphlabels.push(element);
+      }
+    }
+    for (let r = 0; r < idata.length; r++) {
+      const row = idata[r];
+      let newgrow = [row[0]];
+      let newmrow = [row[0]];
+      for (let c = 1; c < row.length; c++) {
+        if (c == latlabelpos) {
+          newmrow[1] = row[c];
+        } else if (c == lonlabelpos) {
+          newmrow[2] = row[c];
+        } else {
+          newgrow.push(row[c]);
+        }
+      }
+      graphdata.push(newgrow);
+      mapdata.push(newmrow);
+    }
+    this.layers[0] = geoJSON(this.h.influx2geojsonPoints(idata, labels), {
+      pointToLayer: function (feature, latlng) {
+        return circleMarker(latlng, geojsonMarkerOptions);
+      },
+      onEachFeature: this.h.leafletPopup,
+    });
+
+    this.labels = graphlabels;
+    this.data = graphdata;
     this.colors = newColors;
     console.log(labels);
     console.log(idata);

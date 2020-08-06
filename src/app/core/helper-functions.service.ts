@@ -118,21 +118,46 @@ export class HelperFunctionsService {
     }
     return obj;
   }
-  influx2geojsonPoints(data): GeoJSON.FeatureCollection<any> {
+  influx2geojsonPoints(data, labels = []): GeoJSON.FeatureCollection<any> {
     let points: GeoJSON.FeatureCollection<any> = {
       type: 'FeatureCollection',
       features: [],
     };
+    let latlabelpos: number, lonlabelpos: number;
+    if (labels) {
+      for (let i = 0; i < labels.length; i++) {
+        const element = labels[i];
+        if (element == 'location lat') {
+          latlabelpos = i;
+        } else if (element == 'location lon') {
+          lonlabelpos = i;
+        }
+      }
+    }
     for (let i = 0; i < data.length; i++) {
       const element = data[i];
+      let coords = [];
+      if (!labels) {
+        coords = [element[2], element[1]];
+      } else {
+        coords = [element[lonlabelpos], element[latlabelpos]];
+      }
       const point: GeoJSON.Feature<any> = {
         type: 'Feature' as const,
-        properties: { date: element[0] },
+        properties: { Date: element[0] },
         geometry: {
           type: 'Point',
-          coordinates: [element[2], element[1]],
+          coordinates: coords,
         },
       };
+      if (labels.length > 3) {
+        for (let i = 1; i < labels.length; i++) {
+          if (i != latlabelpos && i != lonlabelpos) {
+            const label = labels[i];
+            point.properties[label] = element[i];
+          }
+        }
+      }
       points.features.push(point);
     }
     return points;
@@ -684,9 +709,9 @@ export class HelperFunctionsService {
       let text = '<table>';
       for (let [key, value] of Object.entries(feature.properties)) {
         const v =
-          key == 'date'
+          key == 'Date'
             ? value['toLocaleDateString']('de-DE', timeFormatOptions)
-            : value;
+            : Number.isFinite(value) ? Math.round(Number(value)*100)/100 : value;
         text += '<tr><th>' + key + ':</th><td>' + v + '</td></tr>';
       }
       text += '</table>';
