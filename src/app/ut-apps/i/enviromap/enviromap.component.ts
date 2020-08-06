@@ -53,10 +53,10 @@ export class EnviromapComponent implements OnInit {
   }
 
   measurement = 'temperature';
-  sensor = '';
+  sensor: String;
   host = '';
   referrer = 'Bimbox001';
-  id = '';
+  id: String;
   value = '*';
 
   db = 'bimbox001';
@@ -74,28 +74,46 @@ export class EnviromapComponent implements OnInit {
   public currentres = 0;
   public userMeanS = this.meanS;
   public fromTime: Date;
+  private from: Number; // unix time from urlparam
   public toTime: Date;
+  private to: Number; // unix time from urlparam
   public currentRange: string;
   updateFromToTimes(timearray) {
     // console.log(timearray);
     this.fromTime = new Date(timearray[0]);
+    this.from = timearray[0];
     this.toTime = new Date(timearray[1]);
+    this.to = timearray[1];
     const rangeSeconds = Math.floor((timearray[1] - timearray[0]) / 1000);
     this.currentRange = this.h.createHRTimeString(rangeSeconds);
     this.userMeanS = this.calcMean(rangeSeconds);
   }
 
   ngOnInit(): void {
-    ['host', 'measurement', 'sensor', 'referrer', 'id', 'value'].forEach(
-      (element) => {
-        const thing = this.router.snapshot.queryParamMap.get(element);
-        if (thing) {
-          this[element] = thing;
-        }
+    [
+      'host',
+      'measurement',
+      'sensor',
+      'referrer',
+      'id',
+      'value',
+      'from',
+      'to',
+    ].forEach((element) => {
+      const thing = this.router.snapshot.queryParamMap.get(element);
+      if (thing) {
+        this[element] = thing;
       }
-    );
+    });
     this.userMeanS = this.calcMean(this.h.parseToSeconds(this.startTime));
-    this.reload();
+    if (this.from && this.to) {
+      this.from = Number(this.from);
+      this.to = Number(this.to);
+      this.updateFromToTimes([this.from, this.to]);
+      this.reload(true);
+    } else {
+      this.reload();
+    }
   }
   reload(fromTo = false) {
     this.meanS = this.userMeanS;

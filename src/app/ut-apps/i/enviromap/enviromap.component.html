@@ -14,13 +14,31 @@
 <form class="settings" (submit)="reload(true)">
   <div class="section">
     <h3>Current Dataset:</h3>
-    <span class="cRange">{{ data.length }} Points</span><br />
-    <label>Resolution:</label><br />
-    <span class="cRange">{{ currentres }}s</span><br />
-
-    <label>Current Range:</label><br />
-    <span class="cRange">{{ currentRange }} </span><br /><br />
-    Download <a (click)="exportGeojson()">geojson</a>
+    <p>{{ data.length }} Points</p>
+    <p>
+      <label>Resolution:</label><br />
+      <span class="cRange">{{ currentres }}s</span>
+    </p>
+    <p>
+      <label>Current Range:</label><br />
+      <span class="cRange">{{ currentRange }} </span>
+    </p>
+    <p>Download <a (click)="exportGeojson()">geojson</a></p>
+    <p>
+      <a
+        routerLink="/Apps/I/Enviromap"
+        [queryParams]="{
+          measurement: measurement,
+          value: value,
+          sensor: sensor,
+          id: id,
+          from: from,
+          to: to
+        }"
+        routerLinkActive="active"
+        >Permalink</a
+      >
+    </p>
   </div>
   <div class="section">
     <h3>New Query:</h3>
@@ -70,7 +88,7 @@
   [columnLabels]="labels"
   [style]="graphstyle"
   [extraDyGraphConfig]="extraDyGraphConfig"
-  [startTime]="startTime"
+  [startTime]="undefined"
   enableHighlightCallback="true"
   [colors]="colors"
   [YLabel]="measurement"
@@ -78,3 +96,4 @@
   (returnCurrentZoom)="updateFromToTimes($event)"
   #R
 ></app-ut-dygraph-in>
+<!-- [startTime]="startTime" -->
