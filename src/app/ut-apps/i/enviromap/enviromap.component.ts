@@ -18,7 +18,7 @@ export class EnviromapComponent implements OnInit {
     public h: HelperFunctionsService,
     private router: ActivatedRoute
   ) {
-    this.globalSettings.emitChange({ appName: 'enviromap' });
+    this.globalSettings.emitChange({ appName: 'Enviromap' });
   }
   colors = [];
 
@@ -101,6 +101,7 @@ export class EnviromapComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.globalSettings.emitChange({ fullscreen: true });
     [
       'host',
       'measurement',
@@ -188,7 +189,11 @@ export class EnviromapComponent implements OnInit {
 
   launchQuery(clause: string) {
     this.utHTTP
-      .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
+      .getHTTPData(
+        this.utHTTP.buildInfluxQuery(clause, this.db, this.server),
+        'bimweb',
+        'D,OEZ4UL+[hGgMQA(@<){W[kd'
+      )
       .subscribe((data: Object) => this.handleData(data));
   }
   saveMean(param) {
@@ -284,6 +289,10 @@ export class EnviromapComponent implements OnInit {
           // newmrow[2] = element;//unused
           true;
         } else {
+          if (element === null) {
+            delete row[c];
+            continue;
+          }
           newgrow.push(element);
         }
         if (c == colorColumn) {

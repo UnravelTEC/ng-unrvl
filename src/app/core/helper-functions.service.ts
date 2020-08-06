@@ -131,7 +131,17 @@ export class HelperFunctionsService {
         ? Math.floor(percent / section_len_percent)
         : nr_sections - 1;
 
-
+    if (!colorRamp[needed_section]) {
+      console.error(
+        'percent',
+        percent,
+        'nr_sections',
+        nr_sections,
+        'needed_section',
+        needed_section
+      );
+      return '#FFFFFF';
+    }
     const lower_bound = colorRamp[needed_section];
     const upper_bound = colorRamp[needed_section + 1];
     const r_lower = lower_bound.substring(1, 3);
@@ -174,23 +184,37 @@ export class HelperFunctionsService {
       features: [],
     };
     let latlabelpos: number, lonlabelpos: number;
-    if (labels) {
-      for (let i = 0; i < labels.length; i++) {
+    if (labels.length > 2) {
+      for (let i = 1; i < labels.length; i++) {
+        // first: Date
         const element = labels[i];
-        if (element == 'location lat') {
-          latlabelpos = i;
-        } else if (element == 'location lon') {
-          lonlabelpos = i;
+        if (element.indexOf('location') > -1) {
+          if (element.indexOf('lat') > -1) {
+            latlabelpos = i;
+          } else if (element.indexOf('lon') > -1) {
+            lonlabelpos = i;
+          }
         }
       }
+      if (!latlabelpos || !lonlabelpos) {
+        console.error(
+          'error in influx2geojsonPoints, lat or lon not found in',
+          labels
+        );
+        return undefined;
+      }
     }
+
     for (let i = 0; i < data.length; i++) {
       const element = data[i];
       let coords = [];
-      if (!labels) {
+      if (labels.length == 0) {
         coords = [element[2], element[1]];
       } else {
         coords = [element[lonlabelpos], element[latlabelpos]];
+      }
+      if (!coords[0] || !coords[1]) {
+        continue;
       }
       const point: GeoJSON.Feature<any> = {
         type: 'Feature' as const,
@@ -210,6 +234,8 @@ export class HelperFunctionsService {
       }
       points.features.push(point);
     }
+    console.log('geojson:', points);
+
     return points;
   }
 
