@@ -711,7 +711,7 @@ export class HelperFunctionsService {
         const v =
           key == 'Date'
             ? value['toLocaleDateString']('de-DE', timeFormatOptions)
-            : Number.isFinite(value) ? Math.round(Number(value)*100)/100 : value;
+            : Number.isFinite(Number(value)) ? Math.round(Number(value)*100)/100 : value;
         text += '<tr><th>' + key + ':</th><td>' + v + '</td></tr>';
       }
       text += '</table>';
