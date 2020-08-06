@@ -4,6 +4,7 @@ import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
 import { geoJSON, circleMarker } from 'leaflet';
 import { ActivatedRoute } from '@angular/router';
+import { cloneDeep } from 'lodash-es';
 
 @Component({
   selector: 'app-enviromap',
@@ -74,10 +75,20 @@ export class EnviromapComponent implements OnInit {
   public currentres = 0;
   public userMeanS = this.meanS;
   public fromTime: Date;
-  private from: Number; // unix time from urlparam
+  public from: Number; // unix time from urlparam
   public toTime: Date;
-  private to: Number; // unix time from urlparam
+  public to: Number; // unix time from urlparam
   public currentRange: string;
+  public column: String; //used for color
+  public colorramp = [
+    'green:#00FF00',
+    'yellow:#FFFF00',
+    'orange:#FFA600',
+    'red:#FF0000',
+    'violet:#800080',
+  ];
+
+  public minmax = { min: Infinity, max: -Infinity };
   updateFromToTimes(timearray) {
     // console.log(timearray);
     this.fromTime = new Date(timearray[0]);
@@ -99,6 +110,7 @@ export class EnviromapComponent implements OnInit {
       'value',
       'from',
       'to',
+      'column',
     ].forEach((element) => {
       const thing = this.router.snapshot.queryParamMap.get(element);
       if (thing) {
@@ -192,6 +204,7 @@ export class EnviromapComponent implements OnInit {
 
     let logscale = true;
     const newColors = this.h.getColorsforLabels(labels);
+    let colorColumn: Number;
     for (let c = 1; c < labels.length; c++) {
       const item = labels[c];
 
@@ -215,6 +228,9 @@ export class EnviromapComponent implements OnInit {
       if (item.match(/pressure/)) {
         this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
       }
+      if (item.search(this.column) > -1) {
+        colorColumn = c;
+      }
     }
     // console.log(cloneDeep(this.dygLabels));
     if (logscale) {
@@ -226,13 +242,17 @@ export class EnviromapComponent implements OnInit {
     this.startTime = this.userStartTime;
 
     const geojsonMarkerOptions = {
-      radius: 3,
-      fillColor: '#0000ff80',
+      radius: 2,
+      // fillColor: '#0000ff80',
       color: '#0000ff',
       weight: 1,
       opacity: 1,
       fillOpacity: 0.8,
     };
+    const lastmarkerOptions = cloneDeep(geojsonMarkerOptions);
+    lastmarkerOptions.radius = 6;
+    lastmarkerOptions.fillOpacity = 0.5;
+    lastmarkerOptions.color = '#000000';
 
     const graphlabels = [];
     const maplabels = ['Date', 'location lat', 'location lat'];
@@ -249,33 +269,79 @@ export class EnviromapComponent implements OnInit {
         graphlabels.push(element);
       }
     }
+    let max = this.minmax.max;
+    let min = this.minmax.min;
     for (let r = 0; r < idata.length; r++) {
       const row = idata[r];
       let newgrow = [row[0]];
       let newmrow = [row[0]];
       for (let c = 1; c < row.length; c++) {
+        const element = row[c];
         if (c == latlabelpos) {
-          newmrow[1] = row[c];
+          // newmrow[1] = element; //unused
+          true;
         } else if (c == lonlabelpos) {
-          newmrow[2] = row[c];
+          // newmrow[2] = element;//unused
+          true;
         } else {
-          newgrow.push(row[c]);
+          newgrow.push(element);
+        }
+        if (c == colorColumn) {
+          if (max < element) {
+            max = element;
+          } else if (min > element) {
+            min = element;
+          }
         }
       }
       graphdata.push(newgrow);
-      mapdata.push(newmrow);
+      // mapdata.push(newmrow);//unused
     }
+    if (this.column) {
+      labels.push('color');
+      const range = max - min;
+      console.log('for', this.column, 'min:', min, 'max:', max, 'range', range);
+      for (let r = 0; r < idata.length; r++) {
+        const row = idata[r];
+        for (let c = 1; c < row.length; c++) {
+          if (c == colorColumn) {
+            const element = row[c];
+            const percentage = ((element - min) / range) * 100;
+            row.push(this.h.returnColorForPercent(percentage));
+            break;
+          }
+        }
+      }
+    }
+
     this.layers[0] = geoJSON(this.h.influx2geojsonPoints(idata, labels), {
       pointToLayer: function (feature, latlng) {
+        if (feature.properties['color']) {
+          geojsonMarkerOptions.color = feature.properties.color;
+        }
         return circleMarker(latlng, geojsonMarkerOptions);
       },
       onEachFeature: this.h.leafletPopup,
     });
+
+    // highlight Last Point
+    this.layers[1] = geoJSON(
+      this.h.influx2geojsonPoints([idata[idata.length - 1]], labels),
+      {
+        pointToLayer: function (feature, latlng) {
+          return circleMarker(latlng, lastmarkerOptions);
+        },
+        onEachFeature: this.h.leafletPopup,
+      }
+    );
 
     this.labels = graphlabels;
     this.data = graphdata;
     this.colors = newColors;
     console.log(labels);
     console.log(idata);
+  }
+  exportGeojson() {
+    this.h.exportGeojson(this.displayed_points);
   }
 }

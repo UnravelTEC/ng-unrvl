@@ -99,6 +99,56 @@ export class HelperFunctionsService {
     return newColors;
   }
 
+  // 'green:#00FF00',
+  //   'yellow:#FFFF00',
+  //   'orange:#FFA600',
+  //   'red:#FF0000',
+  //   '(dark)violet:#800080',
+  returnColorForPercent(
+    percent,
+    colorRamp = ['#00FF00', '#FFFF00', '#FFA600', '#FF0000', '#800080']
+  ) {
+    function colorFromPercent(
+      percent: number,
+      cfrom: string,
+      cto: string
+    ): string {
+      if (cfrom == cto) {
+        return cto;
+      }
+      const from_int = parseInt(cfrom, 16);
+      const to_int = parseInt(cto, 16);
+      const range = to_int - from_int;
+      const hexstr = Math.floor(from_int + (percent / 100) * range).toString(
+        16
+      );
+      return hexstr.length < 2 ? '0' + hexstr : hexstr;
+    }
+    const nr_sections = colorRamp.length - 1;
+    const section_len_percent = 100 / nr_sections;
+    const needed_section =
+      percent < 100
+        ? Math.floor(percent / section_len_percent)
+        : nr_sections - 1;
+
+
+    const lower_bound = colorRamp[needed_section];
+    const upper_bound = colorRamp[needed_section + 1];
+    const r_lower = lower_bound.substring(1, 3);
+    const g_lower = lower_bound.substring(3, 5);
+    const b_lower = lower_bound.substring(5, 7);
+    const r_upper = upper_bound.substring(1, 3);
+    const g_upper = upper_bound.substring(3, 5);
+    const b_upper = upper_bound.substring(5, 7);
+    const new_r = colorFromPercent(percent, r_lower, r_upper);
+    const new_g = colorFromPercent(percent, g_lower, g_upper);
+    const new_b = colorFromPercent(percent, b_lower, b_upper);
+    // console.log('percent', percent, 'nr_sections', nr_sections, 'needed_section', needed_section, new_r, new_g, new_b );
+    // console.log(percent, 'rgb', new_r, new_g, new_b);
+
+    return '#' + new_r + new_g + new_b;
+  }
+
   getBaseURL() {
     return this.domain;
   }
@@ -152,8 +202,8 @@ export class HelperFunctionsService {
       };
       if (labels.length > 3) {
         for (let i = 1; i < labels.length; i++) {
+          const label = labels[i];
           if (i != latlabelpos && i != lonlabelpos) {
-            const label = labels[i];
             point.properties[label] = element[i];
           }
         }
@@ -711,7 +761,9 @@ export class HelperFunctionsService {
         const v =
           key == 'Date'
             ? value['toLocaleDateString']('de-DE', timeFormatOptions)
-            : Number.isFinite(Number(value)) ? Math.round(Number(value)*100)/100 : value;
+            : Number.isFinite(Number(value))
+            ? Math.round(Number(value) * 100) / 100
+            : value;
         text += '<tr><th>' + key + ':</th><td>' + v + '</td></tr>';
       }
       text += '</table>';

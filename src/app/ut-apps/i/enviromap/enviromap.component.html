@@ -14,13 +14,13 @@
 <form class="settings" (submit)="reload(true)">
   <div class="section">
     <h3>Current Dataset:</h3>
-    <p>{{ data.length }} Points</p>
+    <p><label>#Points:</label><span class="cRange">{{ data.length }}</span></p>
     <p>
-      <label>Resolution:</label><br />
+      <label>Resolution:</label>
       <span class="cRange">{{ currentres }}s</span>
     </p>
     <p>
-      <label>Current Range:</label><br />
+      <label>Range:</label>
       <span class="cRange">{{ currentRange }} </span>
     </p>
     <p>Download <a (click)="exportGeojson()">geojson</a></p>
@@ -33,7 +33,8 @@
           sensor: sensor,
           id: id,
           from: from,
-          to: to
+          to: to,
+          column: column
         }"
         routerLinkActive="active"
         >Permalink</a
@@ -43,7 +44,6 @@
   <div class="section">
     <h3>New Query:</h3>
 
-    <br />
     <mat-form-field>
       <mat-label>Show range from now</mat-label>
       <mat-select
@@ -62,7 +62,7 @@
         <mat-option value="356d">1 year</mat-option>
       </mat-select>
     </mat-form-field>
-    <br />
+    <hr />
     <label for="runningAvgPoints"># Mean Seconds</label><br />
     <input
       type="text"
