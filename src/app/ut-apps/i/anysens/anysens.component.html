@@ -13,7 +13,7 @@
   [style]="graphstyle"
   [changeTrigger]="changeTrigger"
   [extraDyGraphConfig]="extraDyGraphConfig"
-  [startTime]="startTime"
+  [startTime]="undefined"
   enableHighlightCallback="true"
   [colors]="colors"
   [YLabel]="measurement"
@@ -30,6 +30,19 @@
 
     <label>Current Range:</label><br />
     <span class="cRange">{{ currentRange }} </span>
+    <p>
+      <a
+        routerLink="/Apps/I/Anysens"
+        [queryParams]="{
+          measurement: measurement,
+          sensor: sensor,
+          from: from,
+          to: to
+        }"
+        routerLinkActive="active"
+        >Permalink</a
+      >
+    </p>
   </div>
   <div class="section">
     <h3>New Query:</h3>
