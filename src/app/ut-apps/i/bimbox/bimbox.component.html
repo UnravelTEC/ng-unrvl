@@ -12,14 +12,14 @@
           routerLink="/Apps/I/Enviromap"
           [queryParams]="{ measurement: 'temperature', id: 'i2c-7_0x76', column:'°C' }"
           routerLinkActive="active"
-          title="Fullscreen"
+          title="View on Map"
           ><mat-icon>map</mat-icon></a
         >,&nbsp;&nbsp;&nbsp;&nbsp; Humidity
         <a
           routerLink="/Apps/I/Enviromap"
           [queryParams]="{ measurement: 'humidity', id: 'i2c-7_0x76', value: 'H2O_rel_percent', column:'mean' }"
           routerLinkActive="active"
-          title="Fullscreen"
+          title="View on Map"
           ><mat-icon>map</mat-icon></a
         >
       </h3>
@@ -33,7 +33,7 @@
         [queryParams]="{ measurement: 'movement', column: 'air' }"
         routerLinkActive="active"
         class="fullscreen"
-        title="Fullscreen"
+        title="View on Map"
         ><mat-icon>map</mat-icon></a
       >
     </th>
@@ -46,7 +46,7 @@
         [queryParams]="{ measurement: 'pressure', id: 'i2c-7_0x76', value: 'air_hPa', column: 'mean' }"
         routerLinkActive="active"
         class="fullscreen"
-        title="Fullscreen"
+        title="View on Map"
         ><mat-icon>map</mat-icon></a
       >
     </th>
@@ -113,7 +113,7 @@
         [queryParams]="{ measurement: 'particulate_matter', value: '/_ugpm3/', column: 'pm10' }"
         routerLinkActive="active"
         class="fullscreen"
-        title="Fullscreen"
+        title="View on Map"
         ><mat-icon>map</mat-icon></a
       >
       <!-- <a
@@ -136,7 +136,7 @@
         [queryParams]="{ measurement: 'gas', value: '/NO2_/', column: 'µg' }"
         routerLinkActive="active"
         class="fullscreen"
-        title="Fullscreen"
+        title="View on Map"
         ><mat-icon>map</mat-icon></a
       >
     </th>
