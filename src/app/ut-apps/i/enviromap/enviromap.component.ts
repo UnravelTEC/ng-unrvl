@@ -55,6 +55,7 @@ export class EnviromapComponent implements OnInit {
 
   measurement = 'temperature';
   sensor: String;
+  interval: string;
   host = '';
   referrer = 'Bimbox001';
   id: String;
@@ -89,7 +90,7 @@ export class EnviromapComponent implements OnInit {
   ];
 
   public minmax = { min: Infinity, max: -Infinity };
-  updateFromToTimes(timearray) {
+  updateFromToTimes(timearray, interval = '') {
     // console.log(timearray);
     this.fromTime = new Date(timearray[0]);
     this.from = timearray[0];
@@ -97,7 +98,12 @@ export class EnviromapComponent implements OnInit {
     this.to = timearray[1];
     const rangeSeconds = Math.floor((timearray[1] - timearray[0]) / 1000);
     this.currentRange = this.h.createHRTimeString(rangeSeconds);
-    this.userMeanS = this.calcMean(rangeSeconds);
+    if (!interval) {
+      this.userMeanS = this.calcMean(rangeSeconds);
+      this.interval = String(this.userMeanS);
+    } else {
+      this.userMeanS = Number(interval);
+    }
   }
 
   ngOnInit(): void {
@@ -112,6 +118,7 @@ export class EnviromapComponent implements OnInit {
       'from',
       'to',
       'column',
+      'interval',
     ].forEach((element) => {
       const thing = this.router.snapshot.queryParamMap.get(element);
       if (thing) {
@@ -122,7 +129,7 @@ export class EnviromapComponent implements OnInit {
     if (this.from && this.to) {
       this.from = Number(this.from);
       this.to = Number(this.to);
-      this.updateFromToTimes([this.from, this.to]);
+      this.updateFromToTimes([this.from, this.to], this.interval);
       this.reload(true);
     } else {
       this.reload();
