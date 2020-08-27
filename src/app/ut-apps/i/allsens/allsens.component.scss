@@ -1,0 +1,48 @@
+$graphbg: #3f3f3f;
+$appbody: #1e1e1e;
+.abody {
+  margin: 0.5em;
+}
+li {
+  margin: 0.25em 0;
+  a {
+    background-color: white;
+    padding: 0 0.5em;
+  }
+}
+
+table {
+  background-color: $graphbg;
+  border: 0;
+  border-collapse: collapse;
+  td {
+    border: 0;
+    padding: 0.25em 0.5em;
+    border-top: 2px solid $appbody;
+    a {
+      display: inline-block;
+      border: 2px solid black;
+      background: #565656;
+      padding: 0.5em;
+      cursor: pointer;
+      min-width: 2.25em;
+      color: white;
+      text-decoration: none;
+    }
+    a:hover {
+      background-color: #8e8e8e;
+    }
+  }
+  td:first-child a {
+      width: 90%;
+  }
+}
+table.sensors {
+  th {
+    padding: 0.5em 2em 0.5em 0.5em;
+  }
+  td:first-child a {
+    width: 80%;
+    // margin-right: -3em;
+  }
+}

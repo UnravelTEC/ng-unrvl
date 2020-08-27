@@ -37,7 +37,7 @@ export class GlobalSettingsService implements OnInit {
       [50, 'rgba(0, 128, 0, 0.35)'], // light green
       [100, 'rgba(255, 255, 0, 0.35)'], // yellow
       [250, 'rgba(255, 166, 0, 0.35)'], // orange
-      [500, 'rgba(255, 0, 0, 0.35)'] // red
+      [50000, 'rgba(255, 0, 0, 0.35)'] // red
     ],
     NO2_ugpm3: [
       [0.01, 'white'],
@@ -60,6 +60,7 @@ export class GlobalSettingsService implements OnInit {
   public server = {
     baseurl: '',
     serverName: '', // pure IP or hostname w/o protocol/port
+    protocol: '', // https or http
     architecture: undefined,
     type: 'unknown', // Tricorder || PublicServer
     hostname: 'uninitialized',
@@ -72,7 +73,8 @@ export class GlobalSettingsService implements OnInit {
     api: undefined,
     influxdb: '',
     influxuser: '',
-    influxpass: ''
+    influxpass: '',
+    prometheusEnabled: true
   };
   public client = {
     type: 'unknown', // local || web
@@ -125,6 +127,7 @@ export class GlobalSettingsService implements OnInit {
   ngOnInit() {
     this.reloadSettings();
 
+    // for local javascript client IPs:
     // if (this.RTCPeerConnection) {
     //   var rtc = new RTCPeerConnection({ iceServers: [] });
     //   if (1 || window['mozRTCPeerConnection']) {
@@ -200,9 +203,6 @@ export class GlobalSettingsService implements OnInit {
   // - try out switching to another server
   reloadSettings() {
     // const localStoredServer = this.getPrometheusServerFromLocalStorage();
-    this.server.influxdb = this.localStorage.get('influxdb');
-    this.server.influxuser = this.localStorage.get('influxuser');
-    this.server.influxpass = this.localStorage.get('influxpass');
     const localSettings = this.localStorage.get('globalSettings');
     const localStoredServer = this.h.getDeep(localSettings, [
       'server',
@@ -278,6 +278,7 @@ export class GlobalSettingsService implements OnInit {
           apiProtocol = apiProtocol + '://';
         }
       }
+      this.server.protocol = apiProtocol;
       protAndHost = apiProtocol + this.server.serverName;
 
       this.server.api = protAndHost + apiPort + apiPath;
@@ -294,6 +295,7 @@ export class GlobalSettingsService implements OnInit {
       // see if an API i there
       const firstURL = this.h.getBaseURL();
       this.server.serverName = this.stripProtPort(firstURL);
+      this.server.protocol = firstURL.startsWith('https://') ? 'https://' : 'http://';
       this.server.prometheus = firstURL + this.defaultPrometheusPath;
       console.log('No settings in LocalStorage, try our webendpoint', firstURL);
 
@@ -325,27 +327,45 @@ export class GlobalSettingsService implements OnInit {
           }
         );
     }
+    this.server.influxdb = this.localStorage.get('influxdb');
+    const isPublicServer = this.server.serverName.endsWith('.unraveltec.com');
+    if (!this.server.influxdb) {
+      // this.server.influxdb = isPublicServer ? 'public' : 'telegraf';
+      this.server.influxdb = isPublicServer ? 'koffer' : 'telegraf';
+    }
+    this.server.influxuser = this.localStorage.get('influxuser');
+    if (!this.server.influxuser && isPublicServer) {
+      this.server.influxuser = 'public';
+    }
+    this.server.influxpass = this.localStorage.get('influxpass');
+    if (!this.server.influxpass && isPublicServer) {
+      this.server.influxpass = 'unravelit42.14153';
+    }
   }
 
   checkForPrometheus(baseurl, path) {
-    return ;
-    // const prometheusTestQuery = 'query?query=scrape_samples_scraped';
-    // this.http.get(baseurl + path + prometheusTestQuery).subscribe(
-    //   (data: Object) => {
-    //     this.checkPrometheusTestResponse(data, baseurl, path);
-    //   },
-    //   error => {
-    //     console.log(
-    //       'no prometheus yet there',
-    //       baseurl + path + prometheusTestQuery,
-    //       ', 5s to next try.'
-    //     );
-    //     this.server.databaseStatus = 'down';
-    //     setTimeout(() => {
-    //       this.checkForPrometheus(baseurl, path);
-    //     }, 5 * 1000);
-    //   }
-    // );
+    if (this.server.prometheusEnabled == false) {
+      return;
+    }
+
+    const prometheusTestQuery = 'query?query=scrape_samples_scraped';
+    this.http.get(baseurl + path + prometheusTestQuery).subscribe(
+      (data: Object) => {
+        this.checkPrometheusTestResponse(data, baseurl, path);
+      },
+      error => {
+        console.log(
+          'no prometheus yet there',
+          baseurl + path + prometheusTestQuery,
+          ', 5s to next try.'
+        );
+        this.server.databaseStatus = 'down';
+        this.server.prometheusEnabled = false;
+        // setTimeout(() => {
+        //   this.checkForPrometheus(baseurl, path);
+        // }, 5 * 1000);
+      }
+    );
   }
 
   checkPrometheusTestResponse(data: Object, endpoint: string, endpath: string) {

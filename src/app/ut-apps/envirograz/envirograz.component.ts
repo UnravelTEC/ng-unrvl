@@ -27,30 +27,24 @@ export class EnvirograzComponent implements OnInit {
   };
   multiplicateFactors = [1000];
 
-  backGroundLevelsPM = [
-    // the color acts for "everything below $value"
-    [0.01, 'white'], // first one not used
-    [25, 'rgba(0, 128, 0, 0.678)'], // green
-    [50, 'rgba(0, 128, 0, 0.35)'], // light green
-    [100, 'rgba(255, 255, 0, 0.35)'], // yellow
-    [250, 'rgba(255, 166, 0, 0.35)'], // orange
-    [500, 'rgba(255, 0, 0, 0.35)'] // red
-  ];
-  backGroundLevelsN = [
-    // the color acts for "everything below $value"
-    [0.01, 'white'], // first one not used
-    [40, 'rgba(0, 128, 0, 0.678)'], // green Jahresgrenzwert
-    [80, 'rgba(0, 128, 0, 0.35)'], // light green Vorsorgegrenzwert 60-Minuten-Mittelwert
-    [200, 'rgba(255, 255, 0, 0.35)'], // yellow 1h-Mittel-Grenzwert Außen
-    [250, 'rgba(255, 166, 0, 0.35)'], // orange 1h-Mittel Gefahrengrenzwert f Innenräume
-    [400, 'rgba(255, 0, 0, 0.35)'] // red Alarmschwelle
-  ];
-
   extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 };
+  extraDyGraphConfigP = {
+    connectSeparatedPoints: true,
+    pointSize: 3,
+    axes: {
+      y: {
+        axisLabelWidth: 60
+      }
+    }
+  };
   extraDyGraphConfigPM = {
     connectSeparatedPoints: true,
     pointSize: 3,
-    logscale: true
+    axes: {
+      y: {
+        logscale: true
+      }
+    }
   };
 
   isNaN(a) {
@@ -59,9 +53,11 @@ export class EnvirograzComponent implements OnInit {
   changeTrigger = true;
   public startTime = '1h';
   public userStartTime = this.startTime;
+  public currentres = 0;
   public meanS = 10;
   public userMeanS = this.meanS;
   db = 'envirograz000';
+  server = 'https://newton.unraveltec.com';
 
   labels = {
     T: {},
@@ -84,24 +80,19 @@ export class EnvirograzComponent implements OnInit {
     PM: this.startTime,
     N: this.startTime
   };
-
-  public row1 = [new Date(new Date().valueOf() - 300100), 1]; //, null, null];
-  public row2 = [new Date(new Date().valueOf() - 200000), 2]; // null, 1.2, 0.8];
+  graphWidth = 1000;
+  setGraphWidth(width) {
+    this.graphWidth = width;
+    console.log('new w', width);
+  }
 
   constructor(
-    private globalSettings: GlobalSettingsService,
+    public globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
-    private h: HelperFunctionsService
+    public h: HelperFunctionsService
   ) {
     this.globalSettings.emitChange({ appName: 'Enviro Graz 000' });
-    for (const key in this.labels) {
-      if (this.labels.hasOwnProperty(key)) {
-        this.labels[key] = ['Date', 'sensor1-val1'];
-
-        this.data[key] = [this.row1, this.row2];
-      }
-    }
   }
 
   labelBlackListT = [
@@ -118,25 +109,31 @@ export class EnvirograzComponent implements OnInit {
   ];
 
   ngOnInit() {
+    this.globalSettings.emitChange({ fullscreen: true });
     this.reload();
   }
   reload() {
     this.meanS = this.userMeanS;
+    this.currentres = this.meanS;
     this.startTime = this.userStartTime;
+    const timeQuery = this.utHTTP.influxTimeString(this.startTime);
     this.launchQuery(
-      'SELECT mean(*) FROM temperature WHERE time > now() - ' +
-        this.startTime +
-        ' GROUP BY sensor,time(' +
-        String(this.meanS) +
-        's)',
+      this.utHTTP.influxMeanQuery(
+        'temperature',
+        timeQuery,
+        { sensor: ['EE08', 'BME280'] },
+        this.meanS
+      ),
       'T'
     );
     this.launchQuery(
-      'SELECT mean(/rel_percent/) FROM humidity WHERE time > now() - ' +
-        this.startTime +
-        ' GROUP BY sensor,time(' +
-        String(this.meanS) +
-        's)',
+      this.utHTTP.influxMeanQuery(
+        'humidity',
+        timeQuery,
+        { sensor: [] },
+        this.meanS,
+        '/rel_percent/'
+      ),
       'H'
     );
     this.launchQuery(
@@ -164,32 +161,21 @@ export class EnvirograzComponent implements OnInit {
       'N'
     );
   }
-
-  buildQuery(clause: string) {
-    return (
-      'https://' +
-      this.globalSettings.server.serverName +
-      '/influxdb/query?db=' +
-      this.db +
-      '&epoch=ms&q=' +
-      clause
-    );
+  calcMean(secondsRange) {
+    const divider = Math.floor(secondsRange / this.graphWidth);
+    return divider > 30 ? divider : 30;
   }
+
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
-    const widthPx = 600;
-    const divider = rangeSeconds / widthPx;
-    if (divider > 1) {
-      this.userMeanS = Math.floor(divider);
-    }
+    this.userMeanS = this.calcMean(rangeSeconds);
+    this.reload();
   }
 
   launchQuery(clause: string, id: string) {
-    const q = this.buildQuery(clause);
-    console.log('new query:', q);
+    const q = this.utHTTP.buildInfluxQuery(clause, this.db, this.server);
 
     this.utHTTP
-      // .getHTTPData(q)
       .getHTTPData(q, 'grazweb', '.RaVNaygexThM')
       .subscribe((data: Object) => this.handleData(data, id));
   }
@@ -199,6 +185,12 @@ export class EnvirograzComponent implements OnInit {
     console.log(id, 'received', ret);
     this.labels[id] = ret['labels'];
     this.data[id] = ret['data'];
+    if (id == 'N') {
+      const Ndata = this.data['N'];
+      for (let r = 0; r < Ndata.length; r++) {
+        Ndata[r][1] = this.h.smoothNO2(Ndata[r][1]);
+      }
+    }
     // console.log(cloneDeep(this.dygLabels));
     this.startTimes[id] = this.userStartTime;
     this.changeTrigger = !this.changeTrigger;

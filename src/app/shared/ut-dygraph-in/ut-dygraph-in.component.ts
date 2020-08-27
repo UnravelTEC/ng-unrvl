@@ -8,7 +8,7 @@ import {
   Output,
   ViewEncapsulation,
   SimpleChanges,
-  OnChanges
+  OnChanges,
 } from '@angular/core';
 
 import Dygraph from 'dygraphs';
@@ -24,7 +24,7 @@ import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
   selector: 'app-ut-dygraph-in',
   templateUrl: './ut-dygraph-in.component.html',
   styleUrls: ['./ut-dygraph-in.component.scss'],
-  encapsulation: ViewEncapsulation.None // from https://coryrylan.com/blog/css-encapsulation-with-angular-components
+  encapsulation: ViewEncapsulation.None, // from https://coryrylan.com/blog/css-encapsulation-with-angular-components
 })
 export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   // define on start what doesn't change
@@ -38,8 +38,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     top: 0,
     bottom: 0,
     left: 0,
-    right: 0
+    right: 0,
   };
+  private graphBackGroundColor = '#3F3F3F';
+  public yO = '0';
+  public y2O = '0';
   @Input()
   startTime = '15m'; // prefix m for min, s for seconds, h for hours, d for days
 
@@ -47,13 +50,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   YLabel = 'Value (unit)';
   @Input()
   XLabel = undefined;
-  @Input()
-  dataSeriesLabels: Array<string>;
-  @Input()
-  maxRetentionTime = 3; // how long the data is hold in Browser RAM - times the "startTime"
-  // - only enforced on fetchnewdata - and only cuts as much as is fetched new.
-  public retainDataInfinitely = false;
-  public initialDataLength = Infinity; //set on initial Data fetch
   @Input()
   runningAvgPoints = 0;
   @Input()
@@ -69,7 +65,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   showDate = true;
   @Input()
+  showLogscaleSwitcher = true;
+  @Input()
   backGroundLevels: Array<[number, string]>;
+  @Input()
+  colors = [];
 
   private backGroundLevelExample = [
     // the color acts for "everything below $value"
@@ -77,7 +77,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     [400, 'rgba(0, 128, 0, 0.5)'], // green
     [800, 'rgba(255, 255, 0, 0.5)'], // yellow
     [1200, 'rgba(255, 166, 0, 0.5)'], // orange
-    [20000, 'rgba(255, 0, 0, 0.5)'] // red
+    [20000, 'rgba(255, 0, 0, 0.5)'], // red
   ];
 
   @Input()
@@ -85,13 +85,24 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Output()
   returnRunningAvg = new EventEmitter<number>();
 
-  public yRange = [null, null];
+  @Input()
+  enableHighlightCallback = false;
+  @Output()
+  returnHighlightedRow = new EventEmitter<number>();
+
+  public yRange = [undefined, undefined];
+  public y2Range = [undefined, undefined];
+
+  private gridlineActiveWidth = 1.5;
+  private gridlineInactiveWidth = 0.0001;
+  private gridlineActiveColor = '#4A4A4A';
+  private gridlineInactiveColor = this.graphBackGroundColor;
 
   dyGraphOptions = {
     // http://dygraphs.com/options.html
     drawCallback: this.afterDrawCallback,
     zoomCallback: this.afterZoomCallback,
-    clickCallback: this.clickCallback,
+    // clickCallback: this.clickCallback,
 
     // panEdgeFraction: 0.9,
 
@@ -99,18 +110,44 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     title: '',
     animatedZooms: true,
     connectSeparatedPoints: false,
-    logscale: false,
+    highlightSeriesBackgroundAlpha: 1, // disable
     pointSize: 1, // radius
     hideOverlayOnMouseOut: true,
     highlightSeriesOpts: {
       strokeWidth: 3,
       strokeBorderWidth: 1,
-      highlightCircleSize: 5
+      highlightCircleSize: 5,
+      strokeBorderColor: this.graphBackGroundColor,
     },
     labelsSeparateLines: true,
-    valueRange: this.yRange,
+
+    gridLinePattern: [4, 4],
+    gridLineWidth: this.gridlineActiveWidth,
+    gridLineColor: this.gridlineActiveColor,
+    axisLineColor: 'yellow',
+    axisLineWidth: 0.001,
+    xAxisHeight: 34, // xlabel is 18 high
+    // yRangePad: 200, // spacing for data points inside graph
+    logscale: true, // must be true, otherwise we cant enable it for y/y2
+    axes: {
+      y: {
+        logscale: false,
+        drawGrid: true,
+        gridLineWidth: this.gridlineActiveWidth,
+        independentTicks: true,
+      },
+      y2: {
+        logscale: false,
+        gridLineWidth: this.gridlineInactiveWidth,
+        gridLineColor: this.gridlineInactiveColor,
+        drawGrid: true,
+        independentTicks: true,
+      },
+    },
+
+    // valueRange: this.yRange,
     legend: <any>'always', // also 'never' possible
-    visibility: []
+    visibility: [],
   };
   private minimalOptions = {
     strokeWidth: 1.5,
@@ -121,16 +158,19 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     rightGap: 0,
     highlightSeriesBackgroundAlpha: 1,
     highlightCircleSize: 0,
-    highlightSeriesOpts: { strokeBorderWidth: 0, strokeWidth: 1.5 }
+    highlightSeriesOpts: { strokeBorderWidth: 0, strokeWidth: 1.5 },
   };
 
   public fromZoom: Date;
   public fromFormDate = new FormControl(new Date());
   public toZoom: Date;
   public toFormDate = new FormControl(new Date());
+  public pickerEndDate = new Date();
 
   @Input()
   public displayedData = [];
+  @Input()
+  public dataReset = false;
   public lastValue = undefined;
   public lastValues = [];
 
@@ -142,7 +182,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   public dataBeginTime: Date;
   public dataEndTime: Date;
   public currentXrange: number;
-  public currentXrangeText: string;
   public average: number;
   public visibleAverage: number;
   public averages: number[] = [];
@@ -158,9 +197,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   public waiting = true;
   public error: string = undefined;
 
-  public running = false;
   public optionsOpen = false;
-  public updateOnNewData = true;
+  public legendContentVisible = true;
 
   public panAmount = 0.5;
   public zoomValue = 5;
@@ -172,18 +210,17 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   private overrideDateWindow = [];
 
-  public oldFetchRunning = {}; //      {start: Date, end: Date }
-
-  // public fetchFromServerIntervalReducedMS = this.dataBaseQueryStepMS; //reduced if screen res too low (calculated later)
-
   public graphWidthPx = 0;
-  public maxNativeInterval = 0;
+  @Output()
+  returnGraphWidthOnChange = new EventEmitter<number>();
+  @Output()
+  returnCurrentZoom = new EventEmitter<number>();
 
   public stats = false;
 
-  Dygraph: Dygraph;
+  private activeYAxis = 'y1';
 
-  intervalSubscription: Subscription;
+  Dygraph: Dygraph;
 
   constructor(
     private utFetchdataService: UtFetchdataService,
@@ -196,45 +233,85 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     this.updateGraph();
   }
+  onWheel(ev) {
+    console.log(ev);
+    if (ev.deltaY != 0) {
+      this.zoom(ev.deltaY > 0 ? 1.25 : 0.66);
+    }
+
+    if (ev.deltaX != 0) {
+      const oldPan = this.panAmount;
+      this.panAmount = 0.05;
+      this.pan(ev.deltaX > 0 ? 'forward' : 'back');
+      this.panAmount = oldPan;
+    }
+  }
 
   getXLabel() {
-    const xRangeText = this.currentXrangeText ? this.currentXrangeText : '??';
+    const xRangeText = '??';
     // : this.startTime;
     return this.XLabel === undefined
-      ? 'Time (' + xRangeText + ')'
+      ? 'Time (&#8202;' + xRangeText + '&#8202;)'
       : this.XLabel;
   }
-  updateXLabel() {
+  returnXrangeText(newXrange) {
+    return 'Time (&#8202;' + this.h.createHRTimeString(newXrange) + '&#8202;)';
+  }
+  updateXLabel(update = true) {
     this.dyGraphOptions['xlabel'] = this.getXLabel();
     if (this.Dygraph) {
-      this.Dygraph.updateOptions({ xlabel: this.dyGraphOptions['xlabel'] });
+      this.Dygraph.updateOptions(
+        { xlabel: this.dyGraphOptions['xlabel'] },
+        !update
+      );
     }
   }
   updateGraph() {
     if (this.Dygraph) {
-      while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
+      while (
+        this.dyGraphOptions.visibility.length <
+        this.columnLabels.length - 1
+      ) {
         this.dyGraphOptions.visibility.push(true);
       }
 
-      [this.fromZoom, this.toZoom] = this.calculateTimeRange(
-        this.startTime,
-        'now'
-      );
+      this.dyGraphOptions['labels'] = this.columnLabels;
 
-      this.dyGraphOptions['dateWindow'] = [
-        this.fromZoom.valueOf(),
-        this.toZoom.valueOf()
-      ];
-      this.dyGraphOptions['labels'] = this.columnLabels
-
-      this.setCurrentXrange();
-      this.updateDateWindow();
+      const newDataBeginTime = this.displayedData[0][0];
+      const newDataEndTime = this.displayedData[
+        this.displayedData.length - 1
+      ][0];
+      if (
+        newDataBeginTime.valueOf() != this.dataBeginTime.valueOf() ||
+        newDataEndTime.valueOf() != this.dataEndTime.valueOf()
+      ) {
+        this.dataReset = true;
+      }
+      if (this.dataReset) {
+        console.log('data reset, restore viewport');
+        this.dataBeginTime = newDataBeginTime;
+        this.dataEndTime = newDataEndTime;
+        this.dyGraphOptions['dateWindow'] = [
+          this.dataBeginTime.valueOf(),
+          this.dataEndTime.valueOf(),
+        ];
+        this.dataReset = false;
+      }
+      if (this.colors && this.colors.length) {
+        this.dyGraphOptions['colors'] = this.colors;
+        this.Dygraph.updateOptions(
+          { colors: this.dyGraphOptions['colors'] },
+          true
+        );
+      }
       this.Dygraph.updateOptions({
         file: this.displayedData,
         labels: this.columnLabels,
+        axes: this.dyGraphOptions.axes,
         visibility: this.dyGraphOptions.visibility,
-        dateWindow: this.dyGraphOptions['dateWindow']
+        dateWindow: this.dyGraphOptions['dateWindow'],
       });
+
       if (this.minimal && this.displayedData.length > 10) {
         const dateOfSecondPt = this.displayedData[1][0].valueOf();
         const fromZoom = this.Dygraph.xAxisRange()[0];
@@ -245,32 +322,44 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
   }
-
+  waitForData() {
+    if (this.displayedData && this.displayedData.length > 1) {
+      this.handleInitialData(this.displayedData);
+    } else {
+      if (this.displayedData.length == 0 && this.columnLabels.length == 1) {
+        this.noData = true;
+        this.waiting = false;
+        return;
+      }
+      setTimeout(() => {
+        this.waitForData();
+      }, 200);
+    }
+  }
   ngOnInit() {
     this.dyGraphOptions['underlayCallback'] = this.backGroundLevels
       ? this.highLightBackgroundLevels
-      : undefined;
-    /*this.dyGraphOptions.labels.push(...this.dataSeriesLabels);
-    if (!this.dyGraphOptions.labels[1]) {
-      this.dyGraphOptions.labels[1] = this.queryString;
-    }*/
+      : this.highlightDefaultBackground;
     if (this.minimal) {
       this.options = false;
       this.showDate = false;
       this.YLabel = '';
       this.XLabel = '';
-      this.maxRetentionTime = 1.2;
+    } else {
+      this.dyGraphOptions['legendFormatter'] = this.legendFormatter;
     }
-    if (this.backGroundLevels) {
-      this.dyGraphOptions['backGroundLevels'] = this.backGroundLevels; // option we create ourselves to access without Dygraphs.parent in initial draw call
+
+    if (this.enableHighlightCallback) {
+      this.dyGraphOptions['highlightCallback'] = this.highlightCallback;
+      this.dyGraphOptions['unhighlightCallback'] = this.unhighlightCallback;
     }
     this.dyGraphOptions['ylabel'] = this.YLabel;
-    this.dyGraphOptions['labels'] = this.columnLabels;
-    if (!this.columnLabels || !this.columnLabels.length) {
-      console.error('you have to supply correct columnLabels');
-      return;
-    }
-    while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
+    // this.dyGraphOptions['labels'] = this.columnLabels;
+
+    while (
+      this.dyGraphOptions.visibility.length <
+      this.columnLabels.length - 1
+    ) {
       this.dyGraphOptions.visibility.push(true);
     }
     this.updateXLabel();
@@ -286,48 +375,31 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     // this.displayedData = [[undefined, null]];
     this.htmlID = 'graph_' + (Math.random() + 1).toString();
+    if (!document['Dygraphs']) {
+      document['Dygraphs'] = [];
+    }
+    document['Dygraphs'][this.htmlID] = this;
+    this.dyGraphOptions['labelsDiv'] = 'L_' + this.htmlID;
 
     // console.log(this.startTime, this.endTime);
 
-    [this.dataBeginTime, this.dataEndTime] = this.calculateTimeRange(
-      this.startTime,
-      'now',
-      true
-    );
+    if (this.startTime) {
+      [this.dataBeginTime, this.dataEndTime] = this.calculateTimeRange(
+        this.startTime,
+        'now',
+        true
+      );
+    }
 
-    setTimeout(() => {
-      this.handleInitialData(this.displayedData);
-    }, 200);
-
-    // console.log(
-    //   'dataEndTime ' + (this.dataEndTime.valueOf() / 1000).toString(),
-    //   'range: ',
-    //   (this.dataEndTime.valueOf() - this.dataBeginTime.valueOf()) / 1000,
-    //   's'
-    // );
-
-    // this.queryEndPoint = this.constructQueryEndpoint();
-
-    // this.utFetchdataService
-    //   .getRange(
-    //     this.queryString,
-    //     this.dataBeginTime,
-    //     this.dataEndTime,
-    //     this.dataBaseQueryStepMS,
-    //     this.queryEndPoint
-    //   )
-    //   .subscribe(
-    //     (displayedData: Object) => this.handleInitialData(displayedData),
-    //     error => this.handlePrometheusErrors(error)
-    //   );
+    this.waitForData();
   }
 
   ngOnDestroy() {
-    this.stopUpdate();
     if (this.Dygraph) {
       this.Dygraph.destroy();
       console.log('DyGraph destroyed');
     }
+    delete document['Dygraphs'][this.htmlID];
   }
 
   updateDyGraphOptions() {
@@ -338,76 +410,34 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         }
       }
     }
-    for (const key in this.extraDyGraphConfig) {
-      if (this.extraDyGraphConfig.hasOwnProperty(key)) {
-        this.dyGraphOptions[key] = this.extraDyGraphConfig[key];
-      }
+
+    // console.log('old:', cloneDeep(this.dyGraphOptions));
+    // console.log('with:', cloneDeep(this.extraDyGraphConfig));
+    this.h.deepCopyInto(this.dyGraphOptions, this.extraDyGraphConfig);
+    // console.log('result', cloneDeep(this.dyGraphOptions));
+
+    this.dyGraphOptions.logscale =
+      this.dyGraphOptions.axes.y.logscale ||
+      this.dyGraphOptions.axes.y2.logscale;
+
+    const yOffset = this.h.getDeep(this.dyGraphOptions, [
+      'axes',
+      'y',
+      'axisLabelWidth',
+    ]);
+    if (yOffset) {
+      this.yO = String(yOffset - 50);
+      console.log('yOffset:', this.yO);
     }
-  }
-
-  // parse new labels
-  // fill resortedPData array -> output
-  // update this.columnLabels -> member var
-  // add new labels to oldLabels&
-  syncNewToOldLabels(promData, oldData, oldLabels) {
-    const debugflag = false;
-    const receivedDataset = {}; // labelstring : data[] foreach series
-
-    // update labels
-    this.debugFun(['old labels:', oldLabels], debugflag);
-    const newLabels = [];
-    let dataThere = false;
-    for (let seriesNr = 0; seriesNr < promData.length; seriesNr++) {
-      const series = promData[seriesNr];
-      const newLabelString = this.h.createLabelString(
-        series['metric'],
-        this.labelBlackList
-      );
-      newLabels.push(newLabelString);
-
-      if (series['values'].length) {
-        dataThere = true;
-      }
-      receivedDataset[newLabelString] = series['values'];
+    const y2Offset = this.h.getDeep(this.dyGraphOptions, [
+      'axes',
+      'y2',
+      'axisLabelWidth',
+    ]);
+    if (y2Offset) {
+      this.y2O = String(y2Offset - 50);
+      console.log('y2Offset:', this.y2O);
     }
-    if (!dataThere) {
-      console.log('all data columns received empty');
-      return undefined;
-    }
-
-    this.debugFun(['new labels:', newLabels], debugflag);
-
-    const resortedPData = []; // in the order of this.displayedData
-
-    resortedPData.push(['Timestamp']); // dummy to have indices the same
-
-    for (let i = 0; i < newLabels.length; i++) {
-      const currentNewLabelString = newLabels[i];
-      const oldIndex = oldLabels.indexOf(currentNewLabelString);
-      if (oldIndex === -1) {
-        // update old data with up to now with NaN
-        oldData.forEach(element => {
-          element.push(NaN);
-        });
-        resortedPData[oldLabels.length] =
-          receivedDataset[currentNewLabelString];
-        oldLabels.push(currentNewLabelString);
-        this.columnLabels[oldLabels.length - 2] = this.h.getDeep(promData, [
-          i,
-          'metric'
-        ]);
-        console.log('columnlabels now:', cloneDeep(this.columnLabels));
-        this.debugFun(['added new label, result:', oldLabels], debugflag);
-        // this.dyGraphOptions.visibility.push(true);
-      } else {
-        resortedPData[oldIndex] = receivedDataset[currentNewLabelString];
-      }
-      // Note: it may be the case that resortedPData has empty indices!!
-    }
-    this.debugFun(['old labels after:', oldLabels], debugflag);
-    this.debugFun(['resortedPData:', resortedPData, oldLabels], debugflag); // should be resorted to indices like in oldLabels
-
-    return resortedPData;
   }
 
   updateLastValueMembers(dataset) {
@@ -468,20 +498,35 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.min = newdata;
     }
   }
+  setYranges() {
+    const yranges = this.Dygraph.yAxisRanges();
+    this.yRange = yranges[0];
+    if (yranges[1] && yranges[1].length) {
+      this.y2Range = yranges[1];
+    }
+  }
 
   handleInitialData(receivedData: Object) {
     if (!this.displayedData.length) {
+      console.error('no data');
+      return;
+    }
+    if (!this.columnLabels || !this.columnLabels.length) {
+      console.error('you have to supply correct columnLabels');
       return;
     }
     // console.log('handleInitialData: received Data:', cloneDeep(receivedData));
 
-    // this.updateDataSet(receivedData);
-
     this.updateAverages();
 
     this.updateDateWindow();
+    this.dyGraphOptions['xlabel'] = this.returnXrangeText(
+      (this.toZoom.valueOf() - this.fromZoom.valueOf()) / 1000
+    );
 
     this.dyGraphOptions['labels'] = this.columnLabels;
+    // console.log('COLORS:', cloneDeep(this.colors), cloneDeep(this.h.colorArray));
+
     console.log(cloneDeep(this.dyGraphOptions));
     if (this.columnLabels.length != this.displayedData[0].length) {
       console.error(
@@ -492,16 +537,26 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       );
       return;
     }
+    this.dyGraphOptions['colors'] = this.colors.length
+      ? this.colors
+      : this.h.colorArray;
+    if (this.backGroundLevels) {
+      this.dyGraphOptions['backGroundLevels'] = this.backGroundLevels; // option we create ourselves to access without Dygraphs.parent in initial draw call
+    }
+    this.updateDyGraphOptions();
 
     this.waiting = false;
-    while (this.dyGraphOptions.visibility.length < this.columnLabels.length) {
+    while (
+      this.dyGraphOptions.visibility.length <
+      this.columnLabels.length - 1
+    ) {
       this.dyGraphOptions.visibility.push(true);
     }
     console.log(
       'creating Dyg',
       this.htmlID,
-      this.displayedData,
-      this.dyGraphOptions
+      cloneDeep(this.displayedData),
+      cloneDeep(this.dyGraphOptions)
     );
 
     this.Dygraph = new Dygraph(
@@ -521,64 +576,221 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.noData = true;
       return;
     }
-    this.initialDataLength = this.currentXrange;
-    console.log('this.initialDataLength', this.initialDataLength);
 
-    // if (this.fetchFromServerIntervalMS > 0) {
-    //   this.startUpdate();
-    // }
-    this.yRange = this.Dygraph.yAxisRange();
-    // console.log('handleInitialData: calling checkAndFetchOldData');
-    // this.checkAndFetchOldData();
-    this.setCurrentXrange();
+    this.checkAndUpdateGraphWidth();
+    this.setYranges();
   }
 
-  clickCallback(e, x, points) {
-    console.log('clickCallback');
-    if (this.hasOwnProperty('parent')) {
-      const parent = this['parent'];
-      if (parent.options != 'false') {
-        // do only if user has option to enable it again
-        parent.stopUpdateOnNewData();
+  getSeriesAxis(seriesName) {
+    const axisVal = this.h.getDeep(this.dyGraphOptions, [
+      'series',
+      seriesName,
+      'axis',
+    ]);
+    return axisVal ? axisVal : 'y1';
+  }
+  getAxisElements(dygDiv) {
+    let y1axis = undefined,
+      y2axis = undefined;
+    const children = dygDiv.childNodes;
+    for (const key in children) {
+      if (y1axis && y2axis) {
+        break;
+      }
+      if (children.hasOwnProperty(key)) {
+        const element = children[key];
+        if (
+          element.firstChild &&
+          element.firstChild.firstChild &&
+          element.firstChild.firstChild['className']
+        ) {
+          const destchild = element.firstChild.firstChild;
+          const childclass = destchild['className'];
+          if (!y1axis && childclass.search('dygraph-ylabel') > -1) {
+            y1axis = destchild;
+            continue;
+          }
+          if (!y2axis && childclass.search('dygraph-y2label') > -1) {
+            // console.log('found y2');
+            y2axis = destchild;
+          }
+        }
+      }
+    }
+    return [y1axis, y2axis];
+  }
+  setAxisHighlight(seriesName) {
+    const axis = this.getSeriesAxis(seriesName);
+    if (axis == this.activeYAxis) {
+      return;
+    }
+    this.activeYAxis = axis;
+    // console.log(event, x, row, points);
+    const classList = document.getElementById(this.htmlID).classList;
+    this.activateGrid(axis);
+    if (axis == 'y1') {
+      classList.add('y1');
+      classList.remove('y2');
+    } else {
+      classList.add('y2');
+      classList.remove('y1');
+    }
+  }
+  activateGrid(grid = 'y1') {
+    const yRanges = this.Dygraph.yAxisRanges();
+    this.dyGraphOptions.axes.y['valueRange'] = yRanges[0];
+    this.dyGraphOptions.axes.y2['valueRange'] = yRanges[1];
+    if (grid == 'y1') {
+      // this.dyGraphOptions.axes.y['drawGrid'] = true;
+      // this.dyGraphOptions.axes.y2['drawGrid'] = false;
+      this.dyGraphOptions.axes.y['gridLineWidth'] = this.gridlineActiveWidth; // width doesn't work in chrome
+      this.dyGraphOptions.axes.y['gridLineColor'] = this.gridlineActiveColor; // use color for chrome
+      this.dyGraphOptions.axes.y2['gridLineWidth'] = this.gridlineInactiveWidth;
+      this.dyGraphOptions.axes.y2['gridLineColor'] = this.gridlineInactiveColor;
+    } else {
+      // this.dyGraphOptions.axes.y['drawGrid'] = false;
+      // this.dyGraphOptions.axes.y2['drawGrid'] = true; // note: enabling drawGrid y2 again doesn't work, dunno why - use linewidth
+      this.dyGraphOptions.axes.y['gridLineWidth'] = this.gridlineInactiveWidth;
+      this.dyGraphOptions.axes.y['gridLineColor'] = this.gridlineInactiveColor;
+      this.dyGraphOptions.axes.y2['gridLineWidth'] = this.gridlineActiveWidth;
+      this.dyGraphOptions.axes.y2['gridLineColor'] = this.gridlineActiveColor;
+    }
+    this.Dygraph.updateOptions({ axes: this.dyGraphOptions.axes });
+    console.log('new grid:', grid, this.dyGraphOptions.axes);
+  }
+
+  highlightCallback(event, x, points, row, seriesName) {
+    // note: do not use log scale, dygraph does return only displayed data (no values == 0)
+    if (!this.hasOwnProperty('parent')) {
+      console.error('highlightCallback: No parent');
+      return;
+    }
+    const parent = this['parent'];
+
+    const values = { points: points, seriesName: seriesName };
+    parent.returnHighlightedRow.emit(values);
+
+    if (this['numAxes']() < 2) {
+      return;
+    }
+    parent.setAxisHighlight(seriesName);
+  }
+  unhighlightCallback(event) {
+    this['clearSelection']();
+    if (this['numAxes']() < 2 || !this['parent']) {
+      return;
+    }
+    // console.log('unhighlight');
+    // console.log(event);
+    const classList = document.getElementById(this['parent'].htmlID).classList;
+    classList.remove('y1');
+    classList.remove('y2');
+
+    // const DygDiv = document.getElementById(this['parent'].htmlID).firstChild;
+    // const children = DygDiv.childNodes;
+    // ['dygraph-ylabel', 'dygraph-y2label'].forEach(cssclass => {
+    //   for (const key in children) {
+    //     if (
+    //       children.hasOwnProperty(key) &&
+    //       children[key].firstChild &&
+    //       children[key].firstChild.firstChild &&
+    //       children[key].firstChild.firstChild['className'] &&
+    //       children[key].firstChild.firstChild['className'].search(cssclass) > -1
+    //     ) {
+    //       children[key].firstChild.firstChild['style'].textShadow = 'none';
+    //       children[key].firstChild.firstChild['style'].opacity = 1;
+    //       break;
+    //     }
+    //   }
+    // });
+  }
+  toggleLegendContent(id = '') {
+    this.legendContentVisible = !this.legendContentVisible;
+    if (id) {
+      const classList = document.getElementById('L_' + id).classList;
+      if (classList.contains('cthide')) {
+        classList.remove('cthide');
+      } else {
+        classList.add('cthide');
       }
     }
   }
+  legendFormatter(data) {
+    // let html = '<table>';
+    // html += '<tr><th colspan="3" class="header">' + (data.xHTML ? data.xHTML + ':' : 'Legend:') + '</th></tr>';
+    const htmlID = this['parent'] ? this['parent']['htmlID'] : '';
+    const toggleScript = htmlID
+      ? `onclick="document['Dygraphs']['${htmlID}'].toggleLegendContent('${htmlID}')"`
+      : '';
+    let html =
+      '<div class="header">Legend: ' +
+      (data.xHTML ? ' values @ ' + data.xHTML : '') +
+      `</div><div class="legendToggle" ${toggleScript} title="click to toggle legend">&nbsp;</div>`;
+    html += '<table>';
 
+    // console.log(htmlID);
+    function genCallback(label, htmlID) {
+      return htmlID
+        ? `onmousedown="document['Dygraphs']['${htmlID}'].tVis4Label('${label}');" ` +
+            `onmouseover="document['Dygraphs']['${htmlID}'].selectSeries('${label}');"`
+        : '';
+    }
+
+    for (let i = 0; i < data.series.length; i++) {
+      const series = data.series[i];
+      const displayedValue = !series.hasOwnProperty('yHTML')
+        ? ''
+        : series.yHTML;
+      const spanvis =
+        data.x == null || !series.hasOwnProperty('yHTML')
+          ? "style='visibility:hidden'"
+          : '';
+      const cls = series.isHighlighted ? 'class="highlight"' : '';
+      const callbacks = genCallback(series.label, htmlID);
+      const textcolor = series.isVisible ? '' : ' style="color:gray" ';
+      html += `<tr style='color:${series.color};' ${cls} ${callbacks}><th${textcolor}>${series.dashHTML}</th><th${textcolor}>${series.labelHTML}<span ${spanvis}>:</span>&thinsp;</th><td>${displayedValue}</td></tr>`;
+    }
+    return html + '</table>';
+  }
+  selectSeries(name: string) {
+    // this.Dygraph.clearSelection();
+    this.Dygraph.setSelection(false, name);
+    if (this.Dygraph.numAxes() < 2) {
+      return;
+    }
+    this.setAxisHighlight(name);
+  }
+
+  // gets called after AfterDrawCallback
   afterZoomCallback(
     minDate: number,
     maxDate: number,
     yRanges?: Array<Array<number>>
   ) {
-    const debugflag = false;
+    const debugflag = true;
     if (debugflag) {
       console.log('after dygraph zoom callback');
       console.log(typeof minDate, minDate, maxDate, yRanges);
+      return;
     }
 
     if (this.hasOwnProperty('parent')) {
       const parent = this['parent'];
       console.log(yRanges[0]);
 
-      parent.yRange = yRanges[0];
-      parent.updateAverages();
-      // parent.fromZoom = new Date(minDate);
-      // parent.toZoom = new Date(maxDate);
-
-      //reimplementation of parent.updateXLabel();
-      parent.setCurrentXrange();
-      const xRangeText = parent.currentXrangeText
-        ? parent.currentXrangeText
-        : parent.startTime;
-      parent.dyGraphOptions.xlabel =
-        parent.XLabel === undefined
-          ? 'Time (' + xRangeText + ')'
-          : parent.XLabel;
-      // console.log('new xlabel:', parent.dyGraphOptions.xlabel);
-
-      parent.Dygraph.updateOptions(
-        { xlabel: parent.dyGraphOptions.xlabel },
-        true
-      ); //this.upd… gives TS error
+      console.log(
+        'change in XRange',
+        Math.floor(minDate),
+        parent.fromZoom.valueOf(),
+        Math.floor(maxDate),
+        parent.toZoom.valueOf()
+      );
+      if (
+        Math.floor(minDate) != parent.fromZoom.valueOf() ||
+        Math.floor(maxDate) != parent.toZoom.valueOf()
+      ) {
+        console.log('change');
+      }
     } else {
       console.error('afterZoom: No parent');
     }
@@ -590,174 +802,65 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       console.log(clonetext);
     }
   }
+  checkAndUpdateGraphWidth() {
+    const area = this.Dygraph.getArea();
+    const graphWidthPx = area.w;
+    if (this.graphWidthPx !== graphWidthPx) {
+      this.graphWidthPx = graphWidthPx;
+      console.log('new graph width:', graphWidthPx);
+      this.returnGraphWidthOnChange.emit(graphWidthPx);
+    }
+  }
 
   afterDrawCallback(g: Dygraph, isOInitial: boolean) {
-    const debugflag = false;
-    if (debugflag) {
-      console.log('after dygraph draw callback');
-    }
-
+    const debugflag = true;
     if (isOInitial) {
       console.log('ignoring initial afterDrawCallback');
       return;
+    }
+    if (debugflag) {
+      console.log('after dygraph draw callback');
     }
     if (!g.hasOwnProperty('parent')) {
       console.error('afterDrawCallback: no parent');
       return;
     }
     const parent = g['parent'];
-    parent.yRange = g.yAxisRange();
+    if (!parent['displayedData'].length) {
+      console.log('afterDrawCallback: no data');
+      return;
+    }
 
-    const xrange = g.xAxisRange();
-    const dw = g.getOption('dateWindow');
-    const from = xrange[0];
-    const to = xrange[1];
+    const yranges = g.yAxisRanges();
+    parent.yRange = yranges[0];
+    if (yranges[1] && yranges[1].length) {
+      parent.y2Range = yranges[1];
+    }
+
+    const [from, to] = g.xAxisRange();
+    parent.fromZoom = new Date(from);
+    parent.toZoom = new Date(to);
+    parent.updateFromToPickers();
+
+    const newXrange = (to - from) / 1000;
+    if (newXrange != parent.currentXrange) {
+      parent.currentXrange = newXrange;
+
+      this['updateOptions']({ xlabel: parent.returnXrangeText(newXrange) });
+    }
+
     if (debugflag) {
+      const dw = g.getOption('dateWindow');
       console.log('xr:', from, to, 'dw:', dw[0], dw[1]);
     }
-    // if (!from || !to) {
-    //   console.error('after Draw error: from/to NaN');
-    //   // g.resetZoom(); //DONT do, infinite loop!
 
-    //   if (dw[0] === dw[1]) {
-    //     console.error('dateWindow the same');
-    //   }
-    //   if (debugflag) {
-    //     console.log(dw);
-    //   }
-    //   if (!g.hasOwnProperty('modified')) {
-    //     g['modified'] = 1;
-    //   } else {
-    //     g['modified'] = g['modified'] + 1;
-    //     if (g['modified'] < 10) {
-    //       console.log('afterDraw: redraw with dw');
+    parent.returnCurrentZoom.emit([from, to]);
+    parent.checkAndUpdateGraphWidth();
 
-    //       g.updateOptions({ dateWindow: dw });
-    //       if (debugflag) {
-    //         console.log('reset dateWindow');
-    //       }
-    //     }
-    //   }
-
-    //   return;
-    // }
-
-    if (parent && parent.hasOwnProperty('graphWidthPx')) {
-      const area = g.getArea();
-      const graphWidthPx = area.w;
-      if (parent['graphWidthPx'] !== graphWidthPx) {
-        parent['graphWidthPx'] = graphWidthPx;
-        console.log('new graph width:', graphWidthPx);
-
-        const from = parent['fromZoom'];
-        const to = parent['toZoom'];
-        const deltaTimeMS = to.valueOf() - from.valueOf(); // / 1000;
-
-        const neededInterval = 0;
-
-        const maxFetchFrequency = parent['fetchFromServerIntervalMS'];
-        const maxDBqueryStep = parent['dataBaseQueryStepMS'];
-
-        const dataPointsInRange = deltaTimeMS / maxDBqueryStep;
-        const minDatapointsPerPx = Math.floor(dataPointsInRange / graphWidthPx);
-
-        if (minDatapointsPerPx >= 2) {
-          parent['fetchFromServerIntervalReducedMS'] = Math.floor(
-            parent['dataBaseQueryStepMS'] * minDatapointsPerPx
-          );
-        }
-
-        // should affect download of?
-        // only historical data
-        // fetching new data
-
-        parent['maxNativeInterval'] = minDatapointsPerPx;
-        // console.log(parent['graphWidthPx']);
-      }
-    }
-
-    if (
-      parent &&
-      parent.hasOwnProperty('fromZoom') &&
-      parent.hasOwnProperty('toZoom')
-    ) {
-      if (!parent['displayedData'].length) {
-        return;
-      }
-      const firstDataSet = parent.displayedData[0];
-      // const lastDataSet = parent.displayedData[parent.displayedData.length - 1];
-      const percentXFirst = g.toPercentXCoord(firstDataSet[0]);
-      // const percentXLast = g.toPercentXCoord(lastDataSet[0]);
-
-      parent.fromZoom = new Date(from);
-      parent.toZoom = new Date(to);
-      parent.fromFormDate = new FormControl(parent.fromZoom);
-      parent.toFormDate = new FormControl(parent.toZoom);
-
+    if (parent.optionsOpen) {
       parent.updateAverages();
-
-      if (percentXFirst > 0) {
-        parent.checkAndFetchOldData();
-      }
     }
   }
-
-  // checkAndFetchOldData() {
-  //   if (!this.running) {
-  //     console.log('not running, dont checkAndFetchOldData');
-  //     return;
-  //   }
-  //   // if (!this.displayedData.length) {
-  //   //   this.noData = true;
-  //   //   return;
-  //   // }
-  //   const from = this.fromZoom.valueOf();
-  //   const missing_ms = this.dataBeginTime.valueOf() - from;
-  //   // console.log(
-  //   //   'checkAndFetchOldData diff [ms]:',
-  //   //   missing_ms,
-  //   //   this.whoami(),
-  //   //   'from',
-  //   //   this.fromZoom,
-  //   //   'dataBegin',
-  //   //   this.dataBeginTime
-  //   // );
-
-  //   // const earliestDataDate = this.displayedData.length
-  //   //   ? this.displayedData[0][0]
-  //   //   : new Date().valueOf();
-  //   //console.log('from:', from, 'earliest', earliestDataDate);
-
-  //   if (missing_ms > this.getQueryStep()) {
-  //     this.fetchOldData(this.fromZoom, this.dataBeginTime);
-  //   }
-  // }
-
-  startUpdate() {
-    console.error('startUpdate called, BAD');
-    return;
-    // this.lastReset = undefined;
-    // // if (1 == 1) return;
-    // this.intervalSubscription = interval().subscribe(counter => {
-    //   // this.fetchFromServerIntervalMS
-    //   // this.fetchNewData();
-    // });
-    // this.running = true;
-  }
-  stopUpdate() {
-    if (this.intervalSubscription) {
-      // this.intervalSubscription.unsubscribe();
-    }
-    this.running = false;
-  }
-
-  startUpdateOnNewData() {
-    this.updateOnNewData = true;
-  }
-  stopUpdateOnNewData() {
-    this.updateOnNewData = false;
-  }
-
   updateFromToPickers() {
     if (this.minimal) {
       return;
@@ -785,7 +888,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         ')s from ',
         targetArray[upper][0],
         ' to ',
-        targetArray[datalen - 1][0]
+        targetArray[datalen - 1][0],
       ]);
     }
     const nr_series = targetArray[0].length;
@@ -899,63 +1002,33 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.visibleAverage = sum / this.visibleAverages.length;
   }
 
-  setCurrentXrange() {
-    if (!this.toZoom || !this.fromZoom) {
-      this.currentXrange = 0;
-      console.log('setCurrentXrange() unsuccessful');
-      return 0;
-    }
-    this.currentXrange =
-      (this.toZoom.valueOf() - this.fromZoom.valueOf()) / 1000;
-    // console.log('currentXrange', this.currentXrange);
-    if (!this.minimal) {
-      const currentMS = Math.round((this.currentXrange % 1) * 1000);
-      const textMS = currentMS ? String(currentMS) + 'ms' : '';
-      const currentSeconds = Math.floor(this.currentXrange);
-      const displayedSeconds = currentSeconds % 60;
-      const textSeconds = displayedSeconds
-        ? String(displayedSeconds) + 's '
-        : '';
-
-      const currentMinutes = Math.floor(currentSeconds / 60);
-      const displayedMinutes = currentMinutes % 60;
-      const textMinutes = displayedMinutes
-        ? String(displayedMinutes) + 'm '
-        : '';
-
-      const currentHours = Math.floor(currentMinutes / 60);
-      const displayedHours = currentHours % 24;
-      const textHours = displayedHours ? String(displayedHours) + 'h ' : '';
-
-      const currentDays = Math.floor(currentHours / 24);
-      const textDays = currentDays ? String(currentDays) + 'd ' : '';
-
-      this.currentXrangeText = (
-        textDays +
-        textHours +
-        textMinutes +
-        textSeconds +
-        textMS
-      ).trim();
-      this.updateXLabel();
-    }
-    return this.currentXrange;
-  }
-
   // following cases:
   // live pan (updateOnNewData) enabled or not // handled by handleUpdatedData(),
   //    we are only called to update the Date window if this is true!
   // initial call (no currentXrange yet set)
   // this.dyGraphOptions['dateWindowEnd'] // from Weih-VO, kick it
   updateDateWindow() {
-    const blankSpaceOnFreshPercentage = 3;
+    const blankSpaceOnFreshPercentage = 0;
 
-    const dataEndTime = new Date();
+    let dataEndTime = new Date();
     // this.endTime === 'now' ? new Date() : new Date(this.endTime);
 
     if (!this.currentXrange) {
       // initial call from handleInitialData
-      this.currentXrange = this.h.parseToSeconds(this.startTime);
+      if (this.startTime) {
+        this.currentXrange = this.h.parseToSeconds(this.startTime);
+      } else {
+        if (!this.dataBeginTime) {
+          this.dataBeginTime = this.displayedData[0][0];
+        }
+        dataEndTime = this.displayedData[this.displayedData.length - 1][0];
+        if (!this.dataEndTime) {
+          this.dataEndTime = dataEndTime;
+        }
+
+        this.currentXrange =
+          (dataEndTime.valueOf() - this.dataBeginTime.valueOf()) / 1000;
+      }
     }
 
     const dataBeginTime = new Date(
@@ -969,20 +1042,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     this.dyGraphOptions['dateWindow'] = [
       dataBeginTime.valueOf(),
-      dataEndTime.valueOf()
+      dataEndTime.valueOf(),
     ];
     this.fromZoom = dataBeginTime;
     this.toZoom = dataEndTime;
-    if (!this.minimal) {
-      this.updateFromToPickers();
-      // this.checkAndFetchOldData(); // it may be that through moving datewindow after enabling autopan some old data is not there.
-    }
+    this.returnCurrentZoom.emit(this.dyGraphOptions['dateWindow']);
   }
 
   resetData() {
     // this.lastReset = new Date();
-    this.stopUpdate();
-    this.stopUpdateOnNewData();
     while (this.displayedData.length) {
       this.displayedData.pop(); // fastest way to clear array
     }
@@ -990,14 +1058,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.dataEndTime = this.toZoom;
 
     this.Dygraph.updateOptions({ file: this.displayedData });
-  }
-
-  getQueryStep() {
-    return undefined;
-    // const dataBaseQueryStepMS = this.downloadFullResolution
-    //   ? this.dataBaseQueryStepMS
-    //   : this.fetchFromServerIntervalReducedMS;
-    // return dataBaseQueryStepMS;
   }
 
   whoami() {
@@ -1050,46 +1110,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       last_y = level[0];
     }
   }
-
-  highLightFetchRegionCallBack(canvas, area, g) {
-    if (!g['parent']) {
-      console.log('highLightFetchRegionCallBack: no parent');
-      return;
-    }
-    canvas.fillStyle = 'rgba(236, 166, 86, 1.0)';
-    function highlight_period(x_start, x_end) {
-      const canvas_left_x = g.toDomXCoord(x_start);
-      const canvas_right_x = g.toDomXCoord(x_end);
-      const canvas_width = canvas_right_x - canvas_left_x;
-      canvas.fillRect(canvas_left_x, area.y, canvas_width, area.h);
-    }
-    const highLightRange = g.parent.oldFetchRunning;
-    highlight_period(highLightRange.start, highLightRange.end);
-    // console.log('underlayCallback called', highLightRange.start, highLightRange.end);
-    if (g.parent['backGroundLevels']) {
-      g.parent.highLightBackgroundLevels(canvas, area, g);
-    }
-  }
-
-  highLightFetchRegion() {
-    if (this.Dygraph) {
-      this.Dygraph.updateOptions({
-        underlayCallback: this.highLightFetchRegionCallBack
-      });
-    }
-  }
-  unHighLightFetchRegion() {
-    if (this.Dygraph) {
-      this.Dygraph.updateOptions({
-        underlayCallback: this.backGroundLevels
-          ? this.highLightBackgroundLevels
-          : undefined
-      });
-    }
-  }
-
-  checkAndFetchOldData() {
-    // console.log('checkAndFetchOldData called, do nothing');
+  highlightDefaultBackground(canvas, area, g) {
+    const graphbg = g.hasOwnProperty('parent')
+      ? g.parent.graphBackGroundColor
+      : '#3F3F3F';
+    canvas.fillStyle = graphbg;
+    canvas.fillRect(area.x, area.y, area.w, area.h);
   }
 
   toggleOptions() {
@@ -1098,25 +1124,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.Dygraph.resize(undefined, undefined);
     }, 150);
   }
-  toggleFetching() {
-    if (this.running) {
-      this.stopUpdate();
-      this.running = false;
-    } else {
-      this.startUpdate();
-      this.running = true;
-      this.checkAndFetchOldData();
-    }
-  }
-  toggleAutoPan() {
-    if (this.updateOnNewData) {
-      this.stopUpdateOnNewData();
-    } else {
-      this.startUpdateOnNewData();
-    }
-  }
+
   pan(direction: string) {
-    this.stopUpdateOnNewData();
     const dw = this.Dygraph.getOption('dateWindow');
     const currentTimeRangeSeconds = dw[1].valueOf() - dw[0].valueOf();
     const panFor = currentTimeRangeSeconds * this.panAmount;
@@ -1128,56 +1137,20 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     if (direction === 'back') {
       dw[0] = new Date(dw[0].valueOf() - panFor - 1); // offset for avoiding no reloading on auto zoom
       dw[1] = new Date(dw[1].valueOf() - panFor + 1);
-      this.checkAndFetchOldData();
     }
-    this.retainDataInfinitely = true;
     this.Dygraph.updateOptions({ dateWindow: dw });
   }
-  resetZoom() {
-    if (this.overrideDateWindow && this.overrideDateWindow.length) {
-      this.Dygraph.updateOptions({ dateWindow: this.overrideDateWindow });
-      console.log('resetZoom: took dateWindow from override');
-      return;
-    }
-    [this.fromZoom, this.toZoom] = this.calculateTimeRange(
-      // this.startTime,
-      // this.endTime
-      undefined,
-      undefined
-    );
 
-    this.Dygraph.updateOptions({
-      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
-    });
-
-    this.setCurrentXrange();
-    this.updateFromToPickers();
-
-    // console.log([
-    //   'resetZoom:',
-    //   this.fromZoom,
-    //   this.toZoom,
-    //   this.startTime,
-    //   this.endTime
-    // ]);
-  }
   fullZoom() {
     this.Dygraph.resetZoom();
-    const xRange = this.Dygraph.xAxisRange();
-    this.fromZoom = new Date(xRange[0]);
-    this.toZoom = new Date(xRange[1]);
-    this.setCurrentXrange();
-    this.retainDataInfinitely = true;
-    this.updateFromToPickers();
   }
   zoom(factor: number) {
-    this.stopUpdateOnNewData();
     const fromValue = this.fromZoom.valueOf();
     const toValue = this.toZoom.valueOf();
 
     const difference = toValue - fromValue;
     const distanceToCenter = difference / 2;
-    const center = fromValue + distanceToCenter;
+    // const center = fromValue + distanceToCenter;
 
     const newdifference = factor * difference;
     const newDistanceToCenter = newdifference / 2;
@@ -1187,19 +1160,29 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.toZoom = new Date(newTo);
     this.fromZoom = new Date(newFrom);
     this.Dygraph.updateOptions({
-      dateWindow: [newFrom, newTo]
+      dateWindow: [newFrom, newTo],
     });
-    if (factor > 1) {
-      this.checkAndFetchOldData();
-    }
-    this.retainDataInfinitely = true;
-    this.setCurrentXrange();
-    this.updateFromToPickers();
   }
-  updateYlogscale() {
+
+  //note: if logscale not globally set, no logscale graphs are displayed
+  switchLogScale(axis = 'y1') {
+    let axisob = this.dyGraphOptions['axes'];
+    let y = axis == 'y2' ? 'y2' : 'y';
+    if (!axisob.hasOwnProperty(y)) {
+      axisob[y] = {};
+    }
+
+    axisob[y]['logscale'] = axisob[y]['logscale'] ? false : true;
     this.Dygraph.updateOptions({
-      logscale: this.dyGraphOptions.logscale
+      logscale: axisob.y.logscale || axisob.y2.logscale,
+      axes: this.dyGraphOptions['axes'],
     });
+    console.log(
+      'new logscale:',
+      axis,
+      axisob[y]['logscale'],
+      this.dyGraphOptions['axes']
+    );
   }
   toggleLegend() {
     if (this.dyGraphOptions.legend == 'always') {
@@ -1209,7 +1192,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     this.Dygraph.updateOptions({
-      legend: this.dyGraphOptions.legend
+      legend: this.dyGraphOptions.legend,
     });
   }
 
@@ -1232,19 +1215,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       startDate = new Date(startTime);
     }
 
-    // if (reducePoints) {
-    //   const difference = endDate.valueOf() - startDate.valueOf();
-    //   if (difference / this.fetchFromServerIntervalMS > this.maxPointsToFetch) {
-    //     console.log(
-    //       'more than ' + this.maxPointsToFetch + ' points requested, reducing'
-    //     );
-    //     const maxStartDateValue =
-    //       endDate.valueOf() -
-    //       this.fetchFromServerIntervalMS * this.maxPointsToFetch;
-    //     startDate = new Date(maxStartDateValue);
-    //   }
-    // }
-
     return [startDate, endDate];
   }
 
@@ -1260,11 +1230,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     this.fromZoom = startDate;
     this.toZoom = endDate;
-    this.setCurrentXrange();
-    this.updateFromToPickers();
-    this.retainDataInfinitely = true;
     this.Dygraph.updateOptions({
-      dateWindow: [startDate.valueOf(), endDate.valueOf()]
+      dateWindow: [startDate.valueOf(), endDate.valueOf()],
     });
   }
 
@@ -1277,7 +1244,24 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.toZoom
       );
     }
-    this.h.exportCSV(data, labels, this.exportUTC);
+    let visibleLabels = [labels[0]]; // Date
+    for (let i = 1; i < labels.length; i++) {
+      if (this.dyGraphOptions.visibility[i - 1]) {
+        visibleLabels.push(labels[i]);
+      }
+    }
+    let visibleData = [];
+    for (let r = 0; r < data.length; r++) {
+      const origRow = data[r];
+      let newRow = [origRow[0]]; // Timestamp
+      for (let c = 0; c < origRow.length; c++) {
+        if (this.dyGraphOptions.visibility[c - 1]) {
+          newRow.push(origRow[c]);
+        }
+      }
+      visibleData.push(newRow);
+    }
+    this.h.exportCSV(visibleData, visibleLabels, this.exportUTC);
   }
   getAverage(time = '1m', index = 1) {
     let time_s = this.h.parseToSeconds(time);
@@ -1294,38 +1278,63 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.displayedData.length - item_count
     );
     let sum = 0;
-    avgdata.forEach(row => {
+    avgdata.forEach((row) => {
       sum += row[index];
     });
     return sum / item_count;
   }
-  getAverages(time = '1m') {}
 
+  toggleStats() {
+    this.stats = !this.stats;
+    setTimeout(() => {
+      this.Dygraph.resize(undefined, undefined);
+    }, 50);
+  }
+  tVis4Label(label: string) {
+    // console.log('tVis4Label with', label);
+    for (let i = 1; i < this.columnLabels.length; i++) {
+      const ilabel = this.columnLabels[i];
+      if (label == ilabel) {
+        // console.log(i, ilabel);
+        this.dyGraphOptions.visibility[i - 1] = !this.dyGraphOptions.visibility[
+          i - 1
+        ];
+        break;
+      }
+    }
+    this.showAllifNone();
+    this.Dygraph.updateOptions({
+      visibility: this.dyGraphOptions.visibility,
+    });
+  }
+  showAllifNone() {
+    // console.log('show all?', this.dyGraphOptions.visibility);
+    let everythingHidden = true;
+    for (let i = 0; i < this.dyGraphOptions.visibility.length; i++) {
+      if (this.dyGraphOptions.visibility[i] === true) {
+        everythingHidden = false;
+        break;
+      }
+    }
+    if (everythingHidden) {
+      for (let i = 0; i < this.dyGraphOptions.visibility.length; i++) {
+        this.dyGraphOptions.visibility[i] = true;
+      }
+    }
+  }
   fromDatePickerChanged($event) {
-    const newDate = $event['value'];
-    console.log('fromDatePickerChanged:', newDate, newDate.valueOf());
+    const newFrom = $event['value'];
 
-    const toSetDate = new Date(newDate.valueOf());
+    const toSetDate = new Date(newFrom.valueOf());
     toSetDate.setHours(this.fromZoom.getHours());
     toSetDate.setMinutes(this.fromZoom.getMinutes());
     toSetDate.setSeconds(this.fromZoom.getSeconds());
     toSetDate.setMilliseconds(this.fromZoom.getMilliseconds());
 
-    const wasRunning = this.updateOnNewData;
-    if (wasRunning) {
-      this.stopUpdateOnNewData();
-    }
     this.fromZoom = toSetDate;
-    this.setCurrentXrange();
     this.Dygraph.updateOptions({
-      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
+      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()],
     });
-    if (wasRunning) {
-      this.startUpdateOnNewData();
-    }
-    this.retainDataInfinitely = true;
-    console.log('fromDatePickerChanged: calling checkAndFetchOldData');
-    this.checkAndFetchOldData();
   }
   toDatePickerChanged($event) {
     const newTo = $event['value'];
@@ -1337,38 +1346,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     toSetDate.setMilliseconds(this.toZoom.getMilliseconds());
 
     this.toZoom = toSetDate;
-    this.stopUpdateOnNewData();
-    this.setCurrentXrange();
     this.Dygraph.updateOptions({
-      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
+      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()],
     });
-    this.retainDataInfinitely = true;
-  }
-  toggleStats() {
-    this.stats = !this.stats;
-    setTimeout(() => {
-      this.Dygraph.resize(undefined, undefined);
-    }, 50);
-  }
-  updateVisibility() {
-    // wait for ng to update variables
-    setTimeout(() => {
-      // console.log('new vis:', this.dyGraphOptions.visibility);
-
-      let everythingHidden = true;
-      // this.dyGraphOptions.visibility.forEach(series => {
-      //   if (series === true) {
-      //     everythingHidden = false;
-      //   }
-      // });
-      // if (everythingHidden) {
-      //   for (let i = 0; i < this.dyGraphOptions.visibility.length; i++) {
-      //     this.dyGraphOptions.visibility[i] = true;
-      //   }
-      // }
-      // this.Dygraph.updateOptions({
-      //   visibility: this.dyGraphOptions.visibility
-      // });
-    }, 50);
   }
 }

@@ -151,4 +151,12 @@ ram indicator?
 npm install --save --save-exact ng2-charts@2.0.3 # this version works with ng6, the newer one only with ng8
 npm install --save chart.js
 
+# Leaflet
 
+https://medium.com/runic-software/the-simple-guide-to-angular-leaflet-maps-41de83db45f1
+
+npm install leaflet
+npm install @types/leaflet
+npm install @asymmetrik/ngx-leaflet
+
+in angular.json, "buildOptimizer": false

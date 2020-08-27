@@ -1,3 +1,6 @@
+$bordercolor: #666666;
+$labelcolor: #999;
+
 table.envirobody {
   height: 100%;
   width: 100%;
@@ -6,49 +9,69 @@ table.envirobody {
   margin: 0;
   table-layout: fixed;
   h3 {
-    margin: 0rem;
+    margin: 0;
+    display: inline-block;
+    padding: 0;
+  }
+  th[colspan="2"] > h3 {
+    margin-left: 11rem;
   }
   th {
-    padding: 0.5rem;
-    height: 6vh;
-    border-left: 1px solid gray;
+    padding: 0.5rem 0;
+    height: 2.5em;
+    border-left: 1px solid $bordercolor;
     width: 32%;
+    position: relative;
+    a.fullscreen,
+    a.fullscreen:visited {
+      color: #c7c7c7;
+      position: absolute;
+      top: 1em;
+      right: 1em;
+    }
+    a.fullsceen:hover,
+    a.fullsceen:visited:hover {
+      color: white;
+    }
   }
   td {
     position: relative;
     border-left: 1px solid gray;
     width: 100%;
-    height: 36vh;
+    height: 50%;
     .settings {
-      border: 1px solid green;
-      width: 11rem;
-      margin: 1rem;
-      padding: 1rem;
-      label {
-        display: inline-block;
-        color: rgba(0, 0, 0, 0.54);
-        text-align: right;
-        margin-right: 0.7rem;
-        font-weight: 400;
-        font-size: 16px;
-        ￼line-height: 1.125;
-        ￼font-family: Roboto, 'Helvetica Neue', sans-serif;
+      margin-top: -4em;
+      width: 13rem;
+      div.section {
+        border: 1px solid #666;
+        width: 11rem;
+        margin: 1rem;
+        padding: 1rem;
+        mat-label {
+          color: $labelcolor;
+        }
+        h3 {
+          margin-bottom: 0.6em;
+        }
+        .mat-select {
+          background-color: #565656;
+        }
+        label {
+          display: inline-block;
+          color: $labelcolor;
+          text-align: right;
+          margin-right: 0.7rem;
+          font-weight: 400;
+          font-size: 16px;
+          ￼line-height: 1.125;
+          ￼font-family: Roboto, 'Helvetica Neue', sans-serif;
+        }
       }
-      input[type='text'] {
-        padding: 0.3em;
-        // border-radius: 0.5em;
-        font-size: 20px;
-        border: 1px solid rgba(0, 0, 0, 0.54);
-      }
-      button {
-        border: 0;
-        border-radius: 0.5em;
-        background: #5cb85c;
-        padding: 0.5em;
-        cursor: pointer;
-        min-width: 2.25em;
-        color: white;
-      }
+    }
+    a,
+    a:visited {
+      color: #c7c7c7;
+      // text-decoration: none;
     }
   }
   th:first-child,
@@ -56,7 +79,7 @@ table.envirobody {
     border-left: 0;
   }
   tr:first-child + tr td {
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid $bordercolor;
   }
   .val {
     position: absolute;
@@ -77,5 +100,8 @@ table.envirobody {
   .val.big {
     width: 15rem;
     transform: translateY(-3rem);
+  }
+  .pm p {
+    margin-left: 1rem;
   }
 }

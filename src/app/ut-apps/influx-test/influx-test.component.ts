@@ -19,21 +19,33 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
   labelstrings: string[];
   https = true;
 
-  q = 'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE time > now() - ' +
-    this.startTime +
-    ' GROUP BY sensor,time(30s)'
+  /* variables:
+   * colums: *, /regex/
+   * measuerement, eg gas
+   * starttime / range / mean
+  */
+  queries = [
+    'SELECT mean(*) FROM particulate_matter WHERE time > now() - {{T}} GROUP BY sensor,time(30s);' +
+      'SELECT mean(*) FROM gas WHERE time > now() - {{T}} GROUP BY sensor,time(30s);' +
+      'SELECT mean(*) FROM temperature WHERE time > now() - {{T}} GROUP BY sensor,time(30s);',
+    'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE time > now() - {{T}} GROUP BY sensor,time(30s);',
+    'SELECT LAST(*) FROM "temperature" GROUP BY *;',
+    'SELECT * FROM gas WHERE time > now() - {{T}} GROUP BY *;'
+  ];
 
+  // q = 'SELECT * FROM "temperature" LIMIT 3';
+  // q = 'SELECT LAST(sensor_degC),* FROM "temperature" GROUP BY *';
+  // q = 'SELECT LAST(gamma_cps),* FROM "radiation" GROUP BY *';
+  // q = 'SELECT * FROM "temperature" WHERE time > now() - 1m GROUP BY *';
+  // q = 'SELECT * FROM "temperature" LIMIT 3';
+  // q =
+
+  q = this.queries[1];
 
   extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 };
 
-  public dygLabels = ['Date', 'sensor1-val1']; // , 'sensor2-val1', 'sensor2-val2'];
-  public row1 = [new Date(new Date().valueOf() - 300100), 1]; //, null, null];
-  public row2 = [new Date(new Date().valueOf() - 200000), 2]; // null, 1.2, 0.8];
-  // public row3 = [new Date(new Date().valueOf() - 100000), 2, null, null];
-  // public row4 = [new Date(), null, 2.2, 1.1];
-
-  public dygData = [this.row1, this.row2]; // , this.row3, this.row4];
-  // dygDataStr = '';
+  public dygLabels = [];
+  public dygData = [];
 
   changeTrigger = true;
   showResultText = false;
@@ -42,7 +54,8 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
     // 'queryString',
     // 'dataBaseQueryStepMS',
     'startTime',
-    'showResultText'
+    'showResultText',
+    'q'
     // 'endTime'
   ];
 
@@ -63,42 +76,30 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
     this.loadSettings();
     //let call = 'http://' + this.globalSettings.getHostName() + '.lan:8086/ping';
 
-    this.launchQuery();
+    this.reload();
   }
+  chooseQuery(query) {
+    this.q = query
+  }
+
+  reload() {
+    this.launchQuery(this.q);
+  }
+
   ngOnDestroy() {
     this.saveSettings();
   }
 
-  buildQuery() {
-    // let q: String;
-    // q = 'SELECT * FROM "temperature" LIMIT 3';
-    // q = 'SELECT LAST(sensor_degC),* FROM "temperature" GROUP BY *';
-    // q = 'SELECT LAST(gamma_cps),* FROM "radiation" GROUP BY *';
-    // q = 'SELECT * FROM "temperature" WHERE time > now() - 1m GROUP BY *';
-    // q = 'SELECT * FROM "temperature" LIMIT 3';
-    // q = 'SELECT LAST(*) FROM "temperature" GROUP BY *  ';
-    // q =
-    //   'SELECT * FROM gas WHERE time > now() - ' +
-    //   this.startTime +
-    //   ' GROUP BY *;';
-
-    this.influxquery =
-      (this.https ? 'https':'http' ) + '://' +
-      this.globalSettings.server.serverName +
-      '/influxdb/query?db='+this.globalSettings.server.influxdb+'&epoch=ms&q=' +
-      this.q;
-  }
-
-  launchQuery() {
-    this.buildQuery();
-    console.log('calling', this.influxquery);
+  launchQuery(clause: string) {
+    const qWithTime = clause.replace(/{{T}}/g, this.startTime);
+    const q = this.utHTTP.buildInfluxQuery(qWithTime);
     this.utHTTP
-      .getHTTPData(this.influxquery)
+      .getHTTPData(q)
       .subscribe((data: Object) => this.printResult(data));
   }
 
   printResult(data: Object) {
-    console.log(data);
+    console.log(cloneDeep(data));
     let ret = this.utHTTP.parseInfluxData(data);
 
     this.dygLabels = ret['labels'];

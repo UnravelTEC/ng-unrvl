@@ -1,0 +1,100 @@
+<a
+  id="back"
+  class="icon"
+  [routerLink]="'/Apps/I/' + referrer"
+  routerLinkActive="active"
+  title="Return to overview"
+  ><mat-icon>fullscreen_exit</mat-icon></a
+>
+
+<div class="fs-container">
+  <app-map [x]="15.46" [y]="47.07" [z]="13" [layers]="layers"></app-map>
+</div>
+
+<form class="settings" (submit)="reload(true)">
+  <div class="section">
+    <h3>Current Dataset:</h3>
+    <p><label>#Points:</label><span class="cRange">{{ data.length }}</span></p>
+    <p>
+      <label>Resolution:</label>
+      <span class="cRange">{{ currentres }}s</span>
+    </p>
+    <p>
+      <label>Range:</label>
+      <span class="cRange">{{ currentRange }} </span>
+    </p>
+    <p>Download <a (click)="exportGeojson()">geojson</a></p>
+    <p>
+      <a
+        routerLink="/Apps/I/Enviromap"
+        [queryParams]="{
+          measurement: measurement,
+          value: value,
+          sensor: sensor,
+          id: id,
+          from: from,
+          to: to,
+          column: column,
+          interval: interval
+        }"
+        routerLinkActive="active"
+        >Permalink</a
+      >
+    </p>
+  </div>
+  <div class="section">
+    <h3>New Query:</h3>
+
+    <mat-form-field>
+      <mat-label>Show range from now</mat-label>
+      <mat-select
+        [(ngModel)]="userStartTime"
+        name="startTime"
+        (ngModelChange)="changeMean($event)"
+      >
+        <mat-option value="15m">15 min.</mat-option>
+        <mat-option value="1h" selected="selected"> 1h</mat-option>
+        <mat-option value="2h">2 h</mat-option>
+        <mat-option value="3h">3 h</mat-option>
+        <mat-option value="6h">6 h</mat-option>
+        <mat-option value="24h">24 h</mat-option>
+        <mat-option value="7d">1 week</mat-option>
+        <mat-option value="30d">1 month</mat-option>
+        <mat-option value="356d">1 year</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <hr />
+    <label for="runningAvgPoints"># Mean Seconds</label><br />
+    <input
+      type="text"
+      id="runningAvgPoints"
+      name="runningAvgPoints"
+      [(ngModel)]="userMeanS"
+      (ngModelChange)="saveMean($event)"
+      style="width: 4em;"
+    /><br />
+    <br />
+
+    <div style="width: 100%; text-align: right;">
+      <button type="submit">
+        <mat-icon>refresh</mat-icon>
+        Reload
+      </button>
+    </div>
+  </div>
+</form>
+
+<app-ut-dygraph-in
+  [displayedData]="data"
+  [columnLabels]="labels"
+  [style]="graphstyle"
+  [extraDyGraphConfig]="extraDyGraphConfig"
+  [startTime]="undefined"
+  enableHighlightCallback="true"
+  [colors]="colors"
+  [YLabel]="measurement"
+  (returnGraphWidthOnChange)="setGraphWidth($event)"
+  (returnCurrentZoom)="updateFromToTimes($event)"
+  #R
+></app-ut-dygraph-in>
+<!-- [startTime]="startTime" -->

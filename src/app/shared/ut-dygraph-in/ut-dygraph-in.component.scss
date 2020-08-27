@@ -1,3 +1,54 @@
+$graphbg: #3f3f3f;
+$mainbg: #1e1e1e;
+
+$axismainlabelcolor: #8e8e8e;
+$axissublabelcolor: #565656;
+
+$buttontext: #fff;
+$buttontextinactive: #666666;
+$buttonactivebg: #8e8e8e;
+$buttoninactivebg: #373737;
+
+$dygfontsize: 14px;
+$labelcolor: #8e8e8e;
+$editableFormsTextColor: #c7c7c7;
+
+$green3: #002402;
+$green5: #023c0a;
+$green1: #008d0a;
+$green4: #1ef93a;
+$green2: #69f97b;
+$brown3: #561d0b;
+$brown5: #883a06;
+$brown1: #ff5b00;
+$brown4: #ff9c06;
+$brown2: #ffdd73;
+$blue3: #000055;
+$blue5: #000094;
+$blue1: #0000ff;
+$blue4: #394cff;
+$blue2: #6883ff;
+$violet3: #2b0069;
+$violet5: #470994;
+$violet1: #842bff;
+$violet4: #c78dff;
+$violet2: #ffebff;
+$olive3: #002913;
+$olive5: #003c24;
+$olive1: #00805c;
+$olive4: #37a389;
+$olive2: #8ce2cd;
+$navy3: #001341;
+$navy5: #002c54;
+$navy1: #0061a6;
+$navy4: #007cc2;
+$navy2: #00d9ff;
+$red3: #520000;
+$red5: #990000;
+$red1: #e10000;
+$red4: #f81e25;
+$red2: #ff7f88;
+
 .abscontainer {
   position: absolute;
   border: 0px solid green;
@@ -31,7 +82,7 @@
     margin: 1em;
     border: 1px solid blue;
     padding: 1em;
-    background: white;
+    background: $graphbg;
   }
 
   .nodata {
@@ -44,12 +95,84 @@
     border-color: red;
   }
 
-  .date {
+  .fromDate,
+  .toDate,
+  .ymin,
+  .ymax,
+  .y2min,
+  .y2max,
+  .xmin,
+  .xmax,
+  .logy {
     position: absolute;
+    background: $graphbg;
+    font-size: $dygfontsize;
+    color: $editableFormsTextColor;
+    padding: 0.35em;
+    height: 1em;
+    line-height: 1em;
+    cursor: default;
+  }
+
+  .fromDate,
+  .toDate {
     bottom: 0;
-    left: 0;
-    margin-left: 3.6rem;
-    font-size: 0.8em;
+    mat-form-field {
+      width: 5.1em;
+      height: 1em;
+      margin-top: -0.35em;
+      font-family: inherit;
+      .mat-form-field-underline,
+      .mat-form-field-suffix button.mat-icon-button,
+      .mat-form-field-prefix button.mat-icon-button {
+        display: none;
+      }
+      input {
+        cursor: pointer;
+      }
+    }
+    mat-form-field.mat-form-field-appearance-legacy .mat-form-field-infix {
+      padding: 0;
+      border-top: 0;
+    }
+  }
+  .fromDate:hover,
+  .toDate:hover,
+  .xmin:hover,
+  .xmax:hover {
+    background-color: $buttonactivebg;
+    color: $buttontext;
+    b, b.hide {
+      opacity: 1;
+    }
+  }
+  .fromDate,
+  .xmin {
+    left: 55px;
+    b {
+      right: 5px;
+    }
+  }
+  .toDate,
+  .xmax {
+    right: 60px;
+    text-align: right;
+    mat-form-field input {
+      text-align: right;
+    }
+    b {
+      left: 5px;
+    }
+  }
+  .noy2 {
+    right: 5px; // Dygraph option rightGap
+  }
+  .fromDate,
+  .toDate,
+  .xmin,
+  .xmax {
+    cursor: pointer;
+    width: 5.1em;
   }
   .lastTime {
     position: absolute;
@@ -57,52 +180,200 @@
     right: 0;
     margin-right: 1rem;
     font-size: 0.8em;
+    color: $labelcolor;
   }
   .ymax,
-  .ymin {
+  .ymin,
+  .logy.y1 {
     border: 0px solid salmon;
-    background: white;
-    position: absolute;
-    left: 0.8em;
-    width: 2.5em;
-    font-size: 0.8em;
+    width: 42px; // dyg y-width: 50px + paddings
+    left: 1px;
     text-align: right;
-    padding-right: 0.2em;
-    border-right: 1px solid #969696;
   }
-  .ymax {
-    border-top: 1px solid #969696;
+  .ymax,
+  .y2max {
     top: 0;
   }
-  .ymin {
-    bottom: 2.37em;
-    border-bottom: 1px solid #969696;
+  .ymin,
+  .y2min {
+    bottom: 52px;
   }
-  .ymin.noxlabel {
+  .ymin.noxlabel,
+  .y2min.noxlabel {
     bottom: 1.6em;
   }
-
-  .dygraph-legend {
-    // background: rgba(123, 123, 252, 0.993);
-    padding-left: 5px;
+  .y2min,
+  .y2max,
+  .logy.y2 {
+    right: 0;
+    width: 49px;
     text-align: left;
-    background: transparent;
-    text-shadow: 1px 1px white, -1px 1px white, 1px -1px white, -1px -1px white,
-      2px 2px white, -2px 2px white, 2px -2px white, -2px -2px white;
+    border-right: 0px solid $graphbg; // used to "expand" inte left
+  }
+  .xmin,
+  .xmax,
+  .overlapTickTexthider {
+    bottom: 26px;
+    b {
+      position: absolute;
+      bottom: 5px;
+      opacity: 0.5;
+    }
+    b.hide {
+      opacity: 0;
+    }
+  }
+  .logy.y1,
+  .logy.y2 {
+    width: 30px; // 20+paddings
+    height: 0;
+    top: 29px;
+    padding: 0;
+    cursor: pointer;
+    div {
+      padding: 0.35em 0.35em 0 0.35em; // to rm "g" bottom height increase
+      line-height: 1em;
+      width: 20px;
+      display: inline-block;
+      text-align: center;
+      height: 20px;
+      background-color: $buttoninactivebg;
+      color: $buttontextinactive;
+    }
+    div.active,
+    div:hover {
+      background-color: $buttonactivebg;
+      color: $buttontext;
+    }
+
+    div:first-child {
+      margin-bottom: -0.2em;
+    }
+    div + div {
+      padding-top: 0.1em;
+    }
+  }
+  .overlapTickTexthider {
+    background-color: $mainbg;
+    font-size: $dygfontsize;
+    height: 1em;
+    line-height: 1em;
+    padding: 0.35em;
+    position: absolute;
+    bottom: 26px;
+    border-top: 2px solid $mainbg; // gap between x and label
+  }
+  .overlapTickTexthider.y1 {
+    width: 42px;
+    left: 1px;
+    border-right: 2px solid $mainbg; // gap between y and label
+  }
+  .overlapTickTexthider.y2 {
+    width: 60px;
+    right: 0;
+  }
+
+  .legendabscontainer {
+    position: absolute;
+    top: 5px;
+    left: 61px; // y-w(50) + 5px margin + 5px padding + 1px axis-width
+    bottom: 67px; // 52 (bttom of graph)+ 5px own padding + 2x5px legend-padding
+    right: 5px;
+    flex-direction: column;
+    display: flex;
+    pointer-events: none;
+    .legendrelcontainer {
+      height: 100%;
+      position: relative;
+      flex: 1;
+      // width: 100%;
+      // width: auto;
+      pointer-events: none;
+      .legendToggle {
+        position: absolute;
+        font-size: 1.2em;
+        min-width: 20em;
+        text-align: right;
+        top: 0;
+        right: 5px;
+        cursor: pointer;
+      }
+      .legendToggle::after {
+        content: '▲';
+      }
+      .legendToggle:hover {
+        font-weight: bold;
+        color: white;
+      }
+    }
+  }
+  .dygraph-legend,
+  .mylegend {
+    font-size: $dygfontsize;
+    background: rgba(100, 100, 100, 0.8);
+    padding: 5px;
+    text-align: left;
     position: absolute !important;
-    top: 0.1em !important;
-    left: 4em !important;
-    bottom: 3em;
-    width: auto;
-    overflow-x : visible;
+    top: 0px !important;
+    left: 0px !important; // y-w(50) + 5px margin + 5px padding + 1px axis-width
+    overflow-x: visible;
+    min-width: 20em; // width of time text (with seconds) on hovering
+    max-height: 100%;
     overflow-y: auto;
-    pointer-events : none;
+    pointer-events: auto;
+    div.header {
+      position: fixed;
+      top: 0;
+      padding: 5px;
+      z-index: 10;
+      background-color: #5d5d5d; // picked from graph-background + legend-bg
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-top: 1.5em;
+      border: 1px solid black;
+
+      tr {
+        cursor: pointer;
+        td,
+        th {
+          border-bottom: 1px solid black;
+        }
+        th {
+          font-weight: normal;
+          padding: 0.1em 0.2em;
+          color: $editableFormsTextColor;
+        }
+
+        td {
+          color: $editableFormsTextColor;
+          width: 4.5em; // width of string 'undefined'
+          border-left-width: 0;
+          padding: 0.1em 0;
+        }
+      }
+      tr.highlight,
+      tr:hover {
+        background-color: #8e8e8e;
+        th,
+        td {
+          color: $mainbg;
+        }
+      }
+    }
   }
-  .dygraph-legend > span.highlight {
-    border: 1px solid black;
-    background: rgb(197, 197, 197);
-    text-shadow: none;
+  .mylegend.cthide {
+    width: 20em;
+    height: 1.2em;
+    table {
+      display: none;
+    }
+    .legendToggle::after {
+      content: '▼';
+    }
   }
+
   .series {
     text-align: right;
     position: absolute;
@@ -115,22 +386,44 @@
       text-align: left;
     }
   }
+  .dygraph-label {
+    color: $axismainlabelcolor;
+    font-weight: 600;
+    cursor: default;
+  }
+  .y1 .dygraph-ylabel,
+  .y2 .dygraph-y2label {
+    // axis highlight
+    text-shadow: 0 0 1em orange, 0 0 0.2em orange;
+  }
+  .y2 .dygraph-ylabel,
+  .y1 .dygraph-y2label,
+  .y2 .dygraph-axis-label-y1,
+  .y1 .dygraph-axis-label-y2 {
+    opacity: 0.5;
+  }
+  .dygraph-axis-label {
+    color: $axissublabelcolor;
+    cursor: default;
+  }
 
   button.toggleOptions {
     position: absolute;
     bottom: 0;
     left: 0;
-    height: 1.9rem;
-    width: 1.9rem;
+    height: 28px;
+    width: 28px;
     border-radius: 0.5rem;
     background: transparent;
     cursor: pointer;
-    border: 1px solid gray;
     display: block;
+    text-align: center;
     margin-right: auto;
+    padding: 0 !important;
     * {
-      transform: translate(0rem,0rem);
-      font-size: 1.1rem;
+      transform: translate(0rem, 0rem);
+      font-size: 18px;
+      line-height: 24px; // minus border
     }
   }
   button.toggleOptions:hover {
@@ -176,12 +469,6 @@ div.optionsarea {
         padding: 0.5em;
         cursor: pointer;
         min-width: 2.25em;
-        .mat-icon {
-          margin: 0;
-          margin-bottom: -10px;
-          margin-top: -10px;
-          transform: translateY(6px);
-        }
       }
       .time {
         h5 {

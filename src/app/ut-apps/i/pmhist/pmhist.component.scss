@@ -1,0 +1,62 @@
+$bordercolor: #666666;
+$labelcolor: #999;
+
+.settings {
+  position: absolute;
+  bottom: 2em;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  top: 4rem;
+  overflow-y: auto;
+
+  div.section {
+    border: 1px solid #666;
+    width: 11rem;
+    margin: 1rem;
+    padding: 1rem;
+    h3 {
+      margin-top: 0;
+    }
+    mat-label {
+      color: $labelcolor;
+    }
+    .mat-select {
+      background-color: #565656;
+    }
+    label {
+      display: inline-block;
+      color: $labelcolor;
+      text-align: right;
+      margin-right: 0.7rem;
+      font-weight: 400;
+      font-size: 16px;
+      ￼line-height: 1.125;
+      ￼font-family: Roboto, 'Helvetica Neue', sans-serif;
+    }
+  }
+}
+h2 {
+  margin-left: 1em;
+}
+
+.chartabs {
+  position: absolute;
+  top: 70%;
+  bottom: 1rem;
+  left: 1rem;
+  right: 15rem;
+
+  .chart {
+    width: 100%;
+    height: 100%;
+    // background: blue;
+    position: relative;
+  }
+}
+.icon {
+  color: #c7c7c7;
+}
+.icon:hover {
+  color: white;
+}

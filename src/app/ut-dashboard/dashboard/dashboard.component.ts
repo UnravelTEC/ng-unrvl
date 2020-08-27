@@ -15,7 +15,7 @@ import { HostListener } from '@angular/core';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
-  @ViewChild('dashboard')
+  @ViewChild('dashboard', { static: true })
   elementView: ElementRef;
 
   scrHeight: any;

@@ -17,18 +17,17 @@ export class UtFetchdataService {
     private h: HelperFunctionsService
   ) {}
 
-  httpURL =
-    'http://belinda.cgv.tugraz.at:9090/api/v1/query?query=co2{location="FuzzyLab",sensor="scd30"}';
   Config = {};
 
   queryDefaultStep = 1000; // ms
 
   getHTTPData(
-    url: string,
+    thisurl: string,
     user = this.globalSettingsService.server.influxuser,
     pass = this.globalSettingsService.server.influxpass
   ) {
-    const thisurl = url ? url : this.httpURL;
+    console.log('getHTTPData:', thisurl, user, pass);
+
     if (thisurl.startsWith('https') && thisurl.search(/\/influxdb\//)) {
       const httpOptions = {
         headers: new HttpHeaders({
@@ -144,22 +143,131 @@ export class UtFetchdataService {
     return false;
   }
 
-  parseInfluxData(data: Object, labelBlackList: string[] = [], epoch: string = "ms") {
+  influxTimeString(param1: any, param2: Date = undefined) {
+    if (param2) {
+      return (
+        ' time > ' +
+        param1.valueOf() +
+        'ms AND time < ' +
+        param2.valueOf() +
+        'ms '
+      );
+    }
+    return ' time > now() - ' + param1 + ' ';
+  }
+
+  /*
+  @ param tagfilter = { 'sensor': ['SDS011', 'SPS30'] } // OR
+  tagfilter = { 'sensor': 'BME280', // AND
+                'id': '0x77'] }
+  */
+
+  influxMeanQuery(
+    from: string,
+    timeQuery: string,
+    tagfilter: Object = {},
+    mean_s = 30,
+    select = '*'
+  ) {
+    let q = 'SELECT mean(' + select + ') FROM ' + from;
+
+    let whereClause = '';
+    for (const key in tagfilter) {
+      if (tagfilter.hasOwnProperty(key)) {
+        const andobj = tagfilter[key];
+        if (Array.isArray(andobj) && andobj.length) {
+          whereClause += '(';
+          for (let i = 0; i < andobj.length; i++) {
+            const value = andobj[i];
+            whereClause += key + " = '" + value + "'";
+            if (i + 1 != andobj.length) {
+              whereClause += ' OR ';
+            }
+          }
+          whereClause += ') AND ';
+        } else if (andobj && andobj.length) {
+          whereClause += key + " = '" + andobj + "' AND ";
+        }
+      }
+    }
+    whereClause += timeQuery;
+
+    let groupBy = ' GROUP BY ';
+    for (const key in tagfilter) {
+      if (tagfilter.hasOwnProperty(key)) {
+        groupBy += key + ',';
+      }
+    }
+    groupBy += 'host,id,time(' + String(mean_s) + 's)';
+    q += ' WHERE ' + whereClause + groupBy + ';';
+    return q;
+  }
+  buildInfluxQuery(
+    clause: string,
+    database?: string,
+    serverstring?: string,
+    epoch = 'ms'
+  ) {
+    const cleanClause = clause.replace(/;/g, '%3B');
+    if (database === undefined) {
+      database = this.globalSettingsService.server.influxdb;
+    }
+    if (serverstring === undefined) {
+      serverstring =
+        this.globalSettingsService.server.protocol +
+        this.globalSettingsService.server.serverName;
+    }
+    return (
+      serverstring +
+      '/influxdb/query?db=' +
+      database +
+      '&epoch=' +
+      epoch +
+      '&q=' +
+      cleanClause
+    );
+  }
+
+  parseInfluxData(
+    data: Object,
+    labelBlackList: string[] = [],
+    epoch: string = 'ms'
+  ) {
     const tagBlackList = cloneDeep(labelBlackList);
     let retval = { labels: [], data: [] };
 
-    const dataarray = this.h.getDeep(data, ['results', 0, 'series']);
-
-    let factor = 1;
-    if (epoch == "s") {
-      factor = 1000;
+    const results = this.h.getDeep(data, ['results']);
+    if (!results) {
+      console.log('no results');
+      return retval;
     }
+    let dataarray = [];
+    for (let statementId = 0; statementId < results.length; statementId++) {
+      const statement = results[statementId];
+      if (statement['series']) {
+        const seriesArray = statement['series'];
+        console.log('statement', statementId, 'with len', seriesArray.length);
 
-    const labels = ['Date'];
+        for (let seriesI = 0; seriesI < seriesArray.length; seriesI++) {
+          const series = seriesArray[seriesI]
+          dataarray.push(series);
+          console.log('from', new Date(series.values[0][0]), 'to', new Date(series.values[series.values.length -1][0]));
+
+        }
+      }
+    }
     if (!dataarray) {
       console.log('no data');
       return retval;
     }
+
+    let factor = 1;
+    if (epoch == 's') {
+      factor = 1000;
+    }
+
+    const labels = ['Date'];
+
     let validColCount = 0;
     const seriesValidColumns = [];
     let newData = [];
@@ -208,21 +316,28 @@ export class UtFetchdataService {
             colname = colname.replace(/^mean_/, '');
           }
 
-          colname = colname.replace(/percent$/, '%');
-          colname = colname.replace(/_%/, '-%');
-          colname = colname.replace(/degC$/, '°C');
-          colname = colname.replace(/ugpm3$/, 'µg/m³');
-          colname = colname.replace(/gpm3$/, 'g/m³');
           colname = colname.replace(/H2O_/, 'H₂O_');
           colname = colname.replace(/CO2_/, 'CO₂_');
           colname = colname.replace(/NO2_/, 'NO₂_');
           colname = colname.replace(/O3_/, 'O₃_');
           colname = colname.replace(/NH3_/, 'NH₃_');
           colname = colname.replace(/H2_/, 'H₂_');
+          colname = colname.replace(/percent$/, '%');
+          colname = colname.replace(/_%/, '-%');
+          colname = colname.replace(/degC$/, '°C');
+          colname = colname.replace(/p([0-9.]*)_ugpm3$/, 'pm$1 (µg / m³)'); //spaces in () are thin-spaces
+          colname = colname.replace(/_ugpm3$/, ' (µg / m³)');
+          colname = colname.replace(/gpm3$/, 'g/m³');
+          colname = colname.replace(/degps$/, '°/s');
+          colname = colname.replace(/mps2$/, 'm/s²');
+          colname = colname.replace(/uT$/, 'µT');
+          colname = colname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm');
           colname = colname.replace(/dewPoint/, 'dew point');
           colname = colname.replace(/_(\S+)$/, ' ($1)');
-          const collabel = colname ? serieslabel + ' ' + colname : serieslabel.replace(/,$/,"");
-          labels.push(collabel);
+          const collabel = colname
+            ? serieslabel + ' ' + colname
+            : serieslabel.replace(/,$/, '');
+          labels.push(collabel.trim());
         } else {
           seriesValidColumns[i][colindex] = false;
         }
