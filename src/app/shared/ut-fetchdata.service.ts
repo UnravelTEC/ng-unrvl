@@ -246,8 +246,13 @@ export class UtFetchdataService {
       const statement = results[statementId];
       if (statement['series']) {
         const seriesArray = statement['series'];
+        console.log('statement', statementId, 'with len', seriesArray.length);
+
         for (let seriesI = 0; seriesI < seriesArray.length; seriesI++) {
-          dataarray.push(seriesArray[seriesI]);
+          const series = seriesArray[seriesI]
+          dataarray.push(series);
+          console.log('from', new Date(series.values[0][0]), 'to', new Date(series.values[series.values.length -1][0]));
+
         }
       }
     }
