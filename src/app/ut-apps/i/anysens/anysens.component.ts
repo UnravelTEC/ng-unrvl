@@ -8,7 +8,7 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-anysens',
   templateUrl: './anysens.component.html',
-  styleUrls: ['./anysens.component.scss']
+  styleUrls: ['./anysens.component.scss'],
 })
 export class AnysensComponent implements OnInit {
   colors = [];
@@ -24,16 +24,16 @@ export class AnysensComponent implements OnInit {
     logscale: false,
     series: {
       'pressure sensor: BME280, pressure (hPa)': {
-        axis: 'y2'
-      }
+        axis: 'y2',
+      },
     },
     y2label: 'Atmospheric Pressure (hPa)',
     axes: {
       y2: {
         independentTicks: true, // default opt here to have a filled object to access later
         // axisLabelWidth: 60, // set on demand
-      }
-    }
+      },
+    },
   };
   labelBlackListT = ['host', 'serial', 'mean_*'];
   graphstyle = {
@@ -41,7 +41,7 @@ export class AnysensComponent implements OnInit {
     top: '0.5em',
     bottom: '0.5rem',
     left: '0.5rem',
-    right: '15rem'
+    right: '15rem',
   };
 
   public startTime = '6h';
@@ -52,13 +52,20 @@ export class AnysensComponent implements OnInit {
   public fromTime: Date;
   public toTime: Date;
   public currentRange: string;
-  updateFromToTimes(timearray) {
+  updateFromToTimes(timearray, interval = '') {
     // console.log(timearray);
     this.fromTime = new Date(timearray[0]);
+    this.from = timearray[0];
     this.toTime = new Date(timearray[1]);
+    this.to = timearray[1];
     const rangeSeconds = Math.floor((timearray[1] - timearray[0]) / 1000);
     this.currentRange = this.h.createHRTimeString(rangeSeconds);
-    this.userMeanS = this.calcMean(rangeSeconds);
+    if (!interval) {
+      this.userMeanS = this.calcMean(rangeSeconds);
+      this.interval = String(this.userMeanS);
+    } else {
+      this.userMeanS = Number(interval);
+    }
   }
 
   labels = [];
@@ -69,9 +76,12 @@ export class AnysensComponent implements OnInit {
   changeTrigger = true;
 
   measurement = 'temperature';
-  sensor = '';
+  sensor: String;
+  interval: string;
   host = '';
   referrer = 'Allsens';
+  public from: Number; // unix time from urlparam
+  public to: Number; // unix time from urlparam
 
   constructor(
     private globalSettings: GlobalSettingsService,
@@ -93,7 +103,15 @@ export class AnysensComponent implements OnInit {
       this.userStartTime = lsStartTime;
     }
 
-    ['host', 'measurement', 'sensor', 'referrer'].forEach(element => {
+    [
+      'host',
+      'measurement',
+      'sensor',
+      'referrer',
+      'from',
+      'to',
+      'interval',
+    ].forEach((element) => {
       const thing = this.router.snapshot.queryParamMap.get(element);
       if (thing) {
         //   if (thing.search(',') > -1) {
@@ -103,7 +121,14 @@ export class AnysensComponent implements OnInit {
       }
     });
 
-    this.reload();
+    if (this.from && this.to) {
+      this.from = Number(this.from);
+      this.to = Number(this.to);
+      this.updateFromToTimes([this.from, this.to], this.interval);
+      this.reload(true);
+    } else {
+      this.reload();
+    }
   }
 
   reload(fromTo = false) {
@@ -139,7 +164,7 @@ export class AnysensComponent implements OnInit {
 
   calcMean(secondsRange) {
     const divider = Math.floor(secondsRange / this.graphWidth);
-    return divider > 30 ? divider : 30;
+    return divider > 1 ? divider : 1;
   }
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
@@ -195,7 +220,7 @@ export class AnysensComponent implements OnInit {
         }
       }
       if (item.match(/pressure/)) {
-        this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60
+        this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
       }
     }
     // console.log(cloneDeep(this.dygLabels));

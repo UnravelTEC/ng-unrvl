@@ -8,7 +8,7 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-enviroone',
   templateUrl: './enviroone.component.html',
-  styleUrls: ['./enviroone.component.scss']
+  styleUrls: ['./enviroone.component.scss'],
 })
 export class EnvirooneComponent implements OnInit {
   physParamEnabled = {
@@ -16,7 +16,7 @@ export class EnvirooneComponent implements OnInit {
     rH: true,
     P: true,
     PM: true,
-    NO2: true
+    NO2: true,
   };
   sensorsEnabled = {
     BME280: true,
@@ -24,21 +24,21 @@ export class EnvirooneComponent implements OnInit {
     'OPC-N3': true,
     SDS011: true,
     SPS30: true,
-    NO2B43F: true
+    NO2B43F: true,
   };
   physParamColors = {
     T: 'red',
     rH: 'blue',
     P: 'green',
     PM: 'brown',
-    NO2: 'violet'
+    NO2: 'violet',
   };
   searchstrings = {
     T: 'temperature',
     rH: 'humidity',
     P: 'pressure',
     PM: 'particulate',
-    NO2: 'gas'
+    NO2: 'gas',
   };
   colors = [];
   graphWidth = 1500;
@@ -52,18 +52,18 @@ export class EnvirooneComponent implements OnInit {
     pointSize: 3,
     series: {
       'pressure sensor: BME280, pressure (hPa)': {
-        axis: 'y2'
-      }
+        axis: 'y2',
+      },
     },
     y2label: 'Atmospheric Pressure (hPa)',
     axes: {
       y: {
-        logscale: false
+        logscale: false,
       },
       y2: {
         independentTicks: true, // default opt here to have a filled object to access later
-      }
-    }
+      },
+    },
   };
   labelBlackListT = ['host', 'serial', 'mean_*'];
   graphstyle = {
@@ -71,7 +71,7 @@ export class EnvirooneComponent implements OnInit {
     top: '0.5em',
     bottom: '0.5rem',
     left: '0.5rem',
-    right: '15rem'
+    right: '15rem',
   };
 
   public startTime = '6h';
@@ -144,7 +144,7 @@ export class EnvirooneComponent implements OnInit {
   }
   enabledSensors(sarray: Array<string>) {
     const onSensors = [];
-    sarray.forEach(sensor => {
+    sarray.forEach((sensor) => {
       if (this.sensorsEnabled[sensor]) onSensors.push(sensor);
     });
     return onSensors;
@@ -300,7 +300,7 @@ export class EnvirooneComponent implements OnInit {
         }
       }
       if (item.match(/pressure/)) {
-        this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60
+        this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
       }
     }
     // console.log(cloneDeep(this.dygLabels));

@@ -111,12 +111,12 @@ $red2: #ff7f88;
     padding: 0.35em;
     height: 1em;
     line-height: 1em;
+    cursor: default;
   }
 
   .fromDate,
   .toDate {
     bottom: 0;
-    cursor: pointer;
     mat-form-field {
       width: 5.1em;
       height: 1em;
@@ -137,13 +137,21 @@ $red2: #ff7f88;
     }
   }
   .fromDate:hover,
-  .toDate:hover {
+  .toDate:hover,
+  .xmin:hover,
+  .xmax:hover {
     background-color: $buttonactivebg;
     color: $buttontext;
+    b, b.hide {
+      opacity: 1;
+    }
   }
   .fromDate,
   .xmin {
     left: 55px;
+    b {
+      right: 5px;
+    }
   }
   .toDate,
   .xmax {
@@ -151,6 +159,9 @@ $red2: #ff7f88;
     text-align: right;
     mat-form-field input {
       text-align: right;
+    }
+    b {
+      left: 5px;
     }
   }
   .noy2 {
@@ -160,6 +171,7 @@ $red2: #ff7f88;
   .toDate,
   .xmin,
   .xmax {
+    cursor: pointer;
     width: 5.1em;
   }
   .lastTime {
@@ -202,6 +214,14 @@ $red2: #ff7f88;
   .xmax,
   .overlapTickTexthider {
     bottom: 26px;
+    b {
+      position: absolute;
+      bottom: 5px;
+      opacity: 0.5;
+    }
+    b.hide {
+      opacity: 0;
+    }
   }
   .logy.y1,
   .logy.y2 {
@@ -369,6 +389,7 @@ $red2: #ff7f88;
   .dygraph-label {
     color: $axismainlabelcolor;
     font-weight: 600;
+    cursor: default;
   }
   .y1 .dygraph-ylabel,
   .y2 .dygraph-y2label {
@@ -383,6 +404,7 @@ $red2: #ff7f88;
   }
   .dygraph-axis-label {
     color: $axissublabelcolor;
+    cursor: default;
   }
 
   button.toggleOptions {

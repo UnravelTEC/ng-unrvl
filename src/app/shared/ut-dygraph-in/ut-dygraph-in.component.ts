@@ -8,7 +8,7 @@ import {
   Output,
   ViewEncapsulation,
   SimpleChanges,
-  OnChanges
+  OnChanges,
 } from '@angular/core';
 
 import Dygraph from 'dygraphs';
@@ -24,7 +24,7 @@ import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
   selector: 'app-ut-dygraph-in',
   templateUrl: './ut-dygraph-in.component.html',
   styleUrls: ['./ut-dygraph-in.component.scss'],
-  encapsulation: ViewEncapsulation.None // from https://coryrylan.com/blog/css-encapsulation-with-angular-components
+  encapsulation: ViewEncapsulation.None, // from https://coryrylan.com/blog/css-encapsulation-with-angular-components
 })
 export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   // define on start what doesn't change
@@ -38,7 +38,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     top: 0,
     bottom: 0,
     left: 0,
-    right: 0
+    right: 0,
   };
   private graphBackGroundColor = '#3F3F3F';
   public yO = '0';
@@ -77,7 +77,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     [400, 'rgba(0, 128, 0, 0.5)'], // green
     [800, 'rgba(255, 255, 0, 0.5)'], // yellow
     [1200, 'rgba(255, 166, 0, 0.5)'], // orange
-    [20000, 'rgba(255, 0, 0, 0.5)'] // red
+    [20000, 'rgba(255, 0, 0, 0.5)'], // red
   ];
 
   @Input()
@@ -117,7 +117,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       strokeWidth: 3,
       strokeBorderWidth: 1,
       highlightCircleSize: 5,
-      strokeBorderColor: this.graphBackGroundColor
+      strokeBorderColor: this.graphBackGroundColor,
     },
     labelsSeparateLines: true,
 
@@ -134,20 +134,20 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         logscale: false,
         drawGrid: true,
         gridLineWidth: this.gridlineActiveWidth,
-        independentTicks: true
+        independentTicks: true,
       },
       y2: {
         logscale: false,
         gridLineWidth: this.gridlineInactiveWidth,
         gridLineColor: this.gridlineInactiveColor,
         drawGrid: true,
-        independentTicks: true
-      }
+        independentTicks: true,
+      },
     },
 
     // valueRange: this.yRange,
     legend: <any>'always', // also 'never' possible
-    visibility: []
+    visibility: [],
   };
   private minimalOptions = {
     strokeWidth: 1.5,
@@ -158,7 +158,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     rightGap: 0,
     highlightSeriesBackgroundAlpha: 1,
     highlightCircleSize: 0,
-    highlightSeriesOpts: { strokeBorderWidth: 0, strokeWidth: 1.5 }
+    highlightSeriesOpts: { strokeBorderWidth: 0, strokeWidth: 1.5 },
   };
 
   public fromZoom: Date;
@@ -293,7 +293,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.dataEndTime = newDataEndTime;
         this.dyGraphOptions['dateWindow'] = [
           this.dataBeginTime.valueOf(),
-          this.dataEndTime.valueOf()
+          this.dataEndTime.valueOf(),
         ];
         this.dataReset = false;
       }
@@ -309,7 +309,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         labels: this.columnLabels,
         axes: this.dyGraphOptions.axes,
         visibility: this.dyGraphOptions.visibility,
-        dateWindow: this.dyGraphOptions['dateWindow']
+        dateWindow: this.dyGraphOptions['dateWindow'],
       });
 
       if (this.minimal && this.displayedData.length > 10) {
@@ -383,11 +383,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     // console.log(this.startTime, this.endTime);
 
-    [this.dataBeginTime, this.dataEndTime] = this.calculateTimeRange(
-      this.startTime,
-      'now',
-      true
-    );
+    if (this.startTime) {
+      [this.dataBeginTime, this.dataEndTime] = this.calculateTimeRange(
+        this.startTime,
+        'now',
+        true
+      );
+    }
 
     this.waitForData();
   }
@@ -421,7 +423,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     const yOffset = this.h.getDeep(this.dyGraphOptions, [
       'axes',
       'y',
-      'axisLabelWidth'
+      'axisLabelWidth',
     ]);
     if (yOffset) {
       this.yO = String(yOffset - 50);
@@ -430,7 +432,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     const y2Offset = this.h.getDeep(this.dyGraphOptions, [
       'axes',
       'y2',
-      'axisLabelWidth'
+      'axisLabelWidth',
     ]);
     if (y2Offset) {
       this.y2O = String(y2Offset - 50);
@@ -583,7 +585,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     const axisVal = this.h.getDeep(this.dyGraphOptions, [
       'series',
       seriesName,
-      'axis'
+      'axis',
     ]);
     return axisVal ? axisVal : 'y1';
   }
@@ -886,7 +888,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         ')s from ',
         targetArray[upper][0],
         ' to ',
-        targetArray[datalen - 1][0]
+        targetArray[datalen - 1][0],
       ]);
     }
     const nr_series = targetArray[0].length;
@@ -1008,12 +1010,25 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   updateDateWindow() {
     const blankSpaceOnFreshPercentage = 0;
 
-    const dataEndTime = new Date();
+    let dataEndTime = new Date();
     // this.endTime === 'now' ? new Date() : new Date(this.endTime);
 
     if (!this.currentXrange) {
       // initial call from handleInitialData
-      this.currentXrange = this.h.parseToSeconds(this.startTime);
+      if (this.startTime) {
+        this.currentXrange = this.h.parseToSeconds(this.startTime);
+      } else {
+        if (!this.dataBeginTime) {
+          this.dataBeginTime = this.displayedData[0][0];
+        }
+        dataEndTime = this.displayedData[this.displayedData.length - 1][0];
+        if (!this.dataEndTime) {
+          this.dataEndTime = dataEndTime;
+        }
+
+        this.currentXrange =
+          (dataEndTime.valueOf() - this.dataBeginTime.valueOf()) / 1000;
+      }
     }
 
     const dataBeginTime = new Date(
@@ -1027,7 +1042,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     this.dyGraphOptions['dateWindow'] = [
       dataBeginTime.valueOf(),
-      dataEndTime.valueOf()
+      dataEndTime.valueOf(),
     ];
     this.fromZoom = dataBeginTime;
     this.toZoom = dataEndTime;
@@ -1145,7 +1160,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.toZoom = new Date(newTo);
     this.fromZoom = new Date(newFrom);
     this.Dygraph.updateOptions({
-      dateWindow: [newFrom, newTo]
+      dateWindow: [newFrom, newTo],
     });
   }
 
@@ -1160,7 +1175,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     axisob[y]['logscale'] = axisob[y]['logscale'] ? false : true;
     this.Dygraph.updateOptions({
       logscale: axisob.y.logscale || axisob.y2.logscale,
-      axes: this.dyGraphOptions['axes']
+      axes: this.dyGraphOptions['axes'],
     });
     console.log(
       'new logscale:',
@@ -1177,7 +1192,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     this.Dygraph.updateOptions({
-      legend: this.dyGraphOptions.legend
+      legend: this.dyGraphOptions.legend,
     });
   }
 
@@ -1216,7 +1231,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.fromZoom = startDate;
     this.toZoom = endDate;
     this.Dygraph.updateOptions({
-      dateWindow: [startDate.valueOf(), endDate.valueOf()]
+      dateWindow: [startDate.valueOf(), endDate.valueOf()],
     });
   }
 
@@ -1263,7 +1278,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.displayedData.length - item_count
     );
     let sum = 0;
-    avgdata.forEach(row => {
+    avgdata.forEach((row) => {
       sum += row[index];
     });
     return sum / item_count;
@@ -1289,7 +1304,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.showAllifNone();
     this.Dygraph.updateOptions({
-      visibility: this.dyGraphOptions.visibility
+      visibility: this.dyGraphOptions.visibility,
     });
   }
   showAllifNone() {
@@ -1318,7 +1333,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     this.fromZoom = toSetDate;
     this.Dygraph.updateOptions({
-      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
+      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()],
     });
   }
   toDatePickerChanged($event) {
@@ -1332,7 +1347,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     this.toZoom = toSetDate;
     this.Dygraph.updateOptions({
-      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()]
+      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()],
     });
   }
 }

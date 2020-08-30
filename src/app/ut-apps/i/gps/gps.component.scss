@@ -1,5 +1,10 @@
-$bordercolor: #666666;
-$labelcolor: #999;
+.fs-container {
+  height: 100%;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 15rem;
+}
 
 .settings {
   position: absolute;
@@ -62,18 +67,4 @@ $labelcolor: #999;
       }
     }
   }
-}
-h2 {
-  margin-left: 1em;
-}
-.icon {
-  color: #c7c7c7;
-}
-.icon:hover {
-  color: white;
-}
-#back {
-  position: absolute;
-  top: 0.5em;
-  right: 1em;
 }

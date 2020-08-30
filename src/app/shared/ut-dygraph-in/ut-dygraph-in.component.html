@@ -68,42 +68,46 @@ style.padding-bottom="20vh"-->
       *ngIf="dyGraphOptions['drawAxis'] !== false"
       [style.transform]="'translateX(' + yO + 'px)'"
     >
-      {{ yRange[0] | number: '1.0-2' }}
+      {{ yRange[0] | dygNr }}
     </div>
     <div
       class="y2min {{ XLabel == '' ? 'noxlabel' : '' }}"
       *ngIf="dyGraphOptions['drawAxis'] !== false && y2Range[0] !== undefined"
       [style.border-right-width]="y2O + 'px'"
     >
-      {{ y2Range[0] | number: '1.0-2' }}
+      {{ y2Range[0] | dygNr }}
     </div>
     <div
       class="ymax"
       *ngIf="dyGraphOptions['drawAxis'] !== false"
       [style.transform]="'translateX(' + yO + 'px)'"
     >
-      {{ yRange[1] | number: '1.0-2' }}
+      {{ yRange[1] | dygNr }}
     </div>
     <div
       class="y2max"
       *ngIf="dyGraphOptions['drawAxis'] !== false && y2Range[1] !== undefined"
       [style.border-right-width]="y2O + 'px'"
     >
-      {{ y2Range[1] | number: '1.0-2' }}
+      {{ y2Range[1] | dygNr }}
     </div>
     <div
       class="xmin"
       *ngIf="dyGraphOptions['drawAxis'] !== false"
       [style.transform]="'translateX(' + yO + 'px)'"
+      (click)="pan('back')"
     >
       {{ fromZoom | date: 'shortTime' }}
+      <b class="{{ options == true ? '' : 'hide' }}">&lt;</b>
     </div>
     <div
       class="xmax {{ y2Range[1] === undefined ? 'noy2' : '' }}"
       *ngIf="dyGraphOptions['drawAxis'] !== false"
       [style.transform]="'translateX(-' + y2O + 'px)'"
+      (click)="pan('forward')"
     >
       {{ toZoom | date: 'shortTime' }}
+      <b class="{{ options == true ? '' : 'hide' }}">&gt;</b>
     </div>
     <div
       class="fromDate"

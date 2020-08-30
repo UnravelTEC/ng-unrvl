@@ -1,6 +1,14 @@
 $bordercolor: #666666;
 $labelcolor: #999;
 
+.fs-container {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  right: 15rem;
+  bottom: 32%;
+}
+
 .settings {
   position: absolute;
   bottom: 2em;
