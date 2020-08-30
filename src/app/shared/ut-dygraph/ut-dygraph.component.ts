@@ -100,7 +100,7 @@ export class UtDygraphComponent implements OnInit, OnDestroy {
   @Output()
   returnRunningAvg = new EventEmitter<number>();
 
-  public yRange = [null, null];
+  public yRange: [number, number] = [null, null];
 
   dyGraphOptions = {
     // http://dygraphs.com/options.html
