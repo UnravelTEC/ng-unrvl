@@ -1,8 +1,7 @@
 # ng-unrvl
 
-Angular Frontend to visualize data - primarly from Prometheus database as sensor data endpoint.
+Angular Frontend to visualize data - from endpoints Prometheus/Influx
 
-![](CO2-startpage.png)
 
 # Building
 
