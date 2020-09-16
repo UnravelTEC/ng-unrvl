@@ -33,7 +33,7 @@ section.hidden {
 
 label {
   display: block;
-  color: #333;
+  /* color: #333; */
   font-weight: 700;
 }
 input {

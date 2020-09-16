@@ -3,51 +3,31 @@ import { LocalStorageService } from '../../core/local-storage.service';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
+import { MqttService } from 'app/core/mqtt.service';
 
 @Component({
   selector: 'app-settings-panel',
   templateUrl: './settings-panel.component.html',
-  styleUrls: ['./settings-panel.component.css']
+  styleUrls: ['./settings-panel.component.css'],
 })
 export class SettingsPanelComponent implements OnInit {
   defaultSettings = {
     server: {
       // settingsSection
       settingAttributes: {
-        title: 'Backend Settings'
+        title: 'Backend Settings',
       },
       settings: {
         serverName: {
           fieldName: 'Endpoint Name',
-          fieldValue: ''
+          fieldValue: '',
         },
         serverHostName: {
           fieldName: 'Server hostname/ip',
-          fieldValue: ''
+          fieldValue: '',
         },
-        prometheusPort: { fieldName: 'Prometheus port', fieldValue: '80' }, // 9090
-        prometheusPath: {
-          fieldName: 'Prometheus database API path',
-          fieldValue: 'prometheus/api/v1/'
-        },
-        prometheusProtocol: {
-          fieldName: 'Prometheus Protocol',
-          fieldValue: 'http'
-        },
-        apiPort: {
-          fieldName: 'API port',
-          fieldValue: '80'
-        },
-        apiPath: {
-          fieldName: 'API path',
-          fieldValue: 'api/'
-        },
-        apiProtocol: {
-          fieldName: 'API protocol',
-          fieldValue: 'http'
-        }
-      }
-    }
+      },
+    },
   };
 
   settingsArray = {
@@ -55,81 +35,39 @@ export class SettingsPanelComponent implements OnInit {
       server: {
         // settingsSection
         settingAttributes: {
-          title: 'Backend Settings'
+          title: 'Backend Settings',
         },
         settings: {
           serverName: {
             fieldName: 'Endpoint Name',
-            fieldValue: 'UnravelTEC Demo Server'
+            fieldValue: 'UnravelTEC Demo Server',
           },
           serverHostName: {
             fieldName: 'Server hostname/ip',
-            fieldValue: 'newton.unraveltec.com'
+            fieldValue: 'newton.unraveltec.com',
           },
-          prometheusPort: { fieldName: 'Prometheus port', fieldValue: '443' }, // 9090
-          prometheusPath: {
-            fieldName: 'Prometheus database API path',
-            fieldValue: 'prometheus/api/v1/'
-          },
-          prometheusProtocol: {
-            fieldName: 'Prometheus Protocol',
-            fieldValue: 'https'
-          },
-          apiPort: {
-            fieldName: 'API port',
-            fieldValue: '443'
-          },
-          apiPath: {
-            fieldName: 'API path',
-            fieldValue: 'api/'
-          },
-          apiProtocol: {
-            fieldName: 'API protocol',
-            fieldValue: 'https'
-          }
-        }
-      }
+        },
+      },
     },
     default: {
       // includes localhost
       server: {
         // settingsSection
         settingAttributes: {
-          title: 'Backend Settings'
+          title: 'Backend Settings',
         },
         settings: {
           serverName: {
             fieldName: 'Endpoint Name',
-            fieldValue: 'Default Host connection'
+            fieldValue: 'Default Host connection',
           },
           serverHostName: {
             fieldName: 'Server hostname/ip',
-            fieldValue: '$baseurl'
+            fieldValue: '$baseurl',
           },
-          prometheusPort: { fieldName: 'Prometheus port', fieldValue: '80' }, // 9090
-          prometheusPath: {
-            fieldName: 'Prometheus database API path',
-            fieldValue: 'prometheus/api/v1/'
-          },
-          prometheusProtocol: {
-            fieldName: 'Prometheus Protocol',
-            fieldValue: 'http'
-          },
-          apiPort: {
-            fieldName: 'API port',
-            fieldValue: '80'
-          },
-          apiPath: {
-            fieldName: 'API path',
-            fieldValue: 'api/'
-          },
-          apiProtocol: {
-            fieldName: 'API protocol',
-            fieldValue: 'http'
-          }
-        }
-      }
-    }
+        },
+      },
+    },
   };
   endpointValue = undefined;
 
@@ -141,7 +79,6 @@ export class SettingsPanelComponent implements OnInit {
 
   public currentBrightness = 0;
 
-  public prometheusPath = '';
   public oldIFPath = '';
   public uv4lPath = '';
 
@@ -151,7 +88,8 @@ export class SettingsPanelComponent implements OnInit {
     private localStorage: LocalStorageService,
     public globalSettingsService: GlobalSettingsService,
     private utHTTP: UtFetchdataService,
-    private h: HelperFunctionsService
+    private h: HelperFunctionsService,
+    private mqtt: MqttService
   ) {
     // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
     this.globalSettingsService.emitChange({ appName: 'Settings' });
@@ -173,10 +111,6 @@ export class SettingsPanelComponent implements OnInit {
       this.oldIFPath = this.API.replace(/api\/$/, '') + 'old/';
       this.uv4lPath = this.API.replace(/\/api\/$/, '') + ':8080';
     }
-    const globalPrometheusPath = this.globalSettingsService.getPrometheusEndpoint();
-    if (globalPrometheusPath) {
-      this.prometheusPath = globalPrometheusPath.replace(/api\/v1\/$/, '');
-    }
   }
 
   load() {
@@ -188,34 +122,34 @@ export class SettingsPanelComponent implements OnInit {
     }
   }
 
-  loadEndpoint() {
-    if (!this.endpointValue) {
-      alert('select an Endpoint');
-      return;
-    }
-    const loadedSettings = this.settingsArray[this.endpointValue];
-    console.log(loadedSettings);
-    console.log(loadedSettings.server.settings.serverHostName.fieldValue);
-    const serverUrl = this.h.getDeep(loadedSettings, [
-      'server',
-      'settings',
-      'serverHostName',
-      'fieldValue'
-    ]);
-    if (serverUrl == '$baseurl') {
-      loadedSettings.server.settings.serverHostName.fieldValue = this.h.getBaseURL();
-    }
+  // loadEndpoint() {
+  //   if (!this.endpointValue) {
+  //     alert('select an Endpoint');
+  //     return;
+  //   }
+  //   const loadedSettings = this.settingsArray[this.endpointValue];
+  //   console.log(loadedSettings);
+  //   console.log(loadedSettings.server.settings.serverHostName.fieldValue);
+  //   const serverUrl = this.h.getDeep(loadedSettings, [
+  //     'server',
+  //     'settings',
+  //     'serverHostName',
+  //     'fieldValue'
+  //   ]);
+  //   if (serverUrl == '$baseurl') {
+  //     loadedSettings.server.settings.serverHostName.fieldValue = this.h.getBaseURL();
+  //   }
 
-    this.globalSettingsUnsaved = loadedSettings;
+  //   this.globalSettingsUnsaved = loadedSettings;
 
-    this.localStorage.set('globalSettings', this.globalSettingsUnsaved);
-    this.globalSettings = JSON.parse(
-      JSON.stringify(this.globalSettingsUnsaved)
-    );
+  //   this.localStorage.set('globalSettings', this.globalSettingsUnsaved);
+  //   this.globalSettings = JSON.parse(
+  //     JSON.stringify(this.globalSettingsUnsaved)
+  //   );
 
-    this.globalSettingsService.reloadSettings();
-    this.localStoredSettings = true;
-  }
+  //   this.globalSettingsService.reloadSettings();
+  //   this.localStoredSettings = true;
+  // }
 
   save() {
     this.localStorage.set('globalSettings', this.globalSettingsUnsaved);
@@ -225,6 +159,7 @@ export class SettingsPanelComponent implements OnInit {
     // alert('save ok');
     this.globalSettingsService.reloadSettings();
     this.localStoredSettings = true;
+    this.mqtt.reload();
   }
   reset() {
     this.globalSettingsUnsaved = JSON.parse(
