@@ -43,67 +43,6 @@ export class UtFetchdataService {
     return this.http.get(thisurl);
   }
 
-  public constructPrometheusEndPoint(
-    server?: string,
-    port?: string,
-    path?: string
-  ) {
-    if (!server && !port && !path) {
-      return this.globalSettingsService.getPrometheusEndpoint();
-    }
-
-    if (!port) {
-      port = this.globalSettingsService.defaultPrometheusPort;
-    }
-    if (Number(port) > 0) {
-      port = ':' + port;
-    }
-    if (!port) {
-      port = '';
-    }
-    if (!path) {
-      path = this.globalSettingsService.defaultPrometheusPath;
-    }
-    const protocol = port === ':443' ? 'https://' : 'http://';
-    const protAndHost = server.startsWith('http') ? server : protocol + server;
-    return protAndHost + port + (path.startsWith('/') ? '' : '/') + path;
-  }
-
-  private buildRangeQuery(
-    queryEndPoint: string,
-    queryString: string,
-    start: Date,
-    end: Date,
-    step
-  ) {
-    const url =
-      queryEndPoint +
-      'query_range?query=' +
-      queryString +
-      '&start=' +
-      start.toISOString() +
-      '&end=' +
-      end.toISOString() +
-      '&step=' +
-      step +
-      'ms';
-    // console.log(url);
-    return url;
-  }
-
-  getRange(
-    queryString: string,
-    start: Date,
-    end: Date,
-    step = this.queryDefaultStep,
-    queryEndPoint = this.globalSettingsService.server.prometheus
-  ) {
-    // console.log(start);
-    // console.log(end);
-    return this.http.get(
-      this.buildRangeQuery(queryEndPoint, queryString, start, end, step)
-    );
-  }
   postData(url: string, data: any) {
     this.http.post(url, data).subscribe(
       (res: any) => {
@@ -115,32 +54,6 @@ export class UtFetchdataService {
     );
 
     console.log(['postData', url, data]);
-  }
-
-  checkPrometheusDataValidity(data) {
-    const result = this.h.getDeep(data, ['data', 'result']);
-    if (!result || !Array.isArray(result)) {
-      console.log('checkPrometheusDataValidity: no Array:', data);
-      return false;
-    }
-    if (result.length === 0) {
-      console.log('checkPrometheusDataValidity: datasets returned 0');
-      return null;
-    }
-    const metric0 = this.h.getDeep(result, [0, 'metric']);
-    const values0 = this.h.getDeep(result, [0, 'values']);
-    if (!values0 || !metric0) {
-      console.error('updateDataSet: no valid data received.');
-      return false;
-    }
-    // check if any data there
-    for (let i = 0; i < result.length; i++) {
-      const dataset = result[i].values;
-      if (dataset.length) {
-        return true;
-      }
-    }
-    return false;
   }
 
   influxTimeString(param1: any, param2: Date = undefined) {
