@@ -67,8 +67,8 @@ export class GlobalSettingsService implements OnInit {
     sensors: [],
     databaseStatus: 'unknown', // db status: up, down, unknown, waiting
     api: undefined,
-    influxdb: '',
-    influxuser: 'ntopng',
+    influxdb: 'ntopng',
+    influxuser: '',
     influxpass: '',
   };
   public client = {
@@ -210,12 +210,12 @@ export class GlobalSettingsService implements OnInit {
       if (servername.endsWith('/')) {
         servername = servername.substr(0, -1);
       }
-      this.server.baseurl = servername;
+      this.server.baseurl = 'http://' + servername;
       this.server.serverName = this.stripProtPort(servername);
 
       const apiPath = this.defaultAPIPath;
 
-      this.server.protocol = 'http';
+      this.server.protocol = 'http://';
       this.server.api = 'http://' + this.server.serverName + apiPath;
 
       this.fetchHostName(this.server.api);

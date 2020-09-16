@@ -160,3 +160,15 @@ npm install @types/leaflet
 npm install @asymmetrik/ngx-leaflet
 
 in angular.json, "buildOptimizer": false
+
+## Settingsrewrite
+
+welche settings haben wir?
+* backend-server
+  * im iot-w nur http
+-> API-Path
+-> MQTT-endpoint
+-> basename f. links
+* Protokolle immer http
+* ports immer http
+
