@@ -6,7 +6,7 @@ import * as Paho from 'paho-mqtt';
 import { GlobalSettingsService } from './global-settings.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MqttService {
   /*
@@ -20,7 +20,7 @@ export class MqttService {
   public observableTopics$ = {};
 
   private client;
-  private clientID = 'clientID_' + String(Math.random() * 100);
+  private clientID = 'ng-unrvl_' + String(Math.random() * 100);
   public status = 'init'; // | connecting | connected | failed | lost
   public disconnects = 0;
 
@@ -30,7 +30,7 @@ export class MqttService {
     topic: '+/sensors/+/temperature',
     tagFilters: { key1: 'value1', key2: 'value2' }, // TODO implement
     valueFilters: ['air_degC', 'probe_degC'], // TODO implement
-    callBack: (obj: Object) => this.demo(obj)
+    callBack: (obj: Object) => this.demo(obj),
   };
   demo(obj: Object) {}
   private waitingRequests = [];
@@ -44,7 +44,7 @@ export class MqttService {
     } else {
       console.log('mqtt: server not ready yet');
       setTimeout(
-        function() {
+        function () {
           this.init();
         }.bind(this),
         50
@@ -56,7 +56,7 @@ export class MqttService {
     if (!server) {
       console.log('mqtt: server not ready yet');
       setTimeout(
-        function() {
+        function () {
           this.init();
         }.bind(this),
         50 + (this.timeoutcounter += 10)
@@ -71,6 +71,9 @@ export class MqttService {
     this.client.onMessageArrived = (obj: Object) => this.onMessageArrived(obj);
     console.log('MQTT client under construction', this.client);
     this.connect();
+  }
+  public reload() {
+    this.init();
   }
 
   public request(requestObject: Object) {
@@ -133,7 +136,7 @@ export class MqttService {
   private connect() {
     this.client.connect({
       onSuccess: () => this.onConnect(),
-      onFailure: (obj: Object) => this.onFailure(obj)
+      onFailure: (obj: Object) => this.onFailure(obj),
     });
     this.status = 'connecting';
   }
@@ -150,8 +153,8 @@ export class MqttService {
       this.subscribe(request);
     }
     if (this.disconnects > 0) {
-      this.activeRequesters.forEach(req => {
-        this.client.subscribe(req.topic)
+      this.activeRequesters.forEach((req) => {
+        this.client.subscribe(req.topic);
       });
     }
   }
@@ -236,7 +239,7 @@ export class MqttService {
     topic: '+/system/network',
     tagFilters: undefined,
     valueFilters: [],
-    callBack: (obj: Object) => this.updateNetWork(obj)
+    callBack: (obj: Object) => this.updateNetWork(obj),
   };
   updateNetWork(msg: Object) {
     if (msg['interfaces']) {
