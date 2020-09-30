@@ -43,6 +43,11 @@ const appRoutes: Routes = [
     loadChildren: () =>
       import('./ut-apps/flicker/flicker.module').then((m) => m.FlickerModule),
   },
+  {
+    path: 'Apps/Hosts',
+    loadChildren: () =>
+      import('./ut-apps/hosts/hosts.module').then((m) => m.HostsModule),
+  },
 
   {
     path: 'Apps/noir',

@@ -172,3 +172,12 @@ welche settings haben wir?
 * Protokolle immer http
 * ports immer http
 
+## getting mysql to work:
+
+https://github.com/angular/angular/issues/23398
+-> https://github.com/angular/angular-cli/issues/1548#issuecomment-386871992
+  -> https://gist.github.com/niespodd/1fa82da6f8c901d1c33d2fcbb762947d
+
+is a postinstall script, gets run after npm install 
+-> on already installed setup, manually change file
+-> nok FS module n/a in browser -> forget it.

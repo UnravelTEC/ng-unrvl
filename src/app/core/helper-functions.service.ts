@@ -796,4 +796,17 @@ export class HelperFunctionsService {
       layer.bindPopup(text);
     }
   }
+  intToIPv4(intip: string) {
+    const ip_i = parseInt(intip);
+    const hex_str = ip_i.toString(16);
+    return (
+      Math.floor(ip_i / 16777216).toString(10) +
+      '.' +
+      parseInt(hex_str.substr(2, 2), 16).toString(10) +
+      '.' +
+      parseInt(hex_str.substr(4, 2), 16).toString(10) +
+      '.' +
+      parseInt(hex_str.substr(6, 2), 16).toString(10)
+    );
+  }
 }
