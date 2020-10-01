@@ -1,0 +1,21 @@
+<p>hosts works!</p>
+
+<table class="flows" *ngIf="sqlresult.length">
+  <tr>
+    <th>idx</th>
+    <th>IP_SRC_ADDR</th>
+    <th>IP_DST_ADDR</th>
+    <th>L4_DST_PORT</th>
+    <th>L7_PROTO</th>
+    <th>Payload</th>
+  </tr>
+  <tr *ngFor="let flow of sqlresult">
+    <td>{{ flow.idx }}</td>
+    <td>{{ flow.IP_SRC_ADDR_str }}</td>
+    <td>{{ flow.IP_DST_ADDR_str }}</td>
+    <td>{{ flow.L4_DST_PORT }}</td>
+    <td>{{ flow.L7_PROTO }}</td>
+  </tr>
+</table>
+
+{{ sqlresult }}

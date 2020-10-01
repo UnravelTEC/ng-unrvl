@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   min_tilesize = 140; // px
 
-  constructor(private globalSettings: GlobalSettingsService) {
+  constructor(public globalSettings: GlobalSettingsService) {
     // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
     this.globalSettings.emitChange({ appName: 'Dashboard' });
     this.getScreenSize();

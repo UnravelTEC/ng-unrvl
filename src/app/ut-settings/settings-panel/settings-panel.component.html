@@ -56,7 +56,7 @@
       style="display: flex;
       flex-wrap: wrap;"
     >
-      <div style="margin-right:2em;">
+      <!-- <div style="margin-right:2em;">
         <mat-form-field>
           <mat-label>Endpoints</mat-label>
           <mat-select [(ngModel)]="endpointValue" name="Endpoints">
@@ -71,13 +71,13 @@
         <button type="submit" class="btn btn-success" (click)="loadEndpoint()">
           Load
         </button>
-      </div>
+      </div> -->
 
       <table class="th_right">
-        <tr>
+        <!-- <tr>
           <th>Backend Type:</th>
           <td>{{ globalSettingsService.server.type }}</td>
-        </tr>
+        </tr> -->
         <tr>
           <th>
             URL:
@@ -88,14 +88,14 @@
             }}</a>
           </td>
         </tr>
-        <tr>
+        <!-- <tr>
           <th>
             Database:
           </th>
           <td>
             {{ globalSettingsService.server.prometheus }}
           </td>
-        </tr>
+        </tr> -->
         <tr>
           <th>API:</th>
           <td>{{ globalSettingsService.server.api }}</td>
@@ -103,7 +103,7 @@
       </table>
     </div>
 
-    <section *ngFor="let entry of settingsSection.value.settings | keyvalue">
+    <!-- <section *ngFor="let entry of settingsSection.value.settings | keyvalue">
       <div class="fields">
         <label for="{{ settingsSection.key }}-{{ entry.key }}"
           >{{ entry.value.fieldName }}:
@@ -134,11 +134,24 @@
           }}</span
         >'
       </div>
+    </section> -->
+    <section>
+      <div class="fields">
+        <label for="serverName"
+          >{{ globalSettingsUnsaved.server.settings.serverHostName.fieldName }}:
+        </label>
+        <input
+          type="text"
+          class="form-control"
+          id="serverName"
+          [(ngModel)]="globalSettingsUnsaved.server.settings.serverHostName.fieldValue"
+        />
+      </div>
     </section>
 
-    <section>
+    <!-- <section>
       <app-influxsettings></app-influxsettings>
-    </section>
+    </section> -->
 
     <section id="submit" class="center">
       <div>
@@ -168,17 +181,7 @@
     </section>
   </section>
 
-  <section id="links">
-    <!-- <a
-      *ngIf="globalSettingsService.server.type == 'Tricorder'"
-      href="{{ oldIFPath }}"
-      >Old Interface</a
-    > -->
-    <a
-      *ngIf="globalSettingsService.server.prometheus"
-      href="{{ prometheusPath }}"
-      >Prometheus Admin Interface</a
-    >
-    <!-- Small Bug: correct Prometheus IF link not displayed on initial load -->
-  </section>
+  <!-- <section id="links">
+
+  </section> -->
 </div>

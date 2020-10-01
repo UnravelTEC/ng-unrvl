@@ -1,8 +1,7 @@
 # ng-unrvl
 
-Angular Frontend to visualize data - primarly from Prometheus database as sensor data endpoint.
+Angular Frontend to visualize data - from endpoints Prometheus/Influx
 
-![](CO2-startpage.png)
 
 # Building
 
@@ -23,3 +22,10 @@ ng serve
 ```
 
 Access it via http://localhost:4200
+
+# Pull changes from upstream
+
+this is a fork from the main development branch https://github.com/UnravelTEC/ng-unrvl
+
+to merge changes into this repo:
+https://github.com/IoT-Watchdog/ng-unrvl/compare/develop...UnravelTEC:develop

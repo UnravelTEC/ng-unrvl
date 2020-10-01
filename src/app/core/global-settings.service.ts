@@ -7,7 +7,7 @@ import { LocalStorageService } from './local-storage.service';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GlobalSettingsService implements OnInit {
   private hostName = 'uninitialized';
@@ -20,7 +20,7 @@ export class GlobalSettingsService implements OnInit {
       [600, 'rgba(0, 128, 0, 0.35)'], // light green
       [1000, 'rgba(255, 255, 0, 0.35)'], // yellow
       [1500, 'rgba(255, 166, 0, 0.35)'], // orange
-      [20000, 'rgba(255, 0, 0, 0.35)'] // red
+      [20000, 'rgba(255, 0, 0, 0.35)'], // red
     ],
     VOC_ppm: [
       // the color acts for "everything below $value"
@@ -29,7 +29,7 @@ export class GlobalSettingsService implements OnInit {
       [0.2, 'rgba(0, 128, 0, 0.35)'], // light green
       [0.6, 'rgba(255, 255, 0, 0.35)'], // yellow
       [2, 'rgba(255, 166, 0, 0.35)'], // orange
-      [2000, 'rgba(255, 0, 0, 0.35)'] // red
+      [2000, 'rgba(255, 0, 0, 0.35)'], // red
     ],
     PM_ugpm3: [
       [0.01, 'white'],
@@ -37,7 +37,7 @@ export class GlobalSettingsService implements OnInit {
       [50, 'rgba(0, 128, 0, 0.35)'], // light green
       [100, 'rgba(255, 255, 0, 0.35)'], // yellow
       [250, 'rgba(255, 166, 0, 0.35)'], // orange
-      [50000, 'rgba(255, 0, 0, 0.35)'] // red
+      [50000, 'rgba(255, 0, 0, 0.35)'], // red
     ],
     NO2_ugpm3: [
       [0.01, 'white'],
@@ -45,22 +45,19 @@ export class GlobalSettingsService implements OnInit {
       [80, 'rgba(0, 128, 0, 0.35)'], // light green Vorsorgegrenzwert 60-Minuten-Mittelwert
       [200, 'rgba(255, 255, 0, 0.35)'], // yellow 1h-Mittel-Grenzwert Außen
       [250, 'rgba(255, 166, 0, 0.35)'], // orange 1h-Mittel Gefahrengrenzwert f Innenräume
-      [400, 'rgba(255, 0, 0, 0.35)'] // red Alarmschwelle
-    ]
+      [400, 'rgba(255, 0, 0, 0.35)'], // red Alarmschwelle
+    ],
   };
 
-  public defaultPrometheusPath = '/prometheus/api/v1/';
-  public defaultPrometheusPort = undefined; // '80'; // later switch to default port
+
   private defaultAPIPath = '/api/';
   private fallbackEndpoint = 'https://newton.unraveltec.com';
-  private fallbackPrometheusEndpoint =
-    this.fallbackEndpoint + this.defaultPrometheusPath;
   private fallbackAPI = this.fallbackEndpoint + '/api/';
 
   public server = {
     baseurl: '',
     serverName: '', // pure IP or hostname w/o protocol/port
-    protocol: '', // https or http
+    protocol: 'http', // https or http
     architecture: undefined,
     type: 'unknown', // Tricorder || PublicServer
     hostname: 'uninitialized',
@@ -68,18 +65,16 @@ export class GlobalSettingsService implements OnInit {
     cpu: 'unknown',
     cpus: 0,
     sensors: [],
-    prometheus: undefined, // String
     databaseStatus: 'unknown', // db status: up, down, unknown, waiting
     api: undefined,
-    influxdb: '',
+    influxdb: 'ntopng',
     influxuser: '',
     influxpass: '',
-    prometheusEnabled: true
   };
   public client = {
     type: 'unknown', // local || web
     protocol: 'unknown', // http || https
-    mobile: false
+    mobile: false,
   };
 
   public networkStatus: Object;
@@ -105,7 +100,7 @@ export class GlobalSettingsService implements OnInit {
     function mobilecheck() {
       // https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser
       let check = false;
-      (function(a) {
+      (function (a) {
         if (
           /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(
             // tslint:disable-line
@@ -157,7 +152,7 @@ export class GlobalSettingsService implements OnInit {
   }
 
   grepSDP(sdp) {
-    sdp.split('\r\n').forEach(function(line) {
+    sdp.split('\r\n').forEach(function (line) {
       // c.f. http://tools.ietf.org/html/rfc4566#page-39
       if (~line.indexOf('a=candidate')) {
         // http://tools.ietf.org/html/rfc4566#section-5.13
@@ -202,86 +197,26 @@ export class GlobalSettingsService implements OnInit {
   // - default: stay on newton
   // - try out switching to another server
   reloadSettings() {
-    // const localStoredServer = this.getPrometheusServerFromLocalStorage();
     const localSettings = this.localStorage.get('globalSettings');
     const localStoredServer = this.h.getDeep(localSettings, [
       'server',
-      'settings'
+      'settings',
     ]);
     if (localStoredServer) {
       let servername = this.h.getDeep(localStoredServer, [
         'serverHostName',
-        'fieldValue'
+        'fieldValue',
       ]);
       if (servername.endsWith('/')) {
         servername = servername.substr(0, -1);
       }
-      this.server.baseurl = servername;
+      this.server.baseurl = 'http://' + servername;
       this.server.serverName = this.stripProtPort(servername);
 
-      let prometheusPath = this.h.getDeep(localStoredServer, [
-        'prometheusPath',
-        'fieldValue'
-      ]);
-      if (!prometheusPath) {
-        prometheusPath = this.defaultPrometheusPath;
-      }
-      if (!prometheusPath.startsWith('/')) {
-        prometheusPath = '/' + prometheusPath;
-      }
-      let prometheusPort = this.h.getDeep(localStoredServer, [
-        'prometheusPort',
-        'fieldValue'
-      ]);
-      prometheusPort = Number(prometheusPort) > 0 ? ':' + prometheusPort : '';
+      const apiPath = this.defaultAPIPath;
 
-      let prometheusProtocol = this.h.getDeep(localStoredServer, [
-        'prometheusProtocol',
-        'fieldValue'
-      ]);
-      if (!prometheusProtocol) {
-        prometheusProtocol = prometheusPort === ':443' ? 'https://' : 'http://';
-      } else {
-        if (!prometheusProtocol.endsWith('://')) {
-          prometheusProtocol = prometheusProtocol + '://';
-        }
-      }
-      let protAndHost = prometheusProtocol + this.server.serverName;
-
-      this.server.prometheus = protAndHost + prometheusPort + prometheusPath;
-
-      this.checkForPrometheus(protAndHost + prometheusPort, prometheusPath);
-
-      let apiPath = this.h.getDeep(localStoredServer, [
-        'apiPath',
-        'fieldValue'
-      ]);
-      if (!apiPath) {
-        apiPath = this.defaultAPIPath;
-      }
-      if (!apiPath.startsWith('/')) {
-        apiPath = '/' + apiPath;
-      }
-      let apiPort = this.h.getDeep(localStoredServer, [
-        'apiPort',
-        'fieldValue'
-      ]);
-      apiPort = Number(apiPort) > 0 ? ':' + apiPort : '';
-      let apiProtocol = this.h.getDeep(localStoredServer, [
-        'apiProtocol',
-        'fieldValue'
-      ]);
-      if (!apiProtocol) {
-        apiProtocol = apiPort === ':443' ? 'https://' : 'http://';
-      } else {
-        if (!apiProtocol.endsWith('://')) {
-          apiProtocol = apiProtocol + '://';
-        }
-      }
-      this.server.protocol = apiProtocol;
-      protAndHost = apiProtocol + this.server.serverName;
-
-      this.server.api = protAndHost + apiPort + apiPath;
+      this.server.protocol = 'http://';
+      this.server.api = 'http://' + this.server.serverName + apiPath;
 
       this.fetchHostName(this.server.api);
       this.getCPUinfo(this.server.api);
@@ -294,9 +229,11 @@ export class GlobalSettingsService implements OnInit {
     } else {
       // see if an API i there
       const firstURL = this.h.getBaseURL();
+      this.server.baseurl = firstURL;
       this.server.serverName = this.stripProtPort(firstURL);
-      this.server.protocol = firstURL.startsWith('https://') ? 'https://' : 'http://';
-      this.server.prometheus = firstURL + this.defaultPrometheusPath;
+      this.server.protocol = firstURL.startsWith('https://')
+        ? 'https://'
+        : 'http://';
       console.log('No settings in LocalStorage, try our webendpoint', firstURL);
 
       this.http
@@ -312,11 +249,8 @@ export class GlobalSettingsService implements OnInit {
 
             // check if on Raspi
             this.getCPUinfo(this.server.api);
-
-            // emit every 5s a check for prometheus
-            this.checkForPrometheus(firstURL, this.defaultPrometheusPath);
           },
-          error => {
+          (error) => {
             console.log('no UTapi running on', firstURL);
             console.log(error);
             this.server.api = false;
@@ -343,51 +277,6 @@ export class GlobalSettingsService implements OnInit {
     }
   }
 
-  checkForPrometheus(baseurl, path) {
-    if (this.server.prometheusEnabled == false) {
-      return;
-    }
-
-    const prometheusTestQuery = 'query?query=scrape_samples_scraped';
-    this.http.get(baseurl + path + prometheusTestQuery).subscribe(
-      (data: Object) => {
-        this.checkPrometheusTestResponse(data, baseurl, path);
-      },
-      error => {
-        console.log(
-          'no prometheus yet there',
-          baseurl + path + prometheusTestQuery,
-          ', 5s to next try.'
-        );
-        this.server.databaseStatus = 'down';
-        this.server.prometheusEnabled = false;
-        // setTimeout(() => {
-        //   this.checkForPrometheus(baseurl, path);
-        // }, 5 * 1000);
-      }
-    );
-  }
-
-  checkPrometheusTestResponse(data: Object, endpoint: string, endpath: string) {
-    if (data['status'] && data['status'] === 'success') {
-      this.server.baseurl = endpoint;
-      this.server.prometheus = endpoint + endpath;
-      this.server.databaseStatus = 'up';
-      this.emitChange({ Prometheus: this.server.prometheus });
-
-      console.log(
-        'SUCCESS: prometheus found on endpoint',
-        endpoint,
-        'path',
-        endpath
-      );
-
-      this.checkIfTricorder();
-    } else {
-      console.error('FAILURE: prometheus on endpoint not ready', endpoint);
-    }
-  }
-
   getCPUinfo(endpoint) {
     this.http.get(endpoint + 'system/cpuinfo.php').subscribe(
       (data: Object) => {
@@ -397,7 +286,7 @@ export class GlobalSettingsService implements OnInit {
         this.server.cpus = data['cpus'];
         this.checkIfTricorder();
       },
-      error => {
+      (error) => {
         console.log('no cpuinfo from api');
         this.server.architecture = 'unknown';
         this.server.cpu = 'unknown';
@@ -426,7 +315,7 @@ export class GlobalSettingsService implements OnInit {
           this.client.type = 'web';
         }
       },
-      error => {
+      (error) => {
         console.log('no raspi screen -> web client');
         this.client.type = 'web';
       }
@@ -436,7 +325,7 @@ export class GlobalSettingsService implements OnInit {
   private fetchHostName(server: string) {
     this.http.get(server + 'system/hostname.php').subscribe(
       (data: Object) => this.setHostName(data),
-      error => {
+      (error) => {
         console.log('no UTapi running on', server);
         console.log(error);
         this.server.api = false;
@@ -461,25 +350,17 @@ export class GlobalSettingsService implements OnInit {
   }
 
   checkIfTricorder() {
-    if (
-      this.server.architecture === undefined // ||
-      // this.server.prometheus === undefined
-    ) {
+    if (this.server.architecture === undefined) {
       console.log('not enough information to check if I am on a Tricorder');
       return;
     }
     if (this.server.architecture.startsWith('arm')) {
-      // && this.server.prometheus) {
       this.server.type = 'Tricorder';
     } else {
       this.server.type = 'PublicServer';
     }
 
     console.log('I am connected to a', this.server.type);
-  }
-
-  getPrometheusEndpoint() {
-    return this.server.prometheus;
   }
 
   getAPIEndpoint() {
