@@ -155,6 +155,11 @@ const appRoutes: Routes = [
       import('./ut-apps/sensors/sensors.module').then((m) => m.SensorsModule),
   },
   {
+    path: 'Apps/Sensors/BME280',
+    loadChildren: () =>
+      import('./ut-apps/sensors/bme280/bme280.module').then((m) => m.Bme280Module),
+  },
+  {
     path: '',
     redirectTo: 'Dashboard',
     pathMatch: 'full',

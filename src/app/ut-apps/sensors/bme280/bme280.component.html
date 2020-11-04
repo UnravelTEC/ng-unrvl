@@ -1,0 +1,77 @@
+<app-ut-dygraph-in
+  [displayedData]="data"
+  [columnLabels]="labels"
+  [style]="graphstyle"
+  [changeTrigger]="changeTrigger"
+  [extraDyGraphConfig]="extraDyGraphConfig"
+  [startTime]="undefined"
+  enableHighlightCallback="true"
+  [colors]="colors"
+  [YLabel]="measurement"
+  (returnGraphWidthOnChange)="setGraphWidth($event)"
+  (returnCurrentZoom)="updateFromToTimes($event)"
+  #R
+></app-ut-dygraph-in>
+
+<form class="settings" (submit)="reload(true)">
+  <div class="section">
+    <h3>Current Dataset:</h3>
+    <label>Resolution:</label><br />
+    <span class="cRange">{{ currentres }}s</span><br />
+
+    <label>Current Range:</label><br />
+    <span class="cRange">{{ currentRange }} </span>
+    <p>
+      <a
+        routerLink="/Apps/Sensors/BME280"
+        [queryParams]="{
+          from: from,
+          to: to,
+          interval: interval
+        }"
+        routerLinkActive="active"
+        >Permalink</a
+      >
+    </p>
+  </div>
+  <div class="section">
+    <h3>New Query:</h3>
+
+
+    <br />
+    <mat-form-field>
+      <mat-label>Show range from now</mat-label>
+      <mat-select
+        [(ngModel)]="userStartTime"
+        name="startTime"
+        (ngModelChange)="changeMean($event)"
+      >
+        <mat-option value="15m">15 min.</mat-option>
+        <mat-option value="1h" selected="selected"> 1h</mat-option>
+        <mat-option value="6h">6 h</mat-option>
+        <mat-option value="24h">24 h</mat-option>
+        <mat-option value="7d">1 week</mat-option>
+        <mat-option value="30d">1 month</mat-option>
+        <mat-option value="356d">1 year</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <br />
+    <label for="runningAvgPoints"># Mean Seconds</label><br />
+    <input
+      type="text"
+      id="runningAvgPoints"
+      name="runningAvgPoints"
+      [(ngModel)]="userMeanS"
+      (ngModelChange)="saveMean($event)"
+      style="width:4em"
+    /><br />
+    <br />
+
+    <div style="width: 100%; text-align: right;">
+      <button type="submit">
+        <mat-icon>refresh</mat-icon>
+        Reload
+      </button>
+    </div>
+  </div>
+</form>

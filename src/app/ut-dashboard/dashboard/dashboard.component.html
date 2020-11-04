@@ -1,35 +1,28 @@
 <div id="dashboard" #dashboard>
+
+  <h2>Sensors</h2>
   <div class="panel">
-    <a href="{{ globalSettings.server.baseurl }}:3000/lua/flows_stats.lua?ifid=2" target="_blank">ntop-ng</a>
-    <app-ut-dashboard-tile title="IoT Devices" path="/Apps/Hosts"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile bg="#FFF" title="BME280 Environmental" path="/Apps/Sensors/BME280" icon="manufacturers/Bosch.svg"></app-ut-dashboard-tile>
   </div>
 
   <h2>Influx Apps</h2>
   <div class="panel">
-
-    <app-ut-dashboard-tile title="Core Temps" path="/Apps/I/CPU"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Influx Playground" path="/Apps/Influx-Test" bg="#FFF" icon="influxdata-logo--symbol--pool-alpha.png"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="All Sensors" path="/Apps/I/Allsens"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="Air Pressure" path="/Apps/I/Pressure"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="CPU Temperature" path="/Apps/I/CPU"></app-ut-dashboard-tile>
+
+    <app-ut-dashboard-tile title="Particulate Matter" path="/Apps/I/Pmhist"></app-ut-dashboard-tile>
+
 
 
   </div>
   <hr>
-  <h2>MQTT Apps</h2>
+
+  <h2>Tools</h2>
   <div class="panel">
+    <app-ut-dashboard-tile title="Influx Playground" path="/Apps/Influx-Test" bg="#FFF" icon="influxdata-logo--symbol--pool-alpha.png"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="Sensor Overview" path="/Apps/Sensors"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="MQTT Test" path="/Apps/MQTT-Test" icon="mqtt.png"></app-ut-dashboard-tile>
   </div>
 
-  <hr>
-  <h2>Sensors</h2>
-  <div class="panel">
-    <app-ut-dashboard-tile title="Sensor Overview" path="/Apps/Sensors"></app-ut-dashboard-tile>
-
-    </div>
-  <hr>
-
-  <h2>Professional Tools</h2>
-  <div class="panel">
-    <a href="{{ globalSettings.server.baseurl }}:10000/" target="_blank">Wireshark</a>
-
-   </div>
 </div>
