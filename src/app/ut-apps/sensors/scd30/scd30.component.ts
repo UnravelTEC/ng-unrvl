@@ -95,7 +95,7 @@ export class Scd30Component implements OnInit {
   public to: Number; // unix time from urlparam
 
   constructor(
-    private globalSettings: GlobalSettingsService,
+    public globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService,
