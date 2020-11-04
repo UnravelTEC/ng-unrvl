@@ -160,6 +160,16 @@ const appRoutes: Routes = [
       import('./ut-apps/sensors/bme280/bme280.module').then((m) => m.Bme280Module),
   },
   {
+    path: 'Apps/Sensors/SCD30',
+    loadChildren: () =>
+      import('./ut-apps/sensors/scd30/scd30.module').then((m) => m.Scd30Module),
+  },
+  {
+    path: 'Apps/Sensors/SPS30',
+    loadChildren: () =>
+      import('./ut-apps/sensors/sps30/sps30.module').then((m) => m.Sps30Module),
+  },
+  {
     path: '',
     redirectTo: 'Dashboard',
     pathMatch: 'full',
