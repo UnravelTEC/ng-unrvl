@@ -150,6 +150,11 @@ const appRoutes: Routes = [
       import('./ut-apps/i/anysens/anysens.module').then((m) => m.AnysensModule),
   },
   {
+    path: 'Apps/Sensors',
+    loadChildren: () =>
+      import('./ut-apps/sensors/sensors.module').then((m) => m.SensorsModule),
+  },
+  {
     path: '',
     redirectTo: 'Dashboard',
     pathMatch: 'full',
