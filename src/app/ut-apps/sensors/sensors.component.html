@@ -1,6 +1,4 @@
-<h3>
-  Sensor Daemons
-</h3>
+<h3>Sensor Daemons</h3>
 
 <table>
   <tr>
@@ -28,14 +26,17 @@
         *ngIf="service['implemented']"
         routerLink="{{ service['UpperCaseName'] }}/"
         routerLinkActive="active"
-        >{{ service['name'] }}</a
+        style="text-transform: uppercase;">{{ service['name'] }}</a
       >
       <span *ngIf="!service['implemented']">
         {{ service['name'] }}
       </span>
     </td>
     <td>{{ service['description'] }}</td>
-    <td style="text-align: center" class="{{ service['onboot'] }}">
+    <td
+      style="text-align: center"
+      class="{{ service['onboot'] ? 'true' : 'false' }}"
+    >
       <span class="status">
         {{ service['onboot'] ? 'Yes' : 'No' }}
       </span>
@@ -59,7 +60,10 @@
         <mat-icon>access_time</mat-icon>
       </button>
     </td>
-    <td style="text-align: center" class="{{ service['running'] }}">
+    <td
+      style="text-align: center"
+      class="{{ service['running'] ? 'true' : 'false' }}"
+    >
       <span *ngIf="service['running']"
         ><span class="status">Yes</span>
         <button
@@ -90,9 +94,7 @@
   </tr>
 </table>
 
-<h3>
-  I²C Sensors
-</h3>
+<h3>I²C Sensors</h3>
 
 <section *ngFor="let bus of i2cDevices | keyvalue">
   <h4>
