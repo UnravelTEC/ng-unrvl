@@ -3,7 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 @Component({
   selector: 'app-ut-dashboard-tile',
   templateUrl: './ut-dashboard-tile.component.html',
-  styleUrls: ['./ut-dashboard-tile.component.css']
+  styleUrls: ['./ut-dashboard-tile.component.css'],
 })
 export class UtDashboardTileComponent implements OnInit {
   @Input()
@@ -14,6 +14,8 @@ export class UtDashboardTileComponent implements OnInit {
   path = '/Apps/empty';
   @Input()
   bg = '#5991b2';
+  @Input()
+  queryParams = {};
 
   constructor() {}
 
