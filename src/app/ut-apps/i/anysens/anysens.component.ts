@@ -79,6 +79,7 @@ export class AnysensComponent implements OnInit {
   sensor: String;
   interval: string;
   host = '';
+  value = '*';
   referrer = 'Allsens';
   public from: Number; // unix time from urlparam
   public to: Number; // unix time from urlparam
@@ -110,6 +111,7 @@ export class AnysensComponent implements OnInit {
       'referrer',
       'from',
       'to',
+      'value',
       'interval',
     ].forEach((element) => {
       const thing = this.router.snapshot.queryParamMap.get(element);
@@ -156,7 +158,8 @@ export class AnysensComponent implements OnInit {
       this.measurement,
       timeQuery,
       params,
-      this.meanS
+      this.meanS,
+      this.value
     );
 
     this.launchQuery(queries);
