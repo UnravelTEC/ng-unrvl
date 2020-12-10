@@ -60,7 +60,7 @@ export class Scd30Component implements OnInit {
     CO2: this.startTime,
   };
 
-  public meanS = 30;
+  public meanS = 2;
   public currentres = 0;
   public userMeanS = this.meanS;
   public fromTime: Date;
