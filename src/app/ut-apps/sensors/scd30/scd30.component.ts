@@ -16,7 +16,7 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./scd30.component.scss'],
 })
 export class Scd30Component implements OnInit {
-  colors = [];
+
   graphWidth = 1500;
   setGraphWidth(width) {
     this.graphWidth = width;
@@ -47,6 +47,10 @@ export class Scd30Component implements OnInit {
   public startTime = '1h';
   public userStartTime = this.startTime;
 
+  colors = {
+    H: [],
+    CO2: ['#842BFF'],
+  };
   labels = {
     H: {},
     CO2: {},
@@ -211,6 +215,9 @@ export class Scd30Component implements OnInit {
     console.log(id, 'received', ret);
     this.labels[id] = ret['labels'];
     this.data[id] = ret['data'];
+    if (id == "H") {
+      this.colors['H'] = this.h.getColorsforLabels(ret['labels'])
+    }
     // console.log(cloneDeep(this.dygLabels));
     this.startTimes[id] = this.userStartTime;
     this.changeTrigger = !this.changeTrigger;

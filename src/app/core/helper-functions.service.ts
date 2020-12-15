@@ -58,6 +58,8 @@ export class HelperFunctionsService {
     }
     this.defaultColorMappings = {
       // define here to calm down TS
+      'dew point': 'blue',
+      '°C': 'red',
       temperature: 'red',
       humidity: 'blue',
       pressure: 'green',
