@@ -179,6 +179,11 @@ const appRoutes: Routes = [
       import('./ut-apps/sensors/ds18b20/ds18b20.module').then((m) => m.Ds18b20Module),
   },
   {
+    path: 'Apps/Sensors/TSL2561',
+    loadChildren: () =>
+      import('./ut-apps/sensors/tsl2561/tsl2561.module').then((m) => m.Tsl2561Module),
+  },
+  {
     path: '',
     redirectTo: 'Dashboard',
     pathMatch: 'full',
