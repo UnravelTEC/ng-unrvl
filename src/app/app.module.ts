@@ -174,6 +174,11 @@ const appRoutes: Routes = [
       import('./ut-apps/sensors/sps30/sps30.module').then((m) => m.Sps30Module),
   },
   {
+    path: 'Apps/Sensors/DS18B20',
+    loadChildren: () =>
+      import('./ut-apps/sensors/ds18b20/ds18b20.module').then((m) => m.Ds18b20Module),
+  },
+  {
     path: '',
     redirectTo: 'Dashboard',
     pathMatch: 'full',

@@ -9,7 +9,7 @@
       [queryParams]="{ sensor: 'SCD30', measurement: 'gas', value: 'CO2_ppm', referrer: 'Dashboard' }">
     </app-ut-dashboard-tile> -->
     <!-- referrer 'Dashboard' does only work because /Apps/I/Dashboard is invalid and gets redirected to Dashboard -->
-    <app-ut-dashboard-tile title="Air Pressure" path="/Apps/I/Pressure" icon="320px-Pressure_gauge.svg.png"></app-ut-dashboard-tile>
+    <!-- <app-ut-dashboard-tile title="Air Pressure" path="/Apps/I/Pressure" icon="320px-Pressure_gauge.svg.png"></app-ut-dashboard-tile> -->
   </div>
 
   <hr>
@@ -19,6 +19,7 @@
     <app-ut-dashboard-tile bg="#FFF" title="BME280 Environmental" path="/Apps/Sensors/BME280" icon="manufacturers/Bosch.svg"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile bg="#FFF" title="SCD30 NDIR CO₂" path="/Apps/Sensors/SCD30" icon="manufacturers/sensirion.png"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile bg="#FFF" title="SPS30 Particulate Matter" path="/Apps/Sensors/SPS30" icon="manufacturers/sensirion.png"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile bg="#FFF" title="DS18B20 Temperature" path="/Apps/Sensors/DS18B20" icon="manufacturers/Maxim_Integrated.svg"></app-ut-dashboard-tile>
   </div>
 
   <!-- <h2>Influx Apps</h2>
