@@ -110,7 +110,7 @@ export class MqttComponent implements OnInit, OnDestroy {
     const sensor = arr[2];
     const metric = arr[3];
 
-    // console.log('got MQTT message from sensor ', sensor, ' about ', metric);
+    console.log('got MQTT message from sensor ', sensor, ' about ', metric, message);
     try {
       const payload = JSON.parse(message['payloadString']);
       const value = payload['value'];
