@@ -72,7 +72,7 @@ export class Co2Component implements OnInit {
   public from: Number; // unix time from urlparam
   public to: Number; // unix time from urlparam
 
-  constructor(private globalSettings: GlobalSettingsService,
+  constructor(public globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService,
