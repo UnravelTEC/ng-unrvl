@@ -1,5 +1,19 @@
 <div id="dashboard" #dashboard>
 
+  <h2>Graphs</h2>
+  <div class="panel">
+    <app-ut-dashboard-tile title="CO₂ Graph" path="/Apps/CO2" icon="284px-Carbon_dioxide_3D_spacefill.png"></app-ut-dashboard-tile>
+    <!-- template for quick link:<app-ut-dashboard-tile
+      title="CO₂ Graph"
+      path="/Apps/I/Anysens"
+      [queryParams]="{ sensor: 'SCD30', measurement: 'gas', value: 'CO2_ppm', referrer: 'Dashboard' }">
+    </app-ut-dashboard-tile> -->
+    <!-- referrer 'Dashboard' does only work because /Apps/I/Dashboard is invalid and gets redirected to Dashboard -->
+    <app-ut-dashboard-tile title="Air Pressure" path="/Apps/I/Pressure" icon="320px-Pressure_gauge.svg.png"></app-ut-dashboard-tile>
+  </div>
+
+  <hr>
+
   <h2>Sensors</h2>
   <div class="panel">
     <app-ut-dashboard-tile bg="#FFF" title="BME280 Environmental" path="/Apps/Sensors/BME280" icon="manufacturers/Bosch.svg"></app-ut-dashboard-tile>
@@ -9,7 +23,6 @@
 
   <!-- <h2>Influx Apps</h2>
   <div class="panel">
-    <app-ut-dashboard-tile title="Air Pressure" path="/Apps/I/Pressure"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="CPU Temperature" path="/Apps/I/CPU"></app-ut-dashboard-tile>
 
     <app-ut-dashboard-tile title="Particulate Matter" path="/Apps/I/Pmhist"></app-ut-dashboard-tile>

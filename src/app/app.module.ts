@@ -67,7 +67,11 @@ const appRoutes: Routes = [
     loadChildren: () =>
       import('./ut-apps/mqtt/mqtt.module').then((m) => m.MqttModule),
   },
-
+  {
+    path: 'Apps/CO2',
+    loadChildren: () =>
+      import('./ut-apps/co2/co2.module').then((m) => m.Co2Module),
+  },
   {
     path: 'Apps/EnviroGraz000',
     loadChildren: () =>
