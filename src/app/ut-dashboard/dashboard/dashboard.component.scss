@@ -2,7 +2,8 @@
   height: 100%;
   width: 100%;
   margin: 0;
-  padding: 0;
+  padding: 1px 0 0 0; // this and the next line needed for not displaying scrollbar ...
+  box-sizing: border-box;
 }
 
 div.panel {
