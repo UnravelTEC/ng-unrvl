@@ -15,7 +15,6 @@ import Dygraph from 'dygraphs';
 
 import cloneDeep from 'lodash-es/cloneDeep';
 
-import { Subscription } from 'rxjs';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
