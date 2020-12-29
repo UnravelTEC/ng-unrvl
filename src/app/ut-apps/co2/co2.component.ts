@@ -22,6 +22,7 @@ export class Co2Component implements OnInit {
     connectSeparatedPoints: true,
     pointSize: 3,
     logscale: false,
+    strokeWidth: 2,
   };
   labelBlackListT = ['host', 'serial', 'mean_*', 'id', 'sensor', 'mean'];
   graphstyle = {
@@ -59,7 +60,7 @@ export class Co2Component implements OnInit {
   labels = [];
   data = [];
 
-  appName = 'CO2-Graph'
+  appName = 'CO2-Graph';
 
   changeTrigger = true;
 
@@ -72,11 +73,13 @@ export class Co2Component implements OnInit {
   public from: Number; // unix time from urlparam
   public to: Number; // unix time from urlparam
 
-  constructor(public globalSettings: GlobalSettingsService,
+  constructor(
+    public globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService,
-    private router: ActivatedRoute) {
+    private router: ActivatedRoute
+  ) {
     this.globalSettings.emitChange({ appName: 'CO₂' });
   }
   ngOnInit() {
@@ -196,7 +199,6 @@ export class Co2Component implements OnInit {
         }
       }
       // NO2: ppm -> ppb
-
     }
     // console.log(cloneDeep(this.dygLabels));
     if (logscale) {
