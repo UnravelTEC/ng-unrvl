@@ -127,6 +127,9 @@ $red2: #ff7f88;
       .mat-form-field-prefix button.mat-icon-button {
         display: none;
       }
+      .mat-form-field-wrapper {
+        padding-bottom: 0; // stretched out of bottom and created scrollbar
+      }
       input {
         cursor: pointer;
       }
@@ -142,7 +145,8 @@ $red2: #ff7f88;
   .xmax:hover {
     background-color: $buttonactivebg;
     color: $buttontext;
-    b, b.hide {
+    b,
+    b.hide {
       opacity: 1;
     }
   }

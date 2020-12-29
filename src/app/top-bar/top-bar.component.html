@@ -9,7 +9,7 @@
   <em class="appname">{{ appName }}</em>
   <span class="spacer">&nbsp;</span>
   <!-- <a routerLink="/Store" routerLinkActive="active">Store</a> -->
-  <em class="date">{{ currentTime | date: 'MM.dd.yy HH:mm' }}</em>
+  <em class="date">{{ currentTime | date: 'dd.MM.yyyy HH:mm' }}</em>
 
   <em id="mqtt">
     <span class="{{ mqtt.status }}" title="MQTT status: {{ mqtt.status }}">

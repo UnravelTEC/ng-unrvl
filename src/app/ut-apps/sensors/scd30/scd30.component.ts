@@ -90,7 +90,7 @@ export class Scd30Component implements OnInit {
 
   changeTrigger = true;
 
-  measurement = 'humidity (%),temperature (°C)';
+  measurement = 'humidity (g/m³),temperature (°C)';
   sensor: String = 'SCD30';
   interval: string;
   // host = '';
@@ -175,11 +175,11 @@ export class Scd30Component implements OnInit {
       'CO2_ppm'
     );
     const queryH = this.utHTTP.influxMeanQuery(
-      'humidity',
+      'gas',
       timeQuery,
       params,
       this.meanS,
-      '/H2O|humidity|dewPoint|sensor_degC/'
+      '/H2O_gpm3|sensor_degC/'
     );
 
     this.launchQuery(queryCO2, 'CO2');

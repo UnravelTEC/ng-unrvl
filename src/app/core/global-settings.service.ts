@@ -16,10 +16,10 @@ export class GlobalSettingsService implements OnInit {
     CO2_ppm: [
       // the color acts for "everything below $value"
       [0.01, 'white'], // first one not used
-      [415, 'rgba(0, 128, 0, 0.678)'], // green
-      [600, 'rgba(0, 128, 0, 0.35)'], // light green
-      [1000, 'rgba(255, 255, 0, 0.35)'], // yellow
-      [1500, 'rgba(255, 166, 0, 0.35)'], // orange
+      [500, 'rgba(0, 128, 0, 0.678)'], // green
+      [800, 'rgba(0, 128, 0, 0.35)'], // light green
+      [1400, 'rgba(255, 255, 0, 0.35)'], // yellow
+      [2500, 'rgba(255, 166, 0, 0.35)'], // orange
       [20000, 'rgba(255, 0, 0, 0.35)'], // red
     ],
     VOC_ppm: [
