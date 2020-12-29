@@ -80,10 +80,11 @@ export class HelperFunctionsService {
     const newColors = [];
     const colorCounters = {};
     for (let c = 1; c < labels.length; c++) {
-      const item = labels[c];
+      const currentLabel = labels[c];
       for (const searchstring in searchToColor) {
         if (searchToColor.hasOwnProperty(searchstring)) {
-          if (item.match(searchstring)) {
+          if (currentLabel.match(searchstring)) {
+            console.log('getColorsforLabels:', currentLabel, 'matched', searchstring );
             const colorset = searchToColor[searchstring];
             const rightColorArray = this.colors[colorset];
             if (!colorCounters.hasOwnProperty(colorset)) {
@@ -98,6 +99,8 @@ export class HelperFunctionsService {
         }
       }
     }
+    console.log('getColorsforLabels:', newColors);
+
     return newColors;
   }
 
