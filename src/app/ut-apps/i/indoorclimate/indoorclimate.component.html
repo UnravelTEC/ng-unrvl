@@ -14,7 +14,7 @@
           <mat-select
             [(ngModel)]="userStartTime"
             name="startTime"
-            (ngModelChange)="changeMean($event)"
+            (closed)="changeMean(userStartTime)"
           >
             <mat-option value="15m">15 min.</mat-option>
             <mat-option value="1h" selected="selected"> 1h</mat-option>
