@@ -1,17 +1,55 @@
-<h2>
-  Network Status
-</h2>
+<h2>Wireless Network Client</h2>
+
+<div>
+  <div class="block">
+    <table>
+      <tr>
+        <th><label for="ssid">SSID</label></th>
+        <td>
+          <input
+            type="text"
+            class="form-control"
+            id="ssid"
+            [(ngModel)]="wificlient_ssid"
+          />
+        </td>
+      </tr>
+      <tr>
+        <th><label for="psk">PSK</label></th>
+        <td>
+          <input
+            type="text"
+            class="form-control"
+            id="psk"
+            [(ngModel)]="wificlient_psk"
+          />
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <button (click)="setWifi()">Update Wifi Client Credentials</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<h2>Network Interfaces</h2>
 
 <div *ngFor="let interface of gss['networkStatus'] | keyvalue">
   <div *ngIf="interface.key !== 'lo'" class="block">
     <h4>{{ interface.key }}: {{ interface.value['status'] }}</h4>
     <table>
       <tr *ngFor="let line of interface.value | keyvalue">
-
         <th *ngIf="line.key !== 'status'">
           {{ line.key }}
         </th>
-        <td *ngIf="line.key !== 'IPv4' && line.key !== 'IPv6' && line.key !== 'status'">
+        <td
+          *ngIf="
+            line.key !== 'IPv4' && line.key !== 'IPv6' && line.key !== 'status'
+          "
+        >
           {{ line.value }}
         </td>
         <td *ngIf="line.key === 'IPv4' || line.key === 'IPv6'">
