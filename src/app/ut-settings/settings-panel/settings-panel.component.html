@@ -13,18 +13,6 @@
     ></app-display-brightness>
   </section>
 
-  <section *ngIf="globalSettingsService.client.type !== 'local'">
-    <a (click)="fullscreen()">Fullscreen</a>
-  </section>
-
-  <section
-    class="center"
-    *ngIf="globalSettingsService.server.type == 'Tricorder'"
-  >
-    <button (click)="halt()">Shut Down</button>
-    <button (click)="reboot()">Reboot</button>
-  </section>
-
   <section *ngIf="globalSettingsService.server.type == 'Tricorder'">
     <app-network></app-network>
   </section>
@@ -47,16 +35,16 @@
     <app-system-time></app-system-time>
   </section>
 
-  <section *ngFor="let settingsSection of globalSettingsUnsaved | keyvalue">
-    <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
-    <div
-      *ngIf="
-        settingsSection.value.settingAttributes.title == 'Backend Settings'
-      "
-      style="display: flex;
-      flex-wrap: wrap;"
-    >
-      <!-- <div style="margin-right:2em;">
+  <div *ngIf="h.domain == 'http://localhost'">
+    <section *ngFor="let settingsSection of globalSettingsUnsaved | keyvalue">
+      <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
+      <div
+        *ngIf="
+          settingsSection.value.settingAttributes.title == 'Backend Settings'
+        "
+        style="display: flex; flex-wrap: wrap"
+      >
+        <!-- <div style="margin-right:2em;">
         <mat-form-field>
           <mat-label>Endpoints</mat-label>
           <mat-select [(ngModel)]="endpointValue" name="Endpoints">
@@ -73,22 +61,20 @@
         </button>
       </div> -->
 
-      <table class="th_right">
-        <!-- <tr>
+        <table class="th_right">
+          <!-- <tr>
           <th>Backend Type:</th>
           <td>{{ globalSettingsService.server.type }}</td>
         </tr> -->
-        <tr>
-          <th>
-            URL:
-          </th>
-          <td>
-            <a href="{{ globalSettingsService.server.baseurl }}">{{
-              globalSettingsService.server.baseurl
-            }}</a>
-          </td>
-        </tr>
-        <!-- <tr>
+          <tr>
+            <th>URL:</th>
+            <td>
+              <a href="{{ globalSettingsService.server.baseurl }}">{{
+                globalSettingsService.server.baseurl
+              }}</a>
+            </td>
+          </tr>
+          <!-- <tr>
           <th>
             Database:
           </th>
@@ -96,14 +82,14 @@
             {{ globalSettingsService.server.prometheus }}
           </td>
         </tr> -->
-        <tr>
-          <th>API:</th>
-          <td>{{ globalSettingsService.server.api }}</td>
-        </tr>
-      </table>
-    </div>
+          <tr>
+            <th>API:</th>
+            <td>{{ globalSettingsService.server.api }}</td>
+          </tr>
+        </table>
+      </div>
 
-    <!-- <section *ngFor="let entry of settingsSection.value.settings | keyvalue">
+      <!-- <section *ngFor="let entry of settingsSection.value.settings | keyvalue">
       <div class="fields">
         <label for="{{ settingsSection.key }}-{{ entry.key }}"
           >{{ entry.value.fieldName }}:
@@ -135,53 +121,68 @@
         >'
       </div>
     </section> -->
-    <section>
-      <div class="fields">
-        <label for="serverName"
-          >{{ globalSettingsUnsaved.server.settings.serverHostName.fieldName }}:
-        </label>
-        <input
-          type="text"
-          class="form-control"
-          id="serverName"
-          [(ngModel)]="globalSettingsUnsaved.server.settings.serverHostName.fieldValue"
-        />
-      </div>
-    </section>
+      <section>
+        <div class="fields">
+          <label for="serverName"
+            >{{
+              globalSettingsUnsaved.server.settings.serverHostName.fieldName
+            }}:
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="serverName"
+            [(ngModel)]="
+              globalSettingsUnsaved.server.settings.serverHostName.fieldValue
+            "
+          />
+        </div>
+      </section>
 
-    <!-- <section>
+      <!-- <section>
       <app-influxsettings></app-influxsettings>
     </section> -->
 
-    <section id="submit" class="center">
-      <div>
-        <!-- div needed for text-align center -->
-        <button type="submit" class="btn btn-success" (click)="save()">
-          Save Settings
-        </button>
-        <button
-          type="submit"
-          class="btn btn-success"
-          (click)="load()"
-          [disabled]="!localStoredSettings"
-        >
-          Load Settings
-        </button>
-        <button type="submit" class="btn btn-success" (click)="reset()">
-          Reset
-        </button>
-        <button
-          type="submit"
-          class="btn btn-success"
-          (click)="deleteStoredSettings()"
-        >
-          Delete Settings
-        </button>
-      </div>
+      <section id="submit" class="center">
+        <div>
+          <!-- div needed for text-align center -->
+          <button type="submit" class="btn btn-success" (click)="save()">
+            Save Settings
+          </button>
+          <button
+            type="submit"
+            class="btn btn-success"
+            (click)="load()"
+            [disabled]="!localStoredSettings"
+          >
+            Load Settings
+          </button>
+          <button type="submit" class="btn btn-success" (click)="reset()">
+            Reset
+          </button>
+          <button
+            type="submit"
+            class="btn btn-success"
+            (click)="deleteStoredSettings()"
+          >
+            Delete Settings
+          </button>
+        </div>
+      </section>
     </section>
-  </section>
-
+  </div>
   <!-- <section id="links">
 
   </section> -->
+  <section *ngIf="globalSettingsService.client.type !== 'local'">
+    <a (click)="fullscreen()">Fullscreen</a>
+  </section>
+
+  <section
+    class="center"
+    *ngIf="globalSettingsService.server.type == 'Tricorder'"
+  >
+    <button (click)="halt()">Shut Down</button>
+    <button (click)="reboot()">Reboot</button>
+  </section>
 </div>

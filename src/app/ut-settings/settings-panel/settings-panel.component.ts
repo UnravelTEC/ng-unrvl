@@ -88,7 +88,7 @@ export class SettingsPanelComponent implements OnInit {
     private localStorage: LocalStorageService,
     public globalSettingsService: GlobalSettingsService,
     private utHTTP: UtFetchdataService,
-    private h: HelperFunctionsService,
+    public h: HelperFunctionsService,
     private mqtt: MqttService
   ) {
     // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
@@ -111,6 +111,9 @@ export class SettingsPanelComponent implements OnInit {
       this.oldIFPath = this.API.replace(/api\/$/, '') + 'old/';
       this.uv4lPath = this.API.replace(/\/api\/$/, '') + ':8080';
     }
+    console.log('globalSettingsService.server', this.globalSettingsService.server);
+    console.log('domain', this.h.domain);
+
   }
 
   load() {
