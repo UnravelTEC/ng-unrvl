@@ -67,9 +67,10 @@ export class GlobalSettingsService implements OnInit {
     sensors: [],
     databaseStatus: 'unknown', // db status: up, down, unknown, waiting
     api: undefined,
-    influxdb: 'ntopng',
+    influxdb: 'telegraf',
     influxuser: '',
     influxpass: '',
+    influxVersion: '',
   };
   public client = {
     type: 'unknown', // local || web
@@ -149,6 +150,41 @@ export class GlobalSettingsService implements OnInit {
     //     'error in getLocalIPs: RTCPeerConnection could not be created'
     //   );
     // }
+  }
+  checkForInflux() {
+    const influxServer = this.server.protocol + this.server.serverName + '/influxdb'
+    const InfluxHealthQuery = '/health';
+    this.http.get(influxServer + InfluxHealthQuery).subscribe(
+      (data: Object) => {
+        this.checkInfluxTestResponse(data);
+      },
+      error => {
+        console.log(
+          'no Influx yet there',
+          influxServer + InfluxHealthQuery,
+          ', 5s to next try.'
+        );
+        this.server.databaseStatus = 'down';
+        setTimeout(() => {
+          this.checkForInflux();
+        }, 5 * 1000);
+      }
+    );
+  }
+
+  checkInfluxTestResponse(data: Object) {
+    if (data['status'] && data['status'] === 'pass') {
+      this.server.databaseStatus = 'up';
+
+      console.log(
+        'SUCCESS: Influx health:',
+        data
+      );
+      this.server.influxVersion = data['version'];
+
+    } else {
+      console.error('FAILURE: Influx on endpoint not ready', data);
+    }
   }
 
   grepSDP(sdp) {
@@ -275,6 +311,7 @@ export class GlobalSettingsService implements OnInit {
     if (!this.server.influxpass && isPublicServer) {
       this.server.influxpass = 'unravelit42.14153';
     }
+    this.checkForInflux()
   }
 
   getCPUinfo(endpoint) {
