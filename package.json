@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "serve.dev": "ng serve",
-    "build.prod": "ng build --prod --progress false",
+    "build.prod": "node git-version.js && ng build --prod --progress false",
     "test": "jest --silent --coverage --verbose",
     "lint": "ng lint",
     "e2e.dev": "cypress open",

@@ -4,6 +4,7 @@ import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 import { MqttService } from 'app/core/mqtt.service';
+import { gitVersion } from 'environments/git-version';
 
 @Component({
   selector: 'app-settings-panel',
@@ -76,6 +77,7 @@ export class SettingsPanelComponent implements OnInit {
   globalSettingsUnsaved = {}; // the 'live' in editor ones the user can change before saving
 
   debug = true;
+  gitV = gitVersion;
 
   public currentBrightness = 0;
 
