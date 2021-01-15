@@ -161,7 +161,9 @@ const appRoutes: Routes = [
   {
     path: 'Apps/Sensors/BME280',
     loadChildren: () =>
-      import('./ut-apps/sensors/bme280/bme280.module').then((m) => m.Bme280Module),
+      import('./ut-apps/sensors/bme280/bme280.module').then(
+        (m) => m.Bme280Module
+      ),
   },
   {
     path: 'Apps/Sensors/SCD30',
@@ -176,24 +178,26 @@ const appRoutes: Routes = [
   {
     path: 'Apps/Sensors/DS18B20',
     loadChildren: () =>
-      import('./ut-apps/sensors/ds18b20/ds18b20.module').then((m) => m.Ds18b20Module),
+      import('./ut-apps/sensors/ds18b20/ds18b20.module').then(
+        (m) => m.Ds18b20Module
+      ),
   },
   {
     path: 'Apps/Sensors/TSL2561',
     loadChildren: () =>
-      import('./ut-apps/sensors/tsl2561/tsl2561.module').then((m) => m.Tsl2561Module),
+      import('./ut-apps/sensors/tsl2561/tsl2561.module').then(
+        (m) => m.Tsl2561Module
+      ),
   },
   {
     path: '',
-    redirectTo: 'Dashboard',
+    redirectTo: 'Apps/CO2',
     pathMatch: 'full',
   },
   {
     path: '**',
     loadChildren: () =>
-      import('./ut-dashboard/ut-dashboard.module').then(
-        (m) => m.UtDashboardModule
-      ),
+      import('./ut-apps/co2/co2.module').then((m) => m.Co2Module),
   },
 ];
 
