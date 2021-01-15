@@ -13,18 +13,6 @@
     ></app-display-brightness>
   </section>
 
-  <section *ngIf="globalSettingsService.client.type !== 'local'">
-    <a (click)="fullscreen()">Fullscreen</a>
-  </section>
-
-  <section
-    class="center"
-    *ngIf="globalSettingsService.server.type == 'Tricorder'"
-  >
-    <button (click)="halt()">Shut Down</button>
-    <button (click)="reboot()">Reboot</button>
-  </section>
-
   <section *ngIf="globalSettingsService.server.type == 'Tricorder'">
     <app-network></app-network>
   </section>
@@ -183,16 +171,24 @@
   <!-- <section id="links">
 
   </section> -->
+  <section *ngIf="globalSettingsService.client.type !== 'local'">
+    <a (click)="fullscreen()">Fullscreen</a>
+  </section>
+
+  <section
+    class="center"
+    *ngIf="globalSettingsService.server.type == 'Tricorder'"
+  >
+    <button (click)="halt()">Shut Down</button>
+    <button (click)="reboot()">Reboot</button>
+  </section>
 </div>
 
-<div style="margin: 0.5em;">
-
-    {{ gitV.branch }}/<a
-
-      href="https://github.com/UnravelTEC/ng-unrvl/commit/{{ gitV.SHA }}"
-      >{{ gitV.shortSHA }}</a
-    >
-    @ <span title="{{ gitV.lastCommitMessage }}">{{ gitV.lastCommitTime }}</span>
-    <!-- {{ gitV.lastCommitAuthor }} -->
-
+<div style="margin: 0.5em">
+  {{ gitV.branch }}/<a
+    href="https://github.com/UnravelTEC/ng-unrvl/commit/{{ gitV.SHA }}"
+    >{{ gitV.shortSHA }}</a
+  >
+  @ <span title="{{ gitV.lastCommitMessage }}">{{ gitV.lastCommitTime }}</span>
+  <!-- {{ gitV.lastCommitAuthor }} -->
 </div>

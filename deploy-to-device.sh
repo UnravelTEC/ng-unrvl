@@ -54,4 +54,4 @@ ssh root@$TARGET mkdir -p $target_path
 echo rsync -ravx dist/Web/* root@$TARGET:$target_path
 scp -r dist/Web/* root@$TARGET:$target_path
 
-ssh root@$TARGET systemctl restart kiosk
+# ssh root@$TARGET systemctl restart kiosk
