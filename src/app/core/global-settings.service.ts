@@ -49,7 +49,6 @@ export class GlobalSettingsService implements OnInit {
     ],
   };
 
-
   private defaultAPIPath = '/api/';
   private fallbackEndpoint = 'https://newton.unraveltec.com';
   private fallbackAPI = this.fallbackEndpoint + '/api/';
@@ -152,13 +151,14 @@ export class GlobalSettingsService implements OnInit {
     // }
   }
   checkForInflux() {
-    const influxServer = this.server.protocol + this.server.serverName + '/influxdb'
+    const influxServer =
+      this.server.protocol + this.server.serverName + '/influxdb';
     const InfluxHealthQuery = '/health';
     this.http.get(influxServer + InfluxHealthQuery).subscribe(
       (data: Object) => {
         this.checkInfluxTestResponse(data);
       },
-      error => {
+      (error) => {
         console.log(
           'no Influx yet there',
           influxServer + InfluxHealthQuery,
@@ -176,12 +176,8 @@ export class GlobalSettingsService implements OnInit {
     if (data['status'] && data['status'] === 'pass') {
       this.server.databaseStatus = 'up';
 
-      console.log(
-        'SUCCESS: Influx health:',
-        data
-      );
+      console.log('SUCCESS: Influx health:', data);
       this.server.influxVersion = data['version'];
-
     } else {
       console.error('FAILURE: Influx on endpoint not ready', data);
     }
@@ -311,7 +307,7 @@ export class GlobalSettingsService implements OnInit {
     if (!this.server.influxpass && isPublicServer) {
       this.server.influxpass = 'unravelit42.14153';
     }
-    this.checkForInflux()
+    this.checkForInflux();
   }
 
   getCPUinfo(endpoint) {
@@ -349,12 +345,20 @@ export class GlobalSettingsService implements OnInit {
         } else {
           console.log('no screen here.');
           this.server.hasscreen = false;
-          this.client.type = 'web';
+          if (window.location.href.search('localhost:4200') > -1) {
+            this.client.type = 'dev';
+          } else {
+            this.client.type = 'web';
+          }
         }
       },
       (error) => {
         console.log('no raspi screen -> web client');
-        this.client.type = 'web';
+        if (window.location.href.search('localhost:4200') > -1) {
+          this.client.type = 'dev';
+        } else {
+          this.client.type = 'web';
+        }
       }
     );
   }
