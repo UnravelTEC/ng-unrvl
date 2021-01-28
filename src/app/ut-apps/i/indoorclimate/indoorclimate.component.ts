@@ -19,6 +19,8 @@ export class IndoorclimateComponent implements OnInit {
   };
 
   extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 };
+  extraDyGraphConfigCO2 = { connectSeparatedPoints: true, pointSize: 3, strokeWidth: 2, };
+
 
   isNaN(a) {
     return isNaN(a);
@@ -52,7 +54,7 @@ export class IndoorclimateComponent implements OnInit {
     public globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
-    private h: HelperFunctionsService
+    public h: HelperFunctionsService
   ) {
     this.globalSettings.emitChange({ appName: 'Indoor Room Climate' });
   }
