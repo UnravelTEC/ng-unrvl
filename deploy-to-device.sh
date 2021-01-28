@@ -51,7 +51,15 @@ fi
 
 ssh root@$TARGET mkdir -p $target_path
 
+echo "cleaning target dir"
+ssh root@$TARGET rm -rf $target_path/*
 echo rsync -ravx dist/Web/* root@$TARGET:$target_path
 scp -r dist/Web/* root@$TARGET:$target_path
+echo "remount-rw"
+ssh root@$TARGET remount-rw
+echo "cleaning persistent dir"
+ssh root@$TARGET rm -rf /mnt/lower/$target_path/*
+echo "copying to persistent"
+ssh root@$TARGET cp -ra $target_path/* /mnt/lower/$target_path/
 
 # ssh root@$TARGET systemctl restart kiosk

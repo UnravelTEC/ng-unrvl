@@ -50,7 +50,7 @@
     </th>
     <th>
       <h3>
-        VOCs
+        Particulate Matter
       </h3>
     </th>
   </tr>
@@ -61,8 +61,9 @@
         [columnLabels]="labels['CO2']"
         [style]="graphstyle"
         [changeTrigger]="changeTrigger"
-        [extraDyGraphConfig]="extraDyGraphConfig"
+        [extraDyGraphConfig]="extraDyGraphConfigCO2"
         [startTime]="startTimes['CO2']"
+        [colors]="h.colors.violet"
         YLabel="ppm"
         [backGroundLevels]="globalSettings['graphBackgrounds']['CO2_ppm']"
         #CO2
@@ -98,8 +99,8 @@
         [changeTrigger]="changeTrigger"
         [extraDyGraphConfig]="extraDyGraphConfig"
         [startTime]="startTimes['V']"
-        YLabel="ppm"
-        [backGroundLevels]="globalSettings['graphBackgrounds']['VOC_ppm']"
+        YLabel="µg&#8202;/&#8202;m³"
+        [backGroundLevels]="globalSettings['graphBackgrounds']['PM_ugpm3']"
         #V
       >
       </app-ut-dygraph-in>
@@ -147,6 +148,7 @@
         [changeTrigger]="changeTrigger"
         [extraDyGraphConfig]="extraDyGraphConfig"
         [startTime]="startTimes['T']"
+        [colors]="h.colors.red"
         YLabel="°C"
         #Temp
       >

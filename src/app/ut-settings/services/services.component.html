@@ -1,12 +1,8 @@
-<h2>
-  System services
-</h2>
+<h2>System services</h2>
 
 <table>
   <tr>
-    <th>
-      Name
-    </th>
+    <th>Name</th>
     <th>Description</th>
     <th>Installed</th>
     <th>Start on Boot</th>
@@ -29,10 +25,16 @@
     <td style="text-align: center">
       <span>{{ service['installed'] ? 'Yes' : 'No' }}</span>
     </td>
-    <td style="text-align: center" class="{{ service['onboot'] }}">
+    <td style="text-align: center" class="{{ service['onboot'] ? 'true' : 'false' }}">
       <span *ngIf="service['installed']">
         <span class="status">
-          {{ service['onboot'] ? 'Yes' : 'No' }}
+          {{
+            service['onboot']
+              ? 'Yes'
+              : service['onboot'] === undefined
+              ? '...'
+              : 'No'
+          }}
         </span>
         <button
           *ngIf="service['onboot']"
@@ -55,7 +57,7 @@
         </button>
       </span>
     </td>
-    <td style="text-align: center" class="{{ service['running'] }}">
+    <td style="text-align: center" class="{{ service['running'] ? 'true' : 'false' }}">
       <span *ngIf="service['installed']">
         <span *ngIf="service['running']"
           ><span class="status">Yes</span>

@@ -7,7 +7,7 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
 @Component({
   selector: 'app-indoorclimate',
   templateUrl: './indoorclimate.component.html',
-  styleUrls: ['./indoorclimate.component.scss']
+  styleUrls: ['./indoorclimate.component.scss'],
 })
 export class IndoorclimateComponent implements OnInit {
   graphstyle = {
@@ -15,10 +15,15 @@ export class IndoorclimateComponent implements OnInit {
     top: '0',
     bottom: '0.5rem',
     left: '0.5rem',
-    right: '1rem'
+    right: '1rem',
   };
 
   extraDyGraphConfig = { connectSeparatedPoints: true, pointSize: 3 };
+  extraDyGraphConfigCO2 = {
+    connectSeparatedPoints: true,
+    pointSize: 3,
+    strokeWidth: 2,
+  };
 
   isNaN(a) {
     return isNaN(a);
@@ -33,26 +38,26 @@ export class IndoorclimateComponent implements OnInit {
     T: {},
     H: {},
     CO2: {},
-    V: {}
+    V: {},
   };
   data = {
     T: [],
     H: [],
     CO2: [],
-    V: []
+    V: [],
   };
   startTimes = {
     T: this.startTime,
     H: this.startTime,
     CO2: this.startTime,
-    V: this.startTime
+    V: this.startTime,
   };
 
   constructor(
     public globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
-    private h: HelperFunctionsService
+    public h: HelperFunctionsService
   ) {
     this.globalSettings.emitChange({ appName: 'Indoor Room Climate' });
   }
@@ -67,7 +72,7 @@ export class IndoorclimateComponent implements OnInit {
     'id',
     'host',
     'mean',
-    'mean_*'
+    'mean_*',
   ];
 
   ngOnInit() {
@@ -102,7 +107,7 @@ export class IndoorclimateComponent implements OnInit {
       'CO2'
     );
     this.launchQuery(
-      'SELECT mean(VOC_ppm) FROM gas WHERE time > now() - ' +
+      'SELECT mean(/_ugpm3/) FROM particulate_matter WHERE time > now() - ' +
         this.startTime +
         ' GROUP BY sensor,time(' +
         String(this.meanS) +

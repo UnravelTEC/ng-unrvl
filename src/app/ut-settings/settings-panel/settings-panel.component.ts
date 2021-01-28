@@ -113,9 +113,12 @@ export class SettingsPanelComponent implements OnInit {
       this.oldIFPath = this.API.replace(/api\/$/, '') + 'old/';
       this.uv4lPath = this.API.replace(/\/api\/$/, '') + ':8080';
     }
-    console.log('globalSettingsService.server', this.globalSettingsService.server);
+    console.log(
+      'globalSettingsService.server',
+      this.globalSettingsService.server
+    );
     console.log('domain', this.h.domain);
-
+    console.log('loc', window.location.href);
   }
 
   load() {
@@ -125,6 +128,10 @@ export class SettingsPanelComponent implements OnInit {
       this.globalSettingsUnsaved = this.localStorage.get('globalSettings');
       this.localStoredSettings = true;
     }
+    console.log(
+      'globalSettingsService.client.type',
+      this.globalSettingsService.client.type
+    );
   }
 
   // loadEndpoint() {
