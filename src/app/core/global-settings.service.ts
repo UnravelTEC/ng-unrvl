@@ -292,6 +292,7 @@ export class GlobalSettingsService implements OnInit {
             //TODO set fallback!
           }
         );
+
     }
     this.server.influxdb = this.localStorage.get('influxdb');
     const isPublicServer = this.server.serverName.endsWith('.unraveltec.com');
@@ -308,6 +309,9 @@ export class GlobalSettingsService implements OnInit {
       this.server.influxpass = 'unravelit42.14153';
     }
     this.checkForInflux();
+    if (window.location.href.search('localhost:4200') > -1) {
+      this.client.type = 'dev';
+    }
   }
 
   getCPUinfo(endpoint) {
