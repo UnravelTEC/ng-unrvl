@@ -62,9 +62,9 @@ export class NetworkComponent implements OnInit {
       .getHTTPData(
         this.gss.getAPIEndpoint() +
           'system/wificlient.php?cmd=set&ssid=' +
-          this.wificlient_ssid +
+          encodeURIComponent(this.wificlient_ssid) +
           '&psk=' +
-          this.wificlient_psk
+          encodeURIComponent(this.wificlient_psk)
       )
       .subscribe((data: Object) => this.acceptWifi(data));
   }
