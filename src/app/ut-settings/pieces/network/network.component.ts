@@ -34,7 +34,7 @@ export class NetworkComponent implements OnInit {
     }
     console.log(this.wifis);
     if (data['set']) {
-      alert('wifi credentials set successful.')
+      alert('Wifi credentials set successful - system will restart wifi!')
     }
   }
   setWifi() {
