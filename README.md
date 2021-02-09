@@ -32,3 +32,7 @@ to remove the experimentalDecorators warning in VSCode, open the root folder (th
 increase inotify handles:
 
 add fs.inotify.max_user_watches=524288 to /etc/sysctl.conf, execute sysctl -p
+
+## CORS
+
+when developing with API with authentication, CORS may kick you. Currently, you have to deploy to test API with auth :-/
