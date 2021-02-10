@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { GlobalSettingsService } from '../../../core/global-settings.service';
+import { LocalStorageService } from 'app/core/local-storage.service';
 
 @Component({
   selector: 'app-system-time',
@@ -14,6 +15,7 @@ export class SystemTimeComponent implements OnInit {
 
   constructor(
     public gss: GlobalSettingsService,
+    private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService
   ) {}
 
@@ -22,8 +24,10 @@ export class SystemTimeComponent implements OnInit {
   }
 
   getDates() {
+    const ls_api_user = this.localStorage.get('api_user');
+    const ls_api_pass = this.localStorage.get('api_pass');
     this.utHTTP
-      .getHTTPData(this.gss.getAPIEndpoint() + 'system/clock.php')
+      .getHTTPData(this.gss.getAPIEndpoint() + 'system/clock.php', ls_api_user, ls_api_pass, true)
       .subscribe((data: Object) => this.acceptDates(data));
   }
   acceptDates(data: Object) {
@@ -46,7 +50,10 @@ export class SystemTimeComponent implements OnInit {
       .getHTTPData(
         this.gss.getAPIEndpoint() +
           'system/clock.php?set=' +
-          newdate
+          newdate,
+          this.localStorage.get('api_user'),
+          this.localStorage.get('api_pass'),
+          true
       )
       .subscribe((data: Object) => this.acceptDates(data));
   }

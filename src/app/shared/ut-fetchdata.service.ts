@@ -24,11 +24,12 @@ export class UtFetchdataService {
   getHTTPData(
     thisurl: string,
     user = this.globalSettingsService.server.influxuser,
-    pass = this.globalSettingsService.server.influxpass
+    pass = this.globalSettingsService.server.influxpass,
+    forceauth = false
   ) {
     console.log('getHTTPData:', thisurl, user, pass);
 
-    if (thisurl.startsWith('https') && thisurl.search(/\/influxdb\//)) {
+    if (forceauth || (thisurl.startsWith('https') && thisurl.search(/\/influxdb\//))) {
       const httpOptions = {
         headers: new HttpHeaders({
           Authorization: 'Basic ' + btoa(user + ':' + pass)

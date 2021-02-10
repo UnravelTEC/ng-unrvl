@@ -1,6 +1,6 @@
 # ng-unrvl
 
-Angular Frontend to visualize data - from endpoints Prometheus/Influx
+Angular Frontend to visualize data - from endpoints Influx and MQTT
 
 
 # Building
@@ -9,6 +9,7 @@ Angular Frontend to visualize data - from endpoints Prometheus/Influx
 npm install
 
 npm run build.prod
+OR build.sh
 ```
 
 The built project can now be found in `dist/Web`.
@@ -23,9 +24,15 @@ ng serve
 
 Access it via http://localhost:4200
 
-# Pull changes from upstream
 
-this is a fork from the main development branch https://github.com/UnravelTEC/ng-unrvl
+## VS code
 
-to merge changes into this repo:
-https://github.com/IoT-Watchdog/ng-unrvl/compare/develop...UnravelTEC:develop
+to remove the experimentalDecorators warning in VSCode, open the root folder (this) - only then tsconfig.json is read by VS code
+
+increase inotify handles:
+
+add fs.inotify.max_user_watches=524288 to /etc/sysctl.conf, execute sysctl -p
+
+## CORS
+
+when developing with API with authentication, CORS may kick you. Currently, you have to deploy to test API with auth :-/

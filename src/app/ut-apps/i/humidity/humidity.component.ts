@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { GlobalSettingsService } from 'app/core/global-settings.service';
-import { HelperFunctionsService } from 'app/core/helper-functions.service';
-import { LocalStorageService } from 'app/core/local-storage.service';
-import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
+import { GlobalSettingsService } from '../../../core/global-settings.service';
+import { HelperFunctionsService } from '../../../core/helper-functions.service';
+import { LocalStorageService } from '../../../core/local-storage.service';
+import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 
 @Component({
-  selector: 'app-co2',
-  templateUrl: './co2.component.html',
-  styleUrls: ['./co2.component.scss'],
+  selector: 'app-humidity',
+  templateUrl: './humidity.component.html',
+  styleUrls: ['./humidity.component.scss']
 })
-export class Co2Component implements OnInit {
+export class HumidityComponent implements OnInit {
+
   colors = [];
   graphWidth = 1500;
   setGraphWidth(width) {
@@ -22,13 +23,12 @@ export class Co2Component implements OnInit {
     connectSeparatedPoints: true,
     pointSize: 3,
     logscale: false,
-    strokeWidth: 2,
   };
   labelBlackListT = ['host', 'serial', 'mean_*', 'id', 'sensor', 'mean'];
   graphstyle = {
     position: 'absolute',
     top: '0.5em',
-    bottom: '0.5em',
+    bottom: '0.5rem',
     left: '0.5rem',
     right: '15rem',
   };
@@ -60,30 +60,28 @@ export class Co2Component implements OnInit {
   labels = [];
   data = [];
 
-  appName = 'CO2-Graph';
+  appName = 'Humidity';
 
   changeTrigger = true;
 
-  measurement = 'gas';
-  sensor: String;
+  measurement = 'humidity';
+  sensor: String = 'DS18B20';
   interval: string;
-  host = '';
-  value = '/CO2_ppm/';
-  referrer = 'CO2';
+  // host = '';
+  // referrer = 'Allsens';
   public from: Number; // unix time from urlparam
   public to: Number; // unix time from urlparam
 
-  public queryRunning = false;
-
   constructor(
-    public globalSettings: GlobalSettingsService,
+    private globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService,
     private router: ActivatedRoute
   ) {
-    this.globalSettings.emitChange({ appName: 'CO₂' });
+    this.globalSettings.emitChange({ appName: this.appName });
   }
+
   ngOnInit() {
     const lsMean = this.localStorage.get(this.appName + 'userMeanS');
     if (lsMean) {
@@ -95,13 +93,12 @@ export class Co2Component implements OnInit {
     }
 
     [
-      'host',
-      'measurement',
-      'sensor',
-      'referrer',
+      // 'host',
+      // 'measurement',
+      // 'sensor',
+      // 'referrer',
       'from',
       'to',
-      'value',
       'interval',
     ].forEach((element) => {
       const thing = this.router.snapshot.queryParamMap.get(element);
@@ -133,23 +130,22 @@ export class Co2Component implements OnInit {
       : this.utHTTP.influxTimeString(this.startTime);
 
     let params = { sensor: [] };
-    if (this.sensor) {
-      if (Array.isArray(this.sensor)) {
-        params['sensor'] = this.sensor;
-      } else {
-        params['sensor'] = [this.sensor];
-      }
-    }
-    if (this.host) {
-      params['host'] = this.host;
-    }
+    // if (this.sensor) {
+    //   if (Array.isArray(this.sensor)) {
+    //     params['sensor'] = this.sensor;
+    //   } else {
+    //     params['sensor'] = [this.sensor];
+    //   }
+    // }
+    // if (this.host) {
+    //   params['host'] = this.host;
+    // }
 
     const queries = this.utHTTP.influxMeanQuery(
-      this.measurement,
+      'humidity',
       timeQuery,
       params,
-      this.meanS,
-      this.value
+      this.meanS
     );
 
     this.launchQuery(queries);
@@ -170,7 +166,6 @@ export class Co2Component implements OnInit {
   }
 
   launchQuery(clause: string) {
-    this.queryRunning = true;
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
       .subscribe((data: Object) => this.handleData(data));
@@ -201,7 +196,6 @@ export class Co2Component implements OnInit {
           }
         }
       }
-      // NO2: ppm -> ppb
     }
     // console.log(cloneDeep(this.dygLabels));
     if (logscale) {
@@ -218,6 +212,6 @@ export class Co2Component implements OnInit {
     console.log(idata);
     this.changeTrigger = !this.changeTrigger;
     this.changeTrigger = !this.changeTrigger;
-    this.queryRunning = false;
   }
+
 }

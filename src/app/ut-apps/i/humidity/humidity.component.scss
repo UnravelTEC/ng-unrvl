@@ -1,6 +1,5 @@
 $bordercolor: #666666;
 $labelcolor: #999;
-$buttonbg: #565656;
 
 .settings {
   position: absolute;
@@ -10,12 +9,11 @@ $buttonbg: #565656;
   overflow-y: auto;
   margin: 0;
   padding: 0;
-  fieldset {
+  div.section {
     border: 1px solid #666;
-    width: 11.5rem;
+    width: 11rem;
     margin: 1rem;
     padding: 1rem;
-
     h3 {
       margin-top: 0;
     }
@@ -25,14 +23,14 @@ $buttonbg: #565656;
       cursor: pointer;
     }
     mat-label {
-      color: $labelcolor;
+      color: #999;
     }
     .mat-select {
       background-color: #565656;
     }
     label {
-      display: block;
-      color: $labelcolor;
+      display: inline-block;
+      color: #999;
       text-align: left;
       margin-right: 0.7rem;
       font-weight: 400;
@@ -43,9 +41,26 @@ $buttonbg: #565656;
     .cRange {
       font-size: 14px;
     }
-  }
-  fieldset:disabled {
-    background-color: rgba(255, 255, 255, 0.192);
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+      padding: 0.5em;
+      // background-color: khaki;
+      th {
+        // padding: 0.5em;
+      }
+      td:first-child {
+        width: 1em;
+        input {
+          cursor: pointer;
+        }
+      }
+      td label {
+        // background-color: greenyellow;
+        width: 100%;
+        cursor: pointer;
+      }
+    }
   }
 }
 h2 {
@@ -56,9 +71,4 @@ h2 {
 }
 .icon:hover {
   color: white;
-}
-#back {
-  position: absolute;
-  top: 0.5em;
-  right: 1em;
 }

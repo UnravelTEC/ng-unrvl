@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
+import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { GlobalSettingsService } from '../../../core/global-settings.service';
+import { LocalStorageService } from 'app/core/local-storage.service';
 
 @Component({
   selector: 'app-network',
@@ -14,12 +15,18 @@ export class NetworkComponent implements OnInit {
 
   constructor(
     public gss: GlobalSettingsService,
+    private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService
   ) {}
 
   ngOnInit() {
     this.utHTTP
-      .getHTTPData(this.gss.getAPIEndpoint() + 'system/wificlient.php?cmd=get')
+      .getHTTPData(
+        this.gss.getAPIEndpoint() + 'system/wificlient.php?cmd=get',
+        this.localStorage.get('api_user'),
+        this.localStorage.get('api_pass'),
+        true
+      )
       .subscribe((data: Object) => this.acceptWifi(data));
   }
   acceptWifi(data: Object) {
@@ -34,13 +41,13 @@ export class NetworkComponent implements OnInit {
     }
     console.log(this.wifis);
     if (data['set']) {
-      alert('wifi credentials set successful.')
+      alert('Wifi credentials set successful - system will restart wifi!');
     }
   }
   setWifi() {
     if (this.wificlient_psk.length < 8) {
       alert('minimum PSK length: 8 chars');
-      console.error('minimum PSK length: 8 chars')
+      console.error('minimum PSK length: 8 chars');
       return;
     }
     if (this.wificlient_psk.length > 63) {
@@ -62,9 +69,12 @@ export class NetworkComponent implements OnInit {
       .getHTTPData(
         this.gss.getAPIEndpoint() +
           'system/wificlient.php?cmd=set&ssid=' +
-          this.wificlient_ssid +
+          encodeURIComponent(this.wificlient_ssid) +
           '&psk=' +
-          this.wificlient_psk
+          encodeURIComponent(this.wificlient_psk),
+        this.localStorage.get('api_user'),
+        this.localStorage.get('api_pass'),
+        true
       )
       .subscribe((data: Object) => this.acceptWifi(data));
   }

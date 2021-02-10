@@ -106,6 +106,13 @@ const appRoutes: Routes = [
       ),
   },
   {
+    path: 'Apps/I/Humidity',
+    loadChildren: () =>
+      import('./ut-apps/i/humidity/humidity.module').then(
+        (m) => m.HumidityModule
+      ),
+  },
+  {
     path: 'Apps/I/CPU',
     loadChildren: () =>
       import('./ut-apps/i/coretemps/coretemps.module').then(
