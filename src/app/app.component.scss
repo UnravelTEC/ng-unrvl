@@ -1,9 +1,9 @@
-$mainbg: #1E1E1E;
+$mainbg: #1e1e1e;
 $buttontext: #fff;
 $buttontextinactive: #666666;
 $buttonbg: #565656;
-$buttonactivebg: #8E8E8E;
-$buttoninactivebg:#373737;
+$buttonactivebg: #8e8e8e;
+$buttoninactivebg: #373737;
 
 * {
   font-family: Helvetica, Arial, sans-serif;
@@ -21,7 +21,7 @@ $buttoninactivebg:#373737;
   flex-direction: column;
   display: flex;
   background-color: $mainbg;
-  color: #C7C7C7;
+  color: #c7c7c7;
 
   ::ng-deep button {
     border: 2px solid black;
@@ -40,11 +40,27 @@ $buttoninactivebg:#373737;
   ::ng-deep button:hover {
     background-color: $buttonactivebg;
   }
+
   ::ng-deep input[type='text'] {
     padding: 0.3em;
     border: 2px solid black;
     background-color: #565656;
-    color: #C7C7C7
+    color: #c7c7c7;
+  }
+  ::ng-deep fieldset:disabled {
+    button,
+    mat-form-field,
+    mat-label,
+    input {
+      cursor: not-allowed;
+    }
+    button,
+    input[type='text'] {
+      border-color: #373737;
+    }
+    button:hover {
+      background-color: $buttonbg;
+    }
   }
 }
 
