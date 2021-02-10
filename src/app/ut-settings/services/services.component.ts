@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { LocalStorageService } from 'app/core/local-storage.service';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 
 /* this is nearly a 1:1 copy of sensor services - maybe put code into own service? */
 
-
 @Component({
   selector: 'app-services',
   templateUrl: './services.component.html',
-  styleUrls: ['./services.component.scss']
+  styleUrls: ['./services.component.scss'],
 })
 export class ServicesComponent implements OnInit {
   services = [];
@@ -17,6 +17,7 @@ export class ServicesComponent implements OnInit {
 
   constructor(
     private utHTTP: UtFetchdataService,
+    private localStorage: LocalStorageService,
     private globalSettings: GlobalSettingsService
   ) {
     this.globalSettings.emitChange({ appName: 'System Services' });
@@ -43,8 +44,8 @@ export class ServicesComponent implements OnInit {
 
   startService(service: string) {
     console.log('starting', service);
-    this.services.forEach(serviceItem => {
-      if(serviceItem['name'] == service) {
+    this.services.forEach((serviceItem) => {
+      if (serviceItem['name'] == service) {
         serviceItem['running'] = undefined;
       }
     });
@@ -52,8 +53,8 @@ export class ServicesComponent implements OnInit {
   }
   stopService(service: string) {
     console.log('stopping', service);
-    this.services.forEach(serviceItem => {
-      if(serviceItem['name'] == service) {
+    this.services.forEach((serviceItem) => {
+      if (serviceItem['name'] == service) {
         serviceItem['running'] = undefined;
       }
     });
@@ -61,8 +62,8 @@ export class ServicesComponent implements OnInit {
   }
   enableService(service: string) {
     console.log('enabling', service);
-    this.services.forEach(serviceItem => {
-      if(serviceItem['name'] == service) {
+    this.services.forEach((serviceItem) => {
+      if (serviceItem['name'] == service) {
         serviceItem['onboot'] = undefined;
       }
     });
@@ -70,8 +71,8 @@ export class ServicesComponent implements OnInit {
   }
   disableService(service: string) {
     console.log('disabling', service);
-    this.services.forEach(serviceItem => {
-      if(serviceItem['name'] == service) {
+    this.services.forEach((serviceItem) => {
+      if (serviceItem['name'] == service) {
         serviceItem['onboot'] = undefined;
       }
     });
@@ -85,7 +86,10 @@ export class ServicesComponent implements OnInit {
           'system/service.php?cmd=' +
           cmd +
           '&service=' +
-          service
+          service,
+        this.localStorage.get('api_user'),
+        this.localStorage.get('api_pass'),
+        true
       )
       .subscribe((data: Object) => this.checkSuccessOfCommand(data));
   }

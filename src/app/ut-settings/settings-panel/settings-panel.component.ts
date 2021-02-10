@@ -124,6 +124,8 @@ export class SettingsPanelComponent implements OnInit {
     );
     console.log('domain', this.h.domain);
     console.log('loc', window.location.href);
+
+    this.login();
   }
 
   load() {
@@ -223,6 +225,10 @@ export class SettingsPanelComponent implements OnInit {
   }
   handleAuthError(error: any) {
     this.login_status_text = 'authentication failed';
+    if (error && error['statusText']) {
+      this.login_status_text += ': ' + error['statusText'];
+      // 500 if no htpasswd file there
+    }
     this.auth = 'NOK';
     console.log('auth error', error);
   }
@@ -277,14 +283,24 @@ export class SettingsPanelComponent implements OnInit {
   halt() {
     if (confirm('Halt now?')) {
       this.utHTTP
-        .getHTTPData(this.API + 'system/halt.php')
+        .getHTTPData(
+          this.API + 'system/halt.php',
+          this.api_username,
+          this.api_pass,
+          true
+        )
         .subscribe((data: Object) => this.ack(data));
     }
   }
   reboot() {
     if (confirm('Reboot now?')) {
       this.utHTTP
-        .getHTTPData(this.API + 'system/reboot.php')
+        .getHTTPData(
+          this.API + 'system/reboot.php',
+          this.api_username,
+          this.api_pass,
+          true
+        )
         .subscribe((data: Object) => this.ack(data));
     }
   }
