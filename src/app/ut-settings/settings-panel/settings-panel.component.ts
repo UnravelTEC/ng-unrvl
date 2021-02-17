@@ -3,8 +3,8 @@ import { LocalStorageService } from '../../core/local-storage.service';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
-import { MqttService } from 'app/core/mqtt.service';
-import { gitVersion } from 'environments/git-version';
+import { MqttService } from '../../core/mqtt.service';
+import { gitVersion } from '../../../environments/git-version';
 
 @Component({
   selector: 'app-settings-panel',
@@ -86,6 +86,11 @@ export class SettingsPanelComponent implements OnInit {
 
   public API = '';
 
+  public api_username = 'system';
+  public api_pass = '';
+  public login_status_text = 'Not logged in.';
+  public auth = 'NOK';
+
   constructor(
     private localStorage: LocalStorageService,
     public globalSettingsService: GlobalSettingsService,
@@ -119,6 +124,8 @@ export class SettingsPanelComponent implements OnInit {
     );
     console.log('domain', this.h.domain);
     console.log('loc', window.location.href);
+
+    this.login();
   }
 
   load() {
@@ -132,6 +139,10 @@ export class SettingsPanelComponent implements OnInit {
       'globalSettingsService.client.type',
       this.globalSettingsService.client.type
     );
+    const ls_api_user = this.localStorage.get('api_user');
+    if (ls_api_user) this.api_username = ls_api_user;
+    const ls_api_pass = this.localStorage.get('api_pass');
+    if (ls_api_pass) this.api_pass = ls_api_pass;
   }
 
   // loadEndpoint() {
@@ -172,6 +183,7 @@ export class SettingsPanelComponent implements OnInit {
     this.globalSettingsService.reloadSettings();
     this.localStoredSettings = true;
     this.mqtt.reload();
+    this.API = this.globalSettingsService.getAPIEndpoint();
   }
   reset() {
     this.globalSettingsUnsaved = JSON.parse(
@@ -182,6 +194,43 @@ export class SettingsPanelComponent implements OnInit {
   deleteStoredSettings() {
     this.localStorage.delete('globalSettings');
     this.globalSettingsService.reloadSettings();
+  }
+
+  login() {
+    this.login_status_text = 'authentication Request sent.';
+    this.localStorage.set('api_user', this.api_username);
+    this.localStorage.set('api_pass', this.api_pass);
+
+    this.utHTTP
+      .getHTTPData(
+        this.API + 'system/auth.php',
+        this.api_username,
+        this.api_pass,
+        true
+      )
+      .subscribe(
+        (data: Object) => this.acceptAuth(data),
+        (error: any) => this.handleAuthError(error)
+      );
+  }
+  acceptAuth(data: Object) {
+    if (data['success'] && data['success'] === true) {
+      this.login_status_text = 'Authentication successful';
+      this.auth = 'OK';
+    } else {
+      this.login_status_text = 'error at authentication';
+      this.auth = 'NOK';
+    }
+    console.log('acceptAuth', data);
+  }
+  handleAuthError(error: any) {
+    this.login_status_text = 'authentication failed';
+    if (error && error['statusText']) {
+      this.login_status_text += ': ' + error['statusText'];
+      // 500 if no htpasswd file there
+    }
+    this.auth = 'NOK';
+    console.log('auth error', error);
   }
 
   fullscreen() {
@@ -234,14 +283,24 @@ export class SettingsPanelComponent implements OnInit {
   halt() {
     if (confirm('Halt now?')) {
       this.utHTTP
-        .getHTTPData(this.API + 'system/halt.php')
+        .getHTTPData(
+          this.API + 'system/halt.php',
+          this.api_username,
+          this.api_pass,
+          true
+        )
         .subscribe((data: Object) => this.ack(data));
     }
   }
   reboot() {
     if (confirm('Reboot now?')) {
       this.utHTTP
-        .getHTTPData(this.API + 'system/reboot.php')
+        .getHTTPData(
+          this.API + 'system/reboot.php',
+          this.api_username,
+          this.api_pass,
+          true
+        )
         .subscribe((data: Object) => this.ack(data));
     }
   }

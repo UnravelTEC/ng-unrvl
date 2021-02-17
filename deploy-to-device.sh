@@ -60,6 +60,6 @@ ssh root@$TARGET remount-rw
 echo "cleaning persistent dir"
 ssh root@$TARGET rm -rf /mnt/lower/$target_path/*
 echo "copying to persistent"
-ssh root@$TARGET cp -ra $target_path/* /mnt/lower/$target_path/
+ssh root@$TARGET cp -ra "$target_path/*" /mnt/lower/$target_path/
 
 # ssh root@$TARGET systemctl restart kiosk

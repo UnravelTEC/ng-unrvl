@@ -73,6 +73,8 @@ export class Co2Component implements OnInit {
   public from: Number; // unix time from urlparam
   public to: Number; // unix time from urlparam
 
+  public queryRunning = false;
+
   constructor(
     public globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
@@ -168,6 +170,7 @@ export class Co2Component implements OnInit {
   }
 
   launchQuery(clause: string) {
+    this.queryRunning = true;
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
       .subscribe((data: Object) => this.handleData(data));
@@ -215,5 +218,6 @@ export class Co2Component implements OnInit {
     console.log(idata);
     this.changeTrigger = !this.changeTrigger;
     this.changeTrigger = !this.changeTrigger;
+    this.queryRunning = false;
   }
 }

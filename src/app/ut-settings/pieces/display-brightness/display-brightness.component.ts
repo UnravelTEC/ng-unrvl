@@ -1,13 +1,12 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { MatSliderModule } from '@angular/material/slider';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
-import { HelperFunctionsService } from '../../../core/helper-functions.service';
 import { GlobalSettingsService } from '../../../core/global-settings.service';
+import { LocalStorageService } from 'app/core/local-storage.service';
 
 @Component({
   selector: 'app-display-brightness',
   templateUrl: './display-brightness.component.html',
-  styleUrls: ['./display-brightness.component.scss']
+  styleUrls: ['./display-brightness.component.scss'],
 })
 export class DisplayBrighnessComponent implements OnInit {
   @Output()
@@ -16,7 +15,7 @@ export class DisplayBrighnessComponent implements OnInit {
   constructor(
     private utHTTP: UtFetchdataService,
     private gss: GlobalSettingsService,
-    private h: HelperFunctionsService
+    private localStorage: LocalStorageService
   ) {}
 
   public currentBrightness = 64;
@@ -50,7 +49,6 @@ export class DisplayBrighnessComponent implements OnInit {
       this.disabled = false;
     }
     // alert('got bn:' + JSON.stringify(data));
-
   }
 
   setBrightness(MatSliderChange) {
@@ -60,7 +58,10 @@ export class DisplayBrighnessComponent implements OnInit {
       .getHTTPData(
         this.gss.getAPIEndpoint() +
           'screen/brightness.php?bn=' +
-          MatSliderChange.value
+          MatSliderChange.value,
+        this.localStorage.get('api_user'),
+        this.localStorage.get('api_pass'),
+        true
       )
       .subscribe((data: Object) => this.ack(data));
     this.currentBrightness = MatSliderChange.value;
