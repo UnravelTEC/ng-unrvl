@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # written by Michael Maier (s.8472@aon.at)
-# 
+#
 # 18.01.2019   - intial release
 #
 
@@ -16,7 +16,7 @@
 target_path="/var/www/ng/"
 
 if [ ! "$1" ] || [ "$1" = "-h" ] || [ "$1" = " -help" ] || [ "$1" = "--help" ]
-then 
+then
 cat <<EOH
 Usage: $0 [OPTIONS] {target} [path]
 
@@ -58,7 +58,7 @@ scp -r dist/Web/* root@$TARGET:$target_path
 echo "remount-rw"
 ssh root@$TARGET remount-rw
 echo "cleaning persistent dir"
-ssh root@$TARGET rm -rf /mnt/lower/$target_path/*
+ssh root@$TARGET rm -rf "/mnt/lower/$target_path/*"
 echo "copying to persistent"
 ssh root@$TARGET cp -ra "$target_path/*" /mnt/lower/$target_path/
 
