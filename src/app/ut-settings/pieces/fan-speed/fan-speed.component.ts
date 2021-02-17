@@ -1,11 +1,12 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { GlobalSettingsService } from '../../../core/global-settings.service';
+import { LocalStorageService } from 'app/core/local-storage.service';
 
 @Component({
   selector: 'app-fan-speed',
   templateUrl: './fan-speed.component.html',
-  styleUrls: ['./fan-speed.component.scss']
+  styleUrls: ['./fan-speed.component.scss'],
 })
 export class FanSpeedComponent implements OnInit {
   @Output()
@@ -16,6 +17,7 @@ export class FanSpeedComponent implements OnInit {
 
   constructor(
     private utHTTP: UtFetchdataService,
+    private localStorage: LocalStorageService,
     private gss: GlobalSettingsService
   ) {}
 
@@ -35,7 +37,12 @@ export class FanSpeedComponent implements OnInit {
     console.log('getspeed called');
     // alert('get bn called');
     this.utHTTP
-      .getHTTPData(this.gss.getAPIEndpoint() + 'system/fan.php')
+      .getHTTPData(
+        this.gss.getAPIEndpoint() + 'system/fan.php',
+        this.localStorage.get('api_user'),
+        this.localStorage.get('api_pass'),
+        true
+      )
       .subscribe(
         (data: Object) => this.acceptSpeed(data),
         (error: any) => {
@@ -62,7 +69,10 @@ export class FanSpeedComponent implements OnInit {
       .getHTTPData(
         this.gss.getAPIEndpoint() +
           'system/fan.php?fanspeed=' +
-          MatSliderChange.value
+          MatSliderChange.value,
+        this.localStorage.get('api_user'),
+        this.localStorage.get('api_pass'),
+        true
       )
       .subscribe((data: Object) => this.ack(data));
     this.currentSpeed = MatSliderChange.value;

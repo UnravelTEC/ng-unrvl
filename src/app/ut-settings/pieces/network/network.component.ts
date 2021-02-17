@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
+import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { GlobalSettingsService } from '../../../core/global-settings.service';
+import { LocalStorageService } from 'app/core/local-storage.service';
 
 @Component({
   selector: 'app-network',
@@ -14,12 +15,18 @@ export class NetworkComponent implements OnInit {
 
   constructor(
     public gss: GlobalSettingsService,
+    private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService
   ) {}
 
   ngOnInit() {
     this.utHTTP
-      .getHTTPData(this.gss.getAPIEndpoint() + 'system/wificlient.php?cmd=get')
+      .getHTTPData(
+        this.gss.getAPIEndpoint() + 'system/wificlient.php?cmd=get',
+        this.localStorage.get('api_user'),
+        this.localStorage.get('api_pass'),
+        true
+      )
       .subscribe((data: Object) => this.acceptWifi(data));
   }
   acceptWifi(data: Object) {
@@ -40,7 +47,7 @@ export class NetworkComponent implements OnInit {
   setWifi() {
     if (this.wificlient_psk.length < 8) {
       alert('minimum PSK length: 8 chars');
-      console.error('minimum PSK length: 8 chars')
+      console.error('minimum PSK length: 8 chars');
       return;
     }
     if (this.wificlient_psk.length > 63) {
@@ -64,7 +71,10 @@ export class NetworkComponent implements OnInit {
           'system/wificlient.php?cmd=set&ssid=' +
           encodeURIComponent(this.wificlient_ssid) +
           '&psk=' +
-          encodeURIComponent(this.wificlient_psk)
+          encodeURIComponent(this.wificlient_psk),
+        this.localStorage.get('api_user'),
+        this.localStorage.get('api_pass'),
+        true
       )
       .subscribe((data: Object) => this.acceptWifi(data));
   }
