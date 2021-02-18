@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { GlobalSettingsService } from 'app/core/global-settings.service';
+import { HelperFunctionsService } from 'app/core/helper-functions.service';
 import { LocalStorageService } from 'app/core/local-storage.service';
 import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
-import { HelperFunctionsService } from 'app/core/helper-functions.service';
-import { ActivatedRoute } from '@angular/router';
 
 /* FIXME:
-* implement sync of two graphs
-* reload does not work with interval
-*/
+ * implement sync of two graphs
+ * reload does not work with interval
+ */
 
 @Component({
   selector: 'app-scd30',
@@ -16,7 +16,6 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./scd30.component.scss'],
 })
 export class Scd30Component implements OnInit {
-
   graphWidth = 1500;
   setGraphWidth(width) {
     this.graphWidth = width;
@@ -97,6 +96,8 @@ export class Scd30Component implements OnInit {
   // referrer = 'Allsens';
   public from: Number; // unix time from urlparam
   public to: Number; // unix time from urlparam
+
+  public queryRunning: number = 0;
 
   constructor(
     public globalSettings: GlobalSettingsService,
@@ -201,6 +202,7 @@ export class Scd30Component implements OnInit {
   }
 
   launchQuery(clause: string, id: string) {
+    this.queryRunning++;
     const q = this.utHTTP.buildInfluxQuery(clause, undefined, undefined, 's');
     this.utHTTP
       .getHTTPData(q)
@@ -215,11 +217,12 @@ export class Scd30Component implements OnInit {
     console.log(id, 'received', ret);
     this.labels[id] = ret['labels'];
     this.data[id] = ret['data'];
-    if (id == "H") {
-      this.colors['H'] = this.h.getColorsforLabels(ret['labels'])
+    if (id == 'H') {
+      this.colors['H'] = this.h.getColorsforLabels(ret['labels']);
     }
     // console.log(cloneDeep(this.dygLabels));
     this.startTimes[id] = this.userStartTime;
     this.changeTrigger = !this.changeTrigger;
+    this.queryRunning--;
   }
 }
