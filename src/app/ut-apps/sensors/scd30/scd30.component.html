@@ -26,9 +26,9 @@
 </app-ut-dygraph-in>
 
 <form class="settings" (submit)="reload()">
-  <div class="section">
+  <fieldset>
     <h3>Current Dataset:</h3>
-    <label>Resolution:</label><br />
+    <label>Resolution:</label>
     <span class="cRange">{{ currentres }}s</span><br />
 
     <!-- <label>Current Range:</label><br />
@@ -45,17 +45,17 @@
         >Permalink</a
       >
     </p> -->
-  </div>
-  <div class="section">
-    <h3>New Query:</h3>
+  </fieldset>
+  <fieldset [disabled]="queryRunning > 0">
+    <h3>{{ queryRunning > 0 ? 'Query running...' : 'New Query:' }}</h3>
 
-    <br />
     <mat-form-field>
       <mat-label>Show range from now</mat-label>
       <mat-select
         [(ngModel)]="userStartTime"
         name="startTime"
         (closed)="changeMean(userStartTime)"
+        [disabled]="queryRunning > 0"
       >
         <mat-option value="15m">15 min.</mat-option>
         <mat-option value="1h" selected="selected"> 1h</mat-option>
@@ -84,5 +84,5 @@
         Reload
       </button>
     </div> -->
-  </div>
+  </fieldset>
 </form>
