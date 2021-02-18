@@ -72,6 +72,8 @@ export class HumidityComponent implements OnInit {
   public from: Number; // unix time from urlparam
   public to: Number; // unix time from urlparam
 
+  public queryRunning: number = 0;
+
   constructor(
     private globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
@@ -166,6 +168,7 @@ export class HumidityComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
+    this.queryRunning++;
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
       .subscribe((data: Object) => this.handleData(data));
@@ -212,6 +215,7 @@ export class HumidityComponent implements OnInit {
     console.log(idata);
     this.changeTrigger = !this.changeTrigger;
     this.changeTrigger = !this.changeTrigger;
+    this.queryRunning--;
   }
 
 }

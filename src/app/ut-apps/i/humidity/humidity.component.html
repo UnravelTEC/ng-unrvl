@@ -14,13 +14,13 @@
 ></app-ut-dygraph-in>
 
 <form class="settings" (submit)="reload(true)">
-  <div class="section">
+  <fieldset>
     <h3>Current Dataset:</h3>
-    <label>Resolution:</label><br />
+    <label>Resolution:</label>
     <span class="cRange">{{ currentres }}s</span><br />
 
-    <label>Current Range:</label><br />
-    <span class="cRange">{{ currentRange }} </span>
+    <label>Current Range:</label>
+    <span class="cRange">{{ currentRange }}&nbsp;</span>
     <p>
       <a
         routerLink="/Apps/i/Humidity"
@@ -33,18 +33,17 @@
         >Permalink</a
       >
     </p>
-  </div>
-  <div class="section">
-    <h3>New Query:</h3>
+  </fieldset>
+  <fieldset [disabled]="queryRunning > 0">
+    <h3>{{ queryRunning > 0? 'Query running...' : 'New Query:' }}</h3>
 
-
-    <br />
     <mat-form-field>
       <mat-label>Show range from now</mat-label>
       <mat-select
         [(ngModel)]="userStartTime"
         name="startTime"
         (closed)="changeMean(userStartTime)"
+        [disabled]="queryRunning > 0"
       >
         <mat-option value="15m">15 min.</mat-option>
         <mat-option value="1h" selected="selected"> 1h</mat-option>
@@ -56,22 +55,22 @@
       </mat-select>
     </mat-form-field>
     <br />
-    <label for="runningAvgPoints"># Mean Seconds</label><br />
+    <label for="runningAvgPoints"># Mean Seconds</label>
     <input
       type="text"
       id="runningAvgPoints"
       name="runningAvgPoints"
       [(ngModel)]="userMeanS"
       (ngModelChange)="saveMean($event)"
-      style="width:4em"
+      style="width: 4em"
     /><br />
     <br />
 
-    <div style="width: 100%; text-align: right;">
+    <div style="width: 100%; text-align: right">
       <button type="submit">
         <mat-icon>refresh</mat-icon>
         Reload
       </button>
     </div>
-  </div>
+  </fieldset>
 </form>
