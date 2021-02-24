@@ -9,19 +9,22 @@ h1 {
 h2 {
   margin: 0 0 1rem 0;
 }
+a {
+  color: rgb(97, 97, 255);
+}
 
 section {
   border: 1px solid black;
   border-radius: 2px;
   padding: 10px;
   margin: 0.5em auto 0.5em auto;
-}
 
-section section {
-  border: 1px solid gray;
-  padding: 0.1em 0.1em 0.1em 0.5em;
-  margin: 0.2em 0;
-  min-height: 2.5em;
+  section {
+    border: 1px solid gray;
+    padding: 0.1em 0.1em 0.1em 0.5em;
+    margin: 0.2em 0;
+    min-height: 2.5em;
+  }
 }
 section.hidden {
   visibility: hidden; /* no display none because element must be present for JS */
