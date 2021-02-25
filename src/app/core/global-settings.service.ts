@@ -249,8 +249,8 @@ export class GlobalSettingsService implements OnInit {
 
       if (
         servername.search('.') > -1 &&
-        !servername.endsWith('.lan') &&
-        !servername.endsWith('.local')
+        !servername.match('\.[0-9]+$')
+
       ) {
         this.server.protocol = 'https://';
       } else {
