@@ -185,9 +185,9 @@
       </div>
     </section>
 
-    <!-- <section>
+    <section *ngIf="globalSettingsService.server.type == 'PublicServer'">
       <app-influxsettings></app-influxsettings>
-    </section> -->
+    </section>
 
     <section id="submit" class="center">
       <div>

@@ -728,10 +728,19 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     html += '<table>';
 
     // console.log(htmlID);
-    function genCallback(label, htmlID) {
+    function genToggle(label, htmlID) {
       return htmlID
-        ? `onmousedown="document['Dygraphs']['${htmlID}'].tVis4Label('${label}');" ` +
-            `onmouseover="document['Dygraphs']['${htmlID}'].selectSeries('${label}');"`
+        ? `onmousedown="document['Dygraphs']['${htmlID}'].tVis4Label('${label}');" `
+        : '';
+    }
+    function genHover(label, htmlID) {
+      return htmlID
+        ? `onmouseover="document['Dygraphs']['${htmlID}'].selectSeries('${label}');"`
+        : '';
+    }
+    function genSingleClick(label, htmlID) {
+      return htmlID
+        ? `onmousedown="document['Dygraphs']['${htmlID}'].showSingle('${label}');" `
         : '';
     }
 
@@ -745,9 +754,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           ? "style='visibility:hidden'"
           : '';
       const cls = series.isHighlighted ? 'class="highlight"' : '';
-      const callbacks = genCallback(series.label, htmlID);
+      const hoverCallback = genHover(series.label, htmlID);
+      const toggleCallback = genToggle(series.label, htmlID);
+      const setSingleCallback = genSingleClick(series.label, htmlID);
       const textcolor = series.isVisible ? '' : ' style="color:gray" ';
-      html += `<tr style='color:${series.color};' ${cls} ${callbacks}><th${textcolor}>${series.dashHTML}</th><th${textcolor}>${series.labelHTML}<span ${spanvis}>:</span>&thinsp;</th><td>${displayedValue}</td></tr>`;
+      html +=
+        `<tr style='color:${series.color};' ${cls} ${hoverCallback} title='Toggle Display'>` +
+        `<th ${textcolor}><span class='dash'>${series.dashHTML}</span><span class='one' ${setSingleCallback} title='Display alone'>[1]</span></th>` +
+        `<th${textcolor} ${toggleCallback}>${series.labelHTML}<span ${spanvis}>:</span>&thinsp;</th>` +
+        `<td ${toggleCallback}>${displayedValue}</td></tr>`;
     }
     return html + '</table>';
   }
@@ -1320,6 +1335,17 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.dyGraphOptions.visibility[i] = true;
       }
     }
+  }
+  showSingle(label: String) {
+    console.log('single', label);
+
+    for (let i = 1; i < this.columnLabels.length; i++) {
+      const ilabel = this.columnLabels[i];
+      this.dyGraphOptions.visibility[i - 1] = label == ilabel ? true : false;
+    }
+    this.Dygraph.updateOptions({
+      visibility: this.dyGraphOptions.visibility,
+    });
   }
   fromDatePickerChanged($event) {
     const newFrom = $event['value'];

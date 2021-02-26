@@ -9,7 +9,7 @@ import { gitVersion } from '../../../environments/git-version';
 @Component({
   selector: 'app-settings-panel',
   templateUrl: './settings-panel.component.html',
-  styleUrls: ['./settings-panel.component.css'],
+  styleUrls: ['./settings-panel.component.scss'],
 })
 export class SettingsPanelComponent implements OnInit {
   defaultSettings = {

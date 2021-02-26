@@ -53,6 +53,8 @@ export class IndoorclimateComponent implements OnInit {
     V: this.startTime,
   };
 
+  public queryRunning: number = 0;
+
   constructor(
     public globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,
@@ -126,6 +128,7 @@ export class IndoorclimateComponent implements OnInit {
   }
 
   launchQuery(clause: string, id: string) {
+    this.queryRunning++;
     const q = this.utHTTP.buildInfluxQuery(clause, undefined, undefined, 's');
     this.utHTTP
       .getHTTPData(q)
@@ -140,5 +143,6 @@ export class IndoorclimateComponent implements OnInit {
     // console.log(cloneDeep(this.dygLabels));
     this.startTimes[id] = this.userStartTime;
     this.changeTrigger = !this.changeTrigger;
+    this.queryRunning--;
   }
 }
