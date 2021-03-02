@@ -242,13 +242,22 @@ export class GlobalSettingsService implements OnInit {
       if (servername.endsWith('/')) {
         servername = servername.substr(0, -1);
       }
-      this.server.baseurl = 'http://' + servername;
+
       this.server.serverName = this.stripProtPort(servername);
 
       const apiPath = this.defaultAPIPath;
 
-      this.server.protocol = 'http://';
-      this.server.api = 'http://' + this.server.serverName + apiPath;
+      if (
+        servername.search('.') > -1 &&
+        !servername.match('\.[0-9]+$')
+
+      ) {
+        this.server.protocol = 'https://';
+      } else {
+        this.server.protocol = 'http://';
+      }
+      this.server.api = this.server.protocol + this.server.serverName + apiPath;
+      this.server.baseurl = this.server.protocol + servername;
 
       this.fetchHostName(this.server.api);
       this.getCPUinfo(this.server.api);
@@ -292,7 +301,6 @@ export class GlobalSettingsService implements OnInit {
             //TODO set fallback!
           }
         );
-
     }
     this.server.influxdb = this.localStorage.get('influxdb');
     const isPublicServer = this.server.serverName.endsWith('.unraveltec.com');

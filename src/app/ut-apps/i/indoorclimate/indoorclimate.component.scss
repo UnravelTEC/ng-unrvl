@@ -1,3 +1,6 @@
+$buttonbg: #565656;
+$labelcolor: #999;
+
 table.envirobody {
   height: 100%;
   width: 100%;
@@ -5,20 +8,13 @@ table.envirobody {
   padding: 0;
   margin: 0;
   table-layout: fixed;
-  .settings {
-    // border: 1px solid green;
-    // width: 11rem;
-    // margin: 1rem;
-    // padding: 1rem;
+
+  fieldset {
     mat-label {
-      color: #999;
-    }
-    .mat-select {
-      background-color: #565656;
+      color: $labelcolor;
     }
     label {
-      display: inline-block;
-      color: #999;
+      color: $labelcolor;
       text-align: left;
       margin-right: 0.7rem;
       font-weight: 400;
@@ -26,22 +22,24 @@ table.envirobody {
       ￼line-height: 1.125;
       ￼font-family: Roboto, 'Helvetica Neue', sans-serif;
     }
-    input[type='text'] {
-      padding: 0.3em;
-      // border-radius: 0.5em;
-      font-size: 20px;
-      border: 1px solid rgba(0, 0, 0, 0.54);
+  }
+  fieldset:disabled { // FIXME button doesn't accept cursor:not-allowed
+    background-color: rgba(255, 255, 255, 0.192);
+    button,
+    mat-form-field,
+    mat-label,
+    input {
+      cursor: not-allowed;
     }
-    button {
-      border: 0;
-      border-radius: 0.5em;
-      background: #5cb85c;
-      padding: 0.5em;
-      cursor: pointer;
-      min-width: 2.25em;
-      color: white;
+    button,
+    input[type='text'] {
+      border-color: #373737;
+    }
+    button:hover {
+      background-color: $buttonbg;
     }
   }
+
   h3 {
     margin: 0rem;
   }

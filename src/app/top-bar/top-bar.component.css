@@ -16,6 +16,9 @@ nav > * {
   text-decoration: none;
   height: 1.3em;
 }
+nav > a {
+  color: white;
+}
 nav > .spacer {
   flex-grow: 1;
 }
@@ -28,17 +31,20 @@ nav em {
 #db .unkown {
   color: gray;
 }
-#db .up, #mqtt .connected {
+#db .up,
+#mqtt .connected {
   color: white;
 }
-#db .down, #mqtt .lost, #mqtt .failed {
+#db .down,
+#mqtt .lost,
+#mqtt .failed {
   color: red;
 }
-#db .waiting, #mqtt .connecting, #mqtt .init {
+#db .waiting,
+#mqtt .connecting,
+#mqtt .init {
   color: yellow;
 }
-
-
 
 nav a:hover {
   background: rgb(201, 201, 207);
@@ -52,7 +58,7 @@ nav > a.icon {
   padding-right: 0.5em;
   padding-left: 0.5em;
 }
-nav  .material-icons {
+nav .material-icons {
   vertical-align: middle;
   margin: 0;
   height: 1.4em;

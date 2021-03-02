@@ -349,6 +349,9 @@ $red2: #ff7f88;
           padding: 0.1em 0.2em;
           color: $editableFormsTextColor;
         }
+        th span.one {
+          display: none;
+        }
 
         td {
           color: $editableFormsTextColor;
@@ -363,6 +366,15 @@ $red2: #ff7f88;
         th,
         td {
           color: $mainbg;
+        }
+
+      }
+      tr:hover {
+        th span.dash {
+          display: none;
+        }
+        th span.one {
+          display: inline-block;
         }
       }
     }
