@@ -85,6 +85,7 @@ export class AnysensComponent implements OnInit {
   public to: Number; // unix time from urlparam
 
   public queryRunning = false;
+  public autoreload = false;
 
   constructor(
     private globalSettings: GlobalSettingsService,

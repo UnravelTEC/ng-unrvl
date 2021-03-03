@@ -24,11 +24,11 @@
 <form class="settings" (submit)="reload(true)">
   <fieldset>
     <h3>Current Dataset:</h3>
-    <label>Resolution:</label>
+    <label style="display: inline-block">Resolution:</label>
     <span class="cRange">{{ currentres }}s</span><br />
 
-    <label>Current Range:</label>
-    <span class="cRange">{{ currentRange }}&nbsp;</span>
+    <label style="display: inline-block">Range:</label>
+    <span class="cRange">{{ currentRange }}</span>
     <p>
       <a
         routerLink="/Apps/I/Anysens"
@@ -45,8 +45,26 @@
     </p>
   </fieldset>
   <fieldset [disabled]="queryRunning == true">
-    <h3>{{ queryRunning ? 'Query running...' : 'New Query:' }}</h3>
+    <h3>{{ queryRunning ? 'Query running...' : 'Query current View:' }}</h3>
+    <label for="runningAvgPoints">Resolution (s):</label>
+    <input
+      type="text"
+      id="runningAvgPoints"
+      name="runningAvgPoints"
+      [(ngModel)]="userMeanS"
+      (ngModelChange)="saveMean($event)"
+      style="width: 4em"
+    />
 
+    <div style="width: 100%; text-align: right; margin-top: -1.8em">
+      <button type="submit">
+        <mat-icon>refresh</mat-icon>
+        Reload
+      </button>
+    </div>
+  </fieldset>
+  <fieldset [disabled]="queryRunning == true">
+    <h3>{{ queryRunning ? 'Query running...' : 'Query latest data:' }}</h3>
     <mat-form-field>
       <mat-label>Show range from now</mat-label>
       <mat-select
@@ -65,19 +83,11 @@
       </mat-select>
     </mat-form-field>
     <br />
-    <label for="runningAvgPoints"># Mean Seconds</label>
-    <input
-      type="text"
-      id="runningAvgPoints"
-      name="runningAvgPoints"
-      [(ngModel)]="userMeanS"
-      (ngModelChange)="saveMean($event)"
-      style="width: 4em"
-    /><br />
-    <br />
-
     <div style="width: 100%; text-align: right">
-      <button type="submit">
+      <mat-checkbox [(ngModel)]="autoreload" labelPosition="after">
+        auto
+      </mat-checkbox>
+      <button (click)="reload()" type="button">
         <mat-icon>refresh</mat-icon>
         Reload
       </button>
