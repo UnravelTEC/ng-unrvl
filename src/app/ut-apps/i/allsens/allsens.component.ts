@@ -41,7 +41,7 @@ export class AllsensComponent implements OnInit {
       if (!this.measurements.includes(measurement)) {
         this.measurements.push(measurement);
       }
-      const sensor = seri.match(/sensor=([-A-Za-z0-9]*)/);
+      const sensor = seri.match(/sensor=([-A-Za-z0-9|]*)/);
       if (sensor && sensor[1]) {
         const sname = sensor[1];
         if (!this.sensors[sname]) this.sensors[sname] = [];

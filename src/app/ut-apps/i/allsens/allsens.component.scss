@@ -28,13 +28,14 @@ table {
       min-width: 2.25em;
       color: white;
       text-decoration: none;
+      box-sizing: border-box;
     }
     a:hover {
       background-color: #8e8e8e;
     }
   }
   td:first-child a {
-      width: 90%;
+      width: 100%;
   }
 }
 table.sensors {
@@ -42,7 +43,7 @@ table.sensors {
     padding: 0.5em 2em 0.5em 0.5em;
   }
   td:first-child a {
-    width: 80%;
+    width: 100%;
     // margin-right: -3em;
   }
 }
