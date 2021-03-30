@@ -1,11 +1,11 @@
 <div id="innerappbody">
   <app-ut-dygraph
-    queryString='voltage_V{model="adc",sensor="ADS1115",id="0x48",channel="1"}'
+    queryString='{__name__=~"gas_ohm|gas_V",sensor="MiCS6814",gas=~"NO2|OX"}'
     [fetchFromServerIntervalMS]="step"
     [dataBaseQueryStepMS]="step"
     [dataSeriesLabels]="dataSeriesLabelRed"
     [labelBlackList]="labelBlackList"
-    YLabel="Reducing / NO₂"
+    YLabel="Reducing / NO₂ (&#8486;, V)"
     [style]="graphstyle_red"
     [startTime]="startTime"
     [extraDyGraphConfig]="extraDyGraphConfig"
@@ -13,12 +13,12 @@
   ></app-ut-dygraph>
 
   <app-ut-dygraph
-    queryString='voltage_V{model="adc",sensor="ADS1115",id="0x48",channel="3"}'
+    queryString='{__name__=~"gas_ohm|gas_V",sensor="MiCS6814",gas=~"CO|RED"}'
     [fetchFromServerIntervalMS]="step"
     [dataBaseQueryStepMS]="step"
     [dataSeriesLabels]="dataSeriesLabelOx"
     [labelBlackList]="labelBlackList"
-    YLabel="Oxidizing / CO"
+    YLabel="Oxidizing / CO (&#8486;, V)"
     [style]="graphstyle_ox"
     [startTime]="startTime"
     [extraDyGraphConfig]="extraDyGraphConfig"
@@ -26,12 +26,12 @@
   ></app-ut-dygraph>
 
   <app-ut-dygraph
-    queryString='voltage_V{model="adc",sensor="ADS1115",id="0x48",channel="2"}'
+    queryString='{__name__=~"gas_ohm|gas_V",sensor="MiCS6814",gas="NH3"}'
     [fetchFromServerIntervalMS]="step"
     [dataBaseQueryStepMS]="step"
     [dataSeriesLabels]="dataSeriesLabelAmmo"
     [labelBlackList]="labelBlackList"
-    YLabel="Ammonia"
+    YLabel="Ammonia (&#8486;, V)"
     [style]="graphstyle_ammo"
     [startTime]="startTime"
     [extraDyGraphConfig]="extraDyGraphConfig"

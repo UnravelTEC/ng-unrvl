@@ -67,7 +67,7 @@
       </td>
       <td>
         <app-ut-dygraph
-          queryString='{__name__=~"sgp30_raw|gas_ohm|gas_V",sensor=~"SGP30|SGP4X"}'
+          queryString='{__name__=~"sgp30_raw|gas_ohm|gas_V",sensor=~"SGP30|SGP4X|SGP4X_2"}'
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
           [dataSeriesLabels]="dataSeriesLabels"
@@ -89,12 +89,12 @@
     <tr>
       <td>
         <app-ut-dygraph
-          queryString='gas_V{sensor="MiCS6814"}'
+          queryString='{__name__=~"gas_ohm|gas_V",sensor="MiCS6814"}'
           [fetchFromServerIntervalMS]="step"
           [dataBaseQueryStepMS]="step"
           [dataSeriesLabels]="dataSeriesLabels"
           [labelBlackList]="labelBlackList"
-          YLabel="Voltage (V)"
+          YLabel="Value (&#8486;, V)"
           [style]="graphstyle_dgs"
           [startTime]="startTime"
           [extraDyGraphConfig]="extraDyGraphConfig"

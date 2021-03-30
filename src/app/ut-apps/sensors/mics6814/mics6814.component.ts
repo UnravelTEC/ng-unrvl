@@ -10,8 +10,8 @@ import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 export class Mics6814Component implements OnInit {
   step = '1000';
   extraDyGraphConfig = {
-    strokeWidth: 1.5 //,
-    // logscale: true
+    strokeWidth: 1.5,
+    logscale: true
   };
   labelBlackList = ['__name__', 'interval'];
   startTime = '15m';
