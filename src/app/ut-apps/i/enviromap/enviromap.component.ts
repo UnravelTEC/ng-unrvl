@@ -107,7 +107,7 @@ export class EnviromapComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.globalSettings.emitChange({ fullscreen: true });
+    // this.globalSettings.emitChange({ fullscreen: true });
     [
       'host',
       'measurement',

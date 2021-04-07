@@ -14,7 +14,7 @@
     </app-ut-dashboard-tile> -->
     <!-- referrer 'Dashboard' does only work because /Apps/I/Dashboard is invalid and gets redirected to Dashboard -->
     <!-- <app-ut-dashboard-tile title="Air Pressure" path="/Apps/I/Pressure" icon="320px-Pressure_gauge.svg.png"></app-ut-dashboard-tile> -->
-    <app-ut-dashboard-tile title="Temperature Map" path="/Apps/I/Enviromap" icon="noun_Temperature.png" [queryParams]="{ measurement: 'temperature' }"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="Temperature Map" path="/Apps/I/Enviromap" icon="noun_Temperature.png" [queryParams]="{ measurement: 'temperature', column:'°C', referrer: 'Dashboard' }"></app-ut-dashboard-tile>
   </div>
   <hr>
 
