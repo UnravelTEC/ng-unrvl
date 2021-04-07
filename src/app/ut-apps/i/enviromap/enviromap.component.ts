@@ -197,9 +197,9 @@ export class EnviromapComponent implements OnInit {
   launchQuery(clause: string) {
     this.utHTTP
       .getHTTPData(
-        this.utHTTP.buildInfluxQuery(clause, this.db, this.server),
-        'bimweb',
-        'D,OEZ4UL+[hGgMQA(@<){W[kd'
+        this.utHTTP.buildInfluxQuery(clause) //, this.db, this.server)
+        // 'bimweb',
+        // 'D,OEZ4UL+[hGgMQA(@<){W[kd'
       )
       .subscribe((data: Object) => this.handleData(data));
   }
