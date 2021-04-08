@@ -96,7 +96,7 @@ export class GpsComponent implements OnInit {
       this.meanS
     );
     queries =
-      'SELECT lat,lon FROM location WHERE time > now() - ' + this.startTime;
+      'SELECT * FROM location WHERE time > now() - ' + this.startTime;
     this.launchQuery(queries);
   }
   handleData(data: Object) {
@@ -106,6 +106,26 @@ export class GpsComponent implements OnInit {
     const labels = ret['labels'];
     const idata = ret['data'];
 
+    let latcol = -1;
+    let loncol = -1;
+    for (let i = 1; i < labels.length; i++) {
+      const element = labels[i];
+      const lonmatch = element.match(/\blon\b/);
+      if (lonmatch && lonmatch.length > 0 && lonmatch[0] == 'lon') {
+        loncol = i;
+        console.log('loncol', i);
+        continue
+
+      }
+      const latmatch = element.match(/\blat\b/);
+      if (latmatch && latmatch.length > 0 && latmatch[0] == 'lat') {
+        latcol = i;
+        console.log('latcol', i);
+      }
+    }
+
+
+
     let line: GeoJSON.Feature<any> = {
       type: 'Feature' as const,
       properties: {},
@@ -114,27 +134,27 @@ export class GpsComponent implements OnInit {
         coordinates: [],
       },
     };
-    let points: GeoJSON.FeatureCollection<any> = {
-      type: 'FeatureCollection',
-      features: [],
-    };
+    // let points: GeoJSON.FeatureCollection<any> = {
+    //   type: 'FeatureCollection',
+    //   features: [],
+    // };
 
-    for (let i = 0; i < idata.length; i++) {
-      const element = idata[i];
-      if (element[1] == 0 || element[2] == 0) continue;
-      line.geometry.coordinates.push([element[2], element[1]]);
-      const point: GeoJSON.Feature<any> = {
-        type: 'Feature' as const,
-        properties: { date: element[0] },
-        geometry: {
-          type: 'Point',
-          coordinates: [element[2], element[1]],
-        },
-      };
-      points.features.push(point);
-    }
+    // for (let i = 0; i < idata.length; i++) {
+    //   const element = idata[i];
+    //   if (element[1] == 0 || element[2] == 0) continue;
+    //   line.geometry.coordinates.push([element[2], element[1]]);
+    //   const point: GeoJSON.Feature<any> = {
+    //     type: 'Feature' as const,
+    //     properties: { date: element[0] },
+    //     geometry: {
+    //       type: 'Point',
+    //       coordinates: [element[loncol], element[latcol]],
+    //     },
+    //   };
+    //   points.features.push(point);
+    // }
     this.displayed_line = line;
-    this.displayed_points = points;
+    // this.displayed_points = points; // FIXME TODO implement again, also for enviromap!!!!
     const geojsonMarkerOptions = {
       radius: 3,
       fillColor: '#ff780080',
@@ -143,7 +163,7 @@ export class GpsComponent implements OnInit {
       opacity: 1,
       fillOpacity: 0.8,
     };
-    this.layers[0] = geoJSON(points, {
+    this.layers[0] = geoJSON(this.h.influx2geojsonPoints(idata, labels), {
       pointToLayer: function (feature, latlng) {
         return circleMarker(latlng, geojsonMarkerOptions);
       },
