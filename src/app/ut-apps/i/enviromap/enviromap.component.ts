@@ -330,7 +330,9 @@ export class EnviromapComponent implements OnInit {
       }
     }
 
-    this.layers[0] = geoJSON(this.h.influx2geojsonPoints(idata, labels), {
+    let points = this.h.influx2geojsonPoints(idata, labels)
+    this.displayed_points = points;
+    this.layers[0] = geoJSON(points, {
       pointToLayer: function (feature, latlng) {
         if (feature.properties['color']) {
           geojsonMarkerOptions.color = feature.properties.color;
