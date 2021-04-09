@@ -542,15 +542,16 @@ export class HelperFunctionsService {
     }
     let name = 'date_unknown.geojson';
     if (geojsondata.features && geojsondata.features.length) {
+      const datefield = geojsondata.features[0].properties.hasOwnProperty('Date') ? 'Date' : 'date'
       name =
         formatDate(
-          geojsondata.features[0].properties.date,
+          geojsondata.features[0].properties[datefield],
           'yyyy-MM-dd_HH.mm.ss',
           'en-uk'
         ) +
         '-' +
         formatDate(
-          geojsondata.features[geojsondata.features.length - 1].properties.date,
+          geojsondata.features[geojsondata.features.length - 1].properties[datefield],
           'yyyy-MM-dd_HH.mm.ss',
           'en-uk'
         ) +
