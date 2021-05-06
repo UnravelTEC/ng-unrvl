@@ -59,8 +59,6 @@ export class MapComponent implements OnInit, OnDestroy {
   public map: Map;
   public zoom: number;
 
-  p;
-
   constructor() {}
 
   ngOnInit() {
@@ -68,8 +66,12 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.map.clearAllEventListeners;
-    this.map.remove();
+    console.log('map ngOnDestroy called');
+
+    this.map.clearAllEventListeners();
+    console.log('map clearAllEventListeners() called');
+    // this.map.remove();
+    console.log('map removed');
   }
 
   onMapReady(map: Map) {

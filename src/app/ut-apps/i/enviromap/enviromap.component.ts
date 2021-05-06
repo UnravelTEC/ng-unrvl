@@ -107,7 +107,7 @@ export class EnviromapComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.globalSettings.emitChange({ fullscreen: true });
+    // this.globalSettings.emitChange({ fullscreen: true });
     [
       'host',
       'measurement',
@@ -197,9 +197,9 @@ export class EnviromapComponent implements OnInit {
   launchQuery(clause: string) {
     this.utHTTP
       .getHTTPData(
-        this.utHTTP.buildInfluxQuery(clause, this.db, this.server),
-        'bimweb',
-        'D,OEZ4UL+[hGgMQA(@<){W[kd'
+        this.utHTTP.buildInfluxQuery(clause) //, this.db, this.server)
+        // 'bimweb',
+        // 'D,OEZ4UL+[hGgMQA(@<){W[kd'
       )
       .subscribe((data: Object) => this.handleData(data));
   }
@@ -330,7 +330,9 @@ export class EnviromapComponent implements OnInit {
       }
     }
 
-    this.layers[0] = geoJSON(this.h.influx2geojsonPoints(idata, labels), {
+    let points = this.h.influx2geojsonPoints(idata, labels)
+    this.displayed_points = points;
+    this.layers[0] = geoJSON(points, {
       pointToLayer: function (feature, latlng) {
         if (feature.properties['color']) {
           geojsonMarkerOptions.color = feature.properties.color;

@@ -15,7 +15,9 @@ export class GpsComponent implements OnInit {
 
   public appName = 'GPS';
 
-  public displayed_line = {};
+  public minmax = { min: Infinity, max: -Infinity };
+
+  // public displayed_line = {};
   public displayed_points = {};
 
   public startTime = '1h';
@@ -95,8 +97,7 @@ export class GpsComponent implements OnInit {
       params,
       this.meanS
     );
-    queries =
-      'SELECT lat,lon FROM location WHERE time > now() - ' + this.startTime;
+    queries = 'SELECT * FROM location WHERE time > now() - ' + this.startTime;
     this.launchQuery(queries);
   }
   handleData(data: Object) {
@@ -106,45 +107,85 @@ export class GpsComponent implements OnInit {
     const labels = ret['labels'];
     const idata = ret['data'];
 
-    let line: GeoJSON.Feature<any> = {
-      type: 'Feature' as const,
-      properties: {},
-      geometry: {
-        type: 'LineString',
-        coordinates: [],
-      },
-    };
-    let points: GeoJSON.FeatureCollection<any> = {
-      type: 'FeatureCollection',
-      features: [],
-    };
+    let latcol = -1;
+    let loncol = -1;
+    let colorColumn: Number;
+    for (let i = 1; i < labels.length; i++) {
+      const element = labels[i];
 
-    for (let i = 0; i < idata.length; i++) {
-      const element = idata[i];
-      if (element[1] == 0 || element[2] == 0) continue;
-      line.geometry.coordinates.push([element[2], element[1]]);
-      const point: GeoJSON.Feature<any> = {
-        type: 'Feature' as const,
-        properties: { date: element[0] },
-        geometry: {
-          type: 'Point',
-          coordinates: [element[2], element[1]],
-        },
-      };
-      points.features.push(point);
+      if (element.search('hdop') > -1) {
+        colorColumn = i;
+      }
+
+      const lonmatch = element.match(/\blon\b/);
+      if (lonmatch && lonmatch.length > 0 && lonmatch[0] == 'lon') {
+        loncol = i;
+        console.log('loncol', i);
+        continue;
+      }
+      const latmatch = element.match(/\blat\b/);
+      if (latmatch && latmatch.length > 0 && latmatch[0] == 'lat') {
+        latcol = i;
+        console.log('latcol', i);
+      }
     }
-    this.displayed_line = line;
-    this.displayed_points = points;
+
+    // let line: GeoJSON.Feature<any> = {
+    //   type: 'Feature' as const,
+    //   properties: {},
+    //   geometry: {
+    //     type: 'LineString',
+    //     coordinates: [],
+    //   },
+    // };
+    // this.displayed_line = line;
+
+    let max = 20;
+    let min = 0;
+    // for (let r = 0; r < idata.length; r++) {
+    //   const row = idata[r];
+
+    //   for (let c = 1; c < row.length; c++) {
+    //     const element = row[c];
+    //     if (c == colorColumn) {
+    //       if (max < element) {
+    //         max = element;
+    //       } else if (min > element) {
+    //         min = element;
+    //       }
+    //     }
+    //   }
+    // }
+    labels.push('color');
+    const range = max - min;
+    console.log('for', 'hdop', 'min:', min, 'max:', max, 'range', range);
+    for (let r = 0; r < idata.length; r++) {
+      const row = idata[r];
+      for (let c = 1; c < row.length; c++) {
+        if (c == colorColumn) {
+          const element = row[c];
+          const percentage = ((element - min) / range) * 100;
+          row.push(this.h.returnColorForPercent(percentage));
+          break;
+        }
+      }
+    }
+
     const geojsonMarkerOptions = {
-      radius: 3,
-      fillColor: '#ff780080',
-      color: '#ff7800',
+      radius: 2,
+      // fillColor: '#0000ff80',
+      color: '#0000ff',
       weight: 1,
       opacity: 1,
       fillOpacity: 0.8,
     };
+    let points = this.h.influx2geojsonPoints(idata, labels);
+    this.displayed_points = points;
     this.layers[0] = geoJSON(points, {
       pointToLayer: function (feature, latlng) {
+        if (feature.properties['color']) {
+          geojsonMarkerOptions.color = feature.properties.color;
+        }
         return circleMarker(latlng, geojsonMarkerOptions);
       },
       onEachFeature: this.h.leafletPopup,
