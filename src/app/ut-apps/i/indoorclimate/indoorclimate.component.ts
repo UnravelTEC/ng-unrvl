@@ -84,7 +84,7 @@ export class IndoorclimateComponent implements OnInit {
     this.meanS = this.userMeanS;
     this.startTime = this.userStartTime;
     this.launchQuery(
-      'SELECT mean(air_degC) FROM temperature WHERE time > now() - ' +
+      'SELECT mean(sensor_degC) FROM temperature WHERE time > now() - ' +
         this.startTime +
         ' GROUP BY sensor,time(' +
         String(this.meanS) +
