@@ -8,7 +8,7 @@ import { HttpHeaders } from '@angular/common/http';
 import { cloneDeep } from 'lodash-es';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UtFetchdataService {
   constructor(
@@ -29,11 +29,14 @@ export class UtFetchdataService {
   ) {
     console.log('getHTTPData:', thisurl, user, pass);
 
-    if (forceauth || (thisurl.startsWith('https') && thisurl.search(/\/influxdb\//))) {
+    if (
+      forceauth ||
+      (thisurl.startsWith('https') && thisurl.search(/\/influxdb\//))
+    ) {
       const httpOptions = {
         headers: new HttpHeaders({
-          Authorization: 'Basic ' + btoa(user + ':' + pass)
-        })
+          Authorization: 'Basic ' + btoa(user + ':' + pass),
+        }),
       };
       console.log('HEADERS', httpOptions);
 
@@ -86,6 +89,7 @@ export class UtFetchdataService {
     let q = 'SELECT mean(' + select + ') FROM ' + from;
 
     let whereClause = '';
+
     for (const key in tagfilter) {
       if (tagfilter.hasOwnProperty(key)) {
         const andobj = tagfilter[key];
@@ -107,12 +111,17 @@ export class UtFetchdataService {
     whereClause += timeQuery;
 
     let groupBy = ' GROUP BY ';
-    for (const key in tagfilter) {
-      if (tagfilter.hasOwnProperty(key)) {
-        groupBy += key + ',';
+    if (tagfilter && Object.keys(tagfilter).length > 1) { // FIXME don't know if "if" works
+      for (const key in tagfilter) {
+        if (tagfilter.hasOwnProperty(key)) {
+          groupBy += key + ',';
+        }
       }
+      groupBy += 'host,id,time(' + String(mean_s) + 's)';
+    } else {
+      groupBy += '*,time(' + String(mean_s) + 's)';
     }
-    groupBy += 'host,id,time(' + String(mean_s) + 's)';
+
     q += ' WHERE ' + whereClause + groupBy + ';';
     return q;
   }
@@ -163,10 +172,14 @@ export class UtFetchdataService {
         console.log('statement', statementId, 'with len', seriesArray.length);
 
         for (let seriesI = 0; seriesI < seriesArray.length; seriesI++) {
-          const series = seriesArray[seriesI]
+          const series = seriesArray[seriesI];
           dataarray.push(series);
-          console.log('from', new Date(series.values[0][0]), 'to', new Date(series.values[series.values.length -1][0]));
-
+          console.log(
+            'from',
+            new Date(series.values[0][0]),
+            'to',
+            new Date(series.values[series.values.length - 1][0])
+          );
         }
       }
     }
@@ -327,7 +340,7 @@ export class UtFetchdataService {
     }
 
     let newArray = []; // non-sparse Array
-    newData.forEach(row => {
+    newData.forEach((row) => {
       if (row !== undefined) {
         newArray.push(row);
       }
