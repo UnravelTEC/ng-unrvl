@@ -115,7 +115,7 @@ export class BimboxComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.globalSettings.emitChange({ fullscreen: true });
+    // this.globalSettings.emitChange({ fullscreen: true });
     const starttime = this.router.snapshot.queryParamMap.get('t');
     if (starttime && this.h.parseToSeconds(starttime) > 0) {
       this.userStartTime = starttime;
