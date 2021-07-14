@@ -277,12 +277,11 @@ export class GlobalSettingsService implements OnInit {
         : 'http://';
       console.log('No settings in LocalStorage, try our webendpoint', firstURL);
 
+      this.server.api = firstURL + this.defaultAPIPath;
       this.http
         .get(firstURL + this.defaultAPIPath + 'system/hostname.php')
         .subscribe(
           (data: Object) => {
-            this.server.api = firstURL + this.defaultAPIPath;
-
             this.setHostName(data);
 
             // set screen

@@ -2,9 +2,7 @@
 
 <div class="settingspage">
   <section>
-    <h2>
-      Administration login
-    </h2>
+    <h2>Administration login</h2>
     <table>
       <tr>
         <th><label for="api_username">Username</label></th>
@@ -185,10 +183,6 @@
       </div>
     </section>
 
-    <section *ngIf="globalSettingsService.server.type == 'PublicServer'">
-      <app-influxsettings></app-influxsettings>
-    </section>
-
     <section id="submit" class="center">
       <div>
         <!-- div needed for text-align center -->
@@ -215,6 +209,12 @@
         </button>
       </div>
     </section>
+  </section>
+</div>
+
+<div class="settingspage">
+  <section *ngIf="globalSettingsService.server.type == 'PublicServer'">
+    <app-influxsettings></app-influxsettings>
   </section>
 </div>
 
