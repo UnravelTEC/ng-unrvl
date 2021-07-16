@@ -41,6 +41,11 @@ fi
 
 TARGET="$1"
 
+if [ "$TARGET" = "ngbeta" ]; then
+  rsync -ravx dist/Web/* root@newton.unraveltec.com:/var/www/ngbeta/
+  exit
+fi
+
 if [ "$2" ]; then
   target_path="$2"
 fi
