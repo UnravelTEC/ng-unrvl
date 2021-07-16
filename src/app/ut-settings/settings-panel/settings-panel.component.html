@@ -1,10 +1,14 @@
 <h1>Global Settings</h1>
 
-<div class="settingspage">
+<div
+  class="settingspage"
+  *ngIf="
+    globalSettingsService.server.type != 'PublicServer' ||
+    globalSettingsService.client.type === 'dev'
+  "
+>
   <section>
-    <h2>
-      Administration login
-    </h2>
+    <h2>Administration login</h2>
     <table>
       <tr>
         <th><label for="api_username">Username</label></th>
@@ -185,10 +189,6 @@
       </div>
     </section>
 
-    <section *ngIf="globalSettingsService.server.type == 'PublicServer'">
-      <app-influxsettings></app-influxsettings>
-    </section>
-
     <section id="submit" class="center">
       <div>
         <!-- div needed for text-align center -->
@@ -214,6 +214,17 @@
           Delete Settings
         </button>
       </div>
+    </section>
+  </section>
+</div>
+
+<div
+  class="settingspage"
+  *ngIf="globalSettingsService.server.type == 'PublicServer'"
+>
+  <section>
+    <section>
+      <app-influxsettings></app-influxsettings>
     </section>
   </section>
 </div>
