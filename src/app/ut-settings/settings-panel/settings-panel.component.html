@@ -218,6 +218,7 @@
   </section>
 </div>
 
+<<<<<<< HEAD
 <div
   class="settingspage"
   *ngIf="globalSettingsService.server.type == 'PublicServer'"
@@ -226,6 +227,11 @@
     <section>
       <app-influxsettings></app-influxsettings>
     </section>
+=======
+<div class="settingspage">
+  <section *ngIf="globalSettingsService.server.type == 'PublicServer'">
+    <app-influxsettings></app-influxsettings>
+>>>>>>> develop
   </section>
 </div>
 
