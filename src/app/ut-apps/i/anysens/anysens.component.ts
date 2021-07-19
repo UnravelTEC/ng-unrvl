@@ -4,6 +4,7 @@ import { LocalStorageService } from '../../../core/local-storage.service';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
 import { ActivatedRoute } from '@angular/router';
+import { cloneDeep } from 'lodash-es';
 
 @Component({
   selector: 'app-anysens',
@@ -70,6 +71,11 @@ export class AnysensComponent implements OnInit {
 
   labels = [];
   data = [];
+  orig_labels = [];
+  common_label = "";
+  short_labels = [];
+  latest_dates = [];
+  latest_values = [];
 
   appName = 'Any Sens';
 
@@ -198,6 +204,12 @@ export class AnysensComponent implements OnInit {
     console.log('parsed', ret);
     const labels = ret['labels'];
     const idata = ret['data'];
+    this.short_labels = ret['short_labels'];
+    this.common_label = ret['common_label'];
+    console.log('orig labels:', this.orig_labels);
+    console.log('raw labels:', ret['raw_labels']);
+    console.log('common_label:', ret['common_label']);
+    console.log('short_labels:', ret['short_labels']);
 
     let logscale = true;
     const newColors = this.h.getColorsforLabels(labels);
@@ -246,5 +258,21 @@ export class AnysensComponent implements OnInit {
     this.changeTrigger = !this.changeTrigger;
     this.changeTrigger = !this.changeTrigger;
     this.queryRunning = false;
+
+   for (let column = 1; column < this.data[0].length; column++) {
+     for (let i = this.data.length - 1; i != 0; i--) {
+      const element = this.data[i][column];
+      if (typeof element === 'number') {
+        this.latest_values[column -1] = element;
+        this.latest_dates[column -1] = this.data[i][0]
+        break
+      }
+    }
+   }
+   console.log('latest_values', this.latest_values);
+   console.log('latest_dates', this.latest_dates);
+
+
+
   }
 }
