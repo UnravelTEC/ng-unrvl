@@ -99,7 +99,9 @@
   </div>
   <div id="anyfooter">
     <h3>Latest Data:</h3>
-    <label>Common series properties: {{ common_label }}</label>
+    <label
+      >Common series properties: <i>{{ common_label }}</i></label
+    >
     <table>
       <tr>
         <th>Series</th>
@@ -113,15 +115,17 @@
       >
         <td>{{ label }}</td>
         <td>{{ latest_values[i] }}</td>
+
+        <!-- <td>{{ round(latest_values[i], raw_labels[i + 1]) }}</td> forces infinite updates? -->
         <td>
-          {{ latest_dates[i] | date: 'shortDate' }}, {{ latest_dates[i] | date: 'shortTime' }}
+          {{ latest_dates[i] | date: 'shortDate' }},
+          {{ latest_dates[i] | date: 'shortTime' }}
         </td>
         <td>
+          <!-- {{ round(R.averages[i], raw_labels[i + 1]) }} forces infinite updates?-->
           {{ R.averages[i] }}
         </td>
       </tr>
     </table>
   </div>
 </div>
-
-

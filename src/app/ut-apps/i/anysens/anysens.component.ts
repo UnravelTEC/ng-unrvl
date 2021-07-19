@@ -72,10 +72,11 @@ export class AnysensComponent implements OnInit {
   labels = [];
   data = [];
   orig_labels = [];
-  common_label = "";
+  common_label = '';
   short_labels = [];
   latest_dates = [];
   latest_values = [];
+  raw_labels = [];
 
   appName = 'Any Sens';
 
@@ -206,6 +207,7 @@ export class AnysensComponent implements OnInit {
     const idata = ret['data'];
     this.short_labels = ret['short_labels'];
     this.common_label = ret['common_label'];
+    this.raw_labels = ret['raw_labels'];
     console.log('orig labels:', this.orig_labels);
     console.log('raw labels:', ret['raw_labels']);
     console.log('common_label:', ret['common_label']);
@@ -259,20 +261,50 @@ export class AnysensComponent implements OnInit {
     this.changeTrigger = !this.changeTrigger;
     this.queryRunning = false;
 
-   for (let column = 1; column < this.data[0].length; column++) {
-     for (let i = this.data.length - 1; i != 0; i--) {
-      const element = this.data[i][column];
-      if (typeof element === 'number') {
-        this.latest_values[column -1] = element;
-        this.latest_dates[column -1] = this.data[i][0]
-        break
+    for (let column = 1; column < this.data[0].length; column++) {
+      for (let i = this.data.length - 1; i != 0; i--) {
+        const element = this.data[i][column];
+        if (typeof element === 'number') {
+          this.latest_values[column - 1] = element;
+          this.latest_dates[column - 1] = this.data[i][0];
+          break;
+        }
       }
     }
-   }
-   console.log('latest_values', this.latest_values);
-   console.log('latest_dates', this.latest_dates);
-
-
-
+    console.log('latest_values', this.latest_values);
+    console.log('latest_dates', this.latest_dates);
+  }
+  round(value, raw_label = {}) {
+    if (
+      raw_label &&
+      raw_label.hasOwnProperty('sensor') &&
+      this.globalSettings.sensorPresets.hasOwnProperty(raw_label['sensor'])
+    ) {
+      const sensorPreset =
+        this.globalSettings.sensorPresets[raw_label['sensor']];
+      const field = raw_label['field'];
+      for (const key in sensorPreset) {
+        if (Object.prototype.hasOwnProperty.call(sensorPreset, key)) {
+          const sensorfield = sensorPreset[key];
+          if (!sensorfield['tags'].hasOwnProperty('round_digits')) {
+            break;
+          }
+          const round_amount = Math.pow(
+            10,
+            sensorfield['tags']['round_digits']
+          );
+          if (
+            sensorfield == field ||
+            (sensorfield.startsWith('*') &&
+              field.endswith(sensorfield.slice(1)))
+          ) {
+            console.log('myRound: to', 1 / round_amount, 'of', value);
+            return Math.round(value * round_amount) / round_amount;
+          }
+        }
+      }
+    }
+    console.log('myRound: returning fixed 2 digits of', value, raw_label);
+    return Math.round(value * 100) / 100;
   }
 }

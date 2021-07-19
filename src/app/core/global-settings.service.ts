@@ -49,6 +49,18 @@ export class GlobalSettingsService implements OnInit {
     ],
   };
 
+  public sensorPresets = {
+    DS18B20: {
+      '*_degC': {
+        min: -55,
+        max: 125,
+        resolution_b: 16,
+        step: 0.0625, // 1/16°C
+        round_digits: 2
+      },
+    },
+  };
+
   private defaultAPIPath = '/api/';
   private fallbackEndpoint = 'https://newton.unraveltec.com';
   private fallbackAPI = this.fallbackEndpoint + '/api/';
@@ -247,11 +259,7 @@ export class GlobalSettingsService implements OnInit {
 
       const apiPath = this.defaultAPIPath;
 
-      if (
-        servername.search('.') > -1 &&
-        !servername.match('\.[0-9]+$')
-
-      ) {
+      if (servername.search('.') > -1 && !servername.match('.[0-9]+$')) {
         this.server.protocol = 'https://';
       } else {
         this.server.protocol = 'http://';
