@@ -111,7 +111,8 @@ export class UtFetchdataService {
     whereClause += timeQuery;
 
     let groupBy = ' GROUP BY ';
-    if (tagfilter && Object.keys(tagfilter).length > 1) { // FIXME don't know if "if" works
+    if (tagfilter && Object.keys(tagfilter).length > 1) {
+      // FIXME don't know if "if" works
       for (const key in tagfilter) {
         if (tagfilter.hasOwnProperty(key)) {
           groupBy += key + ',';
@@ -194,6 +195,8 @@ export class UtFetchdataService {
     }
 
     const labels = ['Date'];
+    const orig_labels = [];
+    let raw_labels = [{ metric: 'Date', tags: {}, field: '' }];
 
     let validColCount = 0;
     const seriesValidColumns = [];
@@ -236,6 +239,12 @@ export class UtFetchdataService {
           validColCount += 1;
           seriesValidColumns[i][colindex] = validColCount; // where should it be in the end
           let colname = series['columns'][colindex];
+          orig_labels.push(serieslabel + ' ' + colname);
+          raw_labels.push({
+            metric: series['name'],
+            tags: tags,
+            field: colname,
+          });
           if (tagBlackList.indexOf(colname) > -1) {
             colname = '';
           }
@@ -350,6 +359,67 @@ export class UtFetchdataService {
 
     retval['labels'] = labels;
     retval['data'] = newArray;
+    retval['orig_labels'] = orig_labels;
+    retval['raw_labels'] = raw_labels;
+
+    retval['short_labels'] = [];
+    retval['common_label'] = '';
+
+    let common_metric = true;
+    let common_tags = {};
+    if (retval['raw_labels'].length > 2) {
+      const first_metric = retval['raw_labels'][1].metric;
+      for (let i = 2; i < retval['raw_labels'].length; i++) {
+        if (first_metric != retval['raw_labels'][i].metric) {
+          common_metric = false;
+          break;
+        }
+      }
+      const first_tagset = retval['raw_labels'][1].tags;
+      for (const tkey in first_tagset) {
+        if (Object.prototype.hasOwnProperty.call(first_tagset, tkey)) {
+          const tvalue = first_tagset[tkey];
+          common_tags[tkey] = tvalue;
+          for (let i = 2; i < retval['raw_labels'].length; i++) {
+            const elementtags = retval['raw_labels'][i].tags;
+            if (
+              !Object.prototype.hasOwnProperty.call(elementtags, tkey) ||
+              common_tags[tkey] != elementtags[tkey]
+            ) {
+              delete common_tags[tkey];
+              break;
+            }
+          }
+        }
+      }
+    }
+    if (common_metric) {
+      retval['common_label'] = retval['raw_labels'][1].metric;
+    }
+    for (const tkey in common_tags) {
+      if (Object.prototype.hasOwnProperty.call(common_tags, tkey)) {
+        retval['common_label'] += ', ' + tkey + ': ' + common_tags[tkey]
+      }
+    }
+    for (let i = 1; i < retval['labels'].length; i++) {
+      const label = retval['labels'][i];
+      retval['short_labels'][i-1] = label;
+      if (common_metric) {
+        retval['short_labels'][i-1] = label.replace(
+          retval['raw_labels'][1].metric + ' ',
+          ''
+        );
+      }
+      for (const tkey in common_tags) {
+        if (Object.prototype.hasOwnProperty.call(common_tags, tkey)) {
+          const tval = common_tags[tkey];
+          retval['short_labels'][i-1] = retval['short_labels'][i-1].replace(
+            tkey + ': ' + tval + ', ',
+            ''
+          );
+        }
+      }
+    }
 
     return retval;
   }

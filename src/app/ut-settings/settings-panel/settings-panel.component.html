@@ -1,6 +1,12 @@
 <h1>Global Settings</h1>
 
-<div class="settingspage">
+<div
+  class="settingspage"
+  *ngIf="
+    globalSettingsService.server.type != 'PublicServer' ||
+    globalSettingsService.client.type === 'dev'
+  "
+>
   <section>
     <h2>Administration login</h2>
     <table>
@@ -212,9 +218,20 @@
   </section>
 </div>
 
+<<<<<<< HEAD
+<div
+  class="settingspage"
+  *ngIf="globalSettingsService.server.type == 'PublicServer'"
+>
+  <section>
+    <section>
+      <app-influxsettings></app-influxsettings>
+    </section>
+=======
 <div class="settingspage">
   <section *ngIf="globalSettingsService.server.type == 'PublicServer'">
     <app-influxsettings></app-influxsettings>
+>>>>>>> develop
   </section>
 </div>
 

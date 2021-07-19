@@ -1,9 +1,51 @@
-#backicon {
-  color: #c7c7c7;
+#anyapp {
   position: absolute;
-  top: 0.5em;
-  right: 1em;
-}
-#backicon:hover {
-  color: white;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  display: flex;
+
+  label {
+    margin-left: 2em;
+  }
+  #anyheader {
+    width: 100%;
+    text-align: right;
+    #backicon {
+      color: #c7c7c7;
+      text-align: right;
+      margin: 0.5em 1em 0 0;
+
+    }
+    #backicon:hover {
+      color: white;
+    }
+  }
+
+  #anybody {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+  }
+  #anyfooter {
+    padding: 0.5em;
+    h3 {
+      margin: 0.2rem 0.5rem 0.5rem 0.5rem;
+    }
+    table {
+      margin-top: 0.3rem;
+      border: 2px solid gray;
+      border-collapse: collapse;
+      td,
+      th {
+        border: 1px solid gray;
+        padding: 0.2rem;
+      }
+      td + td {
+        text-align: right;
+      }
+    }
+  }
 }

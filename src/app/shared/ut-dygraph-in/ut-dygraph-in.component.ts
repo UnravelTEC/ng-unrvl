@@ -956,7 +956,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       let visibleCount = 0;
       for (let time_i = 0; time_i < datalen; time_i++) {
         const value = data[time_i][series_i];
-        if (isNaN(value)) {
+        if (isNaN(value) || value === null) {
           // console.log(i, series_i);
           continue;
         }
@@ -983,7 +983,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
       for (let time_i = 0; time_i < datalen; time_i++) {
         const value = data[time_i][series_i];
-        if (isNaN(value)) {
+        if (isNaN(value) || value === null) { // TODO check if === null affects result
           continue;
         }
         let addedValue = Math.pow(value - mean, 2);
