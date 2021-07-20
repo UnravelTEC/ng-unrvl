@@ -273,6 +273,11 @@ export class UtFetchdataService {
           colname = colname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm ( # / cm³ )');
           colname = colname.replace(/dewPoint/, 'dew point');
           colname = colname.replace(/gps_view/, '#');
+          colname = colname.replace(/sensor_voltage/, 'sensor voltage'); //RS04
+          colname = colname.replace(/sensor_current/, 'sensor current'); //RS04
+          colname = colname.replace(/sensor_highvoltage/, 'sensor high-voltage'); //RS04
+          colname = colname.replace(/_cps$/, ' ( # / s )');
+          colname = colname.replace(/_Svph$/, ' ( Sv / h )');
           colname = colname.replace(/_(\S+)$/, ' ( $1 )');
           const collabel = colname
             ? serieslabel + ' ' + colname
