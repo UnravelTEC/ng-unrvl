@@ -1,5 +1,9 @@
 <div id="anyapp">
   <div id="anyheader">
+    <h2>
+      {{ sensor }} {{ measurement }} <small>( {{ common_label }} )</small>
+    </h2>
+    <!-- small spaces in ( )-->
     <a
       id="backicon"
       [routerLink]="'/Apps/I/' + referrer"
@@ -98,34 +102,42 @@
     </form>
   </div>
   <div id="anyfooter">
-    <h3>Latest Data:</h3>
-    <label
-      >Common series properties: <i>{{ common_label }}</i></label
-    >
-    <table>
-      <tr>
-        <th>Series</th>
-        <th>latest value</th>
-        <th>latest data</th>
-        <th>average</th>
-      </tr>
-      <tr
-        *ngFor="let label of short_labels; let i = index"
-        [attr.data-index]="i"
-      >
-        <td>{{ label }}</td>
-        <td>{{ latest_values[i] }}</td>
+    <div *ngIf="!tableShown">
+      <button (click)="toggleTableShown()">Show Data Table</button>
+    </div>
+    <table *ngIf="tableShown">
+      <thead>
+        <tr>
+          <th>Series</th>
+          <th>latest value</th>
+          <th>latest data</th>
+          <th style="position: relative">
+            average
+            <button (click)="toggleTableShown()">
+              <mat-icon>Cancel</mat-icon>
+            </button>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let label of short_labels; let i = index"
+          [attr.data-index]="i"
+        >
+          <td>{{ label }}</td>
+          <td>{{ latest_values[i] }}</td>
 
-        <!-- <td>{{ round(latest_values[i], raw_labels[i + 1]) }}</td> forces infinite updates? -->
-        <td>
-          {{ latest_dates[i] | date: 'shortDate' }},
-          {{ latest_dates[i] | date: 'shortTime' }}
-        </td>
-        <td>
-          <!-- {{ round(R.averages[i], raw_labels[i + 1]) }} forces infinite updates?-->
-          {{ R.averages[i] }}
-        </td>
-      </tr>
+          <!-- <td>{{ round(latest_values[i], raw_labels[i + 1]) }}</td> forces infinite updates? -->
+          <td>
+            {{ latest_dates[i] | date: 'shortDate' }},
+            {{ latest_dates[i] | date: 'shortTime' }}
+          </td>
+          <td>
+            <!-- {{ round(R.averages[i], raw_labels[i + 1]) }} forces infinite updates?-->
+            {{ R.averages[i] }}
+          </td>
+        </tr>
+      </tbody>
     </table>
   </div>
 </div>

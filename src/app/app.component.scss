@@ -52,14 +52,14 @@ $labelcolor: #999;
     position: absolute;
     bottom: 2em;
     right: 0;
-    top: 2rem;
+    top: 0;
     overflow-y: auto;
     margin: 0;
     padding: 0;
     fieldset {
       border: 1px solid #666;
       width: 11.5rem;
-      margin: 1rem;
+      margin: 0.5rem 1rem;
       padding: 1rem;
 
       h3 {

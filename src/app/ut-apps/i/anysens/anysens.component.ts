@@ -73,7 +73,7 @@ export class AnysensComponent implements OnInit {
   data = [];
   orig_labels = [];
   common_label = '';
-  short_labels = [];
+  short_labels: string[] = [];
   latest_dates = [];
   latest_values = [];
   raw_labels = [];
@@ -93,6 +93,7 @@ export class AnysensComponent implements OnInit {
 
   public queryRunning = false;
   public autoreload = false;
+  public tableShown = true;
 
   constructor(
     private globalSettings: GlobalSettingsService,
@@ -105,14 +106,12 @@ export class AnysensComponent implements OnInit {
   }
 
   ngOnInit() {
-    const lsMean = this.localStorage.get(this.appName + 'userMeanS');
-    if (lsMean) {
-      this.userMeanS = lsMean;
-    }
-    const lsStartTime = this.localStorage.get(this.appName + 'userStartTime');
-    if (lsStartTime) {
-      this.userStartTime = lsStartTime;
-    }
+    ['userMeanS', 'userStartTime', 'tableShown'].forEach((element) => {
+      const thing = this.localStorage.get(this.appName + element);
+      if (thing !== null) {
+        this[element] = thing;
+      }
+    });
 
     [
       'host',
@@ -189,6 +188,15 @@ export class AnysensComponent implements OnInit {
     this.reload();
   }
 
+  toggleTableShown() {
+    this.tableShown = !this.tableShown;
+    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger = !this.changeTrigger;
+    this.localStorage.set(this.appName + 'tableShown', this.tableShown);
+    console.log('toggleTableShown', this.tableShown, 'LS after:', this.localStorage.get(this.appName + 'tableShown') );
+
+  }
+
   launchQuery(clause: string) {
     this.queryRunning = true;
     this.utHTTP
@@ -205,6 +213,7 @@ export class AnysensComponent implements OnInit {
     console.log('parsed', ret);
     const labels = ret['labels'];
     const idata = ret['data'];
+    this.orig_labels = cloneDeep(ret['labels']);
     this.short_labels = ret['short_labels'];
     this.common_label = ret['common_label'];
     this.raw_labels = ret['raw_labels'];
@@ -252,7 +261,9 @@ export class AnysensComponent implements OnInit {
       console.log('scale: lin');
     }
     this.startTime = this.userStartTime;
-    this.labels = labels;
+    const newLabels = ['Date'];
+    newLabels.concat(this.short_labels);
+    this.labels = ['Date'].concat(this.short_labels);
     this.data = idata;
     this.colors = newColors;
     console.log(labels);
@@ -261,6 +272,9 @@ export class AnysensComponent implements OnInit {
     this.changeTrigger = !this.changeTrigger;
     this.queryRunning = false;
 
+    if (!this.data || !this.data[0]) {
+      return;
+    }
     for (let column = 1; column < this.data[0].length; column++) {
       for (let i = this.data.length - 1; i != 0; i--) {
         const element = this.data[i][column];

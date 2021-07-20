@@ -12,12 +12,21 @@
   }
   #anyheader {
     width: 100%;
-    text-align: right;
+    text-align: left;
+    h2 {
+      margin: 0.5rem;
+      font-size: 1.2rem;
+      small {
+        font-weight: normal;
+      }
+    }
+    position: relative;
     #backicon {
+      position: absolute;
       color: #c7c7c7;
       text-align: right;
-      margin: 0.5em 1em 0 0;
-
+      top: 0.5em;
+      right: 1em;
     }
     #backicon:hover {
       color: white;
@@ -32,18 +41,35 @@
   #anyfooter {
     padding: 0.5em;
     max-height: 50%;
-    overflow-y:scroll;
+    overflow-y: auto;
     h3 {
       margin: 0.2rem 0.5rem 0.5rem 0.5rem;
+    }
+    div:first-child {
+      width: 100%;
+      position: relative;
+      button {
+        position: fixed;
+        right: 0.5em;
+        bottom: 1.5em;
+        z-index: +5;
+      }
     }
     table {
       margin-top: 0.3rem;
       border: 2px solid gray;
       border-collapse: collapse;
+      font-size: 0.9em;
       td,
       th {
         border: 1px solid gray;
-        padding: 0.2rem;
+        padding: 0.2rem 0.3rem;
+        button {
+          position: absolute;
+          top: 0;
+          right: 0;
+          font-size: 0.7em;
+        }
       }
       td + td {
         text-align: right;
