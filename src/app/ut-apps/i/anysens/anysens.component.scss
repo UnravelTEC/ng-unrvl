@@ -68,7 +68,14 @@
           position: absolute;
           top: 0;
           right: 0;
-          font-size: 0.7em;
+          font-size: 0.60em;
+          border: 0;
+          padding: 0.3rem;
+          background: transparent;
+          color: gray;
+        }
+        button:hover {
+          color: white;
         }
       }
       td + td {
