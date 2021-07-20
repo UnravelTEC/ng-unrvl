@@ -194,7 +194,6 @@ export class AnysensComponent implements OnInit {
     this.changeTrigger = !this.changeTrigger;
     this.localStorage.set(this.appName + 'tableShown', this.tableShown);
     console.log('toggleTableShown', this.tableShown, 'LS after:', this.localStorage.get(this.appName + 'tableShown') );
-
   }
 
   launchQuery(clause: string) {

@@ -1158,9 +1158,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   toggleOptions() {
     this.optionsOpen = !this.optionsOpen;
+    this.resize();
+  }
+  public resize(t=150) {
     setTimeout(() => {
       this.Dygraph.resize(undefined, undefined);
-    }, 150);
+    }, t);
   }
 
   pan(direction: string) {
@@ -1324,9 +1327,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   toggleStats() {
     this.stats = !this.stats;
-    setTimeout(() => {
-      this.Dygraph.resize(undefined, undefined);
-    }, 50);
+    this.resize(50);
   }
   tVis4Label(label: string) {
     // console.log('tVis4Label with', label);

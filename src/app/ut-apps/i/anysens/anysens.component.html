@@ -103,7 +103,7 @@
   </div>
   <div id="anyfooter">
     <div *ngIf="!tableShown">
-      <button (click)="toggleTableShown()">Show Data Table</button>
+      <button (click)="toggleTableShown(); R.resize()">Show Data Table</button>
     </div>
     <table *ngIf="tableShown">
       <thead>
@@ -113,7 +113,7 @@
           <th>latest data</th>
           <th style="position: relative; padding-right: 2.2em">
             average
-            <button (click)="toggleTableShown()">
+            <button (click)="toggleTableShown(); R.resize()">
               <mat-icon>cancel</mat-icon>
             </button>
           </th>
