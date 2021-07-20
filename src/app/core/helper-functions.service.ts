@@ -879,4 +879,13 @@ export class HelperFunctionsService {
       parseInt(hex_str.substr(6, 2), 16).toString(10)
     );
   }
+
+  // https://medium.com/swlh/how-to-round-to-a-certain-number-of-decimal-places-in-javascript-ed74c471c1b8
+  roundAccurately(nr, decPlaces) {
+    return Number(
+      Math.round(Number(String(nr) + 'e' + String(decPlaces))) +
+        'e-' +
+        String(decPlaces)
+    );
+  }
 }

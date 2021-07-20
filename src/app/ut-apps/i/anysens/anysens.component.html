@@ -16,6 +16,7 @@
     <app-ut-dygraph-in
       [displayedData]="data"
       [columnLabels]="labels"
+      [roundDigits]="round_digits"
       [style]="graphstyle"
       [changeTrigger]="changeTrigger"
       [extraDyGraphConfig]="extraDyGraphConfig"
@@ -125,7 +126,12 @@
           [attr.data-index]="i"
         >
           <td>{{ label }}</td>
-          <td>{{ latest_values[i] }}</td>
+          <td>
+            {{
+              latest_values[i]
+                | number: '1.' + round_digits[i + 1] + '-' + round_digits[i + 1]
+            }}
+          </td>
 
           <!-- <td>{{ round(latest_values[i], raw_labels[i + 1]) }}</td> forces infinite updates? -->
           <td>
@@ -134,7 +140,7 @@
           </td>
           <td>
             <!-- {{ round(R.averages[i], raw_labels[i + 1]) }} forces infinite updates?-->
-            {{ R.averages[i] }}
+            {{ R.averages[i] | number: '1.' + round_digits[i + 1] + '-' + round_digits[i + 1] }}
           </td>
         </tr>
       </tbody>

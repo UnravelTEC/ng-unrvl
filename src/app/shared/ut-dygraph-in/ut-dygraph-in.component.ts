@@ -63,6 +63,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   labelBlackList: string[];
   @Input()
+  roundDigits = [0];
+  @Input()
   showDate = true;
   @Input()
   showLogscaleSwitcher = true;
@@ -571,6 +573,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     ) {
       this.dyGraphOptions.visibility.push(true);
     }
+    while (this.roundDigits.length < this.columnLabels.length) {
+      this.roundDigits.push(2);
+    }
     console.log(
       'creating Dyg',
       this.htmlID,
@@ -994,9 +999,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       // console.log(sum);
 
       let mean = sum / series_count;
-      this.averages[series_i - 1] = mean;
+      this.averages[series_i - 1] = this.h.roundAccurately(
+        mean,
+        this.roundDigits[series_i]
+      );
       let visibleMean = visibleSum / visibleCount;
-      this.visibleAverages[series_i - 1] = visibleMean;
+      this.visibleAverages[series_i - 1] = this.h.roundAccurately(
+        visibleMean,
+        this.roundDigits[series_i]
+      );
 
       // and now, the std dev.
       allValueCount += series_count;
@@ -1160,7 +1171,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.optionsOpen = !this.optionsOpen;
     this.resize();
   }
-  public resize(t=150) {
+  public resize(t = 150) {
     setTimeout(() => {
       this.Dygraph.resize(undefined, undefined);
     }, t);

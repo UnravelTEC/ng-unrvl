@@ -56,9 +56,101 @@ export class GlobalSettingsService implements OnInit {
         max: 125,
         resolution_b: 16,
         step: 0.0625, // 1/16°C
-        round_digits: 2
+        round_digits: 2,
       },
     },
+    BME280: {
+      '*_degC': {
+        round_digits: 2,
+      },
+      humidity_rel_percent: {
+        round_digits: 0,
+      },
+    },
+    MPU9250: {
+      sensor_degC: {
+        round_digits: 1,
+      },
+    },
+    'OPC-N3': {
+      sensor_degC: {
+        round_digits: 1,
+      },
+      humidity_rel_percent: {
+        round_digits: 0,
+      },
+      '*_ugpm3': {
+        round_digits: 1,
+      },
+    },
+    GPS: {
+      lat: {
+        round_digits: 7,
+      },
+      lon: {
+        round_digits: 7,
+      },
+      heading_deg: {
+        round_digits: 0,
+      },
+      height_m_sea: {
+        round_digits: 0,
+      },
+      height_m_wgs84: {
+        round_digits: 0,
+      },
+      sats_gps_view: {
+        round_digits: 1,
+      },
+    },
+    'NO2-B43F': {
+      NO2_ppm: {
+        round_digits: 4,
+      },
+      NO2_ugpm3:{
+        round_digits: 1,
+      },
+      '*_degC': {
+        round_digits: 1,
+      },
+    },
+    ADS1115: {
+      resolution_mV: {
+        round_digits: 3,
+      },
+      maxrange_V: {
+        round_digits: 3,
+      },
+      gain: {
+        round_digits: 0,
+      },
+      averaged_count: {
+        round_digits: 0,
+      },
+      ch12_V: {
+        round_digits: 4,
+      },
+      ch34_V: {
+        round_digits: 4,
+      },
+      ch1_V: {
+        round_digits: 4,
+      },
+      ch2_V: {
+        round_digits: 4,
+      },
+      ch3_V: {
+        round_digits: 4,
+      },
+      ch4_V: {
+        round_digits: 4,
+      },
+    },
+    DB: {
+      '*db': {
+        round_digits: 0
+      }
+    }
   };
 
   private defaultAPIPath = '/api/';
@@ -429,5 +521,35 @@ export class GlobalSettingsService implements OnInit {
 
   isMobile() {
     return this.client.mobile;
+  }
+
+  // FIXME a better place for this function would be nice, but depends on sensorPresets
+  roundSensorValue(value, raw_label = {}) {
+    return this.h.roundAccurately(value, this.getDigits(raw_label));
+  }
+  getDigits(raw_label) {
+    if (
+      raw_label &&
+      raw_label.hasOwnProperty('tags') &&
+      raw_label['tags'].hasOwnProperty('sensor') &&
+      this.sensorPresets.hasOwnProperty(raw_label['tags']['sensor'])
+    ) {
+      const sensorPreset = this.sensorPresets[raw_label['tags']['sensor']];
+      const field = raw_label['field'].replace(/mean_/, ''); //optionally rm influx avg prefix
+      for (const physicalParam in sensorPreset) {
+        if (Object.prototype.hasOwnProperty.call(sensorPreset, physicalParam)) {
+          const sensorProperties = sensorPreset[physicalParam];
+          if (
+            sensorProperties.hasOwnProperty('round_digits') &&
+            (physicalParam == field ||
+              (physicalParam.startsWith('*') &&
+                field.endsWith(physicalParam.slice(1))))
+          ) {
+            return sensorProperties['round_digits'];
+          }
+        }
+      }
+    }
+    return 2;
   }
 }
