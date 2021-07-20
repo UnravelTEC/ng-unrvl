@@ -599,6 +599,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.checkAndUpdateGraphWidth();
     this.setYranges();
   }
+  updateRoll() {
+    this.Dygraph.adjustRoll(this.runningAvgPoints);
+  }
 
   getSeriesAxis(seriesName) {
     const axisVal = this.h.getDeep(this.dyGraphOptions, [

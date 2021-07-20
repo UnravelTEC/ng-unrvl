@@ -270,6 +270,7 @@ style.padding-bottom="20vh"-->
           name="runningAvgPoints"
           [(ngModel)]="runningAvgPoints"
           style="width:2em"
+          (change)="updateRoll()"
         />
         <span class="unit">Points</span>
       </form>
