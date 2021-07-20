@@ -107,7 +107,7 @@ export class GlobalSettingsService implements OnInit {
       NO2_ppm: {
         round_digits: 4,
       },
-      NO2_ugpm3:{
+      NO2_ugpm3: {
         round_digits: 1,
       },
       '*_degC': {
@@ -148,9 +148,29 @@ export class GlobalSettingsService implements OnInit {
     },
     DB: {
       '*db': {
-        round_digits: 0
-      }
-    }
+        round_digits: 0,
+      },
+    },
+    RS04: {
+      total_Svph: {
+        round_digits: 10,
+      },
+      sensor_highvoltage_V: {
+        round_digits: 1,
+      },
+      sensor_voltage_V: {
+        round_digits: 1,
+      },
+      total_cps: {
+        round_digits: 1,
+      },
+      '*_degC': {
+        round_digits: 1,
+      },
+      sensor_current_mA: {
+        round_digits: 0,
+      },
+    },
   };
 
   private defaultAPIPath = '/api/';
