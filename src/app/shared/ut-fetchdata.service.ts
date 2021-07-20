@@ -261,15 +261,19 @@ export class UtFetchdataService {
           colname = colname.replace(/percent$/, '%');
           colname = colname.replace(/_%/, '-%');
           colname = colname.replace(/degC$/, '°C');
-          colname = colname.replace(/p([0-9.]*)_ugpm3$/, 'pm$1 (µg / m³)'); //spaces in () are thin-spaces
-          colname = colname.replace(/_ugpm3$/, ' (µg / m³)');
-          colname = colname.replace(/gpm3$/, 'g/m³');
-          colname = colname.replace(/degps$/, '°/s');
-          colname = colname.replace(/mps2$/, 'm/s²');
+          colname = colname.replace(/deg$/, '°'); // heading
+          colname = colname.replace(/hdop/, 'HDOP');
+          colname = colname.replace(/p([0-9.]*)_ugpm3$/, 'pm$1 ( µg / m³ )'); //spaces in () are thin-spaces
+          colname = colname.replace(/_ugpm3$/, ' ( µg / m³ )');
+          colname = colname.replace(/_gpm3$/, ' ( g / m³ )');
+          colname = colname.replace(/_degps$/, ' ( ° / s )');
+          colname = colname.replace(/_mps2$/, ' ( m / s² )');
+          colname = colname.replace(/_mps$/, ' ( m / s )');
           colname = colname.replace(/uT$/, 'µT');
           colname = colname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm');
           colname = colname.replace(/dewPoint/, 'dew point');
-          colname = colname.replace(/_(\S+)$/, ' ($1)');
+          colname = colname.replace(/gps_view/, '#');
+          colname = colname.replace(/_(\S+)$/, ' ( $1 )');
           const collabel = colname
             ? serieslabel + ' ' + colname
             : serieslabel.replace(/,$/, '');
