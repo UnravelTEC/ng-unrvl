@@ -393,7 +393,7 @@ export class UtFetchdataService {
         }
       }
     }
-    if (common_metric) {
+    if (common_metric && retval['raw_labels'].length > 1) {
       retval['common_label'] = retval['raw_labels'][1].metric;
     }
     for (const tkey in common_tags) {
