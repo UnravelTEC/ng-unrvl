@@ -270,7 +270,7 @@ export class UtFetchdataService {
           colname = colname.replace(/_mps2$/, ' ( m / s² )');
           colname = colname.replace(/_mps$/, ' ( m / s )');
           colname = colname.replace(/uT$/, 'µT');
-          colname = colname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm');
+          colname = colname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm ( # / cm³ )');
           colname = colname.replace(/dewPoint/, 'dew point');
           colname = colname.replace(/gps_view/, '#');
           colname = colname.replace(/_(\S+)$/, ' ( $1 )');
