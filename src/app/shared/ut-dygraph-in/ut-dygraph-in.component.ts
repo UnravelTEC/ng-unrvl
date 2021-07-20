@@ -45,8 +45,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   startTime = '15m'; // prefix m for min, s for seconds, h for hours, d for days
 
+  private defaultYlabel = 'Value (unit)';
   @Input()
-  YLabel = 'Value (unit)';
+  YLabel = this.defaultYlabel;
   @Input()
   XLabel = undefined;
   @Input()
@@ -254,7 +255,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       : this.XLabel;
   }
   returnXrangeText(newXrange) {
-    return '<b>Time</b> (&#8202;' + this.h.createHRTimeString(newXrange) + '&#8202;)';
+    return (
+      '<b>Time</b> (&#8202;' + this.h.createHRTimeString(newXrange) + '&#8202;)'
+    );
   }
   updateXLabel(update = true) {
     this.dyGraphOptions['xlabel'] = this.getXLabel();
@@ -277,9 +280,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.dyGraphOptions['labels'] = this.columnLabels;
 
       const newDataBeginTime = this.displayedData[0][0];
-      const newDataEndTime = this.displayedData[
-        this.displayedData.length - 1
-      ][0];
+      const newDataEndTime =
+        this.displayedData[this.displayedData.length - 1][0];
       if (
         newDataBeginTime.valueOf() != this.dataBeginTime.valueOf() ||
         newDataEndTime.valueOf() != this.dataEndTime.valueOf()
@@ -522,6 +524,35 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.dyGraphOptions['xlabel'] = this.returnXrangeText(
       (this.toZoom.valueOf() - this.fromZoom.valueOf()) / 1000
     );
+
+    console.log('startin auto unit label for', this.YLabel);
+    if (this.YLabel.search(/\(.*\)$/) == -1) {
+      let newYlabel = this.YLabel;
+      let units = [];
+      for (let i = 1; i < this.columnLabels.length; i++) {
+        const serieslabel = this.columnLabels[i];
+        const unit = serieslabel.match(/\((.*)\)$/);
+        // console.log(unit, serieslabel);
+
+        if (unit && units.indexOf(unit[1]) == -1) {
+          units.push(unit[1]);
+        }
+      }
+      if (units.length == 0) {
+        newYlabel += ' (unitless)';
+      } else {
+        newYlabel += ' (';
+        for (let i = 0; i < units.length; i++) {
+          if (i > 0) {
+            newYlabel += ', ';
+          }
+          newYlabel += units[i];
+        }
+        newYlabel += ')';
+      }
+      this.dyGraphOptions['ylabel'] = newYlabel;
+      // TODO y2label
+    }
 
     this.dyGraphOptions['labels'] = this.columnLabels;
     // console.log('COLORS:', cloneDeep(this.colors), cloneDeep(this.h.colorArray));
@@ -983,7 +1014,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
       for (let time_i = 0; time_i < datalen; time_i++) {
         const value = data[time_i][series_i];
-        if (isNaN(value) || value === null) { // TODO check if === null affects result
+        if (isNaN(value) || value === null) {
+          // TODO check if === null affects result
           continue;
         }
         let addedValue = Math.pow(value - mean, 2);
@@ -1310,9 +1342,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       const ilabel = this.columnLabels[i];
       if (label == ilabel) {
         // console.log(i, ilabel);
-        this.dyGraphOptions.visibility[i - 1] = !this.dyGraphOptions.visibility[
-          i - 1
-        ];
+        this.dyGraphOptions.visibility[i - 1] =
+          !this.dyGraphOptions.visibility[i - 1];
         break;
       }
     }
