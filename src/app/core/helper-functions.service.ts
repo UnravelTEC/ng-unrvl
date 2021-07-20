@@ -808,11 +808,11 @@ export class HelperFunctionsService {
     const textMS = currentMS ? String(currentMS) + 'ms' : '';
     const currentSeconds = Math.floor(seconds);
     const displayedSeconds = currentSeconds % 60;
-    const textSeconds = displayedSeconds ? String(displayedSeconds) + 's ' : '';
+    const textSeconds = displayedSeconds ? String(displayedSeconds) + '" ' : '';
 
     const currentMinutes = Math.floor(currentSeconds / 60);
     const displayedMinutes = currentMinutes % 60;
-    const textMinutes = displayedMinutes ? String(displayedMinutes) + 'm ' : '';
+    const textMinutes = displayedMinutes ? String(displayedMinutes) + "' " : '';
 
     const currentHours = Math.floor(currentMinutes / 60);
     const displayedHours = currentHours % 24;

@@ -254,7 +254,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       : this.XLabel;
   }
   returnXrangeText(newXrange) {
-    return 'Time (&#8202;' + this.h.createHRTimeString(newXrange) + '&#8202;)';
+    return '<b>Time</b> (&#8202;' + this.h.createHRTimeString(newXrange) + '&#8202;)';
   }
   updateXLabel(update = true) {
     this.dyGraphOptions['xlabel'] = this.getXLabel();

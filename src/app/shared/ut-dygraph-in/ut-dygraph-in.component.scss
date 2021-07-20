@@ -422,7 +422,9 @@ $red2: #ff7f88;
     color: $axissublabelcolor;
     cursor: default;
   }
-
+  .dygraph-xlabel, .dygraph-ylabel, .dygraph-y2label {
+    font-weight: normal;
+  }
   button.toggleOptions {
     position: absolute;
     bottom: 0;
