@@ -31,6 +31,8 @@
   }
   #anyfooter {
     padding: 0.5em;
+    max-height: 50%;
+    overflow-y:scroll;
     h3 {
       margin: 0.2rem 0.5rem 0.5rem 0.5rem;
     }
