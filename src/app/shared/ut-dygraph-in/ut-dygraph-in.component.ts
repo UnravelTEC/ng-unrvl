@@ -538,18 +538,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           units.push(unit[1]);
         }
       }
-      if (units.length == 0) {
-        newYlabel += ' (unitless)';
-      } else {
-        newYlabel += ' (';
-        for (let i = 0; i < units.length; i++) {
-          if (i > 0) {
-            newYlabel += ', ';
-          }
-          newYlabel += units[i];
-        }
-        newYlabel += ')';
-      }
+      newYlabel += ' (' + (units.length ? units.join(', ') : 'unitless') + ')';
       this.dyGraphOptions['ylabel'] = newYlabel;
       // TODO y2label
     }
