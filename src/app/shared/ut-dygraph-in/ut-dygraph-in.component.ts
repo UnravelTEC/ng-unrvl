@@ -1308,7 +1308,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       let newRow = [origRow[0]]; // Timestamp
       for (let c = 0; c < origRow.length; c++) {
         if (this.dyGraphOptions.visibility[c - 1]) {
-          newRow.push(origRow[c]);
+          newRow.push(this.h.roundAccurately(origRow[c], this.roundDigits[c]));
         }
       }
       visibleData.push(newRow);
