@@ -282,8 +282,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.dyGraphOptions['labels'] = this.columnLabels;
 
       const newDataBeginTime = this.displayedData[0][0];
-      const newDataEndTime =
-        this.displayedData[this.displayedData.length - 1][0];
+      const newDataEndTime = this.displayedData[
+        this.displayedData.length - 1
+      ][0];
       if (
         newDataBeginTime.valueOf() != this.dataBeginTime.valueOf() ||
         newDataEndTime.valueOf() != this.dataEndTime.valueOf()
@@ -540,7 +541,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           units.push(unit[1]);
         }
       }
-      newYlabel += ' (' + (units.length ? units.join(', ') : 'unitless') + ')';
+      if (units.length) {
+        newYlabel += ' (' + units.join(', ') + ')';
+      }
+      // newYlabel += ' (' + (units.length ? units.join(', ') : 'unitless') + ')';
       this.dyGraphOptions['ylabel'] = newYlabel;
       // TODO y2label
     }
@@ -1346,8 +1350,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       const ilabel = this.columnLabels[i];
       if (label == ilabel) {
         // console.log(i, ilabel);
-        this.dyGraphOptions.visibility[i - 1] =
-          !this.dyGraphOptions.visibility[i - 1];
+        this.dyGraphOptions.visibility[i - 1] = !this.dyGraphOptions.visibility[
+          i - 1
+        ];
         break;
       }
     }
