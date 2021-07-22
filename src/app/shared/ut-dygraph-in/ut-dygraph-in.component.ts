@@ -281,10 +281,20 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
       this.dyGraphOptions['labels'] = this.columnLabels;
 
+      if (!this.displayedData.length) {
+        console.log('Dyg reset to no Data');
+        this.noData = true;
+        this.dataReset = true;
+        this.Dygraph.updateOptions({
+          file: [],
+          labels: [],
+        });
+        return;
+      }
+      this.noData = false;
       const newDataBeginTime = this.displayedData[0][0];
-      const newDataEndTime = this.displayedData[
-        this.displayedData.length - 1
-      ][0];
+      const newDataEndTime =
+        this.displayedData[this.displayedData.length - 1][0];
       if (
         newDataBeginTime.valueOf() != this.dataBeginTime.valueOf() ||
         newDataEndTime.valueOf() != this.dataEndTime.valueOf()
@@ -315,6 +325,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         visibility: this.dyGraphOptions.visibility,
         dateWindow: this.dyGraphOptions['dateWindow'],
       });
+      // setTimeout(() => {
+      //   this.fullZoom();
+      // }, 100);
 
       if (this.minimal && this.displayedData.length > 10) {
         const dateOfSecondPt = this.displayedData[1][0].valueOf();
@@ -324,6 +337,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           this.displayedData.shift();
         }
       }
+    } else {
+      console.error('updateGraph: no Dygraph?');
+      this.handleInitialData(this.displayedData);
     }
   }
   waitForData() {
@@ -519,6 +535,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       console.error('you have to supply correct columnLabels');
       return;
     }
+    this.noData = false;
     // console.log('handleInitialData: received Data:', cloneDeep(receivedData));
 
     this.updateAverages();
@@ -1350,9 +1367,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       const ilabel = this.columnLabels[i];
       if (label == ilabel) {
         // console.log(i, ilabel);
-        this.dyGraphOptions.visibility[i - 1] = !this.dyGraphOptions.visibility[
-          i - 1
-        ];
+        this.dyGraphOptions.visibility[i - 1] =
+          !this.dyGraphOptions.visibility[i - 1];
         break;
       }
     }
