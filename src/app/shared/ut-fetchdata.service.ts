@@ -165,6 +165,14 @@ export class UtFetchdataService {
       console.log('no results');
       return retval;
     }
+    if (results[0] && results[0]['error']) {
+      retval['error'] = results[0]['error'];
+      console.log(
+        'parseInfluxData encountered influx error statement',
+        retval['error']
+      );
+      return retval;
+    }
     let dataarray = [];
     for (let statementId = 0; statementId < results.length; statementId++) {
       const statement = results[statementId];
@@ -276,7 +284,10 @@ export class UtFetchdataService {
           colname = colname.replace(/air_rel/, 'apparent wind');
           colname = colname.replace(/sensor_voltage/, 'sensor voltage'); //RS04
           colname = colname.replace(/sensor_current/, 'sensor current'); //RS04
-          colname = colname.replace(/sensor_highvoltage/, 'sensor high-voltage'); //RS04
+          colname = colname.replace(
+            /sensor_highvoltage/,
+            'sensor high-voltage'
+          ); //RS04
           colname = colname.replace(/_cps$/, ' ( # / s )');
           colname = colname.replace(/_Svph$/, ' ( Sv / h )');
           // colname = colname.replace(/interval_s/, 'interval ( s )'); // not a field, but a tag
@@ -410,14 +421,14 @@ export class UtFetchdataService {
     }
     for (const tkey in common_tags) {
       if (Object.prototype.hasOwnProperty.call(common_tags, tkey)) {
-        retval['common_label'] += ', ' + tkey + ': ' + common_tags[tkey]
+        retval['common_label'] += ', ' + tkey + ': ' + common_tags[tkey];
       }
     }
     for (let i = 1; i < retval['labels'].length; i++) {
       const label = retval['labels'][i];
-      retval['short_labels'][i-1] = label;
+      retval['short_labels'][i - 1] = label;
       if (common_metric) {
-        retval['short_labels'][i-1] = label.replace(
+        retval['short_labels'][i - 1] = label.replace(
           retval['raw_labels'][1].metric + ' ',
           ''
         );
@@ -425,7 +436,7 @@ export class UtFetchdataService {
       for (const tkey in common_tags) {
         if (Object.prototype.hasOwnProperty.call(common_tags, tkey)) {
           const tval = common_tags[tkey];
-          retval['short_labels'][i-1] = retval['short_labels'][i-1].replace(
+          retval['short_labels'][i - 1] = retval['short_labels'][i - 1].replace(
             tkey + ': ' + tval + ', ',
             ''
           );
