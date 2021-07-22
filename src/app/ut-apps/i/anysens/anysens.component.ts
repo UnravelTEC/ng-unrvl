@@ -206,7 +206,12 @@ export class AnysensComponent implements OnInit {
     this.queryRunning = true;
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
-      .subscribe((data: Object) => this.handleData(data));
+      .subscribe((data: Object) => this.handleData(data),
+      (error) => {
+        console.error(error);
+        this.queryRunning = false;
+        alert(`HTTP error: ${error.status}, ${error.statusText}, ${error.message}`);
+      });
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -216,6 +221,11 @@ export class AnysensComponent implements OnInit {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('parsed', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      this.queryRunning = false;
+      return;
+    }
     const labels = ret['labels'];
     const idata = ret['data'];
     this.orig_labels = cloneDeep(ret['labels']);
