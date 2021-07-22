@@ -206,13 +206,17 @@ export class HelperFunctionsService {
           }
         }
       }
-      if (!latlabelpos || !lonlabelpos) {
-        console.error(
-          'error in influx2geojsonPoints, lat or lon not found in',
-          labels
-        );
-        return undefined;
-      }
+    }
+    if (!latlabelpos || !lonlabelpos) {
+      console.error(
+        'error in influx2geojsonPoints, lat or lon not found in',
+        labels
+      );
+      return undefined;
+    }
+    if (!data.length) {
+      console.log('influx2geojsonPoints: no data');
+      return undefined;
     }
 
     for (let i = 0; i < data.length; i++) {
@@ -882,7 +886,8 @@ export class HelperFunctionsService {
 
   // https://medium.com/swlh/how-to-round-to-a-certain-number-of-decimal-places-in-javascript-ed74c471c1b8
   roundAccurately(nr, decPlaces) {
-    if (nr < 1e-5 || nr > 1e5) { //accurate version breaks if "e" already in String display
+    if (nr < 1e-5 || nr > 1e5) {
+      //accurate version breaks if "e" already in String display
       const round_amount = Math.pow(10, decPlaces);
       return Math.round(nr * round_amount) / round_amount;
     }
