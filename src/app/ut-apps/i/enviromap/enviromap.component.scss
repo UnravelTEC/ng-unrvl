@@ -9,11 +9,12 @@ $labelcolor: #999;
   bottom: 32%;
 }
 
-.settings {
+form.settings {
   position: absolute;
+  // background: red;
   bottom: 2em;
   right: 0;
-  top: 2rem;
+  top: 2rem !important;
   overflow-y: auto;
   margin: 0;
   padding: 0;

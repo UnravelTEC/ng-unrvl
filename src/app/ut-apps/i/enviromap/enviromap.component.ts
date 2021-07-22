@@ -39,7 +39,15 @@ export class EnviromapComponent implements OnInit {
       },
     },
   };
-  labelBlackListT = ['host', 'serial', 'mean_*', 'id', 'sensor'];
+  labelBlackListT = [
+    'host',
+    'serial',
+    'mean_*',
+    'id',
+    'sensor',
+    'topic',
+    'interval_s',
+  ];
   graphstyle = {
     position: 'absolute',
     top: '70%',
@@ -201,7 +209,13 @@ export class EnviromapComponent implements OnInit {
         // 'bimweb',
         // 'D,OEZ4UL+[hGgMQA(@<){W[kd'
       )
-      .subscribe((data: Object) => this.handleData(data));
+      .subscribe(
+        (data: Object) => this.handleData(data),
+        (error) => {
+          console.error(error);
+          alert(`HTTP error: ${error.status}, ${error.statusText}, ${error.message}`);
+        }
+      );
   }
   saveMean(param) {
     // this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -211,6 +225,10 @@ export class EnviromapComponent implements OnInit {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('parsed', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
     const labels = ret['labels'];
     const idata = ret['data'];
 
@@ -330,7 +348,7 @@ export class EnviromapComponent implements OnInit {
       }
     }
 
-    let points = this.h.influx2geojsonPoints(idata, labels)
+    let points = this.h.influx2geojsonPoints(idata, labels);
     this.displayed_points = points;
     this.layers[0] = geoJSON(points, {
       pointToLayer: function (feature, latlng) {
