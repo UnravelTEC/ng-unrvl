@@ -149,6 +149,7 @@ export class EnviromapComponent implements OnInit {
     }
   }
   reload(fromTo = false) {
+    this.queryRunning = true;
     this.meanS = this.userMeanS;
     this.currentres = this.meanS;
     this.startTime = this.userStartTime;
@@ -208,7 +209,6 @@ export class EnviromapComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
-    this.queryRunning = true;
     this.utHTTP
       .getHTTPData(
         this.utHTTP.buildInfluxQuery(clause) //, this.db, this.server)
