@@ -35,15 +35,15 @@ style.padding-bottom="20vh"-->
     ></div>
 
     <div *ngIf="noData == true && !minimal" class="info nodata">
-      No data to display.
+      <p>No data to display.</p>
     </div>
 
     <div *ngIf="waiting == true && !minimal" class="info waiting">
-      Waiting for data...
+      <p>Waiting for data...</p>
     </div>
 
     <div *ngIf="error != undefined" class="info error">
-      {{ error }}
+      <p>{{ error }}</p>
     </div>
 
     <button
@@ -215,7 +215,7 @@ style.padding-bottom="20vh"-->
     <div class="options">
       <form class="subbox">
         <h5>Data</h5>
-        <small style="float: left;">
+        <small style="float: left">
           #Points:
           {{
             !displayedData.length
@@ -235,7 +235,7 @@ style.padding-bottom="20vh"-->
           [(ngModel)]="panAmount"
           id="panAmount"
           name="panAmount"
-          style="width:5em"
+          style="width: 5em"
         >
           <option value="0.1">1/10</option>
           <option value="0.2">1/5</option>
@@ -269,7 +269,7 @@ style.padding-bottom="20vh"-->
           id="runningAvgPoints"
           name="runningAvgPoints"
           [(ngModel)]="runningAvgPoints"
-          style="width:2em"
+          style="width: 2em"
           (change)="updateRoll()"
         />
         <span class="unit">Points</span>
@@ -292,7 +292,7 @@ style.padding-bottom="20vh"-->
       </form>
 
       <form class="subbox" [style.width]="stats ? '100%' : ''" id="stats">
-        <div style="float: left;">
+        <div style="float: left">
           <h5>Statistics</h5>
           <button (click)="toggleStats()">{{ stats ? '-' : '+' }}</button>
         </div>
@@ -312,14 +312,10 @@ style.padding-bottom="20vh"-->
               <th *ngFor="let label of dyGraphOptions['labels']">
                 {{ label === 'Date' ? 'Averages' : label }}
               </th>
-              <th>
-                All Series
-              </th>
+              <th>All Series</th>
             </tr>
             <tr>
-              <td>
-                Whole Dataset:
-              </td>
+              <td>Whole Dataset:</td>
               <td *ngFor="let mean of averages">
                 {{ mean | number: '1.3-3' }}
               </td>
@@ -343,14 +339,10 @@ style.padding-bottom="20vh"-->
               <th *ngFor="let label of dyGraphOptions['labels']">
                 {{ label === 'Date' ? 'Std. Deviations' : label }}
               </th>
-              <th>
-                All Series
-              </th>
+              <th>All Series</th>
             </tr>
             <tr>
-              <td>
-                Whole Dataset:
-              </td>
+              <td>Whole Dataset:</td>
               <td *ngFor="let dev of stdDevs">
                 {{ dev | number: '1.3-3' }}
               </td>
