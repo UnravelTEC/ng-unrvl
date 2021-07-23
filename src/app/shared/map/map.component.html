@@ -3,7 +3,9 @@
   leaflet
   [leafletOptions]="options"
   [leafletLayers]="layers"
+  [leafletLayersControl]="layersControl"
   (leafletMapReady)="onMapReady($event)"
   (leafletMapZoomEnd)="onMapZoomEnd($event)"
   id="main-map"
 ></div>
+<!-- [leafletLayers]="layers" -->
