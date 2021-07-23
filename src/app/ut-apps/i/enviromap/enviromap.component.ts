@@ -63,7 +63,6 @@ export class EnviromapComponent implements OnInit {
     right: '0.5rem',
   };
 
-
   measurement = 'temperature';
   sensor: String;
   interval: string;
@@ -78,6 +77,7 @@ export class EnviromapComponent implements OnInit {
   labels = [];
   data = [];
   gpsdata = [];
+  gpslabels = [];
   public displayed_points = {};
   public layers = [];
 
@@ -91,6 +91,9 @@ export class EnviromapComponent implements OnInit {
   public toTime: Date;
   public to: Number; // unix time from urlparam
   public queryRunning = false;
+
+  public highlightDate: Date;
+  public highlightValue: number;
 
   public currentRange: string;
   public column: String; //used for color
@@ -120,6 +123,12 @@ export class EnviromapComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    ['userMeanS', 'userStartTime'].forEach((element) => {
+      const thing = this.localStorage.get(this.appName + element);
+      if (thing !== null) {
+        this[element] = thing;
+      }
+    });
     // this.globalSettings.emitChange({ fullscreen: true });
     [
       'host',
@@ -220,7 +229,9 @@ export class EnviromapComponent implements OnInit {
         (error) => {
           console.error(error);
           this.queryRunning = false;
-          alert(`HTTP error: ${error.status}, ${error.statusText}, ${error.message}`);
+          alert(
+            `HTTP error: ${error.status}, ${error.statusText}, ${error.message}`
+          );
         }
       );
   }
@@ -381,6 +392,8 @@ export class EnviromapComponent implements OnInit {
 
     this.labels = graphlabels;
     this.data = graphdata;
+    this.gpsdata = idata;
+    this.gpslabels = labels;
     this.colors = newColors;
     console.log(labels);
     console.log('all data:', idata);
@@ -390,5 +403,32 @@ export class EnviromapComponent implements OnInit {
   }
   exportGeojson() {
     this.h.exportGeojson(this.displayed_points);
+  }
+  handleHighlightCallback(dataObj: Object) {
+    // console.log(dataObj);
+    if (dataObj['points'] && dataObj['points'][0]) {
+      const TObj = dataObj['points'][0];
+      this.highlightDate = new Date(TObj['xval']);
+      this.highlightValue = this.h.roundAccurately(TObj['yval'], 2);
+
+      const highlightMarkerOptions = {
+        radius: 10,
+        // fillColor: '#0000ff80',
+        color: '#0000ff',
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.3,
+      };
+
+      this.layers[2] = geoJSON(
+        this.h.influx2geojsonPoints([this.gpsdata[TObj['idx']]], this.gpslabels),
+        {
+          pointToLayer: function (feature, latlng) {
+            return circleMarker(latlng, highlightMarkerOptions);
+          },
+          onEachFeature: this.h.leafletPopup,
+        }
+      );
+    }
   }
 }

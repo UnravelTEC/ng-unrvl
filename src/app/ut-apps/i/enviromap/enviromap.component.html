@@ -15,8 +15,7 @@
   <fieldset>
     <h3>Current Dataset:</h3>
     <p>
-      <label>#Points:</label
-      ><span class="cRange">{{ data.length }}</span>
+      <label>#Points:</label><span class="cRange">{{ data.length }}</span>
     </p>
     <p>
       <label>Resolution:</label>
@@ -44,6 +43,20 @@
         >Permalink</a
       >
     </p>
+    <hr />
+    <!-- <p>
+      <span class="cRange"
+        >{{ highlightDate | date: 'shortDate' }}
+        {{ highlightDate | date: 'shortTime' }}
+        <span
+          *ngIf="highlightDate !== undefined && highlightValue !== undefined"
+          >|</span
+        >
+        {{ highlightValue }}&thinsp;<span *ngIf="highlightValue !== undefined"
+          >°C</span
+        >
+      </span>
+    </p> -->
   </fieldset>
 
   <fieldset [disabled]="queryRunning == true">
@@ -104,6 +117,7 @@
   [extraDyGraphConfig]="extraDyGraphConfig"
   [startTime]="undefined"
   enableHighlightCallback="true"
+  (returnHighlightedRow)="handleHighlightCallback($event)"
   [colors]="colors"
   [YLabel]="measurement"
   (returnGraphWidthOnChange)="setGraphWidth($event)"
