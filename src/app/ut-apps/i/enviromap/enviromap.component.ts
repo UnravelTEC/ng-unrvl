@@ -5,6 +5,7 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
 import { geoJSON, circleMarker } from 'leaflet';
 import { ActivatedRoute } from '@angular/router';
 import { cloneDeep } from 'lodash-es';
+import { LocalStorageService } from 'app/core/local-storage.service';
 
 @Component({
   selector: 'app-enviromap',
@@ -12,16 +13,22 @@ import { cloneDeep } from 'lodash-es';
   styleUrls: ['./enviromap.component.scss'],
 })
 export class EnviromapComponent implements OnInit {
+  public appName = 'Enviromap';
   constructor(
     private globalSettings: GlobalSettingsService,
+    private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
     public h: HelperFunctionsService,
     private router: ActivatedRoute
   ) {
-    this.globalSettings.emitChange({ appName: 'Enviromap' });
+    this.globalSettings.emitChange({ appName: this.appName });
   }
   colors = [];
-
+  graphWidth = 1900;
+  setGraphWidth(width) {
+    this.graphWidth = width;
+    console.log('new w', width);
+  }
   extraDyGraphConfig = {
     connectSeparatedPoints: true,
     pointSize: 3,
@@ -55,11 +62,7 @@ export class EnviromapComponent implements OnInit {
     left: '0.5rem',
     right: '0.5rem',
   };
-  graphWidth = 1900;
-  setGraphWidth(width) {
-    this.graphWidth = width;
-    console.log('new w', width);
-  }
+
 
   measurement = 'temperature';
   sensor: String;
@@ -87,6 +90,8 @@ export class EnviromapComponent implements OnInit {
   public from: Number; // unix time from urlparam
   public toTime: Date;
   public to: Number; // unix time from urlparam
+  public queryRunning = false;
+
   public currentRange: string;
   public column: String; //used for color
   public colorramp = [
@@ -197,12 +202,13 @@ export class EnviromapComponent implements OnInit {
 
     this.userMeanS = this.calcMean(rangeSeconds);
 
-    // this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
-    // this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);
+    this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
+    this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);
     this.reload();
   }
 
   launchQuery(clause: string) {
+    this.queryRunning = true;
     this.utHTTP
       .getHTTPData(
         this.utHTTP.buildInfluxQuery(clause) //, this.db, this.server)
@@ -213,6 +219,7 @@ export class EnviromapComponent implements OnInit {
         (data: Object) => this.handleData(data),
         (error) => {
           console.error(error);
+          this.queryRunning = false;
           alert(`HTTP error: ${error.status}, ${error.statusText}, ${error.message}`);
         }
       );
@@ -227,6 +234,7 @@ export class EnviromapComponent implements OnInit {
     console.log('parsed', ret);
     if (ret['error']) {
       alert('Influx Error: ' + ret['error']);
+      this.queryRunning = false;
       return;
     }
     const labels = ret['labels'];
@@ -375,7 +383,10 @@ export class EnviromapComponent implements OnInit {
     this.data = graphdata;
     this.colors = newColors;
     console.log(labels);
-    console.log(idata);
+    console.log('all data:', idata);
+    console.log('graph data:', this.data);
+
+    this.queryRunning = false;
   }
   exportGeojson() {
     this.h.exportGeojson(this.displayed_points);
