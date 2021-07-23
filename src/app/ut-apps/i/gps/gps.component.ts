@@ -195,6 +195,9 @@ export class GpsComponent implements OnInit {
     this.startTime = this.userStartTime;
     this.labels = labels;
     this.data = idata;
+    if (this.data.length) {
+      this.updateFromToTimes([this.data[0][0].valueOf(), this.data[this.data.length - 1][0].valueOf()])
+    }
     console.log(labels);
     console.log(idata);
   }

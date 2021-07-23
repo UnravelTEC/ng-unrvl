@@ -45,8 +45,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   startTime = '15m'; // prefix m for min, s for seconds, h for hours, d for days
 
+  private defaultYlabel = 'Value (unit)';
   @Input()
-  YLabel = 'Value (unit)';
+  YLabel = this.defaultYlabel;
   @Input()
   XLabel = undefined;
   @Input()
@@ -61,6 +62,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   multiplicateFactors = [1];
   @Input()
   labelBlackList: string[];
+  @Input()
+  roundDigits = [0];
   @Input()
   showDate = true;
   @Input()
@@ -254,7 +257,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       : this.XLabel;
   }
   returnXrangeText(newXrange) {
-    return 'Time (&#8202;' + this.h.createHRTimeString(newXrange) + '&#8202;)';
+    return (
+      '<b>Time</b> (&#8202;' + this.h.createHRTimeString(newXrange) + '&#8202;)'
+    );
   }
   updateXLabel(update = true) {
     this.dyGraphOptions['xlabel'] = this.getXLabel();
@@ -276,10 +281,20 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
       this.dyGraphOptions['labels'] = this.columnLabels;
 
+      if (!this.displayedData.length) {
+        console.log('Dyg reset to no Data');
+        this.noData = true;
+        this.dataReset = true;
+        this.Dygraph.updateOptions({
+          file: [],
+          labels: [],
+        });
+        return;
+      }
+      this.noData = false;
       const newDataBeginTime = this.displayedData[0][0];
-      const newDataEndTime = this.displayedData[
-        this.displayedData.length - 1
-      ][0];
+      const newDataEndTime =
+        this.displayedData[this.displayedData.length - 1][0];
       if (
         newDataBeginTime.valueOf() != this.dataBeginTime.valueOf() ||
         newDataEndTime.valueOf() != this.dataEndTime.valueOf()
@@ -310,6 +325,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         visibility: this.dyGraphOptions.visibility,
         dateWindow: this.dyGraphOptions['dateWindow'],
       });
+      // setTimeout(() => {
+      //   this.fullZoom();
+      // }, 100);
 
       if (this.minimal && this.displayedData.length > 10) {
         const dateOfSecondPt = this.displayedData[1][0].valueOf();
@@ -319,6 +337,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           this.displayedData.shift();
         }
       }
+    } else {
+      console.error('updateGraph: no Dygraph?');
+      this.handleInitialData(this.displayedData);
     }
   }
   waitForData() {
@@ -514,6 +535,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       console.error('you have to supply correct columnLabels');
       return;
     }
+    this.noData = false;
     // console.log('handleInitialData: received Data:', cloneDeep(receivedData));
 
     this.updateAverages();
@@ -522,6 +544,27 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.dyGraphOptions['xlabel'] = this.returnXrangeText(
       (this.toZoom.valueOf() - this.fromZoom.valueOf()) / 1000
     );
+
+    console.log('startin auto unit label for', this.YLabel);
+    if (this.YLabel.search(/\(.*\)$/) == -1) {
+      let newYlabel = this.YLabel;
+      let units = [];
+      for (let i = 1; i < this.columnLabels.length; i++) {
+        const serieslabel = this.columnLabels[i];
+        const unit = serieslabel.match(/\((.*)\)$/);
+        // console.log(unit, serieslabel);
+
+        if (unit && units.indexOf(unit[1]) == -1) {
+          units.push(unit[1]);
+        }
+      }
+      if (units.length) {
+        newYlabel += ' (' + units.join(', ') + ')';
+      }
+      // newYlabel += ' (' + (units.length ? units.join(', ') : 'unitless') + ')';
+      this.dyGraphOptions['ylabel'] = newYlabel;
+      // TODO y2label
+    }
 
     this.dyGraphOptions['labels'] = this.columnLabels;
     // console.log('COLORS:', cloneDeep(this.colors), cloneDeep(this.h.colorArray));
@@ -551,6 +594,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     ) {
       this.dyGraphOptions.visibility.push(true);
     }
+    while (this.roundDigits.length < this.columnLabels.length) {
+      this.roundDigits.push(2);
+    }
     console.log(
       'creating Dyg',
       this.htmlID,
@@ -578,6 +624,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     this.checkAndUpdateGraphWidth();
     this.setYranges();
+  }
+  updateRoll() {
+    this.Dygraph.adjustRoll(this.runningAvgPoints);
   }
 
   getSeriesAxis(seriesName) {
@@ -956,7 +1005,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       let visibleCount = 0;
       for (let time_i = 0; time_i < datalen; time_i++) {
         const value = data[time_i][series_i];
-        if (isNaN(value)) {
+        if (isNaN(value) || value === null) {
           // console.log(i, series_i);
           continue;
         }
@@ -971,9 +1020,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       // console.log(sum);
 
       let mean = sum / series_count;
-      this.averages[series_i - 1] = mean;
+      this.averages[series_i - 1] = this.h.roundAccurately(
+        mean,
+        this.roundDigits[series_i]
+      );
       let visibleMean = visibleSum / visibleCount;
-      this.visibleAverages[series_i - 1] = visibleMean;
+      this.visibleAverages[series_i - 1] = this.h.roundAccurately(
+        visibleMean,
+        this.roundDigits[series_i]
+      );
 
       // and now, the std dev.
       allValueCount += series_count;
@@ -983,7 +1038,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
       for (let time_i = 0; time_i < datalen; time_i++) {
         const value = data[time_i][series_i];
-        if (isNaN(value)) {
+        if (isNaN(value) || value === null) {
+          // TODO check if === null affects result
           continue;
         }
         let addedValue = Math.pow(value - mean, 2);
@@ -1134,48 +1190,55 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   toggleOptions() {
     this.optionsOpen = !this.optionsOpen;
+    this.resize();
+  }
+  public resize(t = 150) {
     setTimeout(() => {
       this.Dygraph.resize(undefined, undefined);
-    }, 150);
+    }, t);
   }
 
   pan(direction: string) {
-    const dw = this.Dygraph.getOption('dateWindow');
-    const currentTimeRangeSeconds = dw[1].valueOf() - dw[0].valueOf();
-    const panFor = currentTimeRangeSeconds * this.panAmount;
-    console.log([direction, this.panAmount, panFor]);
-    if (direction === 'forward') {
-      dw[0] = new Date(dw[0].valueOf() + panFor);
-      dw[1] = new Date(dw[1].valueOf() + panFor);
+    if (this.Dygraph) {
+      const dw = this.Dygraph.getOption('dateWindow');
+      const currentTimeRangeSeconds = dw[1].valueOf() - dw[0].valueOf();
+      const panFor = currentTimeRangeSeconds * this.panAmount;
+      console.log([direction, this.panAmount, panFor]);
+      if (direction === 'forward') {
+        dw[0] = new Date(dw[0].valueOf() + panFor);
+        dw[1] = new Date(dw[1].valueOf() + panFor);
+      }
+      if (direction === 'back') {
+        dw[0] = new Date(dw[0].valueOf() - panFor - 1); // offset for avoiding no reloading on auto zoom
+        dw[1] = new Date(dw[1].valueOf() - panFor + 1);
+      }
+      this.Dygraph.updateOptions({ dateWindow: dw });
     }
-    if (direction === 'back') {
-      dw[0] = new Date(dw[0].valueOf() - panFor - 1); // offset for avoiding no reloading on auto zoom
-      dw[1] = new Date(dw[1].valueOf() - panFor + 1);
-    }
-    this.Dygraph.updateOptions({ dateWindow: dw });
   }
 
   fullZoom() {
     this.Dygraph.resetZoom();
   }
   zoom(factor: number) {
-    const fromValue = this.fromZoom.valueOf();
-    const toValue = this.toZoom.valueOf();
+    if (this.fromZoom !== undefined && this.toZoom !== undefined) {
+      const fromValue = this.fromZoom.valueOf();
+      const toValue = this.toZoom.valueOf();
 
-    const difference = toValue - fromValue;
-    const distanceToCenter = difference / 2;
-    // const center = fromValue + distanceToCenter;
+      const difference = toValue - fromValue;
+      const distanceToCenter = difference / 2;
+      // const center = fromValue + distanceToCenter;
 
-    const newdifference = factor * difference;
-    const newDistanceToCenter = newdifference / 2;
-    const newFrom = fromValue + (distanceToCenter - newDistanceToCenter) + 1;
-    const newTo = toValue - (distanceToCenter - newDistanceToCenter) - 1; // offset for avoiding no reloading on auto zoom
+      const newdifference = factor * difference;
+      const newDistanceToCenter = newdifference / 2;
+      const newFrom = fromValue + (distanceToCenter - newDistanceToCenter) + 1;
+      const newTo = toValue - (distanceToCenter - newDistanceToCenter) - 1; // offset for avoiding no reloading on auto zoom
 
-    this.toZoom = new Date(newTo);
-    this.fromZoom = new Date(newFrom);
-    this.Dygraph.updateOptions({
-      dateWindow: [newFrom, newTo],
-    });
+      this.toZoom = new Date(newTo);
+      this.fromZoom = new Date(newFrom);
+      this.Dygraph.updateOptions({
+        dateWindow: [newFrom, newTo],
+      });
+    }
   }
 
   //note: if logscale not globally set, no logscale graphs are displayed
@@ -1270,7 +1333,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       let newRow = [origRow[0]]; // Timestamp
       for (let c = 0; c < origRow.length; c++) {
         if (this.dyGraphOptions.visibility[c - 1]) {
-          newRow.push(origRow[c]);
+          newRow.push(this.h.roundAccurately(origRow[c], this.roundDigits[c]));
         }
       }
       visibleData.push(newRow);
@@ -1300,9 +1363,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   toggleStats() {
     this.stats = !this.stats;
-    setTimeout(() => {
-      this.Dygraph.resize(undefined, undefined);
-    }, 50);
+    this.resize(50);
   }
   tVis4Label(label: string) {
     // console.log('tVis4Label with', label);
@@ -1310,9 +1371,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       const ilabel = this.columnLabels[i];
       if (label == ilabel) {
         // console.log(i, ilabel);
-        this.dyGraphOptions.visibility[i - 1] = !this.dyGraphOptions.visibility[
-          i - 1
-        ];
+        this.dyGraphOptions.visibility[i - 1] =
+          !this.dyGraphOptions.visibility[i - 1];
         break;
       }
     }

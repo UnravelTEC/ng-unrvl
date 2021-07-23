@@ -115,7 +115,7 @@ export class BimboxComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.globalSettings.emitChange({ fullscreen: true });
+    // this.globalSettings.emitChange({ fullscreen: true });
     const starttime = this.router.snapshot.queryParamMap.get('t');
     if (starttime && this.h.parseToSeconds(starttime) > 0) {
       this.userStartTime = starttime;
@@ -193,11 +193,21 @@ export class BimboxComponent implements OnInit {
   }
 
   launchQuery(clause: string, id: string) {
-    const q = this.utHTTP.buildInfluxQuery(clause, this.db, this.server);
+    console.log("launchQuery", this.globalSettings.server.baseurl);
 
-    this.utHTTP
-      .getHTTPData(q, 'bimweb', 'D,OEZ4UL+[hGgMQA(@<){W[kd')
-      .subscribe((data: Object) => this.handleData(data, id));
+    if (this.globalSettings.server.baseurl.startsWith('https')) {
+      const q = this.utHTTP.buildInfluxQuery(clause, this.db, this.server);
+
+      this.utHTTP
+        .getHTTPData(q, 'bimweb', 'D,OEZ4UL+[hGgMQA(@<){W[kd')
+        .subscribe((data: Object) => this.handleData(data, id));
+    } else {
+      const q = this.utHTTP.buildInfluxQuery(clause);
+
+      this.utHTTP
+        .getHTTPData(q, "", "")
+        .subscribe((data: Object) => this.handleData(data, id));
+    }
   }
 
   handleData(data: Object, id: string) {

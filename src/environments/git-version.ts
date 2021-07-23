@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "ng serve",
-  "SHA": "",
-  "branch": "ng serve",
-  "lastCommitAuthor": "unknown",
-  "lastCommitTime": "never, no prd run yet",
-  "lastCommitMessage": "no msg, no prd run yet",
-  "lastCommitNumber": "-1"
+  "shortSHA": "c8b0e82",
+  "SHA": "c8b0e82bdfb67587c7e0f0ca328a6a6fe9346433",
+  "branch": "bimbox",
+  "lastCommitAuthor": "Michael Maier",
+  "lastCommitTime": "Fri Jul 2 16:48:21 2021 +0200",
+  "lastCommitMessage": "bimbox dashboard",
+  "lastCommitNumber": "1109"
 }

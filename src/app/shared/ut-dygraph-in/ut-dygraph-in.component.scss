@@ -77,12 +77,17 @@ $red2: #ff7f88;
 
   .info {
     position: absolute;
-    top: 1em;
-    left: 1em;
-    margin: 1em;
+    top: 0;
+    left: 55px;
+    bottom: 55px;
+    right: 0.5em;
+    margin: 0;
     border: 1px solid blue;
-    padding: 1em;
+    padding: auto 1em;
     background: $graphbg;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .nodata {
@@ -367,7 +372,6 @@ $red2: #ff7f88;
         td {
           color: $mainbg;
         }
-
       }
       tr:hover {
         th span.dash {
@@ -422,7 +426,11 @@ $red2: #ff7f88;
     color: $axissublabelcolor;
     cursor: default;
   }
-
+  .dygraph-xlabel,
+  .dygraph-ylabel,
+  .dygraph-y2label {
+    font-weight: normal;
+  }
   button.toggleOptions {
     position: absolute;
     bottom: 0;

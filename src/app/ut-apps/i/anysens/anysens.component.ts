@@ -4,6 +4,7 @@ import { LocalStorageService } from '../../../core/local-storage.service';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
 import { ActivatedRoute } from '@angular/router';
+import { cloneDeep } from 'lodash-es';
 
 @Component({
   selector: 'app-anysens',
@@ -70,6 +71,13 @@ export class AnysensComponent implements OnInit {
 
   labels = [];
   data = [];
+  orig_labels = [];
+  common_label = '';
+  short_labels: string[] = [];
+  latest_dates = [];
+  latest_values = [];
+  raw_labels = [];
+  round_digits = [0];
 
   appName = 'Any Sens';
 
@@ -86,6 +94,7 @@ export class AnysensComponent implements OnInit {
 
   public queryRunning = false;
   public autoreload = false;
+  public tableShown = true;
 
   constructor(
     private globalSettings: GlobalSettingsService,
@@ -98,14 +107,12 @@ export class AnysensComponent implements OnInit {
   }
 
   ngOnInit() {
-    const lsMean = this.localStorage.get(this.appName + 'userMeanS');
-    if (lsMean) {
-      this.userMeanS = lsMean;
-    }
-    const lsStartTime = this.localStorage.get(this.appName + 'userStartTime');
-    if (lsStartTime) {
-      this.userStartTime = lsStartTime;
-    }
+    ['userMeanS', 'userStartTime', 'tableShown'].forEach((element) => {
+      const thing = this.localStorage.get(this.appName + element);
+      if (thing !== null) {
+        this[element] = thing;
+      }
+    });
 
     [
       'host',
@@ -182,11 +189,29 @@ export class AnysensComponent implements OnInit {
     this.reload();
   }
 
+  toggleTableShown() {
+    this.tableShown = !this.tableShown;
+    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger = !this.changeTrigger;
+    this.localStorage.set(this.appName + 'tableShown', this.tableShown);
+    console.log(
+      'toggleTableShown',
+      this.tableShown,
+      'LS after:',
+      this.localStorage.get(this.appName + 'tableShown')
+    );
+  }
+
   launchQuery(clause: string) {
     this.queryRunning = true;
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
-      .subscribe((data: Object) => this.handleData(data));
+      .subscribe((data: Object) => this.handleData(data),
+      (error) => {
+        console.error(error);
+        this.queryRunning = false;
+        alert(`HTTP error: ${error.status}, ${error.statusText}, ${error.message}`);
+      });
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -196,8 +221,21 @@ export class AnysensComponent implements OnInit {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('parsed', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      this.queryRunning = false;
+      return;
+    }
     const labels = ret['labels'];
     const idata = ret['data'];
+    this.orig_labels = cloneDeep(ret['labels']);
+    this.short_labels = ret['short_labels'];
+    this.common_label = ret['common_label'];
+    this.raw_labels = ret['raw_labels'];
+    console.log('orig labels:', this.orig_labels);
+    console.log('raw labels:', ret['raw_labels']);
+    console.log('common_label:', ret['common_label']);
+    console.log('short_labels:', ret['short_labels']);
 
     let logscale = true;
     const newColors = this.h.getColorsforLabels(labels);
@@ -229,6 +267,7 @@ export class AnysensComponent implements OnInit {
       if (item.match(/pressure/)) {
         this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
       }
+      this.round_digits.push(this.globalSettings.getDigits(this.raw_labels[c]));
     }
     // console.log(cloneDeep(this.dygLabels));
     if (logscale) {
@@ -238,7 +277,9 @@ export class AnysensComponent implements OnInit {
       console.log('scale: lin');
     }
     this.startTime = this.userStartTime;
-    this.labels = labels;
+    const newLabels = ['Date'];
+    newLabels.concat(this.short_labels);
+    this.labels = ['Date'].concat(this.short_labels);
     this.data = idata;
     this.colors = newColors;
     console.log(labels);
@@ -246,5 +287,24 @@ export class AnysensComponent implements OnInit {
     this.changeTrigger = !this.changeTrigger;
     this.changeTrigger = !this.changeTrigger;
     this.queryRunning = false;
+
+    if (!this.data || !this.data[0]) {
+      return;
+    }
+    for (let column = 1; column < this.data[0].length; column++) {
+      for (let i = this.data.length - 1; i != 0; i--) {
+        const element = this.data[i][column];
+        if (typeof element === 'number') {
+          this.latest_values[column - 1] = this.h.roundAccurately(
+            element,
+            this.round_digits[column]
+          );
+          this.latest_dates[column - 1] = this.data[i][0];
+          break;
+        }
+      }
+    }
+    console.log('latest_values', this.latest_values);
+    console.log('latest_dates', this.latest_dates);
   }
 }

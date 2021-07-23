@@ -1,96 +1,149 @@
-<a
-  id="backicon"
-  [routerLink]="'/Apps/I/' + referrer"
-  routerLinkActive="active"
-  title="Return to overview"
-  ><mat-icon>fullscreen_exit</mat-icon></a
->
+<div id="anyapp">
+  <div id="anyheader">
+    <h2>
+      {{ sensor }} {{ measurement }} <small>( {{ common_label }} )</small>
+    </h2>
+    <!-- small spaces in ( )-->
+    <a
+      id="backicon"
+      [routerLink]="'/Apps/I/' + referrer"
+      routerLinkActive="active"
+      title="Return to overview"
+      ><mat-icon>fullscreen_exit</mat-icon></a
+    >
+  </div>
+  <div id="anybody">
+    <app-ut-dygraph-in
+      [displayedData]="data"
+      [columnLabels]="labels"
+      [roundDigits]="round_digits"
+      [style]="graphstyle"
+      [changeTrigger]="changeTrigger"
+      [extraDyGraphConfig]="extraDyGraphConfig"
+      [startTime]="undefined"
+      enableHighlightCallback="true"
+      [colors]="colors"
+      [YLabel]="measurement"
+      (returnGraphWidthOnChange)="setGraphWidth($event)"
+      (returnCurrentZoom)="updateFromToTimes($event)"
+      #R
+    ></app-ut-dygraph-in>
+    <form class="settings" (submit)="reload(true)">
+      <fieldset>
+        <h3>Current Dataset:</h3>
+        <label>Resolution:</label>
+        <span class="cRange">{{ currentres }}s</span><br />
 
-<app-ut-dygraph-in
-  [displayedData]="data"
-  [columnLabels]="labels"
-  [style]="graphstyle"
-  [changeTrigger]="changeTrigger"
-  [extraDyGraphConfig]="extraDyGraphConfig"
-  [startTime]="undefined"
-  enableHighlightCallback="true"
-  [colors]="colors"
-  [YLabel]="measurement"
-  (returnGraphWidthOnChange)="setGraphWidth($event)"
-  (returnCurrentZoom)="updateFromToTimes($event)"
-  #R
-></app-ut-dygraph-in>
+        <!-- <label style="display: inline-block">Range:</label> -->
+        <!-- <span class="cRange">{{ currentRange }}</span> -->
+        <p>
+          <a
+            routerLink="/Apps/I/Anysens"
+            [queryParams]="{
+              measurement: measurement,
+              sensor: sensor,
+              from: from,
+              to: to,
+              interval: interval
+            }"
+            routerLinkActive="active"
+            >Permalink</a
+          >
+        </p>
+      </fieldset>
+      <fieldset [disabled]="queryRunning == true">
+        <h3>{{ queryRunning ? 'Query running...' : 'Query current view:' }}</h3>
+        <label for="runningAvgPoints">Resolution (s):</label>
+        <input
+          type="text"
+          id="runningAvgPoints"
+          name="runningAvgPoints"
+          [(ngModel)]="userMeanS"
+          (ngModelChange)="saveMean($event)"
+          style="width: 4em"
+        />
 
-<form class="settings" (submit)="reload(true)">
-  <fieldset>
-    <h3>Current Dataset:</h3>
-    <label style="display: inline-block">Resolution:</label>
-    <span class="cRange">{{ currentres }}s</span><br />
-
-    <label style="display: inline-block">Range:</label>
-    <span class="cRange">{{ currentRange }}</span>
-    <p>
-      <a
-        routerLink="/Apps/I/Anysens"
-        [queryParams]="{
-          measurement: measurement,
-          sensor: sensor,
-          from: from,
-          to: to,
-          interval: interval
-        }"
-        routerLinkActive="active"
-        >Permalink</a
-      >
-    </p>
-  </fieldset>
-  <fieldset [disabled]="queryRunning == true">
-    <h3>{{ queryRunning ? 'Query running...' : 'Query current View:' }}</h3>
-    <label for="runningAvgPoints">Resolution (s):</label>
-    <input
-      type="text"
-      id="runningAvgPoints"
-      name="runningAvgPoints"
-      [(ngModel)]="userMeanS"
-      (ngModelChange)="saveMean($event)"
-      style="width: 4em"
-    />
-
-    <div style="width: 100%; text-align: right; margin-top: -1.8em">
-      <button type="submit">
-        <mat-icon>refresh</mat-icon>
-        Reload
-      </button>
+        <div style="width: 100%; text-align: right; margin-top: -1.8em">
+          <button type="submit">
+            <mat-icon>refresh</mat-icon>
+            Reload
+          </button>
+        </div>
+      </fieldset>
+      <fieldset [disabled]="queryRunning == true">
+        <h3>{{ queryRunning ? 'Query running...' : 'Query latest data:' }}</h3>
+        <mat-form-field>
+          <mat-label>Show range from now</mat-label>
+          <mat-select
+            [(ngModel)]="userStartTime"
+            name="startTime"
+            (closed)="changeMean(userStartTime)"
+            [disabled]="queryRunning == true"
+          >
+            <mat-option value="15m">15 min.</mat-option>
+            <mat-option value="1h" selected="selected"> 1h</mat-option>
+            <mat-option value="6h">6 h</mat-option>
+            <mat-option value="24h">24 h</mat-option>
+            <mat-option value="7d">1 week</mat-option>
+            <mat-option value="30d">1 month</mat-option>
+            <mat-option value="356d">1 year</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <br />
+        <div style="width: 100%; text-align: right">
+          <!-- <mat-checkbox [(ngModel)]="autoreload" labelPosition="after">
+            auto
+          </mat-checkbox> -->
+          <button (click)="reload()" type="button">
+            <mat-icon>refresh</mat-icon>
+            Reload
+          </button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div id="anyfooter">
+    <div *ngIf="!tableShown">
+      <button (click)="toggleTableShown(); R.resize()">Show Data Table</button>
     </div>
-  </fieldset>
-  <fieldset [disabled]="queryRunning == true">
-    <h3>{{ queryRunning ? 'Query running...' : 'Query latest data:' }}</h3>
-    <mat-form-field>
-      <mat-label>Show range from now</mat-label>
-      <mat-select
-        [(ngModel)]="userStartTime"
-        name="startTime"
-        (closed)="changeMean(userStartTime)"
-        [disabled]="queryRunning == true"
-      >
-        <mat-option value="15m">15 min.</mat-option>
-        <mat-option value="1h" selected="selected"> 1h</mat-option>
-        <mat-option value="6h">6 h</mat-option>
-        <mat-option value="24h">24 h</mat-option>
-        <mat-option value="7d">1 week</mat-option>
-        <mat-option value="30d">1 month</mat-option>
-        <mat-option value="356d">1 year</mat-option>
-      </mat-select>
-    </mat-form-field>
-    <br />
-    <div style="width: 100%; text-align: right">
-      <mat-checkbox [(ngModel)]="autoreload" labelPosition="after">
-        auto
-      </mat-checkbox>
-      <button (click)="reload()" type="button">
-        <mat-icon>refresh</mat-icon>
-        Reload
-      </button>
-    </div>
-  </fieldset>
-</form>
+    <table *ngIf="tableShown">
+      <thead>
+        <tr>
+          <th>Series</th>
+          <th>latest value</th>
+          <th>latest data</th>
+          <th style="position: relative; padding-right: 2.2em">
+            average
+            <button (click)="toggleTableShown(); R.resize()">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let label of short_labels; let i = index"
+          [attr.data-index]="i"
+        >
+          <td>{{ label }}</td>
+          <td>
+            {{
+              latest_values[i]
+                | number: '1.' + round_digits[i + 1] + '-' + round_digits[i + 1]
+            }}
+          </td>
+
+          <!-- <td>{{ round(latest_values[i], raw_labels[i + 1]) }}</td> forces infinite updates? -->
+          <td>
+            {{ latest_dates[i] | date: 'shortDate' }},
+            {{ latest_dates[i] | date: 'shortTime' }}
+          </td>
+          <td>
+            <!-- {{ round(R.averages[i], raw_labels[i + 1]) }} forces infinite updates?-->
+            {{ R.averages[i] | number: '1.' + round_digits[i + 1] + '-' + round_digits[i + 1] }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

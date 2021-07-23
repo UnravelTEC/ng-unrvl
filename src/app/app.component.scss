@@ -52,14 +52,14 @@ $labelcolor: #999;
     position: absolute;
     bottom: 2em;
     right: 0;
-    top: 2rem;
+    top: 0;
     overflow-y: auto;
     margin: 0;
     padding: 0;
     fieldset {
       border: 1px solid #666;
       width: 11.5rem;
-      margin: 1rem;
+      margin: 0.5rem 1rem;
       padding: 1rem;
 
       h3 {
@@ -80,11 +80,17 @@ $labelcolor: #999;
         display: block;
         color: $labelcolor;
         text-align: left;
-        margin-right: 0.7rem;
+        margin-right: 0.3rem;
         font-weight: 400;
         font-size: 14px;
-        ￼line-height: 1.125;
-        ￼font-family: Roboto, 'Helvetica Neue', sans-serif;
+        line-height: 1.125;
+        font-family: Roboto, 'Helvetica Neue', sans-serif;
+      }
+      p {
+        margin: 0.4em 0;
+        label {
+          display: inline-block;
+        }
       }
       .cRange {
         font-size: 14px;

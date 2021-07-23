@@ -84,7 +84,12 @@ export class HelperFunctionsService {
       for (const searchstring in searchToColor) {
         if (searchToColor.hasOwnProperty(searchstring)) {
           if (currentLabel.match(searchstring)) {
-            console.log('getColorsforLabels:', currentLabel, 'matched', searchstring );
+            console.log(
+              'getColorsforLabels:',
+              currentLabel,
+              'matched',
+              searchstring
+            );
             const colorset = searchToColor[searchstring];
             const rightColorArray = this.colors[colorset];
             if (!colorCounters.hasOwnProperty(colorset)) {
@@ -201,13 +206,17 @@ export class HelperFunctionsService {
           }
         }
       }
-      if (!latlabelpos || !lonlabelpos) {
-        console.error(
-          'error in influx2geojsonPoints, lat or lon not found in',
-          labels
-        );
-        return undefined;
-      }
+    }
+    if (!latlabelpos || !lonlabelpos) {
+      console.error(
+        'error in influx2geojsonPoints, lat or lon not found in',
+        labels
+      );
+      return undefined;
+    }
+    if (!data.length) {
+      console.log('influx2geojsonPoints: no data');
+      return undefined;
     }
 
     for (let i = 0; i < data.length; i++) {
@@ -465,12 +474,43 @@ export class HelperFunctionsService {
     if (data.length > 1) {
       step = data[1][0].valueOf() - data[0][0].valueOf();
     }
+    // detect if data is with bounds
+    let isWithBounds = undefined;
+    for (let row = 0; row < data.length; row++) {
+      for (let column = 1; column < data[row].length; column++) {
+        let element = data[row][column];
+        if (Array.isArray(element)) {
+          isWithBounds = element.length;
+          break;
+        }
+        if (element != null && !isNaN(element)) {
+          isWithBounds = false;
+          break;
+        }
+      }
+      if (isWithBounds !== undefined) {
+        break;
+      }
+    }
+    console.log('isWithBounds:' + isWithBounds);
+
     for (let i = 0; i < labels.length; i++) {
       const element = labels[i];
       if (i > 0) {
         header += separator;
       }
-      header += element.replace(/,/g, ';');
+      if (i > 0 && isWithBounds == 3) {
+        header +=
+          element.replace(/,/g, ';') + ' (lower error range)' + separator;
+      }
+      header += element.replace(/,/g, ';'); // data label
+      if (i > 0 && isWithBounds == 3) {
+        header +=
+          separator + element.replace(/,/g, ';') + ' (upper error range)';
+      }
+      if (i > 0 && isWithBounds == 2) {
+        header += separator + element.replace(/,/g, ';') + ' (std deviation)';
+      }
       if (i === 0) {
         header +=
           separator +
@@ -494,7 +534,29 @@ export class HelperFunctionsService {
           line += String(element.valueOf() / 1000) + separator;
           line += utc ? element.toUTCString() : element.toString();
         } else {
-          line += separator + String(element);
+          line += separator;
+
+          if (isWithBounds) {
+            if (Array.isArray(element)) {
+              for (let i = 0; i < element.length; i++) {
+                const bound = element[i];
+                if (i > 0) {
+                  line += separator;
+                }
+                line += String(bound);
+              }
+            } else {
+              // null or NaN
+              for (let i = 0; i < isWithBounds; i++) {
+                if (i > 0) {
+                  line += separator;
+                }
+                line += String(element);
+              }
+            }
+          } else {
+            line += String(element);
+          }
         }
       }
       return line + linebreak;
@@ -542,7 +604,11 @@ export class HelperFunctionsService {
     }
     let name = 'date_unknown.geojson';
     if (geojsondata.features && geojsondata.features.length) {
-      const datefield = geojsondata.features[0].properties.hasOwnProperty('Date') ? 'Date' : 'date'
+      const datefield = geojsondata.features[0].properties.hasOwnProperty(
+        'Date'
+      )
+        ? 'Date'
+        : 'date';
       name =
         formatDate(
           geojsondata.features[0].properties[datefield],
@@ -551,7 +617,9 @@ export class HelperFunctionsService {
         ) +
         '-' +
         formatDate(
-          geojsondata.features[geojsondata.features.length - 1].properties[datefield],
+          geojsondata.features[geojsondata.features.length - 1].properties[
+            datefield
+          ],
           'yyyy-MM-dd_HH.mm.ss',
           'en-uk'
         ) +
@@ -744,11 +812,11 @@ export class HelperFunctionsService {
     const textMS = currentMS ? String(currentMS) + 'ms' : '';
     const currentSeconds = Math.floor(seconds);
     const displayedSeconds = currentSeconds % 60;
-    const textSeconds = displayedSeconds ? String(displayedSeconds) + 's ' : '';
+    const textSeconds = displayedSeconds ? String(displayedSeconds) + '" ' : '';
 
     const currentMinutes = Math.floor(currentSeconds / 60);
     const displayedMinutes = currentMinutes % 60;
-    const textMinutes = displayedMinutes ? String(displayedMinutes) + 'm ' : '';
+    const textMinutes = displayedMinutes ? String(displayedMinutes) + "' " : '';
 
     const currentHours = Math.floor(currentMinutes / 60);
     const displayedHours = currentHours % 24;
@@ -813,6 +881,20 @@ export class HelperFunctionsService {
       parseInt(hex_str.substr(4, 2), 16).toString(10) +
       '.' +
       parseInt(hex_str.substr(6, 2), 16).toString(10)
+    );
+  }
+
+  // https://medium.com/swlh/how-to-round-to-a-certain-number-of-decimal-places-in-javascript-ed74c471c1b8
+  roundAccurately(nr, decPlaces) {
+    if (nr < 1e-5 || nr > 1e5) {
+      //accurate version breaks if "e" already in String display
+      const round_amount = Math.pow(10, decPlaces);
+      return Math.round(nr * round_amount) / round_amount;
+    }
+    return Number(
+      Math.round(Number(String(nr) + 'e' + String(decPlaces))) +
+        'e-' +
+        String(decPlaces)
     );
   }
 }

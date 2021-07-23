@@ -34,28 +34,46 @@ export class MapComponent implements OnInit, OnDestroy {
         [15.421154166666666, 47.09932516666667],
         [15.421522, 47.102269666666665],
         [15.421682833333334, 47.1025895],
-      ]
-    }
+      ],
+    },
   };
 
   geojsonlayer = geoJSON(this.geojsonObj);
-  @Input() layers = [this.geojsonlayer];
-  @Input() z = 12;
+  @Input() layers = [this.geojsonlayer]; // only for initialisation
+  @Input() z = 13;
   @Input() x = 15.5;
   @Input() y = 47;
+
+  public OSMofflineLayer = tileLayer('/assets/tiles/{z}/{x}/{y}.png', {
+    opacity: 0.7,
+    minZoom: 13,
+    maxZoom: 13,
+  });
+  public OSMonlineLayer = tileLayer(
+    'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+      maxZoom: 19,
+      opacity: 0.7,
+      detectRetina: true,
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }
+  );
+
   @Input() options: MapOptions = {
-    layers: [
-      tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        opacity: 0.7,
-        maxZoom: 19,
-        detectRetina: true,
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      }),
-    ],
+    layers: [this.OSMofflineLayer], // only one baselayer -> default layer
     zoom: this.z,
     center: latLng(this.y, this.x),
   };
+
+  public layersControl = {
+    baseLayers: {
+      'OpenStreetMap offline': this.OSMofflineLayer,
+      'OpenStreetMap online': this.OSMonlineLayer,
+    },
+    overlays: { Data: this.layers },
+  };
+
   public map: Map;
   public zoom: number;
 
