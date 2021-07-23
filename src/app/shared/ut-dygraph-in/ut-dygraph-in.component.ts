@@ -1199,42 +1199,46 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   pan(direction: string) {
-    const dw = this.Dygraph.getOption('dateWindow');
-    const currentTimeRangeSeconds = dw[1].valueOf() - dw[0].valueOf();
-    const panFor = currentTimeRangeSeconds * this.panAmount;
-    console.log([direction, this.panAmount, panFor]);
-    if (direction === 'forward') {
-      dw[0] = new Date(dw[0].valueOf() + panFor);
-      dw[1] = new Date(dw[1].valueOf() + panFor);
+    if (this.Dygraph) {
+      const dw = this.Dygraph.getOption('dateWindow');
+      const currentTimeRangeSeconds = dw[1].valueOf() - dw[0].valueOf();
+      const panFor = currentTimeRangeSeconds * this.panAmount;
+      console.log([direction, this.panAmount, panFor]);
+      if (direction === 'forward') {
+        dw[0] = new Date(dw[0].valueOf() + panFor);
+        dw[1] = new Date(dw[1].valueOf() + panFor);
+      }
+      if (direction === 'back') {
+        dw[0] = new Date(dw[0].valueOf() - panFor - 1); // offset for avoiding no reloading on auto zoom
+        dw[1] = new Date(dw[1].valueOf() - panFor + 1);
+      }
+      this.Dygraph.updateOptions({ dateWindow: dw });
     }
-    if (direction === 'back') {
-      dw[0] = new Date(dw[0].valueOf() - panFor - 1); // offset for avoiding no reloading on auto zoom
-      dw[1] = new Date(dw[1].valueOf() - panFor + 1);
-    }
-    this.Dygraph.updateOptions({ dateWindow: dw });
   }
 
   fullZoom() {
     this.Dygraph.resetZoom();
   }
   zoom(factor: number) {
-    const fromValue = this.fromZoom.valueOf();
-    const toValue = this.toZoom.valueOf();
+    if (this.fromZoom !== undefined && this.toZoom !== undefined) {
+      const fromValue = this.fromZoom.valueOf();
+      const toValue = this.toZoom.valueOf();
 
-    const difference = toValue - fromValue;
-    const distanceToCenter = difference / 2;
-    // const center = fromValue + distanceToCenter;
+      const difference = toValue - fromValue;
+      const distanceToCenter = difference / 2;
+      // const center = fromValue + distanceToCenter;
 
-    const newdifference = factor * difference;
-    const newDistanceToCenter = newdifference / 2;
-    const newFrom = fromValue + (distanceToCenter - newDistanceToCenter) + 1;
-    const newTo = toValue - (distanceToCenter - newDistanceToCenter) - 1; // offset for avoiding no reloading on auto zoom
+      const newdifference = factor * difference;
+      const newDistanceToCenter = newdifference / 2;
+      const newFrom = fromValue + (distanceToCenter - newDistanceToCenter) + 1;
+      const newTo = toValue - (distanceToCenter - newDistanceToCenter) - 1; // offset for avoiding no reloading on auto zoom
 
-    this.toZoom = new Date(newTo);
-    this.fromZoom = new Date(newFrom);
-    this.Dygraph.updateOptions({
-      dateWindow: [newFrom, newTo],
-    });
+      this.toZoom = new Date(newTo);
+      this.fromZoom = new Date(newFrom);
+      this.Dygraph.updateOptions({
+        dateWindow: [newFrom, newTo],
+      });
+    }
   }
 
   //note: if logscale not globally set, no logscale graphs are displayed
