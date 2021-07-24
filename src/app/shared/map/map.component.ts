@@ -104,4 +104,7 @@ export class MapComponent implements OnInit, OnDestroy {
     this.zoom = e.target.getZoom();
     this.zoom$.emit(this.zoom);
   }
+  zoomToBounds() {
+    this.map.fitBounds(this.layers[0].getBounds());
+  }
 }

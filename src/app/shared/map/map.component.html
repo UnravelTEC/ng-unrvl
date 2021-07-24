@@ -1,3 +1,6 @@
+<button class="zout" (click)="zoomToBounds()" title="Zoom to all Data">
+  <mat-icon>zoom_out_map</mat-icon>
+</button>
 <div
   class="map-container"
   leaflet
@@ -8,4 +11,3 @@
   (leafletMapZoomEnd)="onMapZoomEnd($event)"
   id="main-map"
 ></div>
-<!-- [leafletLayers]="layers" -->
