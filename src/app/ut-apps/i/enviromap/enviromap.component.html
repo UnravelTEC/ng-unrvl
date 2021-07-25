@@ -11,6 +11,30 @@
   <app-map [x]="15.46" [y]="47.07" [z]="13" [layers]="layers"></app-map>
 </div>
 
+<div class="colorlegend">
+  <table>
+    <tr>
+      <th class="end">{{ unit }}</th>
+    </tr>
+    <tr>
+      <td
+        class="end"
+        style.background-color="{{ h.returnColorForPercent(100) }}"
+      >
+      <span *ngIf="minmax.max !== -Infinity">{{ minmax.max }}</span>
+      </td>
+    </tr>
+    <tr *ngFor="let nr of barArray">
+      <td style.background-color="{{ h.returnColorForPercent(nr) }}"></td>
+    </tr>
+    <tr>
+      <td class="end" style.background-color="{{ h.returnColorForPercent(0) }}">
+        <span *ngIf="minmax.min !== Infinity">{{ minmax.min }}</span>
+      </td>
+    </tr>
+  </table>
+</div>
+
 <form class="settings" (submit)="reload(true)">
   <fieldset>
     <h3>Current Dataset:</h3>

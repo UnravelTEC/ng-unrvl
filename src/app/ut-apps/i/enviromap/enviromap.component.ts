@@ -22,8 +22,12 @@ export class EnviromapComponent implements OnInit {
     private router: ActivatedRoute
   ) {
     this.globalSettings.emitChange({ appName: this.appName });
+    for (let i = 99; i > 1; i -= 2) {
+      this.barArray.push(i);
+    }
   }
   colors = [];
+  barArray = [];
   graphWidth = 1900;
   setGraphWidth(width) {
     this.graphWidth = width;
@@ -75,11 +79,15 @@ export class EnviromapComponent implements OnInit {
   server = 'https://newton.unraveltec.com';
 
   labels = [];
+  raw_graphlabels = [];
+  round_graphdigits = [0];
+  unit = '?';
   data = [];
   gpsdata = [];
   gpslabels = [];
   public displayed_points = {};
   public layers = [];
+  public Infinity = Infinity; // hack to allow use in .html
 
   public startTime = '2h';
   public userStartTime = this.startTime;
@@ -316,8 +324,12 @@ export class EnviromapComponent implements OnInit {
         lonlabelpos = i;
       } else {
         graphlabels.push(element);
+        this.raw_graphlabels.push(ret['raw_labels'][i]);
+        this.round_graphdigits.push(this.globalSettings.getDigits(ret['raw_labels'][i]));
       }
     }
+    let labelunit = graphlabels[1].match(/\(\s?(.*)\s?\)$/);
+    this.unit = labelunit && labelunit[1] ? labelunit[1] : this.unit;
     let max = this.minmax.max;
     let min = this.minmax.min;
     for (let r = 0; r < idata.length; r++) {
@@ -350,6 +362,8 @@ export class EnviromapComponent implements OnInit {
       graphdata.push(newgrow);
       // mapdata.push(newmrow);//unused
     }
+    this.minmax.max = this.h.roundAccurately(max, this.round_graphdigits[1]);
+    this.minmax.min = this.h.roundAccurately(min, this.round_graphdigits[1]);
     if (this.column) {
       labels.push('color');
       const range = max - min;
@@ -395,7 +409,9 @@ export class EnviromapComponent implements OnInit {
     this.gpsdata = idata;
     this.gpslabels = labels;
     this.colors = newColors;
-    console.log(labels);
+    console.log('graphlabels', labels);
+    console.log('raw_graphlabels', this.raw_graphlabels);
+
     console.log('all data:', idata);
     console.log('graph data:', this.data);
 
@@ -409,7 +425,7 @@ export class EnviromapComponent implements OnInit {
     if (dataObj['points'] && dataObj['points'][0]) {
       const TObj = dataObj['points'][0];
       this.highlightDate = new Date(TObj['xval']);
-      this.highlightValue = this.h.roundAccurately(TObj['yval'], 2);
+      this.highlightValue = this.h.roundAccurately(TObj['yval'], this.round_graphdigits[1]);
 
       const highlightMarkerOptions = {
         radius: 10,
@@ -421,7 +437,10 @@ export class EnviromapComponent implements OnInit {
       };
 
       this.layers[2] = geoJSON(
-        this.h.influx2geojsonPoints([this.gpsdata[TObj['idx']]], this.gpslabels),
+        this.h.influx2geojsonPoints(
+          [this.gpsdata[TObj['idx']]],
+          this.gpslabels
+        ),
         {
           pointToLayer: function (feature, latlng) {
             return circleMarker(latlng, highlightMarkerOptions);
