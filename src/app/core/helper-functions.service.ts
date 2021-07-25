@@ -114,14 +114,15 @@ export class HelperFunctionsService {
   //   'orange:#FFA600',
   //   'red:#FF0000',
   //   '(dark)violet:#800080',
-  returnColorForPercent(
-    percent,
-    colorRamp = ['#00FF00', '#FFFF00', '#FFA600', '#FF0000', '#800080']
-  ) {
+  returnColorForPercent(percent, colorRamp?: Array<string>, debug = false) {
+    if (!colorRamp || colorRamp.length == 0) {
+      colorRamp = ['#00FF00', '#FFFF00', '#FFA600', '#FF0000', '#800080'];
+    }
     function colorFromPercent(
       percent: number,
       cfrom: string,
-      cto: string
+      cto: string,
+      cdebug = debug
     ): string {
       if (cfrom == cto) {
         return cto;
@@ -132,8 +133,19 @@ export class HelperFunctionsService {
       const hexstr = Math.floor(from_int + (percent / 100) * range).toString(
         16
       );
+      if (cdebug)
+        console.log(
+          'colorFromPercent:',
+          percent,
+          from_int,
+          to_int,
+          parseInt(hexstr, 16)
+        );
+
       return hexstr.length < 2 ? '0' + hexstr : hexstr;
     }
+    if (debug) console.log(percent, colorRamp);
+
     const nr_sections = colorRamp.length - 1;
     const section_len_percent = 100 / nr_sections;
     const needed_section =
@@ -160,11 +172,21 @@ export class HelperFunctionsService {
     const r_upper = upper_bound.substring(1, 3);
     const g_upper = upper_bound.substring(3, 5);
     const b_upper = upper_bound.substring(5, 7);
-    const new_r = colorFromPercent(percent, r_lower, r_upper);
-    const new_g = colorFromPercent(percent, g_lower, g_upper);
-    const new_b = colorFromPercent(percent, b_lower, b_upper);
+    if (debug)
+      console.log(
+        r_lower + g_lower + b_lower,
+        'to',
+        r_upper + g_upper + b_upper
+      );
+
+    const bucked_size = 100 / nr_sections;
+    const sec_percent =
+      percent != 100 ? (percent % bucked_size) * nr_sections : 100;
+    const new_r = colorFromPercent(sec_percent, r_lower, r_upper);
+    const new_g = colorFromPercent(sec_percent, g_lower, g_upper);
+    const new_b = colorFromPercent(sec_percent, b_lower, b_upper);
     // console.log('percent', percent, 'nr_sections', nr_sections, 'needed_section', needed_section, new_r, new_g, new_b );
-    // console.log(percent, 'rgb', new_r, new_g, new_b);
+    if (debug) console.log(percent, 'rgb #' + new_r + new_g + new_b);
 
     return '#' + new_r + new_g + new_b;
   }
