@@ -27,7 +27,6 @@ export class EnviromapComponent implements OnInit {
     }
   }
   colors = [];
-  barArray = [];
   graphWidth = 1900;
   setGraphWidth(width) {
     this.graphWidth = width;
@@ -112,6 +111,10 @@ export class EnviromapComponent implements OnInit {
     'red:#FF0000',
     'violet:#800080',
   ];
+  barArray = [];
+  barColors = [];
+  begincolor = 'black';
+  endcolor = 'black';
 
   public minmax = { min: Infinity, max: -Infinity };
   updateFromToTimes(timearray, interval = '') {
@@ -164,6 +167,11 @@ export class EnviromapComponent implements OnInit {
     } else {
       this.reload();
     }
+    for (let i = 0; i < this.barArray.length; i++) {
+      this.barColors[i] = this.h.returnColorForPercent(this.barArray[i]);
+    }
+    this.begincolor = this.h.returnColorForPercent(0);
+    this.endcolor = this.h.returnColorForPercent(100);
   }
   reload(fromTo = false) {
     this.queryRunning = true;
@@ -325,7 +333,9 @@ export class EnviromapComponent implements OnInit {
       } else {
         graphlabels.push(element);
         this.raw_graphlabels.push(ret['raw_labels'][i]);
-        this.round_graphdigits.push(this.globalSettings.getDigits(ret['raw_labels'][i]));
+        this.round_graphdigits.push(
+          this.globalSettings.getDigits(ret['raw_labels'][i])
+        );
       }
     }
     let labelunit = graphlabels[1].match(/\(\s?(.*)\s?\)$/);
@@ -425,7 +435,10 @@ export class EnviromapComponent implements OnInit {
     if (dataObj['points'] && dataObj['points'][0]) {
       const TObj = dataObj['points'][0];
       this.highlightDate = new Date(TObj['xval']);
-      this.highlightValue = this.h.roundAccurately(TObj['yval'], this.round_graphdigits[1]);
+      this.highlightValue = this.h.roundAccurately(
+        TObj['yval'],
+        this.round_graphdigits[1]
+      );
 
       const highlightMarkerOptions = {
         radius: 10,

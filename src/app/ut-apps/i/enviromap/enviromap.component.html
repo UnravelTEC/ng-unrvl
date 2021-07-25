@@ -19,16 +19,16 @@
     <tr>
       <td
         class="end"
-        style.background-color="{{ h.returnColorForPercent(100) }}"
+        style.background-color="{{ endcolor }}"
       >
       <span *ngIf="minmax.max !== -Infinity">{{ minmax.max }}</span>
       </td>
     </tr>
-    <tr *ngFor="let nr of barArray">
-      <td style.background-color="{{ h.returnColorForPercent(nr) }}"></td>
+    <tr *ngFor="let nr of barArray; let i = index" [attr.data-index]="i">
+      <td style.background-color="{{ barColors[i] }}"></td>
     </tr>
     <tr>
-      <td class="end" style.background-color="{{ h.returnColorForPercent(0) }}">
+      <td class="end" style.background-color="{{ begincolor }}">
         <span *ngIf="minmax.min !== Infinity">{{ minmax.min }}</span>
       </td>
     </tr>
