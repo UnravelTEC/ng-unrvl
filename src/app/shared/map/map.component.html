@@ -6,8 +6,10 @@
   leaflet
   [leafletOptions]="options"
   [leafletLayers]="layers"
-  [leafletLayersControl]="layersControl"
+
   (leafletMapReady)="onMapReady($event)"
   (leafletMapZoomEnd)="onMapZoomEnd($event)"
-  id="main-map"
+  id="{{ htmlID }}"
 ></div>
+
+<!-- [leafletLayersControl]="layersControl" dont use via ng, implement manually to avoid leaflet bug of not removing layersControl on destroy-->
