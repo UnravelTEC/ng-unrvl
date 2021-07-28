@@ -5,6 +5,7 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 import { MqttService } from '../../core/mqtt.service';
 import { gitVersion } from '../../../environments/git-version';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-settings-panel',
@@ -91,19 +92,85 @@ export class SettingsPanelComponent implements OnInit {
   public login_status_text = 'Not logged in.';
   public auth = 'NOK';
 
-  public backendTypes = [ "Internet server", "Current Device", "Local Device" ];
-  public chosenBackendType = "Internet server";
+  public backendTypes = ['Demo Server', 'Current Web Endpoint', 'Other'];
+  public chosenBackendType = '';
+  public customServerURL = 'https://example.com';
+  public checkedCustomServerURL = '';
 
-  public InternetServers = {
-    Newton: { }
-  }
+  // public InternetServers = [
+  //   {
+  //     url: 'https://newton.unraveltec.com',
+  //     name: 'UnravelTEC Demo Server',
+  //   },
+  //   // TODO handle custom
+  // ];
+
+  currentSettings = {
+    // -> later into globalsettings?
+    baseurl: '',
+    influxdb: '',
+    influxuser: '',
+    influxpass: '',
+  };
+  defaultsInfluxcreds: {
+    'https://*unraveltec.com': {
+      db: 'koffer';
+      user: 'public';
+      pass: 'unravelit42.14153';
+    };
+    localhost: {
+      db: 'telegraf';
+      user: '';
+      pass: '';
+    };
+    LAN: {
+      db: 'telegraf';
+      user: '';
+      pass: '';
+    };
+  };
 
   /*
   Cases:
-    - dev (localhost:4200)
-    - Local Screen (localhost)
+    - dev (localhost:4200) -> zwingend other host, default Newton:Koffer
+    - Local Screen (localhost) - show only if url: localhost?
     - internet server (https://...)
+      - Newton or more?
     - LAN (http://...)
+      - LAN device DB
+      - others - discover?
+
+  browserurl:
+    - https:// -> newton, ngbeta, ...
+    - http://localhost -> Henri Screen
+    - http://localhost:4200 -> Dev
+    - http://192.* -> Ampel, Bimbox, Tinylogger
+
+  serverurls:
+    - http://localhost -> Henri (show only if http://localhost)
+    - Demo: https://newton
+    - http://192... (or other https )
+
+  Options to Choose (old)
+    - internet server
+       ... möglichkeit zum querien von Standard Influx (port 8xxx) bieten, nicht nur hinter apache proxy?
+    - Local Screen -> derzeit nichts zum wechseln, use case net da.
+      - naja Demo-Server schon, da man ev. Sensoren herzeigen will die Henri net hat?
+    - LAN (wenn lan-IP?) -> eigentlich a net zum wechseln, es hat eh jedes unserer Geräte ein UI, wenn eine Influx drauf is
+      - aber für Marketingzwecke soll Demo-Server auch angewählt werden können!
+    -> Choosing Server only needed for Dev!
+      - und da: newton, LAN
+
+  Für User:
+    - This [device|server] (http[s]//x.x.x.x)
+      - can be:
+        - localhost (Henri)
+        - Ampel, Tinylogger
+        - newton, ngbeta, envirograz, ...
+    - UnravelTEC Demo Server (only if url does not contain unraveltec)
+    - Other: free (option to save custom in list)
+      - free text
+      - discover LAN?
 
   Defaults (if nothing in LS):
     - if dev -> Newton, influx public
@@ -112,6 +179,10 @@ export class SettingsPanelComponent implements OnInit {
   needed saved Settings:
     - baseurl
     - influx db, user, pass (sub-app accesses gss directly!)
+
+    influx:
+      only user/pass should be supplied (or nothing)
+      -> list DBs, choose DB from Dropdown, save it.
 
 
   Check at start
@@ -141,18 +212,124 @@ export class SettingsPanelComponent implements OnInit {
     - System Services, Shut Down/Reboot
 
     */
+
+    // TODO move to globalSettings and load on Init
+  setEndpoint(event: any) {
+    console.log('setEndpoint', this.chosenBackendType);
+
+    switch (this.chosenBackendType) {
+      case 'Current Web Endpoint':
+        this.gss.server.baseurl = this.gss.client.baseurl;
+        this.gss.server.protocol = this.gss.client.protocol;
+        this.gss.server.serverName = this.gss.client.host;
+        this.gss.server.type =
+          this.gss.server.protocol == 'https' ? 'PublicServer' : 'Tricorder';
+        this.gss.server.api = this.gss.server.baseurl + this.gss.defaultAPIPath;
+        // get hasScreen
+        this.gss.server.hostname = 'uninitialized';
+        this.gss.fetchHostName(this.gss.server.api);
+        this.localStorage.set(
+          'GlobalSettings.chosenBackendType',
+          this.chosenBackendType
+        );
+        break;
+      case 'Demo Server':
+        this.gss.server.baseurl = 'https://newton.unraveltec.com';
+        this.gss.server.protocol = 'https';
+        this.gss.server.serverName = 'newton.unraveltec.com';
+        this.gss.server.type = 'PublicServer'; // dunno if needed
+        this.gss.server.api = this.gss.server.baseurl + this.gss.defaultAPIPath;
+        this.gss.server.hasscreen = false;
+        this.gss.server.hostname = 'uninitialized';
+        this.gss.fetchHostName(this.gss.server.api);
+        this.localStorage.set(
+          'GlobalSettings.chosenBackendType',
+          this.chosenBackendType
+        );
+      case 'Other':
+        break;
+
+      default:
+        console.error('??');
+        break;
+    }
+  }
+  checkCustomEndpoint() {
+    ['baseurl', 'protocol', 'serverName', 'type', 'api'].forEach((element) => {
+      this.gss.server[element] = '';
+    });
+    this.gss.server.hostname = 'Unset';
+    if (!this.customServerURL.startsWith('http')) {
+      this.customServerURL = 'http://' + this.customServerURL;
+    }
+    this.http
+      .get(
+        this.customServerURL + this.gss.defaultAPIPath + 'system/hostname.php'
+      )
+      .subscribe(
+        (data: Object) => this.setCustomEndpoint(data),
+        (error) => this.apiError(error)
+      );
+  }
+  setCustomEndpoint(data: Object) {
+    if (!data['hostname'] || data['hostname'].length == 0) {
+      this.apiError('no hostname in answer');
+      return;
+    }
+    this.gss.server.baseurl = this.customServerURL;
+    this.gss.server.protocol = this.customServerURL.replace(/:\/\/.*$/, '');
+    this.gss.server.serverName = this.customServerURL
+      .replace(/^http[s]*:\/\//, '')
+      .replace(/:\d+$/, '');
+    this.gss.server.type =
+      this.gss.server.protocol == 'https' ? 'PublicServer' : 'Tricorder';
+    this.gss.server.api = this.gss.server.baseurl + this.gss.defaultAPIPath;
+    this.checkedCustomServerURL = this.customServerURL;
+    this.gss.setHostName(data);
+    this.localStorage.set(
+      'GlobalSettings.customServerURL',
+      this.customServerURL
+    );
+    this.localStorage.set(
+      'GlobalSettings.chosenBackendType',
+      this.chosenBackendType
+    );
+  }
+  apiError(error) {
+    console.log('no UTapi running on', this.customServerURL);
+    console.log(error);
+    alert('no UTapi running on "' + this.customServerURL + '"');
+    this.gss.emitChange({ hostname: 'Unset' });
+  }
+
   constructor(
     private localStorage: LocalStorageService,
-    public globalSettingsService: GlobalSettingsService,
+    public gss: GlobalSettingsService,
     private utHTTP: UtFetchdataService,
+    private http: HttpClient,
     public h: HelperFunctionsService,
     private mqtt: MqttService
   ) {
     // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
-    this.globalSettingsService.emitChange({ appName: 'Settings' });
+    this.gss.emitChange({ appName: 'Settings' });
   }
 
   ngOnInit() {
+    ['chosenBackendType', 'customServerURL'].forEach((element) => {
+      const thing = this.localStorage.get('GlobalSettings.' + element);
+      if (thing !== null) {
+        this[element] = thing;
+      }
+    });
+
+    if (this.chosenBackendType == 'Other') {
+      if (this.customServerURL) {
+        this.checkCustomEndpoint();
+      }
+    } else if (this.chosenBackendType) {
+      this.setEndpoint(null);
+    }
+
     // before, read out all localstorage items
     this.load();
 
@@ -162,16 +339,13 @@ export class SettingsPanelComponent implements OnInit {
         this.globalSettingsUnsaved[item] = JSON.parse(deepcopy);
       }
     }
-    this.API = this.globalSettingsService.getAPIEndpoint();
+    this.API = this.gss.getAPIEndpoint();
 
     if (this.API) {
       this.oldIFPath = this.API.replace(/api\/$/, '') + 'old/';
       this.uv4lPath = this.API.replace(/\/api\/$/, '') + ':8080';
     }
-    console.log(
-      'globalSettingsService.server',
-      this.globalSettingsService.server
-    );
+    console.log('globalSettingsService.server', this.gss.server);
     console.log('domain', this.h.domain);
     console.log('loc', window.location.href);
 
@@ -185,10 +359,7 @@ export class SettingsPanelComponent implements OnInit {
       this.globalSettingsUnsaved = this.localStorage.get('globalSettings');
       this.localStoredSettings = true;
     }
-    console.log(
-      'globalSettingsService.client.type',
-      this.globalSettingsService.client.type
-    );
+    console.log('globalSettingsService.client.type', this.gss.client.type);
     const ls_api_user = this.localStorage.get('api_user');
     if (ls_api_user) this.api_username = ls_api_user;
     const ls_api_pass = this.localStorage.get('api_pass');
@@ -220,7 +391,7 @@ export class SettingsPanelComponent implements OnInit {
   //     JSON.stringify(this.globalSettingsUnsaved)
   //   );
 
-  //   this.globalSettingsService.reloadSettings();
+  //   this.gss.reloadSettings();
   //   this.localStoredSettings = true;
   // }
 
@@ -230,10 +401,10 @@ export class SettingsPanelComponent implements OnInit {
       JSON.stringify(this.globalSettingsUnsaved)
     );
     // alert('save ok');
-    this.globalSettingsService.reloadSettings();
+    this.gss.reloadSettings();
     this.localStoredSettings = true;
     this.mqtt.reload();
-    this.API = this.globalSettingsService.getAPIEndpoint();
+    this.API = this.gss.getAPIEndpoint();
   }
   reset() {
     this.globalSettingsUnsaved = JSON.parse(
@@ -243,7 +414,7 @@ export class SettingsPanelComponent implements OnInit {
   }
   deleteStoredSettings() {
     this.localStorage.delete('globalSettings');
-    this.globalSettingsService.reloadSettings();
+    this.gss.reloadSettings();
   }
 
   login() {

@@ -4,6 +4,7 @@ import { Injectable, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { HelperFunctionsService } from './helper-functions.service';
 import { LocalStorageService } from './local-storage.service';
+import { Location } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -173,7 +174,7 @@ export class GlobalSettingsService implements OnInit {
     },
   };
 
-  private defaultAPIPath = '/api/';
+  public defaultAPIPath = '/api/';
   private fallbackEndpoint = 'https://newton.unraveltec.com';
   private fallbackAPI = this.fallbackEndpoint + '/api/';
 
@@ -196,8 +197,14 @@ export class GlobalSettingsService implements OnInit {
     influxVersion: '',
   };
   public client = {
-    type: 'unknown', // local || web
+    host: '',
+    hostAndPort: '',
     protocol: 'unknown', // http || https
+    baseurl: '', //http[s]://host:port
+    dev: undefined,
+
+    type: 'unknown', // local || web
+
     mobile: false,
   };
 
@@ -219,7 +226,8 @@ export class GlobalSettingsService implements OnInit {
   constructor(
     private http: HttpClient,
     private h: HelperFunctionsService,
-    private localStorage: LocalStorageService
+    private localStorage: LocalStorageService,
+    private loc: Location
   ) {
     function mobilecheck() {
       // https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser
@@ -241,6 +249,15 @@ export class GlobalSettingsService implements OnInit {
       return check;
     }
     this.client.mobile = mobilecheck();
+
+    const url = window.location.href;
+    const angularRoute = this.loc.path();
+    this.client.baseurl = url.replace(angularRoute, '').replace(/\/$/, '');
+    this.client.protocol = this.client.baseurl.replace(/:\/\/.*$/, '');
+    this.client.hostAndPort = this.client.baseurl.replace(/^http[s]*:\/\//, '');
+    this.client.host = this.client.hostAndPort.replace(/:\d+$/, '');
+    this.client.dev = this.client.hostAndPort == 'localhost:4200';
+    console.log('client:', this.client);
   }
 
   ngOnInit() {
@@ -494,7 +511,7 @@ export class GlobalSettingsService implements OnInit {
     );
   }
 
-  private fetchHostName(server: string) {
+  public fetchHostName(server: string) {
     this.http.get(server + 'system/hostname.php').subscribe(
       (data: Object) => this.setHostName(data),
       (error) => {

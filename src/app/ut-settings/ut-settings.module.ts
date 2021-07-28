@@ -7,6 +7,7 @@ import { SettingsPanelComponent } from './settings-panel/settings-panel.componen
 import { DisplayBrighnessComponent } from './pieces/display-brightness/display-brightness.component';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSelectModule } from '@angular/material/select';
+import { MatRadioModule } from '@angular/material/radio';
 import { SystemTimeComponent } from './pieces/system-time/system-time.component';
 import { MatIconModule } from '@angular/material/icon';
 import { FanSpeedComponent } from './pieces/fan-speed/fan-speed.component';
@@ -20,8 +21,16 @@ import { InfluxsettingsComponent } from './pieces/influxsettings/influxsettings.
     FormsModule,
     MatSliderModule,
     MatSelectModule,
-    MatIconModule
+    MatRadioModule,
+    MatIconModule,
   ],
-  declarations: [SettingsPanelComponent, DisplayBrighnessComponent, SystemTimeComponent, FanSpeedComponent, NetworkComponent, InfluxsettingsComponent]
+  declarations: [
+    SettingsPanelComponent,
+    DisplayBrighnessComponent,
+    SystemTimeComponent,
+    FanSpeedComponent,
+    NetworkComponent,
+    InfluxsettingsComponent,
+  ],
 })
 export class UtSettingsModule {}

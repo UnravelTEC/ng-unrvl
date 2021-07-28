@@ -49,6 +49,9 @@ export class HelperFunctionsService {
     const angularRoute = this.loc.path();
     this.domainAndApp = url.replace(angularRoute, '');
     this.domain = this.domainAndApp.replace(/:[0-9]*$/, '').replace(/[?]/, '');
+    console.log('window.location.href:', url);
+    console.log('domainAndApp', this.domainAndApp);
+    console.log('domain', this.domain);
 
     for (let cWeightI = 0; cWeightI < this.colors.blue.length; cWeightI++) {
       for (let cOrderI = 0; cOrderI < this.colorOrder.length; cOrderI++) {
@@ -270,7 +273,7 @@ export class HelperFunctionsService {
       }
       points.features.push(point);
     }
-    console.log('geojson:', points);
+    // console.log('geojson:', points);
 
     return points;
   }
