@@ -38,23 +38,6 @@
         <button (click)="checkCustomEndpoint()">Check</button>
       </div>
     </div>
-
-    <!-- old
-    <div *ngFor="let selectedBackend of backendTypes">
-      <mat-radio-button [value]="selectedBackend">
-        {{ selectedBackend }}
-      </mat-radio-button>
-      <div *ngIf="chosenBackendType == 'Internet server'">
-        <mat-radio-group [(ngModel)]="">
-          <mat-radio-button
-            *ngFor="let server of InternetServers"
-            [value]="server.name"
-          >
-            {{ server.name }} ({{ server.url }})
-          </mat-radio-button>
-        </mat-radio-group>
-      </div>
-    </div>-->
   </mat-radio-group>
 </section>
 
@@ -148,42 +131,16 @@
       "
       style="display: flex; flex-wrap: wrap"
     >
-      <!-- <div style="margin-right:2em;">
-        <mat-form-field>
-          <mat-label>Endpoints</mat-label>
-          <mat-select [(ngModel)]="endpointValue" name="Endpoints">
-            <mat-option
-              *ngFor="let setting of settingsArray | keyvalue"
-              [value]="setting.key"
-            >
-              {{ setting.value.server.settings.serverName.fieldValue }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <button type="submit" class="btn btn-success" (click)="loadEndpoint()">
-          Load
-        </button>
-      </div> -->
 
       <table class="th_right">
-        <!-- <tr>
-          <th>Backend Type:</th>
-          <td>{{ gss.server.type }}</td>
-        </tr> -->
+
         <tr>
           <th>URL:</th>
           <td>
             <a href="{{ gss.server.baseurl }}">{{ gss.server.baseurl }}</a>
           </td>
         </tr>
-        <!-- <tr>
-          <th>
-            Database:
-          </th>
-          <td>
-            {{ gss.server.prometheus }}
-          </td>
-        </tr> -->
+
         <tr>
           <th>API:</th>
           <td>{{ gss.server.api }}</td>
@@ -191,38 +148,6 @@
       </table>
     </div>
 
-    <!-- <section *ngFor="let entry of settingsSection.value.settings | keyvalue">
-      <div class="fields">
-        <label for="{{ settingsSection.key }}-{{ entry.key }}"
-          >{{ entry.value.fieldName }}:
-        </label>
-        <input
-          type="text"
-          class="form-control"
-          id="{{ settingsSection.key }}-{{ entry.key }}"
-          [(ngModel)]="entry.value.fieldValue"
-        />
-      </div>
-      <div class="valuedebug" *ngIf="debug == true">
-        Default: '{{
-          defaultSettings[settingsSection.key].settings[entry.key].fieldValue
-        }}',<br />
-        Global: '<span
-          *ngIf="
-            globalSettings &&
-            globalSettings[settingsSection.key] &&
-            globalSettings[settingsSection.key]['settings'] &&
-            globalSettings[settingsSection.key]['settings'][entry.key] &&
-            globalSettings[settingsSection.key]['settings'][entry.key][
-              'fieldValue'
-            ]
-          "
-          >{{
-            globalSettings[settingsSection.key].settings[entry.key].fieldValue
-          }}</span
-        >'
-      </div>
-    </section> -->
     <section>
       <div class="fields">
         <label for="serverName"
