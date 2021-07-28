@@ -179,6 +179,7 @@ export class GlobalSettingsService implements OnInit {
   private fallbackAPI = this.fallbackEndpoint + '/api/';
 
   public server = {
+    chosenBackendType: undefined, //'Demo Server', 'Current Web Endpoint', 'Other'
     baseurl: '',
     serverName: '', // pure IP or hostname w/o protocol/port
     protocol: 'http', // https or http
@@ -291,6 +292,43 @@ export class GlobalSettingsService implements OnInit {
     //   );
     // }
   }
+  setCurrentWebEndpoint(chosenBackendType, baseurl?: string) {
+    switch (chosenBackendType) {
+      case 'Current Web Endpoint':
+        this.server.baseurl = this.client.baseurl;
+        break;
+      case 'Demo Server':
+        this.server.baseurl = 'https://newton.unraveltec.com';
+        this.server.hasscreen = false;
+        break;
+      case 'Other':
+        if (!baseurl) {
+          console.error('setCurrentWebEndpoint: no baseurl provided');
+          return;
+        }
+        this.server.baseurl = baseurl;
+        this.localStorage.set('GlobalSettings.customServerURL', baseurl);
+        break;
+      default:
+        console.error('setCurrentWebEndpoint ??');
+        return;
+    }
+    this.server.protocol = this.server.baseurl.replace(/:\/\/.*$/, '');
+    this.server.serverName = this.server.baseurl
+      .replace(/^http[s]*:\/\//, '')
+      .replace(/:\d+$/, '');
+    this.server.type =
+      this.server.protocol == 'https' ? 'PublicServer' : 'Tricorder';
+    this.server.api = this.server.baseurl + this.defaultAPIPath;
+    this.server.hostname = 'uninitialized';
+    this.fetchHostName(this.server.api);
+    this.localStorage.set(
+      'GlobalSettings.chosenBackendType',
+      chosenBackendType
+    );
+    console.log('setCurrentWebEndpoint', chosenBackendType, baseurl);
+  }
+
   checkForInflux() {
     const influxServer =
       this.server.protocol + this.server.serverName + '/influxdb';

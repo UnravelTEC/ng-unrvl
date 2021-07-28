@@ -213,40 +213,22 @@ export class SettingsPanelComponent implements OnInit {
 
     */
 
-    // TODO move to globalSettings and load on Init
+  // TODO move to globalSettings and load on Init
   setEndpoint(event: any) {
     console.log('setEndpoint', this.chosenBackendType);
 
     switch (this.chosenBackendType) {
       case 'Current Web Endpoint':
-        this.gss.server.baseurl = this.gss.client.baseurl;
-        this.gss.server.protocol = this.gss.client.protocol;
-        this.gss.server.serverName = this.gss.client.host;
-        this.gss.server.type =
-          this.gss.server.protocol == 'https' ? 'PublicServer' : 'Tricorder';
-        this.gss.server.api = this.gss.server.baseurl + this.gss.defaultAPIPath;
-        // get hasScreen
-        this.gss.server.hostname = 'uninitialized';
-        this.gss.fetchHostName(this.gss.server.api);
-        this.localStorage.set(
-          'GlobalSettings.chosenBackendType',
-          this.chosenBackendType
-        );
-        break;
       case 'Demo Server':
-        this.gss.server.baseurl = 'https://newton.unraveltec.com';
-        this.gss.server.protocol = 'https';
-        this.gss.server.serverName = 'newton.unraveltec.com';
-        this.gss.server.type = 'PublicServer'; // dunno if needed
-        this.gss.server.api = this.gss.server.baseurl + this.gss.defaultAPIPath;
-        this.gss.server.hasscreen = false;
-        this.gss.server.hostname = 'uninitialized';
-        this.gss.fetchHostName(this.gss.server.api);
-        this.localStorage.set(
-          'GlobalSettings.chosenBackendType',
-          this.chosenBackendType
-        );
+        this.gss.setCurrentWebEndpoint(this.chosenBackendType);
+        break;
       case 'Other':
+        if (this.checkedCustomServerURL == this.customServerURL) {
+          this.localStorage.set(
+            'GlobalSettings.chosenBackendType',
+            this.chosenBackendType
+          );
+        }
         break;
 
       default:
@@ -267,34 +249,19 @@ export class SettingsPanelComponent implements OnInit {
         this.customServerURL + this.gss.defaultAPIPath + 'system/hostname.php'
       )
       .subscribe(
-        (data: Object) => this.setCustomEndpoint(data),
+        (data: Object) => this.setCustomEndpointCallback(data),
         (error) => this.apiError(error)
       );
   }
-  setCustomEndpoint(data: Object) {
+  setCustomEndpointCallback(data: Object) {
     if (!data['hostname'] || data['hostname'].length == 0) {
       this.apiError('no hostname in answer');
       return;
     }
-    this.gss.server.baseurl = this.customServerURL;
-    this.gss.server.protocol = this.customServerURL.replace(/:\/\/.*$/, '');
-    this.gss.server.serverName = this.customServerURL
-      .replace(/^http[s]*:\/\//, '')
-      .replace(/:\d+$/, '');
-    this.gss.server.type =
-      this.gss.server.protocol == 'https' ? 'PublicServer' : 'Tricorder';
-    this.gss.server.api = this.gss.server.baseurl + this.gss.defaultAPIPath;
+    this.gss.setCurrentWebEndpoint('Other', this.customServerURL);
     this.checkedCustomServerURL = this.customServerURL;
-    this.gss.setHostName(data);
-    this.localStorage.set(
-      'GlobalSettings.customServerURL',
-      this.customServerURL
-    );
-    this.localStorage.set(
-      'GlobalSettings.chosenBackendType',
-      this.chosenBackendType
-    );
   }
+
   apiError(error) {
     console.log('no UTapi running on', this.customServerURL);
     console.log(error);
