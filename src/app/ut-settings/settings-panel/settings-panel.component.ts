@@ -91,6 +91,56 @@ export class SettingsPanelComponent implements OnInit {
   public login_status_text = 'Not logged in.';
   public auth = 'NOK';
 
+  public backendTypes = [ "Internet server", "Current Device", "Local Device" ];
+  public chosenBackendType = "Internet server";
+
+  public InternetServers = {
+    Newton: { }
+  }
+
+  /*
+  Cases:
+    - dev (localhost:4200)
+    - Local Screen (localhost)
+    - internet server (https://...)
+    - LAN (http://...)
+
+  Defaults (if nothing in LS):
+    - if dev -> Newton, influx public
+    - everything else -> baseurl, influx telegraf
+
+  needed saved Settings:
+    - baseurl
+    - influx db, user, pass (sub-app accesses gss directly!)
+
+
+  Check at start
+    - isDev
+    - hasLocalScreen
+    - hasFan
+    - show Login?
+    - has network settings (->startswith http://)
+    - show influx settings (isDev, Internet Server)
+
+  Settings Sections
+    - Backend
+    - Auth
+    - Brightness
+    - Network
+    - Fan Speed
+    - System Services
+    - System Time
+    - Shut Down/Reboot
+    - Influx
+  -> New
+  - Backend
+    - Influx
+  - If Auth
+    - Network
+    - Brightness, Fan Speed, System Time
+    - System Services, Shut Down/Reboot
+
+    */
   constructor(
     private localStorage: LocalStorageService,
     public globalSettingsService: GlobalSettingsService,

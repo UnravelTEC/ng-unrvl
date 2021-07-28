@@ -1,5 +1,23 @@
 <h1>Global Settings</h1>
 
+<h2>Backend Settings</h2>
+
+<section>
+  <mat-radio-group [(ngModel)]="backendTypes">
+    <div *ngFor="let selectedBackend of backendTypes">
+      <mat-radio-button [value]="selectedBackend">
+        {{ selectedBackend }}
+      </mat-radio-button>
+      <div *ngIf="selectedBackend == 'Internet server'">
+
+      </div>
+    </div>
+  </mat-radio-group>
+
+  Internet server - UnravelTEC's Newton - other influx - Current Device () -
+  Local Device
+</section>
+
 <div
   class="settingspage"
   *ngIf="
