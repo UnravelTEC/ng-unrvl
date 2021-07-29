@@ -12,8 +12,19 @@
   <em class="date">{{ currentTime | date: 'dd.MM.yyyy HH:mm' }}</em>
 
   <em id="mqtt">
-    <span class="{{ mqtt.status }}" title="MQTT status: {{ mqtt.status }}">
+    <span
+      class="{{ mqtt.status }}"
+      title="MQTT status: {{ mqtt.status }} on {{ mqtt.serverName }}"
+      (click)="showMqttList = !showMqttList"
+    >
       <mat-icon>rss_feed</mat-icon>
+      <div id="mqttList" *ngIf="showMqttList">
+        <ul>
+          <li *ngFor="let entry of mqtt.lastMessages">
+            {{ entry }}
+          </li>
+        </ul>
+      </div>
     </span>
   </em>
 

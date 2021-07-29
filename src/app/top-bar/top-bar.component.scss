@@ -46,6 +46,25 @@ nav em {
   color: yellow;
 }
 
+#mqttList {
+  position: fixed;
+  top: 2.6em;
+  right: 4.5em;
+  left: 2em;
+  background: white;
+  z-index: 100;
+  border-radius: 0.5em;
+  ul {
+    list-style: circle;
+  }
+  li {
+    color: black;
+    white-space: nowrap;
+    text-align: left;
+    overflow-x: hidden;
+  }
+}
+
 nav a:hover {
   background: rgb(201, 201, 207);
 }

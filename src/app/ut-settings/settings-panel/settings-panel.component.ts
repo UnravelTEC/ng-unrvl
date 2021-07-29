@@ -13,79 +13,12 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./settings-panel.component.scss'],
 })
 export class SettingsPanelComponent implements OnInit {
-  defaultSettings = {
-    server: {
-      // settingsSection
-      settingAttributes: {
-        title: 'Backend Settings',
-      },
-      settings: {
-        serverName: {
-          fieldName: 'Endpoint Name',
-          fieldValue: '',
-        },
-        serverHostName: {
-          fieldName: 'Server hostname/ip',
-          fieldValue: '',
-        },
-      },
-    },
-  };
-
-  settingsArray = {
-    newton: {
-      server: {
-        // settingsSection
-        settingAttributes: {
-          title: 'Backend Settings',
-        },
-        settings: {
-          serverName: {
-            fieldName: 'Endpoint Name',
-            fieldValue: 'UnravelTEC Demo Server',
-          },
-          serverHostName: {
-            fieldName: 'Server hostname/ip',
-            fieldValue: 'newton.unraveltec.com',
-          },
-        },
-      },
-    },
-    default: {
-      // includes localhost
-      server: {
-        // settingsSection
-        settingAttributes: {
-          title: 'Backend Settings',
-        },
-        settings: {
-          serverName: {
-            fieldName: 'Endpoint Name',
-            fieldValue: 'Default Host connection',
-          },
-          serverHostName: {
-            fieldName: 'Server hostname/ip',
-            fieldValue: '$baseurl',
-          },
-        },
-      },
-    },
-  };
-  endpointValue = undefined;
-
-  globalSettings = {};
-  localStoredSettings = false;
-  globalSettingsUnsaved = {}; // the 'live' in editor ones the user can change before saving
-
   debug = true;
   gitV = gitVersion;
 
   public currentBrightness = 0;
 
-  public oldIFPath = '';
   public uv4lPath = '';
-
-  public API = '';
 
   public api_username = 'system';
   public api_pass = '';
@@ -220,6 +153,7 @@ export class SettingsPanelComponent implements OnInit {
       case 'Current Web Endpoint':
       case 'Demo Server':
         this.gss.setCurrentWebEndpoint(this.chosenBackendType);
+        this.mqtt.reload();
         break;
       case 'Other':
         if (this.checkedCustomServerURL == this.customServerURL) {
@@ -258,6 +192,7 @@ export class SettingsPanelComponent implements OnInit {
       return;
     }
     this.gss.setCurrentWebEndpoint('Other', this.customServerURL);
+    this.mqtt.reload();
     this.checkedCustomServerURL = this.customServerURL;
   }
 
@@ -288,43 +223,27 @@ export class SettingsPanelComponent implements OnInit {
       }
     });
 
-    if (this.chosenBackendType == 'Other') {
-      if (this.customServerURL) {
-        this.checkCustomEndpoint();
-      }
-    } else if (this.chosenBackendType) {
-      this.setEndpoint(null);
-    }
+    // if (this.chosenBackendType == 'Other') {
+    //   if (this.customServerURL) {
+    //     this.checkCustomEndpoint();
+    //   }
+    // } else if (this.chosenBackendType) {
+    //   this.setEndpoint(null);
+    // }
 
     // before, read out all localstorage items
     this.load();
 
-    for (const item in this.defaultSettings) {
-      if (!this.globalSettingsUnsaved[item]) {
-        const deepcopy = JSON.stringify(this.defaultSettings[item]);
-        this.globalSettingsUnsaved[item] = JSON.parse(deepcopy);
-      }
-    }
-    this.API = this.gss.getAPIEndpoint();
-
-    if (this.API) {
-      this.oldIFPath = this.API.replace(/api\/$/, '') + 'old/';
-      this.uv4lPath = this.API.replace(/\/api\/$/, '') + ':8080';
-    }
+    // if (this.gss.server.api) {
+    //   this.uv4lPath = this.gss.server.api.replace(/\/api\/$/, '') + ':8080';
+    // }
     console.log('globalSettingsService.server', this.gss.server);
     console.log('domain', this.h.domain);
-    console.log('loc', window.location.href);
 
     this.login();
   }
 
   load() {
-    const loadedSettings = this.localStorage.get('globalSettings'); // returns deep copy
-    if (loadedSettings) {
-      this.globalSettings = loadedSettings;
-      this.globalSettingsUnsaved = this.localStorage.get('globalSettings');
-      this.localStoredSettings = true;
-    }
     // console.log('globalSettingsService.client.type', this.gss.client.type);
     const ls_api_user = this.localStorage.get('api_user');
     if (ls_api_user) this.api_username = ls_api_user;
@@ -332,56 +251,27 @@ export class SettingsPanelComponent implements OnInit {
     if (ls_api_pass) this.api_pass = ls_api_pass;
   }
 
-  // loadEndpoint() {
-  //   if (!this.endpointValue) {
-  //     alert('select an Endpoint');
-  //     return;
-  //   }
-  //   const loadedSettings = this.settingsArray[this.endpointValue];
-  //   console.log(loadedSettings);
-  //   console.log(loadedSettings.server.settings.serverHostName.fieldValue);
-  //   const serverUrl = this.h.getDeep(loadedSettings, [
-  //     'server',
-  //     'settings',
-  //     'serverHostName',
-  //     'fieldValue'
-  //   ]);
-  //   if (serverUrl == '$baseurl') {
-  //     loadedSettings.server.settings.serverHostName.fieldValue = this.h.getBaseURL();
-  //   }
-
-  //   this.globalSettingsUnsaved = loadedSettings;
-
+  // save() {
   //   this.localStorage.set('globalSettings', this.globalSettingsUnsaved);
   //   this.globalSettings = JSON.parse(
   //     JSON.stringify(this.globalSettingsUnsaved)
   //   );
-
+  //   // alert('save ok');
   //   this.gss.reloadSettings();
   //   this.localStoredSettings = true;
+  //   this.mqtt.reload();
+  //   this.API = this.gss.getAPIEndpoint();
   // }
-
-  save() {
-    this.localStorage.set('globalSettings', this.globalSettingsUnsaved);
-    this.globalSettings = JSON.parse(
-      JSON.stringify(this.globalSettingsUnsaved)
-    );
-    // alert('save ok');
-    this.gss.reloadSettings();
-    this.localStoredSettings = true;
-    this.mqtt.reload();
-    this.API = this.gss.getAPIEndpoint();
-  }
-  reset() {
-    this.globalSettingsUnsaved = JSON.parse(
-      JSON.stringify(this.defaultSettings)
-    );
-    // alert('reset ok');
-  }
-  deleteStoredSettings() {
-    this.localStorage.delete('globalSettings');
-    this.gss.reloadSettings();
-  }
+  // reset() {
+  //   this.globalSettingsUnsaved = JSON.parse(
+  //     JSON.stringify(this.defaultSettings)
+  //   );
+  //   // alert('reset ok');
+  // }
+  // deleteStoredSettings() {
+  //   this.localStorage.delete('globalSettings');
+  //   this.gss.reloadSettings();
+  // }
 
   login() {
     this.login_status_text = 'authentication Request sent.';
@@ -390,7 +280,7 @@ export class SettingsPanelComponent implements OnInit {
 
     this.utHTTP
       .getHTTPData(
-        this.API + 'system/auth.php',
+        this.gss.server.api + 'system/auth.php',
         this.api_username,
         this.api_pass,
         true
@@ -471,7 +361,7 @@ export class SettingsPanelComponent implements OnInit {
     if (confirm('Halt now?')) {
       this.utHTTP
         .getHTTPData(
-          this.API + 'system/halt.php',
+          this.gss.server.api + 'system/halt.php',
           this.api_username,
           this.api_pass,
           true
@@ -483,7 +373,7 @@ export class SettingsPanelComponent implements OnInit {
     if (confirm('Reboot now?')) {
       this.utHTTP
         .getHTTPData(
-          this.API + 'system/reboot.php',
+          this.gss.server.api + 'system/reboot.php',
           this.api_username,
           this.api_pass,
           true

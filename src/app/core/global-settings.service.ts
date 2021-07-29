@@ -11,8 +11,6 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class GlobalSettingsService implements OnInit {
-  private hostName = 'uninitialized';
-
   public graphBackgrounds = {
     CO2_ppm: [
       // the color acts for "everything below $value"
@@ -175,14 +173,12 @@ export class GlobalSettingsService implements OnInit {
   };
 
   public defaultAPIPath = '/api/';
-  private fallbackEndpoint = 'https://newton.unraveltec.com';
-  private fallbackAPI = this.fallbackEndpoint + '/api/';
 
   public server = {
     chosenBackendType: undefined, //'Demo Server', 'Current Web Endpoint', 'Other'
     baseurl: '',
     serverName: '', // pure IP or hostname w/o protocol/port
-    protocol: 'http', // https or http
+    protocol: '', // https or http
     // architecture: undefined,
     type: 'unknown', // Tricorder || PublicServer
     hostname: 'uninitialized',
@@ -208,7 +204,7 @@ export class GlobalSettingsService implements OnInit {
     mobile: false,
   };
 
-  public networkStatus: Object;
+  public networkStatus: Object; // gets filled by MQTT service
 
   // for local javascript client IPs:
   private RTCPeerConnection =

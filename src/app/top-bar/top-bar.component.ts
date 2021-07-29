@@ -9,7 +9,7 @@ import { MqttService } from '../core/mqtt.service';
 @Component({
   selector: 'app-top-bar',
   templateUrl: './top-bar.component.html',
-  styleUrls: ['./top-bar.component.css']
+  styleUrls: ['./top-bar.component.scss']
 })
 export class TopBarComponent implements OnInit {
   @Input()
@@ -21,6 +21,8 @@ export class TopBarComponent implements OnInit {
   public currentTime: Date;
   public hostName = 'uninitialized';
 
+  public showMqttList = false;
+
   private titleSubscription$;
 
   private intervalSubscription: Subscription;
@@ -28,7 +30,7 @@ export class TopBarComponent implements OnInit {
   constructor(
     private h: HelperFunctionsService,
     private gss: GlobalSettingsService,
-    private mqtt: MqttService
+    private mqtt: MqttService // used in html
   ) {}
 
   ngOnInit() {

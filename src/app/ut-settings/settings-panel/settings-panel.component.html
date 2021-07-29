@@ -25,7 +25,9 @@
     <div>
       <mat-radio-button value="Other">
         Other
-        {{ checkedCustomServerURL ? '(' + checkedCustomServerURL  +')' : '' }}</mat-radio-button
+        {{
+          checkedCustomServerURL ? '(' + checkedCustomServerURL + ')' : ''
+        }}</mat-radio-button
       >
       <div *ngIf="chosenBackendType == 'Other'">
         <label for="customServerURL">Custom Endpoint URL</label>
@@ -43,7 +45,7 @@
 
 <div
   class="settingspage"
-  *ngIf="gss.server.type != 'PublicServer' || gss.client.dev"
+  *ngIf="gss.server.type != 'PublicServer'"
 >
   <section>
     <h2>Administration login</h2>
@@ -122,52 +124,7 @@
   </section>
 </div>
 
-<div class="settingspage" *ngIf="gss.client.dev">
-  <section *ngFor="let settingsSection of globalSettingsUnsaved | keyvalue">
-    <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
-    <div
-      *ngIf="
-        settingsSection.value.settingAttributes.title == 'Backend Settings'
-      "
-      style="display: flex; flex-wrap: wrap"
-    >
-
-      <table class="th_right">
-
-        <tr>
-          <th>URL:</th>
-          <td>
-            <a href="{{ gss.server.baseurl }}">{{ gss.server.baseurl }}</a>
-          </td>
-        </tr>
-
-        <tr>
-          <th>API:</th>
-          <td>{{ gss.server.api }}</td>
-        </tr>
-      </table>
-    </div>
-
-    <section>
-      <div class="fields">
-        <label for="serverName"
-          >{{ globalSettingsUnsaved.server.settings.serverHostName.fieldName }}:
-        </label>
-        <input
-          type="text"
-          class="form-control"
-          id="serverName"
-          [(ngModel)]="
-            globalSettingsUnsaved.server.settings.serverHostName.fieldValue
-          "
-        />
-      </div>
-    </section>
-
-    <section id="submit" class="center">
-      <div>
-        <!-- div needed for text-align center -->
-        <button type="submit" class="btn btn-success" (click)="save()">
+<!-- <button type="submit" class="btn btn-success" (click)="save()">
           Save Settings
         </button>
         <button
@@ -187,11 +144,7 @@
           (click)="deleteStoredSettings()"
         >
           Delete Settings
-        </button>
-      </div>
-    </section>
-  </section>
-</div>
+        </button> -->
 
 <div class="settingspage" *ngIf="gss.server.type == 'PublicServer'">
   <section>
