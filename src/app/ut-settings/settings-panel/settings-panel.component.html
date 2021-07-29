@@ -1,5 +1,13 @@
 <h1>Global Settings</h1>
 
+<div *ngIf="gss.client.localscreen == false">
+  <h2>Frontend Settings</h2>
+
+  <section>
+    <a (click)="fullscreen()">Fullscreen</a>
+  </section>
+</div>
+
 <h2>Backend Settings</h2>
 
 <section>
