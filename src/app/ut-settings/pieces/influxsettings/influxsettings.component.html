@@ -15,10 +15,24 @@
 
   <div class="flow">
     <form [formGroup]="myDBs">
-      <label for="influxdb"> Database </label>
-      <select size="{{ databases.length > 1 ? databases.length : 2}}" formControlName="databasesForm" (change)="changeDB($event)">
-        <option *ngIf="databases.length == 0" disabled>No Available Databases, log in first</option>
-        <option *ngFor="let dbname of databases">{{ dbname }}</option>
+      <label for="influxdb">
+        Database
+        <!--{{ dbname }}--></label
+      >
+      <select
+        size="{{ databases.length > 1 ? databases.length : 2 }}"
+        formControlName="databasesForm"
+        (change)="changeDB($event)"
+      >
+        <option *ngIf="databases.length == 0" disabled>
+          No Available Databases, log in first
+        </option>
+        <option
+          *ngFor="let cdbname of databases"
+          [selected]="dbname === cdbname"
+        >
+          {{ cdbname }}
+        </option>
       </select>
     </form>
   </div>

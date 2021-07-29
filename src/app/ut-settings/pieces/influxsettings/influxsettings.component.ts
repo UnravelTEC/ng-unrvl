@@ -53,6 +53,7 @@ export class InfluxsettingsComponent implements OnInit, OnDestroy {
     if (lsuser && lspw) {
       this.login();
     }
+    this.dbname = this.gss.server.influxdb;
   }
 
   login() {
@@ -98,16 +99,6 @@ export class InfluxsettingsComponent implements OnInit, OnDestroy {
     this.gss.server.influxpass = this.password;
     this.localStorage.set('influxuser', this.username);
     this.localStorage.set('influxpass', this.password);
-    if (
-      this.gss.server.influxdb &&
-      this.databases.includes(this.gss.server.influxdb)
-    ) {
-      console.log('found pre-set', this.gss.server.influxdb);
-
-      this.myDBs.setValue(
-        { databasesForm: this.gss.server.influxdb }, {emitEvent: true}
-      );
-    }
   }
 
   ngOnDestroy() {
