@@ -33,8 +33,7 @@ export class TopBarComponent implements OnInit {
 
   ngOnInit() {
     this.currentTime = new Date();
-    // this.hostName = this.h.getBaseURL().replace(/http[s]?:\/\//, '');
-    const tmpHostName = this.gss.getHostName();
+    const tmpHostName = this.gss.server.hostname;
     if (tmpHostName) {
       this.hostName = tmpHostName;
     }

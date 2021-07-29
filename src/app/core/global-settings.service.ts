@@ -183,13 +183,12 @@ export class GlobalSettingsService implements OnInit {
     baseurl: '',
     serverName: '', // pure IP or hostname w/o protocol/port
     protocol: 'http', // https or http
-    architecture: undefined,
+    // architecture: undefined,
     type: 'unknown', // Tricorder || PublicServer
     hostname: 'uninitialized',
     hasscreen: undefined, // true || false
-    cpu: 'unknown',
-    cpus: 0,
-    sensors: [],
+    // cpu: 'unknown',
+    // cpus: undefined,
     databaseStatus: 'unknown', // db status: up, down, unknown, waiting
     api: undefined,
     influxdb: 'telegraf',
@@ -200,11 +199,11 @@ export class GlobalSettingsService implements OnInit {
   public client = {
     host: '',
     hostAndPort: '',
-    protocol: 'unknown', // http || https
+    protocol: '', // http || https
     baseurl: '', //http[s]://host:port
-    dev: undefined,
+    dev: undefined, // if running as ng serve (localhost:4200)
 
-    type: 'unknown', // local || web
+    localscreen: undefined, // true if running on Henri/Device where Browser runs on same Hardware as server
 
     mobile: false,
   };
@@ -258,11 +257,15 @@ export class GlobalSettingsService implements OnInit {
     this.client.hostAndPort = this.client.baseurl.replace(/^http[s]*:\/\//, '');
     this.client.host = this.client.hostAndPort.replace(/:\d+$/, '');
     this.client.dev = this.client.hostAndPort == 'localhost:4200';
+    this.client.localscreen = this.client.hostAndPort == 'localhost';
     console.log('client:', this.client);
   }
 
   ngOnInit() {
-    this.reloadSettings();
+    if (this.client.localscreen) {
+      this.emitChange({ TricorderLocal: true });
+    }
+    // this.reloadSettings();
 
     // for local javascript client IPs:
     // if (this.RTCPeerConnection) {
@@ -291,8 +294,24 @@ export class GlobalSettingsService implements OnInit {
     //     'error in getLocalIPs: RTCPeerConnection could not be created'
     //   );
     // }
+    const chosenBackendType = this.localStorage.get(
+      'GlobalSettings.chosenBackendType'
+    );
+    const customServerURL = this.localStorage.get(
+      'GlobalSettings.customServerURL'
+    );
+    if (chosenBackendType) {
+      this.setCurrentWebEndpoint(chosenBackendType, customServerURL);
+      // what todo if setting no longer correct?
+      // -> Do nothing atm, API can be seen in Top-Bar
+      return;
+    }
+    if (this.client.dev) {
+      this.setCurrentWebEndpoint('Demo Server');
+    } else {
+      this.setCurrentWebEndpoint('Current Web Endpoint');
+    }
   }
-    // TODO load on Init
   setCurrentWebEndpoint(chosenBackendType, baseurl?: string) {
     switch (chosenBackendType) {
       case 'Current Web Endpoint':
@@ -314,6 +333,7 @@ export class GlobalSettingsService implements OnInit {
         console.error('setCurrentWebEndpoint ??');
         return;
     }
+    this.server.chosenBackendType = chosenBackendType;
     this.server.protocol = this.server.baseurl.replace(/:\/\/.*$/, '');
     this.server.serverName = this.server.baseurl
       .replace(/^http[s]*:\/\//, '')
@@ -321,13 +341,19 @@ export class GlobalSettingsService implements OnInit {
     this.server.type =
       this.server.protocol == 'https' ? 'PublicServer' : 'Tricorder';
     this.server.api = this.server.baseurl + this.defaultAPIPath;
+
+    if (chosenBackendType != 'Demo Server') {
+      this.getScreen();
+    }
+
     this.server.hostname = 'uninitialized';
-    this.fetchHostName(this.server.api);
+    this.fetchHostName();
+
     this.localStorage.set(
       'GlobalSettings.chosenBackendType',
       chosenBackendType
     );
-    console.log('setCurrentWebEndpoint', chosenBackendType, baseurl);
+    console.log('setCurrentWebEndpoint', chosenBackendType, this.server);
   }
 
   checkForInflux() {
@@ -409,74 +435,6 @@ export class GlobalSettingsService implements OnInit {
   // - default: stay on newton
   // - try out switching to another server
   reloadSettings() {
-    const localSettings = this.localStorage.get('globalSettings');
-    const localStoredServer = this.h.getDeep(localSettings, [
-      'server',
-      'settings',
-    ]);
-    if (localStoredServer) {
-      let servername = this.h.getDeep(localStoredServer, [
-        'serverHostName',
-        'fieldValue',
-      ]);
-      if (servername.endsWith('/')) {
-        servername = servername.substr(0, -1);
-      }
-
-      this.server.serverName = this.stripProtPort(servername);
-
-      const apiPath = this.defaultAPIPath;
-
-      if (servername.search('.') > -1 && !servername.match('.[0-9]+$')) {
-        this.server.protocol = 'https://';
-      } else {
-        this.server.protocol = 'http://';
-      }
-      this.server.api = this.server.protocol + this.server.serverName + apiPath;
-      this.server.baseurl = this.server.protocol + servername;
-
-      this.fetchHostName(this.server.api);
-      this.getCPUinfo(this.server.api);
-      this.getScreen(this.server.api);
-      console.log(
-        'reloadSettings: got',
-        this.server.baseurl,
-        'from LocalStorage'
-      );
-    } else {
-      // see if an API i there
-      const firstURL = this.h.getBaseURL();
-      this.server.baseurl = firstURL;
-      this.server.serverName = this.stripProtPort(firstURL);
-      this.server.protocol = firstURL.startsWith('https://')
-        ? 'https://'
-        : 'http://';
-      console.log('No settings in LocalStorage, try our webendpoint', firstURL);
-
-      this.server.api = firstURL + this.defaultAPIPath;
-      this.http
-        .get(firstURL + this.defaultAPIPath + 'system/hostname.php')
-        .subscribe(
-          (data: Object) => {
-            this.setHostName(data);
-
-            // set screen
-            this.getScreen(this.server.api);
-
-            // check if on Raspi
-            this.getCPUinfo(this.server.api);
-          },
-          (error) => {
-            console.log('no UTapi running on', firstURL);
-            console.log(error);
-            this.server.api = false;
-            this.hostName = 'unknown';
-            this.emitChange({ hostname: this.hostName });
-
-            //TODO set fallback!
-          }
-        );
-    }
     this.server.influxdb = this.localStorage.get('influxdb');
     const isPublicServer = this.server.serverName.endsWith('.unraveltec.com');
     if (!this.server.influxdb) {
@@ -492,103 +450,68 @@ export class GlobalSettingsService implements OnInit {
       this.server.influxpass = 'unravelit42.14153';
     }
     this.checkForInflux();
-    if (window.location.href.search('localhost:4200') > -1) {
-      this.client.type = 'dev';
-    }
   }
 
-  getCPUinfo(endpoint) {
-    this.http.get(endpoint + 'system/cpuinfo.php').subscribe(
-      (data: Object) => {
-        console.log('getCPUinfo got', data);
-        this.server.architecture = data['architecture'];
-        this.server.cpu = data['cpu'];
-        this.server.cpus = data['cpus'];
-        this.checkIfTricorder();
-      },
-      (error) => {
-        console.log('no cpuinfo from api');
-        this.server.architecture = 'unknown';
-        this.server.cpu = 'unknown';
-        this.server.cpus = undefined;
-        this.checkIfTricorder();
-      }
-    );
-  }
-  getScreen(endpoint) {
-    this.http.get(endpoint + 'screen/getBrightness.php').subscribe(
+  // getCPUinfo(endpoint) {
+  //   this.http.get(endpoint + 'system/cpuinfo.php').subscribe(
+  //     (data: Object) => {
+  //       console.log('getCPUinfo got', data);
+  //       this.server.architecture = data['architecture'];
+  //       this.server.cpu = data['cpu'];
+  //       this.server.cpus = data['cpus'];
+  //     },
+  //     (error) => {
+  //       console.log('no cpuinfo from api');
+  //       this.server.architecture = 'unknown';
+  //       this.server.cpu = 'unknown';
+  //       this.server.cpus = undefined;
+  //     }
+  //   );
+  // }
+  getScreen(api = this.server.api) {
+    this.server.hasscreen = undefined;
+    this.http.get(api + 'screen/getBrightness.php').subscribe(
       (data: Object) => {
         if (data && data['brightness']) {
+          console.log('api says server has a Raspi screen');
           this.server.hasscreen = true;
-
-          if (endpoint.startsWith('http://localhost')) {
-            console.log('we are on a Raspi with Raspi-Display!');
-            this.client.type = 'local';
-            this.emitChange({ TricorderLocal: true });
-          } else {
-            console.log('running on localhost without Rpi -> Developing');
-            this.client.type = 'web';
-          }
         } else {
-          console.log('no screen here.');
+          console.log('api says no Raspi screen here.');
           this.server.hasscreen = false;
-          if (window.location.href.search('localhost:4200') > -1) {
-            this.client.type = 'dev';
-          } else {
-            this.client.type = 'web';
-          }
         }
       },
       (error) => {
-        console.log('no raspi screen -> web client');
-        if (window.location.href.search('localhost:4200') > -1) {
-          this.client.type = 'dev';
-        } else {
-          this.client.type = 'web';
-        }
+        console.log('no screen api');
+        this.server.hasscreen = false;
       }
     );
   }
 
-  public fetchHostName(server: string) {
-    this.http.get(server + 'system/hostname.php').subscribe(
+  public fetchHostName(api = this.server.api) {
+    if (!api) {
+      console.error('fetchHostName: no api', api);
+      return;
+    }
+    this.http.get(api + 'system/hostname.php').subscribe(
       (data: Object) => this.setHostName(data),
       (error) => {
-        console.log('no UTapi running on', server);
+        console.log('no UTapi running on', api);
         console.log(error);
         this.server.api = false;
-        this.hostName = 'unknown';
-        this.emitChange({ hostname: this.hostName });
+        this.server.hostname = 'unknown';
+        this.emitChange({ hostname: this.server.hostname });
       }
     );
   }
   public setHostName(data: Object) {
     if (data['hostname']) {
-      this.hostName = data['hostname'];
+      this.server.hostname = data['hostname'];
     } else {
       console.error('hostname cmd returned no hostname');
-      this.hostName = 'undefined';
+      this.server.hostname = 'undefined';
     }
 
-    this.emitChange({ hostname: this.hostName });
-  }
-
-  public getHostName(): string {
-    return this.hostName;
-  }
-
-  checkIfTricorder() {
-    if (this.server.architecture === undefined) {
-      console.log('not enough information to check if I am on a Tricorder');
-      return;
-    }
-    if (this.server.architecture.startsWith('arm')) {
-      this.server.type = 'Tricorder';
-    } else {
-      this.server.type = 'PublicServer';
-    }
-
-    console.log('I am connected to a', this.server.type);
+    this.emitChange({ hostname: this.server.hostname });
   }
 
   getAPIEndpoint() {

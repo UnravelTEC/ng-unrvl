@@ -141,10 +141,10 @@ export class SettingsPanelComponent implements OnInit {
       - others - discover?
 
   browserurl:
-    - https:// -> newton, ngbeta, ...
-    - http://localhost -> Henri Screen
-    - http://localhost:4200 -> Dev
-    - http://192.* -> Ampel, Bimbox, Tinylogger
+    - https:// -> newton, ngbeta, ... => 'Current Web Endpoint'
+    - http://localhost -> Henri Screen =>  'Current Web Endpoint'
+    - http://localhost:4200 -> Dev => 'Demo Server'
+    - http://192.* -> Ampel, Bimbox, Tinylogger =>  'Current Web Endpoint'
 
   serverurls:
     - http://localhost -> Henri (show only if http://localhost)
@@ -325,7 +325,7 @@ export class SettingsPanelComponent implements OnInit {
       this.globalSettingsUnsaved = this.localStorage.get('globalSettings');
       this.localStoredSettings = true;
     }
-    console.log('globalSettingsService.client.type', this.gss.client.type);
+    // console.log('globalSettingsService.client.type', this.gss.client.type);
     const ls_api_user = this.localStorage.get('api_user');
     if (ls_api_user) this.api_username = ls_api_user;
     const ls_api_pass = this.localStorage.get('api_pass');

@@ -43,7 +43,7 @@
 
 <div
   class="settingspage"
-  *ngIf="gss.server.type != 'PublicServer' || gss.client.type === 'dev'"
+  *ngIf="gss.server.type != 'PublicServer' || gss.client.dev"
 >
   <section>
     <h2>Administration login</h2>
@@ -122,7 +122,7 @@
   </section>
 </div>
 
-<div class="settingspage" *ngIf="gss.client.type === 'dev'">
+<div class="settingspage" *ngIf="gss.client.dev">
   <section *ngFor="let settingsSection of globalSettingsUnsaved | keyvalue">
     <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
     <div
