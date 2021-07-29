@@ -292,6 +292,7 @@ export class GlobalSettingsService implements OnInit {
     //   );
     // }
   }
+    // TODO load on Init
   setCurrentWebEndpoint(chosenBackendType, baseurl?: string) {
     switch (chosenBackendType) {
       case 'Current Web Endpoint':

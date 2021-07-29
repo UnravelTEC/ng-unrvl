@@ -213,7 +213,6 @@ export class SettingsPanelComponent implements OnInit {
 
     */
 
-  // TODO move to globalSettings and load on Init
   setEndpoint(event: any) {
     console.log('setEndpoint', this.chosenBackendType);
 
