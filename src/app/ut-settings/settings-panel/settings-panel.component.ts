@@ -117,6 +117,9 @@ export class SettingsPanelComponent implements OnInit {
       only user/pass should be supplied (or nothing)
       -> list DBs, choose DB from Dropdown, save it.
 
+    -> here in settingspanel: if proto == http; dont display
+    in globalsettings: if nothing stored for host, use telegraf if http; else unraveltec/koffer
+
 
   Check at start
     - isDev

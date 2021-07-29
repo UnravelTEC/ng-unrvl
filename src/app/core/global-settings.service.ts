@@ -261,7 +261,6 @@ export class GlobalSettingsService implements OnInit {
     if (this.client.localscreen) {
       this.emitChange({ TricorderLocal: true });
     }
-    // this.reloadSettings();
 
     // for local javascript client IPs:
     // if (this.RTCPeerConnection) {
@@ -297,16 +296,50 @@ export class GlobalSettingsService implements OnInit {
       'GlobalSettings.customServerURL'
     );
     if (chosenBackendType) {
+      // something already in LS
       this.setCurrentWebEndpoint(chosenBackendType, customServerURL);
       // what todo if setting no longer correct?
       // -> Do nothing atm, API can be seen in Top-Bar
+    } else {
+      if (this.client.dev) {
+        this.setCurrentWebEndpoint('Demo Server');
+      } else {
+        this.setCurrentWebEndpoint('Current Web Endpoint');
+      }
+    }
+    this.initializeInfluxCreds();
+    this.checkForInflux();
+  }
+  initializeInfluxCreds() {
+    if (this.server.protocol == 'http') {
+      this.server.influxdb = 'telegraf';
+      this.server.influxuser = '';
+      this.server.influxpass = '';
+      console.log('initializeInfluxCreds: http -> no auth, db telegraf');
       return;
     }
-    if (this.client.dev) {
-      this.setCurrentWebEndpoint('Demo Server');
-    } else {
-      this.setCurrentWebEndpoint('Current Web Endpoint');
+    const lsinfluxdb = this.localStorage.get('influxdb');
+    const lsinfluxuser = this.localStorage.get('influxuser');
+    const lsinfluxpass = this.localStorage.get('influxpass');
+    if (lsinfluxdb && lsinfluxuser && lsinfluxpass) {
+      this.server.influxdb = lsinfluxdb;
+      this.server.influxuser = lsinfluxuser;
+      this.server.influxpass = lsinfluxpass;
+      console.log(
+        'initializeInfluxCreds from localStorage:',
+        lsinfluxdb,
+        lsinfluxuser,
+        lsinfluxpass
+      );
+      return;
     }
+    if (this.server.type == 'PublicServer') {
+      this.server.influxdb = 'koffer';
+      this.server.influxuser = 'public';
+      this.server.influxpass = 'unravelit42.14153';
+      console.log('initializeInfluxCreds to', this.server.influxdb);
+    }
+    console.error('initializeInfluxCreds ??');
   }
   setCurrentWebEndpoint(chosenBackendType, baseurl?: string) {
     switch (chosenBackendType) {
@@ -353,8 +386,7 @@ export class GlobalSettingsService implements OnInit {
   }
 
   checkForInflux() {
-    const influxServer =
-      this.server.protocol + this.server.serverName + '/influxdb';
+    const influxServer = this.server.baseurl + '/influxdb';
     const InfluxHealthQuery = '/health';
     this.http.get(influxServer + InfluxHealthQuery).subscribe(
       (data: Object) => {
@@ -409,43 +441,6 @@ export class GlobalSettingsService implements OnInit {
     input = input.replace(/:\d+$/, '');
     input = input.replace(/\/$/, '');
     return input;
-  }
-
-  // we do not need to handle localhost in a special case - covered by $baseurl
-
-  // order - what is the criteria a server must met?
-  // prometheus running? - yes
-  // api running? - maybe
-  // 1. local storage settings
-  // 2. hostname of url (if api working)
-  // 3. fallback to Newton
-
-  // following use cases:
-  // • developing on localhost:4200 with ng
-  //   - default: connect to Newton
-  //   - connect to other tricorders on demand
-  // • connected to a Tricorder
-  //   - via webif
-  //   - on local screen (localhost)
-  // • using public Webif on Newton:
-  // - default: stay on newton
-  // - try out switching to another server
-  reloadSettings() {
-    this.server.influxdb = this.localStorage.get('influxdb');
-    const isPublicServer = this.server.serverName.endsWith('.unraveltec.com');
-    if (!this.server.influxdb) {
-      // this.server.influxdb = isPublicServer ? 'public' : 'telegraf';
-      this.server.influxdb = isPublicServer ? 'koffer' : 'telegraf';
-    }
-    this.server.influxuser = this.localStorage.get('influxuser');
-    if (!this.server.influxuser && isPublicServer) {
-      this.server.influxuser = 'public';
-    }
-    this.server.influxpass = this.localStorage.get('influxpass');
-    if (!this.server.influxpass && isPublicServer) {
-      this.server.influxpass = 'unravelit42.14153';
-    }
-    this.checkForInflux();
   }
 
   // getCPUinfo(endpoint) {

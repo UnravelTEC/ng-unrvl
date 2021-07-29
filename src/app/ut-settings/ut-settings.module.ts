@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { UtSettingsRoutingModule } from './ut-settings-routing.module';
 import { SettingsPanelComponent } from './settings-panel/settings-panel.component';
@@ -14,11 +14,13 @@ import { FanSpeedComponent } from './pieces/fan-speed/fan-speed.component';
 import { NetworkComponent } from './pieces/network/network.component';
 import { InfluxsettingsComponent } from './pieces/influxsettings/influxsettings.component';
 
+
 @NgModule({
   imports: [
     CommonModule,
     UtSettingsRoutingModule,
     FormsModule,
+    ReactiveFormsModule,
     MatSliderModule,
     MatSelectModule,
     MatRadioModule,

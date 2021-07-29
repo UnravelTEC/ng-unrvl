@@ -1,0 +1,28 @@
+div {
+  label {
+    display: inline-block;
+    width: 6em;
+  }
+  label.error {
+    color: red;
+  }
+  input {
+    margin-top: 0.2em;
+  }
+}
+div.flexcontainer {
+  display: flex;
+  div.flow {
+    h3 {
+      margin: 0.3em;
+    }
+    flex-wrap: wrap;
+    flex-direction: row;
+    border: 2px solid gray;
+    padding: 0.5em;
+    margin: 0.5em;
+    button {
+      margin: 0.5em 0 0.5em 17em;
+    }
+  }
+}

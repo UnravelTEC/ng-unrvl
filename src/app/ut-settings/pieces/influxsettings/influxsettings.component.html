@@ -1,5 +1,30 @@
 <h2>Influx Settings</h2>
-<table>
+
+<div class="flexcontainer">
+  <div class="flow">
+    <h3>Authentication</h3>
+    <label for="influxuser"> Username </label
+    ><input type="text" id="influxuser" [(ngModel)]="username" /><br />
+
+    <label for="influxpass"> Password </label
+    ><input type="text" id="influxpass" [(ngModel)]="password" /><br />
+    <label *ngIf="note">{{ note }}</label>
+    <label *ngIf="errortext" class="error">{{ errortext }}</label>
+    <button (click)="login()">Login</button>
+  </div>
+
+  <div class="flow">
+    <form [formGroup]="myDBs">
+      <label for="influxdb"> Database </label>
+      <select size="{{ databases.length > 1 ? databases.length : 2}}" formControlName="databasesForm" (change)="changeDB($event)">
+        <option *ngIf="databases.length == 0" disabled>No Available Databases, log in first</option>
+        <option *ngFor="let dbname of databases">{{ dbname }}</option>
+      </select>
+    </form>
+  </div>
+</div>
+
+<!-- <table>
   <tr>
     <th>
       <label for="influxdb"> Database </label>
@@ -10,7 +35,7 @@
   </tr>
   <tr>
     <th>
-      <label for="influxuser"> Username </label>
+       <label for="influxuser"> Username </label>
     </th>
     <td>
       <input type="text" id="influxuser" [(ngModel)]="gss.server.influxuser" />
@@ -24,4 +49,4 @@
       <input type="text" id="influxpass" [(ngModel)]="gss.server.influxpass" />
     </td>
   </tr>
-</table>
+</table> -->
