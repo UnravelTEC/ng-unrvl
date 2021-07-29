@@ -1,3 +1,4 @@
+$buttonbg: #565656;
 // div.settingspage {
 //   padding: 0 0.5em;
 // }
@@ -22,6 +23,19 @@ section {
   #chosenBackend {
     div {
       margin: 0.5rem;
+    }
+    fieldset {
+      border: 0;
+    }
+    fieldset:disabled {
+      opacity: 0.5;
+      input,
+      button {
+        cursor: not-allowed;
+      }
+      button:hover {
+        background-color: $buttonbg;
+      }
     }
   }
 

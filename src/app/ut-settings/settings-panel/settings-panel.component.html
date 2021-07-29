@@ -29,7 +29,7 @@
           checkedCustomServerURL ? '(' + checkedCustomServerURL + ')' : ''
         }}</mat-radio-button
       >
-      <div *ngIf="chosenBackendType == 'Other'">
+      <fieldset [disabled]="chosenBackendType != 'Other'">
         <label for="customServerURL">Custom Endpoint URL</label>
         <input
           type="text"
@@ -38,15 +38,12 @@
           [(ngModel)]="customServerURL"
         />
         <button (click)="checkCustomEndpoint()">Check</button>
-      </div>
+      </fieldset>
     </div>
   </mat-radio-group>
 </section>
 
-<div
-  class="settingspage"
-  *ngIf="gss.server.type != 'PublicServer'"
->
+<div class="settingspage" *ngIf="gss.server.type != 'PublicServer'">
   <section>
     <h2>Administration login</h2>
     <table>
@@ -82,7 +79,10 @@
   </section>
 </div>
 
-<div class="settingspage" *ngIf="auth == 'OK'">
+<div
+  class="settingspage"
+  *ngIf="auth == 'OK' && gss.server.type == 'Tricorder'"
+>
   <section *ngIf="gss.server.hasscreen">
     <h2>
       Screen Brightness:
@@ -96,18 +96,15 @@
     ></app-display-brightness>
   </section>
 
-  <section *ngIf="gss.server.type == 'Tricorder'">
+  <section>
     <app-network></app-network>
   </section>
 
-  <section
-    *ngIf="gss.server.type == 'Tricorder'"
-    class="{{ fanspeed.disabled ? 'hidden' : '' }}"
-  >
+  <section class="{{ fanspeed.disabled ? 'hidden' : '' }}">
     <app-fan-speed #fanspeed></app-fan-speed>
   </section>
 
-  <section *ngIf="gss.server.type == 'Tricorder'">
+  <section>
     <h2>System Services</h2>
     <a routerLink="/Settings/Services" routerLinkActive="active"
       >System Services</a
@@ -118,7 +115,7 @@
     <app-system-time></app-system-time>
   </section>
 
-  <section class="center" *ngIf="gss.server.type == 'Tricorder'">
+  <section class="center">
     <button (click)="halt()">Shut Down</button>
     <button (click)="reboot()">Reboot</button>
   </section>
