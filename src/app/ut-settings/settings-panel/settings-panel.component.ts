@@ -123,7 +123,7 @@ export class SettingsPanelComponent implements OnInit {
     - hasLocalScreen
     - hasFan
     - show Login?
-    - has network settings (->startswith http://)
+    - has network settings (->startswith http:// | !PublicServer)
     - show influx settings (isDev, Internet Server)
 
   Settings Sections

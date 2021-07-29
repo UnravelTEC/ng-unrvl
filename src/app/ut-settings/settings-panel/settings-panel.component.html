@@ -31,13 +31,9 @@
       >
       <fieldset [disabled]="chosenBackendType != 'Other'">
         <label for="customServerURL">Custom Endpoint URL</label>
-        <input
-          type="text"
-          class="form-control"
-          id="customServerURL"
-          [(ngModel)]="customServerURL"
-        />
+        <input type="text" id="customServerURL" [(ngModel)]="customServerURL" />
         <button (click)="checkCustomEndpoint()">Check</button>
+        <!-- TODO: Discover LAN -->
       </fieldset>
     </div>
   </mat-radio-group>
@@ -50,23 +46,13 @@
       <tr>
         <th><label for="api_username">Username</label></th>
         <td>
-          <input
-            type="text"
-            class="form-control"
-            id="api_username"
-            [(ngModel)]="api_username"
-          />
+          <input type="text" id="api_username" [(ngModel)]="api_username" />
         </td>
       </tr>
       <tr>
         <th><label for="api_pass">Password</label></th>
         <td>
-          <input
-            type="text"
-            class="form-control"
-            id="api_pass"
-            [(ngModel)]="api_pass"
-          />
+          <input type="text" id="api_pass" [(ngModel)]="api_pass" />
         </td>
       </tr>
       <tr>

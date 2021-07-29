@@ -1,50 +1,27 @@
-<h2>
-  Influx Settings
-</h2>
+<h2>Influx Settings</h2>
 <table>
   <tr>
     <th>
-      <label for="influxdb">
-        Database
-      </label>
+      <label for="influxdb"> Database </label>
     </th>
     <td>
-      <input
-        type="text"
-        class="form-control"
-        id="influxdb"
-        [(ngModel)]="gss.server.influxdb"
-      />
+      <input type="text" id="influxdb" [(ngModel)]="gss.server.influxdb" />
     </td>
   </tr>
   <tr>
     <th>
-      <label for="influxuser">
-        Username
-      </label>
+      <label for="influxuser"> Username </label>
     </th>
     <td>
-      <input
-        type="text"
-        class="form-control"
-        id="influxuser"
-        [(ngModel)]="gss.server.influxuser"
-      />
+      <input type="text" id="influxuser" [(ngModel)]="gss.server.influxuser" />
     </td>
   </tr>
   <tr>
     <th>
-      <label for="influxpass">
-        Password
-      </label>
+      <label for="influxpass"> Password </label>
     </th>
     <td>
-      <input
-        type="text"
-        class="form-control"
-        id="influxpass"
-        [(ngModel)]="gss.server.influxpass"
-      />
+      <input type="text" id="influxpass" [(ngModel)]="gss.server.influxpass" />
     </td>
   </tr>
 </table>
