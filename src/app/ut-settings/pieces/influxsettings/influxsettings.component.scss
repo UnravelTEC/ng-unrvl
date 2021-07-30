@@ -24,5 +24,26 @@ div.flexcontainer {
     button {
       margin: 0.5em 0 0.5em 17em;
     }
+    form {
+      position: relative;
+      label {
+        position: absolute;
+        top: 0.5em;
+        left: 0, 5em;
+      }
+      select {
+        display: inline-block;
+        padding: 0.2em;
+        margin-left: 8em;
+        color: #c7c7c7;
+        background: #565656;
+        option {
+          margin: 0.1em;
+          padding: 0.2em;
+          display: block;
+        }
+        overflow-y: auto;
+      }
+    }
   }
 }

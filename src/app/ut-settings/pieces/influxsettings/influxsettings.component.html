@@ -21,6 +21,7 @@
       >
       <select
         size="{{ databases.length > 1 ? databases.length : 2 }}"
+        style="height: {{ databases.length*1.85 }}em;"
         formControlName="databasesForm"
         (change)="changeDB($event)"
       >
