@@ -262,6 +262,18 @@ style.padding-bottom="20vh"-->
       </form>
 
       <form class="subbox">
+        <h5>Y linearity</h5>
+        <label for="log">Logarithmic</label>
+        <input
+          type="checkbox"
+          name="logarithmic"
+          id="log"
+          [(ngModel)]="dyGraphOptions.logscale"
+          (change)="switchLogScale()"
+        />
+      </form>
+
+      <form class="subbox">
         <h5>Running Average</h5>
         <label for="runningAvgPoints"></label>
         <input

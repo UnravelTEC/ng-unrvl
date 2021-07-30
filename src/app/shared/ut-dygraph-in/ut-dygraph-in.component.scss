@@ -411,6 +411,11 @@ $red2: #ff7f88;
     font-weight: 600;
     cursor: default;
   }
+  .dygraph-ylabel {
+    //offset width of x-axis labels
+    margin-left: 60px;
+    margin-right: 25px;
+  }
   .y1 .dygraph-ylabel,
   .y2 .dygraph-y2label {
     // axis highlight
