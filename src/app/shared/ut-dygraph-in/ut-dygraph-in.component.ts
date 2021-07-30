@@ -573,9 +573,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     if (this.columnLabels.length != this.displayedData[0].length) {
       console.error(
         'mismatch columnlabels',
-        this.columnLabels.length,
+        this.columnLabels,
         'and datalen',
-        this.displayedData[0].length
+        this.displayedData
       );
       return;
     }
