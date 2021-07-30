@@ -37,12 +37,14 @@ export class AnysensComponent implements OnInit {
     },
   };
   labelBlackListT = ['host', 'serial', 'mean_*'];
+  private sidebarWidth = '15rem';
+  public currentSidebarWidth = this.sidebarWidth;
   graphstyle = {
     position: 'absolute',
     top: '0.5em',
     bottom: '0.5rem',
     left: '0.5rem',
-    right: '15rem',
+    right: '0.5rem',
   };
 
   public startTime = '6h';
@@ -95,6 +97,7 @@ export class AnysensComponent implements OnInit {
   public queryRunning = false;
   public autoreload = false;
   public tableShown = true;
+  public sideBarShown = true;
 
   constructor(
     private globalSettings: GlobalSettingsService,
@@ -107,12 +110,15 @@ export class AnysensComponent implements OnInit {
   }
 
   ngOnInit() {
-    ['userMeanS', 'userStartTime', 'tableShown'].forEach((element) => {
-      const thing = this.localStorage.get(this.appName + element);
-      if (thing !== null) {
-        this[element] = thing;
+    ['userMeanS', 'userStartTime', 'tableShown', 'sideBarShown'].forEach(
+      (element) => {
+        const thing = this.localStorage.get(this.appName + element);
+        if (thing !== null) {
+          this[element] = thing;
+        }
       }
-    });
+    );
+    this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
 
     [
       'host',
@@ -200,6 +206,16 @@ export class AnysensComponent implements OnInit {
       'LS after:',
       this.localStorage.get(this.appName + 'tableShown')
     );
+  }
+  toggleSidebar() {
+    this.sideBarShown = !this.sideBarShown;
+    this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
+    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger = !this.changeTrigger;
+
+    this.localStorage.set(this.appName + 'sideBarShown', this.sideBarShown);
+    console.log('toggleSidebar', this.currentSidebarWidth);
+
   }
 
   launchQuery(clause: string) {

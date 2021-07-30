@@ -11,24 +11,36 @@
       title="Return to overview"
       ><mat-icon>fullscreen_exit</mat-icon></a
     >
+    <button
+      id="toggleSidebar"
+      (click)="toggleSidebar(); R.resize()"
+      title="Toggle sidebar"
+    >
+      {{ sideBarShown ? '»' : '«' }}
+    </button>
   </div>
   <div id="anybody">
-    <app-ut-dygraph-in
-      [displayedData]="data"
-      [columnLabels]="labels"
-      [roundDigits]="round_digits"
-      [style]="graphstyle"
-      [changeTrigger]="changeTrigger"
-      [extraDyGraphConfig]="extraDyGraphConfig"
-      [startTime]="undefined"
-      enableHighlightCallback="true"
-      [colors]="colors"
-      [YLabel]="measurement"
-      (returnGraphWidthOnChange)="setGraphWidth($event)"
-      (returnCurrentZoom)="updateFromToTimes($event)"
-      #R
-    ></app-ut-dygraph-in>
-    <form class="settings" (submit)="reload(true)">
+    <div id="dygcontainerabs" [style.right]="currentSidebarWidth">
+      <div id="dygcontainerrel">
+        <app-ut-dygraph-in
+          [displayedData]="data"
+          [columnLabels]="labels"
+          [roundDigits]="round_digits"
+          [style]="graphstyle"
+          [changeTrigger]="changeTrigger"
+          [extraDyGraphConfig]="extraDyGraphConfig"
+          [startTime]="undefined"
+          enableHighlightCallback="true"
+          [colors]="colors"
+          [YLabel]="measurement"
+          (returnGraphWidthOnChange)="setGraphWidth($event)"
+          (returnCurrentZoom)="updateFromToTimes($event)"
+          #R
+        ></app-ut-dygraph-in>
+      </div>
+    </div>
+
+    <form class="settings" (submit)="reload(true)" *ngIf="sideBarShown">
       <fieldset>
         <h3>Current Dataset:</h3>
         <label>Resolution:</label>
@@ -114,7 +126,7 @@
           <th>latest data</th>
           <th style="position: relative; padding-right: 2.2em">
             average
-            <button (click)="toggleTableShown(); R.resize()">
+            <button (click)="toggleTableShown(); R.resize()" title="Hide Data Table">
               <mat-icon>cancel</mat-icon>
             </button>
           </th>
