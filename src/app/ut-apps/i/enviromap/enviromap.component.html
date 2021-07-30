@@ -11,7 +11,7 @@
   <app-map [x]="15.46" [y]="47.07" [z]="13" [layers]="layers"></app-map>
 </div>
 
-<div class="colorlegend">
+<div class="colorlegend" *ngIf="column">
   <table>
     <tr>
       <th class="end">{{ unit }}</th>
