@@ -12,7 +12,7 @@
       <td>
       <a
         routerLink="/Apps/I/Enviromap"
-        [queryParams]="{ measurement: m, referrer: '/Apps/I/Sensemaps' }"
+        [queryParams]="{ measurement: m, referrer: 'Sensemaps' }"
         routerLinkActive="active"
         >{{ m }}</a
       ></td>
@@ -33,7 +33,7 @@
       <td>
         <a
           routerLink="/Apps/I/Enviromap"
-          [queryParams]="{ sensor: s.key, measurement: s.value.join(','), referrer: '/Apps/I/Sensemaps' }"
+          [queryParams]="{ sensor: s.key, measurement: s.value.join(','), referrer: 'Sensemaps' }"
           routerLinkActive="active"
           >{{ s.key }}</a
         ></td>
@@ -41,7 +41,7 @@
         <span *ngFor="let m of s.value">
           <a
             routerLink="/Apps/I/Enviromap"
-            [queryParams]="{ sensor: s.key, measurement: m, referrer: '/Apps/I/Sensemaps' }"
+            [queryParams]="{ sensor: s.key, measurement: m, referrer: 'Sensemaps' }"
             routerLinkActive="active"
           >{{ m }}</a
           >&nbsp;</span>
