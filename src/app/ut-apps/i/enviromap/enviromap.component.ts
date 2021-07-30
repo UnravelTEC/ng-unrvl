@@ -103,7 +103,7 @@ export class EnviromapComponent implements OnInit {
   public highlightValue: number;
 
   public currentRange: string;
-  public column: String; //used for color
+  public column: String; //searchstring - if a label matches, this column is used for coloring the markers
   public colorramp = [
     'green:#00FF00',
     'yellow:#FFFF00',
@@ -262,16 +262,39 @@ export class EnviromapComponent implements OnInit {
     if (ret['error']) {
       alert('Influx Error: ' + ret['error']);
       this.queryRunning = false;
+      this.data = [];
+      this.labels = ['']; // to signalise no data
       return;
     }
     const labels = ret['labels'];
+    if (labels.length < 4) {
+      // date, lat, lon
+      console.log('not enough data columns received', labels);
+      this.queryRunning = false;
+      this.data = [];
+      this.labels = ['']; // to signalise no data
+      return;
+    }
     const idata = ret['data'];
 
     let logscale = true;
     const newColors = this.h.getColorsforLabels(labels);
+    if (!this.column) {
+      if (labels.length == 4) {
+        // Date, (lat, lon, value in any order)
+        for (let i = 1; i < labels.length; i++) {
+          if (labels[i] != 'location lon' && labels[i] != 'location lat') {
+            this.column = labels[i];
+            console.log('only 1 data column, use', this.column, 'for colors');
+          }
+        }
+      }
+    }
+
     let colorColumn: Number;
     for (let c = 1; c < labels.length; c++) {
       const item = labels[c];
+      console.log('scan: column', c, '="' + item + '"');
 
       if (logscale == true) {
         for (let r = 0; r < idata.length; r++) {
@@ -293,8 +316,10 @@ export class EnviromapComponent implements OnInit {
       if (item.match(/pressure/)) {
         this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
       }
-      if (item.search(this.column) > -1) {
+      if (item.search(this.column) > -1 || item == this.column) {
+        // || needed, does not match if the same?? at least for "temperature sensor ( °C )"
         colorColumn = c;
+        console.log('using', labels[c], 'as color column');
       }
     }
     // console.log(cloneDeep(this.dygLabels));
@@ -346,6 +371,7 @@ export class EnviromapComponent implements OnInit {
       const row = idata[r];
       let newgrow = [row[0]];
       let newmrow = [row[0]];
+      let isValidRow = false;
       for (let c = 1; c < row.length; c++) {
         const element = row[c];
         if (c == latlabelpos) {
@@ -356,8 +382,12 @@ export class EnviromapComponent implements OnInit {
           true;
         } else {
           if (element === null) {
-            delete row[c];
-            continue;
+            // delete row[c];
+            // row[c] = NaN;
+            // continue;
+            true;
+          } else {
+            isValidRow = true;
           }
           newgrow.push(element);
         }
@@ -369,7 +399,9 @@ export class EnviromapComponent implements OnInit {
           }
         }
       }
-      graphdata.push(newgrow);
+      if (isValidRow) {
+        graphdata.push(newgrow);
+      }
       // mapdata.push(newmrow);//unused
     }
     this.minmax.max = this.h.roundAccurately(max, this.round_graphdigits[1]);
@@ -383,8 +415,12 @@ export class EnviromapComponent implements OnInit {
         for (let c = 1; c < row.length; c++) {
           if (c == colorColumn) {
             const element = row[c];
-            const percentage = ((element - min) / range) * 100;
-            row.push(this.h.returnColorForPercent(percentage));
+            if (element !== null) {
+              const percentage = ((element - min) / range) * 100;
+              row.push(this.h.returnColorForPercent(percentage));
+            } else {
+              row.push('gray');
+            }
             break;
           }
         }
