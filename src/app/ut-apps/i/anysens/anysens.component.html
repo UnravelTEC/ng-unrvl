@@ -1,7 +1,7 @@
 <div id="anyapp">
   <div id="anyheader">
     <h2>
-      {{ sensor }} {{ measurement }} <small>( {{ common_label }} )</small>
+      {{ sensor }} {{ measurement }} <small *ngIf="common_label != measurement">( {{ common_label }} )</small>
     </h2>
     <!-- small spaces in ( )-->
     <a
