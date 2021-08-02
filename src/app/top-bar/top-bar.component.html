@@ -4,7 +4,7 @@
   >
   <!-- <em class=search>Search</em> -->
   <!-- <em class=wifi>Wifi</em> -->
-  <em class="hostname">{{ hostName }}</em
+  <em class="hostname">{{ hostName }}<span *ngIf="gss.server.influxdb != 'telegraf'"> ( {{ gss.server.influxdb}} )</span></em
   >:
   <em class="appname">{{ appName }}</em>
   <span class="spacer">&nbsp;</span>
