@@ -308,7 +308,6 @@ export class GlobalSettingsService implements OnInit {
         this.setCurrentWebEndpoint('Current Web Endpoint');
       }
     }
-    this.initializeInfluxCreds();
     this.checkFullscreen();
   }
   initializeInfluxCreds() {
@@ -420,6 +419,7 @@ export class GlobalSettingsService implements OnInit {
 
       console.log('SUCCESS: Influx health:', data);
       this.server.influxVersion = data['version'];
+      this.initializeInfluxCreds();
     } else {
       console.error('FAILURE: Influx on endpoint not ready', data);
     }
