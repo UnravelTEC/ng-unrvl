@@ -4,14 +4,23 @@
   <div class="flow auth">
     <h3>Authentication</h3>
     <label for="influxuser"> Username </label
-    ><input type="text" id="influxuser" [(ngModel)]="username" /><br />
+    ><input
+      type="text"
+      id="influxuser"
+      [(ngModel)]="username"
+      [disabled]="gss.server.databaseStatus != 'up'"
+    /><br />
 
     <label for="influxpass"> Password </label
     ><input
-    type="{{ hidepw ? 'password' : 'text'}}"
-    id="influxpass"
-    [(ngModel)]="password"
-    /><mat-icon (click)="hidepw = !hidepw">{{ hidepw ? 'visibility' : 'visibility_off' }}</mat-icon><br />
+      type="{{ hidepw ? 'password' : 'text' }}"
+      id="influxpass"
+      [(ngModel)]="password"
+      [disabled]="gss.server.databaseStatus != 'up'"
+    /><mat-icon (click)="hidepw = !hidepw">{{
+      hidepw ? 'visibility' : 'visibility_off'
+    }}</mat-icon
+    ><br />
     <label *ngIf="note">{{ note }}</label>
     <label *ngIf="errortext" class="error">{{ errortext }}</label>
     <button (click)="login()">Login</button>
@@ -25,7 +34,7 @@
       >
       <select
         size="{{ databases.length > 1 ? databases.length : 2 }}"
-        style="height: {{ databases.length*1.85 }}em;"
+        [style.height.rem]="1.55 * databases.length"
         formControlName="databasesForm"
         (change)="changeDB($event)"
       >

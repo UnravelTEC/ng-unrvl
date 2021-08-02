@@ -33,16 +33,24 @@ div.flexcontainer {
       }
       select {
         display: inline-block;
+        border: 2px solid black;
         padding: 0.2em;
         margin-left: 8em;
         color: #c7c7c7;
         background: #565656;
+        scrollbar-width: none; /*For Firefox*/
+        -ms-overflow-style: none; /*For Internet Explorer 10+*/
         option {
           margin: 0.1em;
           padding: 0.2em;
           display: block;
         }
         overflow-y: auto;
+      }
+      select:-webkit-scrollbar {
+        /*For WebKit Browsers*/
+        width: 0;
+        height: 0;
       }
     }
   }
