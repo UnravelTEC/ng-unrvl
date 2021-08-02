@@ -309,7 +309,6 @@ export class GlobalSettingsService implements OnInit {
       }
     }
     this.initializeInfluxCreds();
-    this.checkForInflux();
     this.checkFullscreen();
   }
   initializeInfluxCreds() {
@@ -385,8 +384,11 @@ export class GlobalSettingsService implements OnInit {
       chosenBackendType
     );
     console.log('setCurrentWebEndpoint', chosenBackendType, this.server);
+    this.checkForInfluxCounter = 0;
+    this.checkForInflux();
   }
 
+  private checkForInfluxCounter = 0;
   checkForInflux() {
     const influxServer = this.server.baseurl + '/influxdb';
     const InfluxHealthQuery = '/health';
@@ -401,9 +403,12 @@ export class GlobalSettingsService implements OnInit {
           ', 5s to next try.'
         );
         this.server.databaseStatus = 'down';
-        setTimeout(() => {
-          this.checkForInflux();
-        }, 5 * 1000);
+        this.checkForInfluxCounter++;
+        if (this.checkForInfluxCounter < 5) {
+          setTimeout(() => {
+            this.checkForInflux();
+          }, 5 * 1000);
+        }
       }
     );
   }
@@ -411,6 +416,7 @@ export class GlobalSettingsService implements OnInit {
   checkInfluxTestResponse(data: Object) {
     if (data['status'] && data['status'] === 'pass') {
       this.server.databaseStatus = 'up';
+      this.checkForInfluxCounter = 0;
 
       console.log('SUCCESS: Influx health:', data);
       this.server.influxVersion = data['version'];
@@ -546,11 +552,12 @@ export class GlobalSettingsService implements OnInit {
   }
 
   checkFullscreen() {
-    this.client.isFullscreen = document['fullscreenElement'] && document['fullscreenElement'] !== null;
+    this.client.isFullscreen =
+      document['fullscreenElement'] && document['fullscreenElement'] !== null;
   }
   fullscreen() {
     // https://stackoverflow.com/questions/36672561/how-to-exit-fullscreen-onclick-using-javascript
-    const isInFullScreen =   this.client.isFullscreen;
+    const isInFullScreen = this.client.isFullscreen;
     /*||
         (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
         (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
