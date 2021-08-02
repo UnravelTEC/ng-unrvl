@@ -24,6 +24,7 @@ export class SettingsPanelComponent implements OnInit {
   public api_pass = '';
   public login_status_text = 'Not logged in.';
   public auth = 'NOK';
+  public hidepw = true;
 
   public backendTypes = ['Demo Server', 'Current Web Endpoint', 'Other'];
   public chosenBackendType = '';

@@ -47,7 +47,7 @@
   </mat-radio-group>
 </section>
 
-<div class="settingspage" *ngIf="gss.server.type != 'PublicServer'">
+<div *ngIf="gss.server.type != 'PublicServer'">
   <section>
     <h2>Administration login</h2>
     <table>
@@ -59,8 +59,9 @@
       </tr>
       <tr>
         <th><label for="api_pass">Password</label></th>
-        <td>
-          <input type="text" id="api_pass" [(ngModel)]="api_pass" />
+        <td class="auth">
+          <input type="{{ hidepw ? 'password' : 'text'}}" id="api_pass" [(ngModel)]="api_pass"
+          /><mat-icon (click)="hidepw = !hidepw">{{ hidepw ? 'visibility' : 'visibility_off' }}</mat-icon>
         </td>
       </tr>
       <tr>
@@ -73,9 +74,17 @@
   </section>
 </div>
 
+<div *ngIf="gss.server.type == 'PublicServer'">
+  <section>
+    <section>
+      <app-influxsettings></app-influxsettings>
+    </section>
+  </section>
+</div>
+
 <div
-  class="settingspage"
-  *ngIf="auth == 'OK' && gss.server.type == 'Tricorder'"
+  class="{{ auth != 'OK' ? 'red' : '' }}"
+  *ngIf="gss.client.dev || (auth == 'OK' && gss.server.type == 'Tricorder')"
 >
   <section *ngIf="gss.server.hasscreen">
     <h2>
@@ -136,14 +145,6 @@
         >
           Delete Settings
         </button> -->
-
-<div class="settingspage" *ngIf="gss.server.type == 'PublicServer'">
-  <section>
-    <section>
-      <app-influxsettings></app-influxsettings>
-    </section>
-  </section>
-</div>
 
 <div style="margin: 0.5em; text-align: right">
   {{ gitV.branch }}/<a

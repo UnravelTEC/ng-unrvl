@@ -19,6 +19,8 @@ export class InfluxsettingsComponent implements OnInit, OnDestroy {
   note = '';
   errortext = '';
 
+  hidepw = true;
+
   databases = [];
   constructor(
     public gss: GlobalSettingsService,

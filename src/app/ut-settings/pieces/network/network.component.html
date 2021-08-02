@@ -11,8 +11,9 @@
       </tr>
       <tr>
         <th><label for="psk">PSK</label></th>
-        <td>
-          <input type="text" id="psk" [(ngModel)]="wificlient_psk" />
+        <td class="auth">
+          <input type="{{ hidepw ? 'password' : 'text'}}" id="psk" [(ngModel)]="wificlient_psk"
+           /><mat-icon (click)="hidepw = !hidepw">{{ hidepw ? 'visibility' : 'visibility_off' }}</mat-icon>
         </td>
       </tr>
       <tr>
