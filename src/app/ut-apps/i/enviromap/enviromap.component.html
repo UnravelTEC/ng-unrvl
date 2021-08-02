@@ -4,14 +4,28 @@
   [routerLink]="'/Apps/I/' + referrer"
   routerLinkActive="active"
   title="Return to overview"
+  [style.right]="sideBarShown ? '3rem' : '2rem'"
   ><mat-icon>fullscreen_exit</mat-icon></a
 >
+<button
+  id="toggleSidebar"
+  (click)="sideBarShown = !sideBarShown; R.resize()"
+  title="Toggle sidebar"
+  [style.right]="sideBarShown ? '1rem' : '0.4rem'"
+>
+  {{ sideBarShown ? '»' : '«' }}
+</button>
 
-<div class="fs-container">
+<div class="fs-container" [style.right]="sideBarShown ? '18rem': '3.5rem'">
   <app-map [x]="15.46" [y]="47.07" [z]="13" [layers]="layers"></app-map>
 </div>
 
-<div class="colorlegend" *ngIf="column">
+<div
+  class="colorlegend"
+  *ngIf="column"
+  [style.top]="sideBarShown ? '0.5rem' : '2.8rem'"
+  [style.right]="sideBarShown ? '15rem' : '0.5rem'"
+>
   <table>
     <tr>
       <th class="end">{{ unit }}</th>
@@ -35,7 +49,7 @@
   </table>
 </div>
 
-<form class="settings" (submit)="reload(true)">
+<form class="settings" (submit)="reload(true)" *ngIf="sideBarShown">
   <fieldset>
     <h3>Current Dataset:</h3>
     <p>

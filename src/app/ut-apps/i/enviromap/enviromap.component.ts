@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GlobalSettingsService } from '../../../core/global-settings.service';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
@@ -12,7 +12,7 @@ import { LocalStorageService } from 'app/core/local-storage.service';
   templateUrl: './enviromap.component.html',
   styleUrls: ['./enviromap.component.scss'],
 })
-export class EnviromapComponent implements OnInit {
+export class EnviromapComponent implements OnInit, OnDestroy {
   public appName = 'Enviromap';
   constructor(
     private globalSettings: GlobalSettingsService,
@@ -116,6 +116,8 @@ export class EnviromapComponent implements OnInit {
   begincolor = 'black';
   endcolor = 'black';
 
+  public sideBarShown = true;
+
   public minmax = { min: Infinity, max: -Infinity };
   updateFromToTimes(timearray, interval = '') {
     // console.log(timearray);
@@ -134,7 +136,7 @@ export class EnviromapComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    ['userMeanS', 'userStartTime'].forEach((element) => {
+    ['userMeanS', 'userStartTime','sideBarShown'].forEach((element) => {
       const thing = this.localStorage.get(this.appName + element);
       if (thing !== null) {
         this[element] = thing;
@@ -509,5 +511,8 @@ export class EnviromapComponent implements OnInit {
         }
       );
     }
+  }
+  ngOnDestroy() {
+    this.localStorage.set(this.appName + 'sideBarShown', this.sideBarShown);
   }
 }
