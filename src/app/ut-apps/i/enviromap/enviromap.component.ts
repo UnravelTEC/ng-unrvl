@@ -381,15 +381,14 @@ export class EnviromapComponent implements OnInit {
           // newmrow[2] = element;//unused
           true;
         } else {
+          newgrow.push(element);
           if (element === null) {
             // delete row[c];
             // row[c] = NaN;
-            // continue;
-            true;
+            continue;
           } else {
             isValidRow = true;
           }
-          newgrow.push(element);
         }
         if (c == colorColumn) {
           if (max < element) {
