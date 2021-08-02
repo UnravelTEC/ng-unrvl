@@ -185,6 +185,8 @@ export class GlobalSettingsService implements OnInit {
     hasscreen: undefined, // true || false
     // cpu: 'unknown',
     // cpus: undefined,
+    sensors: {},
+    measurements: [],
     databaseStatus: 'unknown', // db status: up, down, unknown, waiting
     api: undefined,
     influxdb: 'telegraf',
@@ -316,6 +318,7 @@ export class GlobalSettingsService implements OnInit {
       this.server.influxuser = '';
       this.server.influxpass = '';
       console.log('initializeInfluxCreds: http -> no auth, db telegraf');
+      this.triggerDBScan();
       return;
     }
     const lsinfluxdb = this.localStorage.get('influxdb');
@@ -331,6 +334,7 @@ export class GlobalSettingsService implements OnInit {
         lsinfluxuser,
         lsinfluxpass
       );
+      this.triggerDBScan();
       return;
     }
     if (this.server.type == 'PublicServer') {
@@ -338,8 +342,41 @@ export class GlobalSettingsService implements OnInit {
       this.server.influxuser = 'public';
       this.server.influxpass = 'unravelit42.14153';
       console.log('initializeInfluxCreds to', this.server.influxdb);
+    } else {
+      console.error('initializeInfluxCreds ??');
     }
-    console.error('initializeInfluxCreds ??');
+    this.triggerDBScan();
+  }
+  public triggerDBScan() {
+    // gets sent to root app.component, who fetches sensorlist (avoid cyclic dependency with uthttp)
+    this.emitChange({ InfluxUP: true });
+  }
+  public handleInfluxSeries(data: Object) {
+    // console.log('received', data);
+    const series = this.h.getDeep(data, ['results', 0, 'series', 0, 'values']);
+    console.log('series', series);
+    this.server.measurements = [];
+    this.server.sensors = {};
+    for (let i = 0; i < series.length; i++) {
+      const seri = series[i][0];
+      const measurement = seri.split(',')[0];
+      if (!this.server.measurements.includes(measurement)) {
+        this.server.measurements.push(measurement);
+      }
+      const sensor = seri.match(/sensor=([-A-Za-z0-9|]*)/);
+      if (sensor && sensor[1]) {
+        const sname = sensor[1];
+        if (!this.server.sensors[sname]) this.server.sensors[sname] = [];
+        if (!this.server.sensors[sname].includes(measurement))
+          this.server.sensors[sname].push(measurement);
+      }
+      // const host = seri.match(/host=([-A-Za-z0-9]*)/);
+      // if (host && host[1] && !this.hosts.includes(host[1])) {
+      //   this.hosts.push(host[1]);
+      // }
+    }
+    console.log('measurements:', this.server.measurements);
+    console.log('sensors:', this.server.sensors);
   }
   setCurrentWebEndpoint(chosenBackendType, baseurl?: string) {
     switch (chosenBackendType) {

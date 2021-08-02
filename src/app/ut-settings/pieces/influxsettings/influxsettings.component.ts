@@ -40,6 +40,7 @@ export class InfluxsettingsComponent implements OnInit, OnDestroy {
 
     this.localStorage.set('influxdb', this.dbname);
     this.gss.server.influxdb = this.dbname;
+    this.gss.triggerDBScan()
     // alert(this.myDBs.value['databasesForm']);
   }
 

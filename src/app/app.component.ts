@@ -4,11 +4,12 @@ import { HttpClient } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 
 import { GlobalSettingsService } from './core/global-settings.service';
+import { UtFetchdataService } from './shared/ut-fetchdata.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
   title = 'SDARS - Sensor Data Access and Retrieval System';
@@ -27,6 +28,7 @@ export class AppComponent implements OnInit {
 
   public constructor(
     private http: HttpClient,
+    private utHTTP: UtFetchdataService,
     private titleService: Title,
     private globalSettings: GlobalSettingsService
   ) {}
@@ -34,18 +36,24 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.setTitle('UnravelTEC');
 
-    this.globalSettings.changeEmitted$.subscribe(obj => {
+    this.globalSettings.changeEmitted$.subscribe((obj) => {
       console.log(obj);
-      if (obj && obj.hasOwnProperty('fullscreen')) {
+      if (!obj) {
+        return;
+      }
+      if (obj.hasOwnProperty('fullscreen')) {
         this.toggleFullScreen(obj['fullscreen']);
+        return;
       }
-      if (obj && obj.hasOwnProperty('appName')) {
+      if (obj.hasOwnProperty('appName')) {
         this.setAppName(obj['appName']);
+        return;
       }
-      if (obj && obj.hasOwnProperty('footer')) {
+      if (obj.hasOwnProperty('footer')) {
         this.toggleFooter(obj['footer']);
+        return;
       }
-      if (obj && obj.hasOwnProperty('TricorderLocal')) {
+      if (obj.hasOwnProperty('TricorderLocal')) {
         if (obj['TricorderLocal'] === true) {
           this.cursor = 'none';
           this.toggleFooter(false);
@@ -55,10 +63,20 @@ export class AppComponent implements OnInit {
           this.toggleFooter(true);
           this.cursor = 'auto';
         }
+        return;
       }
-      if (obj && obj.hasOwnProperty('hostname')) {
+      if (obj.hasOwnProperty('hostname')) {
         this.hostName = obj['hostname'];
         this.setTitle();
+        return;
+      }
+      if (obj.hasOwnProperty('InfluxUP')) {
+        if (obj['InfluxUP'] === true) {
+          this.getInfluxDBOverview();
+        } else {
+          this.globalSettings.server.measurements = [];
+          this.globalSettings.server.sensors = {};
+        }
       }
     });
 
@@ -68,6 +86,13 @@ export class AppComponent implements OnInit {
       console.log('mobile detected, remove footer');
       this.toggleFooter(false);
     }
+  }
+  getInfluxDBOverview() { // here to avoid cyclic dependency gss <=> uthttp
+    this.utHTTP
+      .getHTTPData(this.utHTTP.buildInfluxQuery('show series'))
+      .subscribe((data: Object) =>
+        this.globalSettings.handleInfluxSeries(data)
+      );
   }
 
   public setTitle(newTitle?: string) {
