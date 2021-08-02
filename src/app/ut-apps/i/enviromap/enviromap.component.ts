@@ -174,10 +174,21 @@ export class EnviromapComponent implements OnInit {
     this.endcolor = this.h.returnColorForPercent(100);
   }
   reload(fromTo = false) {
-    this.queryRunning = true;
     this.meanS = this.userMeanS;
     this.currentres = this.meanS;
     this.startTime = this.userStartTime;
+
+    const timerange = fromTo ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000 : this.h.parseToSeconds(this.startTime);
+    const nr_points = timerange / this.meanS;
+    if (nr_points > 10000) {
+      if (!window.confirm('Database would be queried for up to ' + Math.ceil(nr_points).toLocaleString() + ' points of data, are you sure?')) {
+        console.log('user canceled query with', nr_points, 'points.');
+        if (!this.labels.length) { // at start to show "no data"
+          this.labels = [''];
+        }
+        return;
+      }
+    }
 
     const timeQuery = fromTo
       ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
@@ -234,6 +245,7 @@ export class EnviromapComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
+    this.queryRunning = true;
     this.utHTTP
       .getHTTPData(
         this.utHTTP.buildInfluxQuery(clause) //, this.db, this.server)

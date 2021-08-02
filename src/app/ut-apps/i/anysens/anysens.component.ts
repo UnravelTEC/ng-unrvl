@@ -154,6 +154,18 @@ export class AnysensComponent implements OnInit {
     this.currentres = this.meanS;
     this.startTime = this.userStartTime;
 
+    const timerange = fromTo ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000 : this.h.parseToSeconds(this.startTime);
+    const nr_points = timerange / this.meanS;
+    if (nr_points > 10000) {
+      if (!window.confirm('Database would be queried for up to ' + Math.ceil(nr_points).toLocaleString() + ' points of data, are you sure?')) {
+        console.log('user canceled query with', nr_points, 'points.');
+        if (!this.labels.length) { // at start to show "no data"
+          this.labels = [''];
+        }
+        return;
+      }
+    }
+
     const timeQuery = fromTo
       ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
       : this.utHTTP.influxTimeString(this.startTime);
@@ -215,7 +227,6 @@ export class AnysensComponent implements OnInit {
 
     this.localStorage.set(this.appName + 'sideBarShown', this.sideBarShown);
     console.log('toggleSidebar', this.currentSidebarWidth);
-
   }
 
   launchQuery(clause: string) {
