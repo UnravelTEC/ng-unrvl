@@ -154,7 +154,7 @@ style.padding-bottom="20vh"-->
     </div>
     <div
       class="logbuttons"
-      *ngIf="options == true && showLogscaleSwitcher == true"
+      *ngIf="options == true && showLogscaleSwitcher == true && !noData"
     >
       <div class="logy y1" (click)="switchLogScale()">
         <div
