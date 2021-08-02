@@ -3,7 +3,7 @@ import {
   OnInit,
   ElementRef,
   ViewChild,
-  AfterViewInit
+  AfterViewInit,
 } from '@angular/core';
 
 import { GlobalSettingsService } from '../../core/global-settings.service';
@@ -12,7 +12,7 @@ import { HostListener } from '@angular/core';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
   @ViewChild('dashboard', { static: true })
@@ -29,11 +29,43 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   contentHeight: number;
   contentWidth: number;
 
+  sensorAppRegistry = {
+    // '': {
+    //   description: '',
+    //   icon: '',
+    // },
+    TSL2561: {
+      description: 'Brightness',
+      icon: 'manufacturers/Ams.svg  ',
+    },
+    DS18B20: {
+      description: 'Temperature',
+      icon: 'manufacturers/Maxim_Integrated.svg',
+    },
+    SCD30: {
+      description: 'NDIR CO₂',
+      icon: 'manufacturers/sensirion.png',
+    },
+    SPS30: {
+      description: 'Particulate Matter',
+      icon: 'manufacturers/sensirion.png',
+    },
+    BME280: {
+      description: 'Environmental',
+      icon: 'manufacturers/Bosch.svg',
+    },
+  };
+  SAR = this.sensorAppRegistry;
+  // EXSENSOR = {
+  //   description: 'exampling',
+  //   icon: 'example.png',
+  // };
+
   min_tilesize = 140; // px
 
-  constructor(public globalSettings: GlobalSettingsService) {
+  constructor(public gss: GlobalSettingsService) {
     // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
-    this.globalSettings.emitChange({ appName: 'Dashboard' });
+    this.gss.emitChange({ appName: 'Dashboard' });
     this.getScreenSize();
     console.log('w:', this.tilewidth, 'h:', this.tileheight);
   }

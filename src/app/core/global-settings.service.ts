@@ -185,7 +185,7 @@ export class GlobalSettingsService implements OnInit {
     hasscreen: undefined, // true || false
     // cpu: 'unknown',
     // cpus: undefined,
-    sensors: {},
+    sensors: undefined, // checking for undef in html is easier than for {}
     measurements: [],
     databaseStatus: 'unknown', // db status: up, down, unknown, waiting
     api: undefined,
@@ -357,6 +357,7 @@ export class GlobalSettingsService implements OnInit {
     console.log('series', series);
     this.server.measurements = [];
     this.server.sensors = {};
+    let sensorhere = false;
     for (let i = 0; i < series.length; i++) {
       const seri = series[i][0];
       const measurement = seri.split(',')[0];
@@ -365,6 +366,7 @@ export class GlobalSettingsService implements OnInit {
       }
       const sensor = seri.match(/sensor=([-A-Za-z0-9|]*)/);
       if (sensor && sensor[1]) {
+        sensorhere = true;
         const sname = sensor[1];
         if (!this.server.sensors[sname]) this.server.sensors[sname] = [];
         if (!this.server.sensors[sname].includes(measurement))
@@ -374,6 +376,9 @@ export class GlobalSettingsService implements OnInit {
       // if (host && host[1] && !this.hosts.includes(host[1])) {
       //   this.hosts.push(host[1]);
       // }
+    }
+    if (!sensorhere) {
+      this.server.sensors = undefined; // checking for undef in html is easier than for {}
     }
     console.log('measurements:', this.server.measurements);
     console.log('sensors:', this.server.sensors);
