@@ -46,6 +46,10 @@
     class="icon"
     ><mat-icon>power</mat-icon></a
   > -->
+  <a (click)="gss.fullscreen()" *ngIf="gss.client.mobile" class="icon fs"
+  ><mat-icon *ngIf="!gss.client.isFullscreen">fullscreen</mat-icon
+    ><mat-icon *ngIf="gss.client.isFullscreen">fullscreen_exit</mat-icon
+      ></a>
   <a routerLink="/Settings" routerLinkActive="active" class="icon"
     ><mat-icon>settings</mat-icon></a
   >

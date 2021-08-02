@@ -76,10 +76,19 @@ nav em.appname {
 nav > a.icon {
   padding-right: 0.5em;
   padding-left: 0.5em;
+  cursor:pointer;
 }
-nav .material-icons {
-  vertical-align: middle;
-  margin: 0;
-  height: 1.4em;
-  transform: translateY(-0.2em);
+nav {
+  .material-icons {
+    vertical-align: middle;
+    margin: 0;
+    height: 1.4em;
+    transform: translateY(-0.2em);
+  }
+  .fs .material-icons{
+    font-size: 1.7em;
+    // height: 1.7em;
+    // line-height: 1.4em;
+    // transform: translateY(-0.2em);
+  }
 }

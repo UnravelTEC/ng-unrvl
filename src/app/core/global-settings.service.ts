@@ -200,6 +200,7 @@ export class GlobalSettingsService implements OnInit {
     dev: undefined, // if running as ng serve (localhost:4200)
 
     localscreen: undefined, // true if running on Henri/Device where Browser runs on same Hardware as server
+    isFullscreen: undefined,
 
     mobile: false,
   };
@@ -309,6 +310,7 @@ export class GlobalSettingsService implements OnInit {
     }
     this.initializeInfluxCreds();
     this.checkForInflux();
+    this.checkFullscreen();
   }
   initializeInfluxCreds() {
     if (this.server.protocol == 'http') {
@@ -541,5 +543,42 @@ export class GlobalSettingsService implements OnInit {
       }
     }
     return 2;
+  }
+
+  checkFullscreen() {
+    this.client.isFullscreen = document['fullscreenElement'] && document['fullscreenElement'] !== null;
+  }
+  fullscreen() {
+    // https://stackoverflow.com/questions/36672561/how-to-exit-fullscreen-onclick-using-javascript
+    const isInFullScreen =   this.client.isFullscreen;
+    /*||
+        (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
+        (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
+        (document.msFullscreenElement && document.msFullscreenElement !== null); */
+
+    const docElm = document.documentElement;
+    if (!isInFullScreen) {
+      if (docElm.requestFullscreen) {
+        docElm.requestFullscreen();
+        this.client.isFullscreen = true;
+      } /* else if (docElm.mozRequestFullScreen) {
+            docElm.mozRequestFullScreen();
+        } else if (docElm.webkitRequestFullScreen) {
+            docElm.webkitRequestFullScreen();
+        } else if (docElm.msRequestFullscreen) {
+            docElm.msRequestFullscreen();
+        } */
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+        this.client.isFullscreen = false;
+      } /* else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        } */
+    }
   }
 }
