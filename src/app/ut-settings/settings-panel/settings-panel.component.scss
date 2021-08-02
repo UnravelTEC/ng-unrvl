@@ -1,6 +1,8 @@
 $buttonbg: #565656;
 div.red {
   border: 2px solid red;
+  box-sizing: border-box;
+  margin: 0.5em;
 }
 
 h1 {
