@@ -61,6 +61,39 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   //   icon: 'example.png',
   // };
 
+  appRegistry = {
+    // '': {
+    //   path: '',
+    //   icon: '',
+    //   queryParams: {},
+    //   datafields: [{ '': '' }],
+    // },
+    'Indoor Climate': {
+      path: 'I/IndoorClimate',
+      datafields: [{ humidity: 'H2O_rel_percent' }],
+    },
+    Humidity: {
+      path: 'I/Humidity',
+      icon: '320px-Water_molecule.svg.png',
+      datafields: [{ humidity: 'H2O_rel_percent' }],
+    },
+    'CO₂ Graph': {
+      path: 'CO2',
+      icon: '284px-Carbon_dioxide_3D_spacefill.png',
+      datafields: [{ gas: 'CO2_ppm' }],
+    },
+    'Air Temperature': {
+      path: 'Sensors/DS18B20',
+      icon: 'noun_Temperature.png',
+      datafields: [{ 'temperature': 'air_degC' }],
+    },
+    'Air Pressure': {
+      path: 'I/Pressure',
+      icon: '320px-Pressure_gauge.svg.png',
+      datafields: [{ 'pressure': 'air_hPa' }],
+    },
+  };
+
   min_tilesize = 140; // px
 
   constructor(public gss: GlobalSettingsService) {
