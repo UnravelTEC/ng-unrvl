@@ -48,6 +48,43 @@ export class GlobalSettingsService implements OnInit {
     ],
   };
 
+  private Devs = {
+    Bosch: {
+      T: function (value) {
+        if (value === null) return null;
+        if (isNaN(value) || value > 85 || value < -40) {
+          return NaN;
+        }
+
+        if (value > 20 && value < 30) {
+          // guess, only spec. at 25°C
+          const delta_rel = Math.abs(value - 25) / 5;
+          return [
+            value - 0.5 - 0.5 * delta_rel,
+            value,
+            value + 0.5 + 0.5 * delta_rel,
+          ];
+        }
+        let dev = 1; // °
+        if (value > 0 && value < 65) {
+          return [value - dev, value, value + dev];
+        }
+        // TODO not specified outside 0..65°C
+        dev = 2; // guess
+        return [value - dev, value, value + dev];
+      },
+      P: function (value) {
+        if (value === null) return null;
+        if (isNaN(value) || value > 1100 || value < 300) {
+          return NaN;
+        }
+        const dev = 1; // hPa
+        // TODO dev = 1.7 hPa if T < 0
+        // TODO Log term stability ±1 hPA / Year 0..65°C
+        return [value - dev, value, value + dev];
+      },
+    },
+  };
   public sensorPresets = {
     DS18B20: {
       '*_degC': {
@@ -82,9 +119,35 @@ export class GlobalSettingsService implements OnInit {
     BME280: {
       '*_degC': {
         round_digits: 2,
+        getDeviation: this.Devs.Bosch.T,
       },
-      humidity_rel_percent: {
-        round_digits: 0,
+      H2O_rel_percent: {
+        round_digits: 2,
+        getDeviation: function (value) {
+          if (value === null) return null;
+          if (isNaN(value) || value > 100 || value < 0) {
+            return NaN;
+          }
+          const dev = 3; // %
+          // TODO Log term stability ±0.5 % / Year 10...90%
+          // TODO hysteresis ±1%
+          // TODO nonlinearity 1%
+          return [value - dev, value, value + dev];
+        },
+      },
+      air_hPa: {
+        round_digits: 3,
+        getDeviation: this.Devs.Bosch.P,
+      },
+    },
+    BMP280: {
+      '*_degC': {
+        round_digits: 2,
+        getDeviation: this.Devs.Bosch.T,
+      },
+      air_hPa: {
+        round_digits: 3,
+        getDeviation: this.Devs.Bosch.P,
       },
     },
     MPU9250: {
