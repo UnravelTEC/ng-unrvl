@@ -95,8 +95,12 @@ export class AnysensComponent implements OnInit {
   public to: Number; // unix time from urlparam
 
   public queryRunning = false;
+
   public autoreload = false;
   public auto_interval = 1; // gets set to userMeanS
+  public reload_timer = Infinity;
+  public last_reload: number;
+
   public tableShown = true;
   public sideBarShown = true;
 
@@ -121,6 +125,7 @@ export class AnysensComponent implements OnInit {
     );
     this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
     this.auto_interval = this.userMeanS;
+    this.reload_timer = this.auto_interval;
 
     [
       'host',
@@ -203,6 +208,13 @@ export class AnysensComponent implements OnInit {
 
     this.launchQuery(queries);
   }
+  changeAutoS(param) {
+    console.log(param);
+
+    if (!this.autoreload) {
+      this.reload_timer = param;
+    }
+  }
 
   toggleAutoReload(param) {
     console.log('autoreload:', this.autoreload);
@@ -220,12 +232,24 @@ export class AnysensComponent implements OnInit {
           return;
         }
       }
+      this.last_reload = new Date().valueOf() / 1000;
+      setTimeout(() => this.updateReloadTimer(), 1000);
       setTimeout(() => {
         this.reload();
       }, this.auto_interval * 1000);
+
     }
   }
-  changeAutoS(param) {}
+
+  updateReloadTimer() {
+    if (this.autoreload) {
+      const now_utime = new Date().valueOf()/1000;
+      this.reload_timer = Math.round(this.last_reload + Number(this.auto_interval) - now_utime);
+      // console.log(this.last_reload, this.auto_interval, now_utime);
+
+      setTimeout(() => this.updateReloadTimer(), 1000);
+    }
+  }
 
   calcMean(secondsRange) {
     const divider = Math.floor(secondsRange / this.graphWidth);
@@ -236,6 +260,7 @@ export class AnysensComponent implements OnInit {
 
     this.userMeanS = this.calcMean(rangeSeconds);
     this.auto_interval = this.userMeanS;
+    this.reload_timer = this.auto_interval;
 
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
     this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);
@@ -378,6 +403,7 @@ export class AnysensComponent implements OnInit {
     }
     console.log('latest_values', this.latest_values);
     console.log('latest_dates', this.latest_dates);
+    this.last_reload = new Date().valueOf() / 1000;
     if (this.autoreload) {
       setTimeout(() => {
         this.reload();

@@ -5,6 +5,9 @@
       <small *ngIf="common_label != measurement">( {{ common_label }} )</small>
     </h2>
     <!-- small spaces in ( )-->
+    <div style="position: absolute; top: 0.8em; right: 7em; color: gray;" *ngIf="autoreload">
+      {{ reload_timer | number }}s
+    </div>
     <a
       id="backicon"
       [routerLink]="'/Apps/I/' + referrer"
