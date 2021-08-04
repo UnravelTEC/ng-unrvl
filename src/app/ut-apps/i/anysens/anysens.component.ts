@@ -96,17 +96,18 @@ export class AnysensComponent implements OnInit {
 
   public queryRunning = false;
   public autoreload = false;
+  public auto_interval = 1; // gets set to userMeanS
   public tableShown = true;
   public sideBarShown = true;
 
   constructor(
-    private globalSettings: GlobalSettingsService,
+    private gss: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService,
     private router: ActivatedRoute
   ) {
-    this.globalSettings.emitChange({ appName: this.appName });
+    this.gss.emitChange({ appName: this.appName });
   }
 
   ngOnInit() {
@@ -119,6 +120,7 @@ export class AnysensComponent implements OnInit {
       }
     );
     this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
+    this.auto_interval = this.userMeanS;
 
     [
       'host',
@@ -154,12 +156,21 @@ export class AnysensComponent implements OnInit {
     this.currentres = this.meanS;
     this.startTime = this.userStartTime;
 
-    const timerange = fromTo ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000 : this.h.parseToSeconds(this.startTime);
+    const timerange = fromTo
+      ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000
+      : this.h.parseToSeconds(this.startTime);
     const nr_points = timerange / this.meanS;
     if (nr_points > 10000) {
-      if (!window.confirm('Database would be queried for up to ' + Math.ceil(nr_points).toLocaleString() + ' points of data, are you sure?')) {
+      if (
+        !window.confirm(
+          'Database would be queried for up to ' +
+            Math.ceil(nr_points).toLocaleString() +
+            ' points of data, are you sure?'
+        )
+      ) {
         console.log('user canceled query with', nr_points, 'points.');
-        if (!this.labels.length) { // at start to show "no data"
+        if (!this.labels.length) {
+          // at start to show "no data"
           this.labels = [''];
         }
         return;
@@ -192,6 +203,16 @@ export class AnysensComponent implements OnInit {
 
     this.launchQuery(queries);
   }
+  toggleAutoReload(param) {
+    console.log('autoreload:', this.autoreload);
+
+    if (this.autoreload) {
+      setTimeout(() => {
+        this.reload();
+      }, this.auto_interval * 1000);
+    }
+  }
+  changeAutoS(param) {}
 
   calcMean(secondsRange) {
     const divider = Math.floor(secondsRange / this.graphWidth);
@@ -201,6 +222,7 @@ export class AnysensComponent implements OnInit {
     const rangeSeconds = this.h.parseToSeconds(param);
 
     this.userMeanS = this.calcMean(rangeSeconds);
+    this.auto_interval = this.userMeanS;
 
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
     this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);
@@ -230,15 +252,24 @@ export class AnysensComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
+    if(!this.gss.server.influxdb) {
+      console.log('db not yet set, wait');
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
     this.queryRunning = true;
-    this.utHTTP
-      .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
-      .subscribe((data: Object) => this.handleData(data),
+    this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(clause)).subscribe(
+      (data: Object) => this.handleData(data),
       (error) => {
         console.error(error);
         this.queryRunning = false;
-        alert(`HTTP error: ${error.status}, ${error.statusText}, ${error.message}`);
-      });
+        alert(
+          `HTTP error: ${error.status}, ${error.statusText}, ${error.message}`
+        );
+      }
+    );
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -251,6 +282,7 @@ export class AnysensComponent implements OnInit {
     if (ret['error']) {
       alert('Influx Error: ' + ret['error']);
       this.queryRunning = false;
+      this.autoreload = false;
       return;
     }
     const labels = ret['labels'];
@@ -294,7 +326,7 @@ export class AnysensComponent implements OnInit {
       if (item.match(/pressure/)) {
         this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
       }
-      this.round_digits.push(this.globalSettings.getDigits(this.raw_labels[c]));
+      this.round_digits.push(this.gss.getDigits(this.raw_labels[c]));
     }
     // console.log(cloneDeep(this.dygLabels));
     if (logscale) {
@@ -333,5 +365,10 @@ export class AnysensComponent implements OnInit {
     }
     console.log('latest_values', this.latest_values);
     console.log('latest_dates', this.latest_dates);
+    if (this.autoreload) {
+      setTimeout(() => {
+        this.reload();
+      }, this.auto_interval * 1000);
+    }
   }
 }
