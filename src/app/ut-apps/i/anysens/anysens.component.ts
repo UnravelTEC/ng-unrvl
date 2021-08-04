@@ -203,10 +203,23 @@ export class AnysensComponent implements OnInit {
 
     this.launchQuery(queries);
   }
+
   toggleAutoReload(param) {
     console.log('autoreload:', this.autoreload);
 
     if (this.autoreload) {
+      if (this.gss.server.protocol == 'https' && this.auto_interval < 5 * 60) {
+        if (
+          !confirm(
+            "autoreload < 180s do not make sense on public server, as DB doesn't get updated this often - are you sure?"
+          )
+        ) {
+          setTimeout(() => {
+          this.autoreload = false;
+          }, 50);
+          return;
+        }
+      }
       setTimeout(() => {
         this.reload();
       }, this.auto_interval * 1000);
@@ -252,7 +265,7 @@ export class AnysensComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
-    if(!this.gss.server.influxdb) {
+    if (!this.gss.server.influxdb) {
       console.log('db not yet set, wait');
       setTimeout(() => {
         this.launchQuery(clause);
