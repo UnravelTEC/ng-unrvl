@@ -28,7 +28,7 @@ export class AnysensComponent implements OnInit {
         axis: 'y2',
       },
     },
-    y2label: 'Atmospheric Pressure (hPa)',
+
     axes: {
       y2: {
         independentTicks: true, // default opt here to have a filled object to access later
@@ -36,7 +36,8 @@ export class AnysensComponent implements OnInit {
       },
     },
   };
-  labelBlackListT = ['host', 'serial', 'mean_*'];
+  y2label = 'Atmospheric Pressure';
+  labelBlackListT = ['host', 'serial', 'mean_*','topic'];
   private sidebarWidth = '15rem';
   public currentSidebarWidth = this.sidebarWidth;
   graphstyle = {
@@ -364,8 +365,9 @@ export class AnysensComponent implements OnInit {
           idata[r][c] = this.h.smoothNO2(idata[r][c]);
         }
       }
-      if (item.match(/pressure/)) {
+      if (item.match(/hPa/)) {
         this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
+        this.extraDyGraphConfig.series[this.short_labels[c-1]] = { axis: 'y2' };
       }
       this.round_digits.push(this.gss.getDigits(this.raw_labels[c]));
     }

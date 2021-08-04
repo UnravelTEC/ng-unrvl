@@ -49,6 +49,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   YLabel = this.defaultYlabel;
   @Input()
+  Y2Label = this.defaultYlabel;
+  @Input()
   XLabel = undefined;
   @Input()
   runningAvgPoints = 0;
@@ -549,21 +551,32 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     if (this.YLabel.search(/\(.*\)$/) == -1) {
       let newYlabel = this.YLabel;
       let units = [];
+      let units2 = [];
       for (let i = 1; i < this.columnLabels.length; i++) {
         const serieslabel = this.columnLabels[i];
         const unit = serieslabel.match(/\((.*)\)$/);
         // console.log(unit, serieslabel);
 
-        if (unit && units.indexOf(unit[1]) == -1) {
-          units.push(unit[1]);
+        const axis = this.h.getDeep(this.extraDyGraphConfig,['series', serieslabel, 'axis']);
+        if (axis == 'y2') {
+          if (unit && units2.indexOf(unit[1]) == -1) {
+            units2.push(unit[1]);
+          }
+        } else {
+          if (unit && units.indexOf(unit[1]) == -1) {
+            units.push(unit[1]);
+          }
         }
       }
       if (units.length) {
         newYlabel += ' (' + units.join(', ') + ')';
       }
+      if (units2.length) {
+        console.log('y2label units:', units2);
+        this.dyGraphOptions['y2label'] = this.Y2Label + ' (' + units2.join(', ') + ')';
+      }
       // newYlabel += ' (' + (units.length ? units.join(', ') : 'unitless') + ')';
       this.dyGraphOptions['ylabel'] = newYlabel;
-      // TODO y2label
     }
 
     this.dyGraphOptions['labels'] = this.columnLabels;
