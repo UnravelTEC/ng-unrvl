@@ -20,7 +20,7 @@ export class AnysensComponent implements OnInit {
   }
 
   extraDyGraphConfig = {
-    connectSeparatedPoints: true,
+    // connectSeparatedPoints: true,
     pointSize: 3,
     logscale: false,
     series: {
@@ -35,9 +35,10 @@ export class AnysensComponent implements OnInit {
         // axisLabelWidth: 60, // set on demand
       },
     },
+    customBars: true,
   };
   y2label = 'Atmospheric Pressure';
-  labelBlackListT = ['host', 'serial', 'mean_*','topic'];
+  labelBlackListT = ['host', 'serial', 'mean_*', 'topic'];
   private sidebarWidth = '15rem';
   public currentSidebarWidth = this.sidebarWidth;
   graphstyle = {
@@ -228,7 +229,7 @@ export class AnysensComponent implements OnInit {
           )
         ) {
           setTimeout(() => {
-          this.autoreload = false;
+            this.autoreload = false;
           }, 50);
           return;
         }
@@ -240,14 +241,15 @@ export class AnysensComponent implements OnInit {
           this.reload();
         }
       }, this.auto_interval * 1000);
-
     }
   }
 
   updateReloadTimer() {
     if (this.autoreload) {
-      const now_utime = new Date().valueOf()/1000;
-      const remaining = Math.round(this.last_reload + Number(this.auto_interval) - now_utime);
+      const now_utime = new Date().valueOf() / 1000;
+      const remaining = Math.round(
+        this.last_reload + Number(this.auto_interval) - now_utime
+      );
       this.reload_timer = remaining > 0 ? remaining : 0;
       // console.log(this.last_reload, this.auto_interval, now_utime);
 
@@ -329,6 +331,7 @@ export class AnysensComponent implements OnInit {
     }
     const labels = ret['labels'];
     const idata = ret['data'];
+    const dataWithDev = []; // [[15xx, [1, 2, 3], [1, 2, 3]]];
     this.orig_labels = cloneDeep(ret['labels']);
     this.short_labels = ret['short_labels'];
     this.common_label = ret['common_label'];
@@ -340,7 +343,8 @@ export class AnysensComponent implements OnInit {
 
     let logscale = true;
     const newColors = this.h.getColorsforLabels(labels);
-    for (let c = 1; c < labels.length; c++) {
+    const numColumns = labels.length;
+    for (let c = 1; c < numColumns; c++) {
       const item = labels[c];
 
       if (logscale == true) {
@@ -367,7 +371,9 @@ export class AnysensComponent implements OnInit {
       }
       if (item.match(/hPa/)) {
         this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
-        this.extraDyGraphConfig.series[this.short_labels[c-1]] = { axis: 'y2' };
+        this.extraDyGraphConfig.series[this.short_labels[c - 1]] = {
+          axis: 'y2',
+        };
       }
       this.round_digits.push(this.gss.getDigits(this.raw_labels[c]));
     }
@@ -378,14 +384,38 @@ export class AnysensComponent implements OnInit {
     } else {
       console.log('scale: lin');
     }
+
+    function nullDevFun(value) {
+      return [value, value, value];
+    }
+    const deviFunctions = [null];
+    for (let c = 1; c < numColumns; c++) {
+      deviFunctions[c] = this.gss.getDeviationFunction(this.raw_labels[c]);
+      if (!deviFunctions[c]) deviFunctions[c] = nullDevFun;
+    }
+
+    for (let r = 0; r < idata.length; r++) {
+      const oldRow = idata[r];
+      let newRow = [oldRow[0]]; // Date
+      for (let c = 1; c < numColumns; c++) {
+        const point = oldRow[c];
+        if (deviFunctions[c]) {
+          newRow.push(deviFunctions[c](point));
+        } else {
+          newRow.push(point);
+        }
+      }
+      dataWithDev.push(newRow);
+    }
+
     this.startTime = this.userStartTime;
     const newLabels = ['Date'];
     newLabels.concat(this.short_labels);
     this.labels = ['Date'].concat(this.short_labels);
-    this.data = idata;
+    this.data = dataWithDev;
     this.colors = newColors;
     console.log(labels);
-    console.log(idata);
+    console.log(dataWithDev);
     this.changeTrigger = !this.changeTrigger;
     this.changeTrigger = !this.changeTrigger;
     this.queryRunning = false;
@@ -393,15 +423,15 @@ export class AnysensComponent implements OnInit {
     if (!this.data || !this.data[0]) {
       return;
     }
-    for (let column = 1; column < this.data[0].length; column++) {
-      for (let i = this.data.length - 1; i != 0; i--) {
-        const element = this.data[i][column];
+    for (let column = 1; column < numColumns; column++) {
+      for (let i = idata.length - 1; i != 0; i--) {
+        const element = idata[i][column];
         if (typeof element === 'number') {
           this.latest_values[column - 1] = this.h.roundAccurately(
             element,
             this.round_digits[column]
           );
-          this.latest_dates[column - 1] = this.data[i][0];
+          this.latest_dates[column - 1] = idata[i][0];
           break;
         }
       }

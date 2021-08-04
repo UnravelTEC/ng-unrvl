@@ -36,7 +36,7 @@ export class Bme280Component implements OnInit {
       },
     },
   };
-  labelBlackListT = ['host', 'serial', 'mean_*', 'id', 'sensor', 'mean'];
+  labelBlackListT = ['host', 'serial', 'mean_*', 'sensor'];
   graphstyle = {
     position: 'absolute',
     top: '0.5em',

@@ -557,7 +557,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         const unit = serieslabel.match(/\((.*)\)$/);
         // console.log(unit, serieslabel);
 
-        const axis = this.h.getDeep(this.extraDyGraphConfig,['series', serieslabel, 'axis']);
+        const axis = this.h.getDeep(this.extraDyGraphConfig, [
+          'series',
+          serieslabel,
+          'axis',
+        ]);
         if (axis == 'y2') {
           if (unit && units2.indexOf(unit[1]) == -1) {
             units2.push(unit[1]);
@@ -573,7 +577,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       }
       if (units2.length) {
         console.log('y2label units:', units2);
-        this.dyGraphOptions['y2label'] = this.Y2Label + ' (' + units2.join(', ') + ')';
+        this.dyGraphOptions['y2label'] =
+          this.Y2Label + ' (' + units2.join(', ') + ')';
       }
       // newYlabel += ' (' + (units.length ? units.join(', ') : 'unitless') + ')';
       this.dyGraphOptions['ylabel'] = newYlabel;
@@ -1017,7 +1022,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       let series_count = 0;
       let visibleCount = 0;
       for (let time_i = 0; time_i < datalen; time_i++) {
-        const value = data[time_i][series_i];
+        const element = data[time_i][series_i];
+        const value = Array.isArray(element) ? element[1] : element;
         if (isNaN(value) || value === null) {
           // console.log(i, series_i);
           continue;

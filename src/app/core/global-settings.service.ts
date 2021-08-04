@@ -56,6 +56,27 @@ export class GlobalSettingsService implements OnInit {
         resolution_b: 16,
         step: 0.0625, // 1/16°C
         round_digits: 2,
+        getDeviation: function (value) {
+          if (value === null) {
+            return null;
+          }
+          if (isNaN(value) || value > 125 || value < -55) {
+            return NaN;
+          }
+          if (value > 0 && value < 70) {
+            // according to Datasheet for VDD > 4.3V
+            return [value - 0.5, value, value + 0.5];
+          }
+          if (value >= 85) {
+            return [value - (1 + (value - 85) / 20), value, value + 1];
+          }
+          if (value >= 70) {
+            return [value - 1, value, value + 1];
+          }
+          if (value <= 0) {
+            return [value - 1, value, value + (1 + (-value / 55) * 4)];
+          }
+        },
       },
     },
     BME280: {
@@ -260,7 +281,8 @@ export class GlobalSettingsService implements OnInit {
     console.log('client:', this.client);
   }
 
-  ngOnInit() { // gets called in /app.component.ts
+  ngOnInit() {
+    // gets called in /app.component.ts
     if (this.client.localscreen) {
       this.emitChange({ TricorderLocal: true });
     }
@@ -317,7 +339,10 @@ export class GlobalSettingsService implements OnInit {
       this.server.influxdb = 'telegraf';
       this.server.influxuser = '';
       this.server.influxpass = '';
-      console.log('initializeInfluxCreds: http -> no auth, db', this.server.influxdb);
+      console.log(
+        'initializeInfluxCreds: http -> no auth, db',
+        this.server.influxdb
+      );
       this.triggerDBScan();
       return;
     }
@@ -568,29 +593,30 @@ export class GlobalSettingsService implements OnInit {
     return this.h.roundAccurately(value, this.getDigits(raw_label));
   }
   getDigits(raw_label) {
-    if (
-      raw_label &&
-      raw_label.hasOwnProperty('tags') &&
-      raw_label['tags'].hasOwnProperty('sensor') &&
-      this.sensorPresets.hasOwnProperty(raw_label['tags']['sensor'])
-    ) {
-      const sensorPreset = this.sensorPresets[raw_label['tags']['sensor']];
-      const field = raw_label['field'].replace(/mean_/, ''); //optionally rm influx avg prefix
-      for (const physicalParam in sensorPreset) {
-        if (Object.prototype.hasOwnProperty.call(sensorPreset, physicalParam)) {
-          const sensorProperties = sensorPreset[physicalParam];
-          if (
-            sensorProperties.hasOwnProperty('round_digits') &&
-            (physicalParam == field ||
-              (physicalParam.startsWith('*') &&
-                field.endsWith(physicalParam.slice(1))))
-          ) {
-            return sensorProperties['round_digits'];
-          }
+    const retval = this.getSensorPresetField(raw_label, 'round_digits');
+    return retval !== undefined ? retval : 2;
+  }
+  getSensorPresetField(raw_label, fieldname) {
+    const sensor = this.h.getDeep(raw_label, ['tags', 'sensor']);
+    if (!sensor || !this.sensorPresets.hasOwnProperty(sensor)) return undefined;
+    const sensorPreset = this.sensorPresets[sensor];
+    const field = raw_label['field'].replace(/mean_/, ''); //optionally rm influx avg prefix
+    for (const physParam in sensorPreset) {
+      if (Object.prototype.hasOwnProperty.call(sensorPreset, physParam)) {
+        const sensorProperties = sensorPreset[physParam];
+        if (
+          sensorProperties.hasOwnProperty(fieldname) &&
+          (physParam == field ||
+            (physParam.startsWith('*') && field.endsWith(physParam.slice(1))))
+        ) {
+          return sensorProperties[fieldname];
         }
       }
     }
-    return 2;
+    return undefined;
+  }
+  getDeviationFunction(raw_label) {
+    return this.getSensorPresetField(raw_label, 'getDeviation');
   }
 
   checkFullscreen() {
