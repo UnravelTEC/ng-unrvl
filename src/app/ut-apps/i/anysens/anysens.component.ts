@@ -235,7 +235,9 @@ export class AnysensComponent implements OnInit {
       this.last_reload = new Date().valueOf() / 1000;
       setTimeout(() => this.updateReloadTimer(), 1000);
       setTimeout(() => {
-        this.reload();
+        if (this.autoreload) {
+          this.reload();
+        }
       }, this.auto_interval * 1000);
 
     }
@@ -244,7 +246,8 @@ export class AnysensComponent implements OnInit {
   updateReloadTimer() {
     if (this.autoreload) {
       const now_utime = new Date().valueOf()/1000;
-      this.reload_timer = Math.round(this.last_reload + Number(this.auto_interval) - now_utime);
+      const remaining = Math.round(this.last_reload + Number(this.auto_interval) - now_utime);
+      this.reload_timer = remaining > 0 ? remaining : 0;
       // console.log(this.last_reload, this.auto_interval, now_utime);
 
       setTimeout(() => this.updateReloadTimer(), 1000);
@@ -406,7 +409,9 @@ export class AnysensComponent implements OnInit {
     this.last_reload = new Date().valueOf() / 1000;
     if (this.autoreload) {
       setTimeout(() => {
-        this.reload();
+        if (this.autoreload) {
+          this.reload();
+        }
       }, this.auto_interval * 1000);
     }
   }

@@ -5,7 +5,7 @@
       <small *ngIf="common_label != measurement">( {{ common_label }} )</small>
     </h2>
     <!-- small spaces in ( )-->
-    <div style="position: absolute; top: 0.8em; right: 7em; color: gray;" *ngIf="autoreload">
+    <div style="position: absolute; top: 0.8em; right: 7em; color: gray;" *ngIf="autoreload" title="Time until reload">
       {{ reload_timer | number }}s
     </div>
     <a
