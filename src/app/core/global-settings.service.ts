@@ -189,7 +189,7 @@ export class GlobalSettingsService implements OnInit {
     measurements: [],
     databaseStatus: 'unknown', // db status: up, down, unknown, waiting
     api: undefined,
-    influxdb: 'telegraf',
+    influxdb: '',
     influxuser: '',
     influxpass: '',
     influxVersion: '',
@@ -260,7 +260,7 @@ export class GlobalSettingsService implements OnInit {
     console.log('client:', this.client);
   }
 
-  ngOnInit() {
+  ngOnInit() { // gets called in /app.component.ts
     if (this.client.localscreen) {
       this.emitChange({ TricorderLocal: true });
     }
@@ -317,7 +317,7 @@ export class GlobalSettingsService implements OnInit {
       this.server.influxdb = 'telegraf';
       this.server.influxuser = '';
       this.server.influxpass = '';
-      console.log('initializeInfluxCreds: http -> no auth, db telegraf');
+      console.log('initializeInfluxCreds: http -> no auth, db', this.server.influxdb);
       this.triggerDBScan();
       return;
     }
