@@ -6,6 +6,7 @@ import { geoJSON, circleMarker } from 'leaflet';
 import { ActivatedRoute } from '@angular/router';
 import { cloneDeep } from 'lodash-es';
 import { LocalStorageService } from 'app/core/local-storage.service';
+import { SensorService } from 'app/shared/sensor.service';
 
 @Component({
   selector: 'app-enviromap',
@@ -19,7 +20,8 @@ export class EnviromapComponent implements OnInit, OnDestroy {
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
     public h: HelperFunctionsService,
-    private router: ActivatedRoute
+    private router: ActivatedRoute,
+    private sensorService: SensorService
   ) {
     this.globalSettings.emitChange({ appName: this.appName });
     for (let i = 99; i > 1; i -= 2) {
@@ -373,7 +375,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
         graphlabels.push(element);
         this.raw_graphlabels.push(ret['raw_labels'][i]);
         this.round_graphdigits.push(
-          this.globalSettings.getDigits(ret['raw_labels'][i])
+          this.sensorService.getDigits(ret['raw_labels'][i])
         );
       }
     }

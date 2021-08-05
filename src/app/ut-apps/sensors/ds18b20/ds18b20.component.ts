@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { GlobalSettingsService } from 'app/core/global-settings.service';
 import { HelperFunctionsService } from 'app/core/helper-functions.service';
 import { LocalStorageService } from 'app/core/local-storage.service';
+import { SensorService } from 'app/shared/sensor.service';
 import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
 
 @Component({
@@ -79,7 +80,8 @@ export class Ds18b20Component implements OnInit {
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService,
-    private router: ActivatedRoute
+    private router: ActivatedRoute,
+    private sensorService: SensorService
   ) {
     this.globalSettings.emitChange({ appName: this.appName });
   }
@@ -186,7 +188,7 @@ export class Ds18b20Component implements OnInit {
     const idata = ret['data']; // [[date, x1, x2], [date, x1, x2]]
     const dataWithDev = []; // [[15xx, [1, 2, 3], [1, 2, 3]]];
 
-    const getDevFun = this.globalSettings.getDeviationFunction(ret['raw_labels'][1]);
+    const getDevFun = this.sensorService.getDeviationFunction(ret['raw_labels'][1]);
 
     let logscale = false;
     const newColors = this.h.getColorsforLabels(labels);

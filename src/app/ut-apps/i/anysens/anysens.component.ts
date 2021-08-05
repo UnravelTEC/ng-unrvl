@@ -5,6 +5,7 @@ import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
 import { ActivatedRoute } from '@angular/router';
 import { cloneDeep } from 'lodash-es';
+import { SensorService } from 'app/shared/sensor.service';
 
 @Component({
   selector: 'app-anysens',
@@ -111,7 +112,8 @@ export class AnysensComponent implements OnInit {
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService,
-    private router: ActivatedRoute
+    private router: ActivatedRoute,
+    private sensorService: SensorService
   ) {
     this.gss.emitChange({ appName: this.appName });
   }
@@ -331,7 +333,7 @@ export class AnysensComponent implements OnInit {
     }
     const labels = ret['labels'];
     const idata = ret['data'];
-    const dataWithDev = []; // [[15xx, [1, 2, 3], [1, 2, 3]]];
+    let dataWithDev = []; // [[15xx, [1, 2, 3], [1, 2, 3]]];
     this.orig_labels = cloneDeep(ret['labels']);
     this.short_labels = ret['short_labels'];
     this.common_label = ret['common_label'];
@@ -375,7 +377,7 @@ export class AnysensComponent implements OnInit {
           axis: 'y2',
         };
       }
-      this.round_digits.push(this.gss.getDigits(this.raw_labels[c]));
+      this.round_digits.push(this.sensorService.getDigits(this.raw_labels[c]));
     }
     // console.log(cloneDeep(this.dygLabels));
     if (logscale) {
@@ -385,19 +387,7 @@ export class AnysensComponent implements OnInit {
       console.log('scale: lin');
     }
 
-    const deviFunctions = [null];
-    for (let c = 1; c < numColumns; c++) {
-      deviFunctions[c] = this.gss.getDeviationFunction(this.raw_labels[c]);
-    }
-
-    for (let r = 0; r < idata.length; r++) {
-      const oldRow = idata[r];
-      let newRow = [oldRow[0]]; // Date
-      for (let c = 1; c < numColumns; c++) {
-        newRow.push(deviFunctions[c](oldRow[c]));
-      }
-      dataWithDev.push(newRow);
-    }
+    dataWithDev = this.sensorService.returnDataWithDeviations(idata, this.raw_labels);
 
     this.startTime = this.userStartTime;
     const newLabels = ['Date'];
