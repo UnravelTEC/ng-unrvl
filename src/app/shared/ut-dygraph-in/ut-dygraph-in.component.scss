@@ -360,9 +360,11 @@ $red2: #ff7f88;
 
         td {
           color: $editableFormsTextColor;
-          width: 4.5em; // width of string 'undefined'
           border-left-width: 0;
           padding: 0.1em 0;
+        }
+        td.a {
+          padding: 0 5px;
         }
       }
       tr.highlight,

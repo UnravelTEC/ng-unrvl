@@ -847,9 +847,19 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
   legendFormatter(data) {
+    // console.log(data.dygraph);
+    const parent = this['parent'];
+    const showDevs = parent && parent.showDeviation;
+    let yvalues = [];
+    if (showDevs && data.x) {
+      yvalues = parent.getDeviationsofTS(data.x);
+      // console.log('legendFormatter', yvalues);
+      // console.log(data.series);
+    }
+
     // let html = '<table>';
     // html += '<tr><th colspan="3" class="header">' + (data.xHTML ? data.xHTML + ':' : 'Legend:') + '</th></tr>';
-    const htmlID = this['parent'] ? this['parent']['htmlID'] : '';
+    const htmlID = parent ? parent['htmlID'] : '';
     const toggleScript = htmlID
       ? `onclick="document['Dygraphs']['${htmlID}'].toggleLegendContent('${htmlID}')"`
       : '';
@@ -890,11 +900,30 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       const toggleCallback = genToggle(series.label, htmlID);
       const setSingleCallback = genSingleClick(series.label, htmlID);
       const textcolor = series.isVisible ? '' : ' style="color:gray" ';
+      let devtext = '';
+      if (showDevs) {
+        const values = yvalues[i + 1];
+        if (Array.isArray(values)) {
+          const dlower = parent.h.roundAccurately(values[1] - values[0], 2);
+          const dupper = parent.h.roundAccurately(values[2] - values[1], 2);
+          if (dlower == dupper) {
+            devtext = dlower ? '±' + String(dlower) : ''; // if no dev defined
+          } else {
+            devtext = '-' + String(dlower) + ' +' + String(dupper);
+          }
+        }
+      }
+      const labeltext = series.labelHTML.replace(/\((.*)\)$/,'');
+      let unit = data.x != null ? series.labelHTML.match(/\((.*)\)$/) : '';
+      if (unit) {
+        unit = unit[1];
+      }
+      const dev = showDevs ? '<td class="a">' + devtext + '</td>' : '';
       html +=
         `<tr style='color:${series.color};' ${cls} ${hoverCallback} title='Toggle Display'>` +
         `<th ${textcolor}><span class='dash'>${series.dashHTML}</span><span class='one' ${setSingleCallback} title='Display alone'>[1]</span></th>` +
-        `<th${textcolor} ${toggleCallback}>${series.labelHTML}<span ${spanvis}>:</span>&thinsp;</th>` +
-        `<td ${toggleCallback}>${displayedValue}</td></tr>`;
+        `<th${textcolor} ${toggleCallback}>${labeltext}<span ${spanvis}>:</span>&thinsp;</th>` +
+        `<td ${toggleCallback} class='value'>${displayedValue}</td>${dev}<td class='a'>${unit}</td></tr>`;
     }
     return html + '</table>';
   }
@@ -905,6 +934,50 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
     this.setAxisHighlight(name);
+  }
+  getDeviationsofTS(ts) {
+    // search for complete data row at timestamp (incl. deviations) for display in legend
+    const datalen = this.data.length; // use data, array has a lower memory footprint
+    let firstindex = 0;
+    let firstts;
+    // const logoffset = this.data[firstindex][0].valueOf();
+    let lastindex = datalen - 1;
+    let lastts;
+    let timeoutcounter = 0;
+    while (timeoutcounter++ < 99) {
+      firstts = this.data[firstindex][0].valueOf();
+
+      // console.log(
+      //   'BS count:',
+      //   timeoutcounter,
+      //   'firsti:',
+      //   firstindex,
+      //   'lasti:',
+      //   lastindex,
+      //   'firstts',
+      //   (firstts - logoffset)/1000,
+      //   'target',
+      //   (ts - logoffset)/1000,
+      //   'lastts',
+      //   (lastts - logoffset)/1000
+      // );
+
+      if (firstts == ts) {
+        return this.dataWithDev[firstindex];
+      }
+      lastts = this.data[lastindex][0].valueOf();
+      if (lastts == ts) {
+        return this.dataWithDev[lastindex];
+      }
+      const new_half_ts = firstts + (lastts - firstts) / 2;
+      const new_half_index = Math.floor((lastindex - firstindex) / 2);
+      if (ts < new_half_ts) {
+        lastindex -= new_half_index;
+      } else {
+        firstindex += new_half_index;
+      }
+    }
+    console.error('getDeviationsofTS Timeout');
   }
 
   // gets called after AfterDrawCallback

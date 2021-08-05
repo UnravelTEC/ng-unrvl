@@ -264,7 +264,12 @@ export class SensorService {
       }
       dataWithDev.push(newRow);
     }
-    console.log('calculated Deviation Data for', (nrcols - 1) *  data.length, 'points of', raw_labels);
+    console.log(
+      'calculated Deviation Data for',
+      (nrcols - 1) * data.length,
+      'points of',
+      raw_labels
+    );
     return dataWithDev;
   }
 }
