@@ -58,6 +58,7 @@ export class Ds18b20Component implements OnInit {
   }
 
   labels = [];
+  raw_labels = [];
   data = [];
 
   appName = 'DS18B20';
@@ -184,6 +185,7 @@ export class Ds18b20Component implements OnInit {
     console.log('parsed', ret);
     const labels = ret['labels'];
     const idata = ret['data']; // [[date, x1, x2], [date, x1, x2]]
+    this.raw_labels = ret['raw_labels'];
 
     let logscale = false;
     const newColors = this.h.getColorsforLabels(labels);
