@@ -65,8 +65,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   labelBlackList: string[];
   @Input()
-  roundDigits = [0];
-  @Input()
   showDate = true;
   @Input()
   showLogscaleSwitcher = true;
@@ -89,6 +87,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   showDeviation = false;
   @Input()
   rawLabels: Array<any>;
+  public roundDigits: Array<number> = [null];
 
   @Input()
   calculateRunningAvgFrom: Date;
@@ -280,6 +279,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       );
     }
   }
+  updateRoundDigits() {
+    if (this.rawLabels) {
+      this.roundDigits = [null];
+      for (let c = 1; c < this.rawLabels.length; c++) {
+        this.roundDigits.push(this.sensorService.getDigits(this.rawLabels[c]));
+      }
+    }
+    console.log('roundDigits:', this.roundDigits);
+  }
   updateGraph() {
     if (this.Dygraph) {
       while (
@@ -331,6 +339,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         } else {
           this.displayedData = this.data;
         }
+        this.updateRoundDigits();
         this.dataReset = false;
       }
       if (this.colors && this.colors.length) {
@@ -595,6 +604,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.noData = false;
 
     this.updateAverages();
+    this.updateRoundDigits();
 
     this.updateDateWindow();
     this.dyGraphOptions['xlabel'] = this.returnXrangeText(
@@ -888,9 +898,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     for (let i = 0; i < data.series.length; i++) {
       const series = data.series[i];
-      const displayedValue = !series.hasOwnProperty('yHTML')
+      const displayedValue = !series.hasOwnProperty('y')
         ? ''
-        : series.yHTML;
+        : parent.h.roundAccurately(series.y, parent.roundDigits[i + 1]);
       const spanvis =
         data.x == null || !series.hasOwnProperty('yHTML')
           ? "style='visibility:hidden'"
@@ -904,8 +914,14 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       if (showDevs) {
         const values = yvalues[i + 1];
         if (Array.isArray(values)) {
-          const dlower = parent.h.roundAccurately(values[1] - values[0], 2);
-          const dupper = parent.h.roundAccurately(values[2] - values[1], 2);
+          const dlower = parent.h.roundAccurately(
+            values[1] - values[0],
+            parent.roundDigits[i + 1]
+          );
+          const dupper = parent.h.roundAccurately(
+            values[2] - values[1],
+            parent.roundDigits[i + 1]
+          );
           if (dlower == dupper) {
             devtext = dlower ? '±' + String(dlower) : ''; // if no dev defined
           } else {
@@ -913,7 +929,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           }
         }
       }
-      const labeltext = series.labelHTML.replace(/\((.*)\)$/,'');
+      const labeltext = series.labelHTML.replace(/\s?\((.*)\)$/, '');
       let unit = data.x != null ? series.labelHTML.match(/\((.*)\)$/) : '';
       if (unit) {
         unit = unit[1];
