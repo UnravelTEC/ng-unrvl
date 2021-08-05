@@ -3,7 +3,6 @@ import { ActivatedRoute } from '@angular/router';
 import { GlobalSettingsService } from 'app/core/global-settings.service';
 import { HelperFunctionsService } from 'app/core/helper-functions.service';
 import { LocalStorageService } from 'app/core/local-storage.service';
-import { SensorService } from 'app/shared/sensor.service';
 import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
 
 @Component({
@@ -81,7 +80,6 @@ export class Ds18b20Component implements OnInit {
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService,
     private router: ActivatedRoute,
-    private sensorService: SensorService
   ) {
     this.globalSettings.emitChange({ appName: this.appName });
   }
@@ -186,23 +184,10 @@ export class Ds18b20Component implements OnInit {
     console.log('parsed', ret);
     const labels = ret['labels'];
     const idata = ret['data']; // [[date, x1, x2], [date, x1, x2]]
-    const dataWithDev = []; // [[15xx, [1, 2, 3], [1, 2, 3]]];
-
-    const getDevFun = this.sensorService.getDeviationFunction(ret['raw_labels'][1]);
 
     let logscale = false;
     const newColors = this.h.getColorsforLabels(labels);
     const numColumns = labels.length; // speed
-    for (let r = 0; r < idata.length; r++) {
-      const oldRow = idata[r];
-      let newRow = [oldRow[0]]; // Date
-      for (let c = 1; c < numColumns; c++) {
-        const point = oldRow[c];
-
-        newRow.push(getDevFun(point));
-      }
-      dataWithDev.push(newRow);
-    }
 
     // console.log(cloneDeep(this.dygLabels));
     if (logscale) {
@@ -213,7 +198,7 @@ export class Ds18b20Component implements OnInit {
     }
     this.startTime = this.userStartTime;
     this.labels = labels;
-    this.data = dataWithDev;
+    this.data = idata;
     this.colors = newColors;
     console.log(labels);
     console.log(this.data);

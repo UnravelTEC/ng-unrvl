@@ -70,6 +70,7 @@ export class Bme280Component implements OnInit {
   }
 
   labels = [];
+  raw_labels = [];
   data = [];
 
   appName = 'BME280';
@@ -198,6 +199,7 @@ export class Bme280Component implements OnInit {
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('parsed', ret);
     const labels = ret['labels'];
+    this.raw_labels = ret['raw_labels'];
     const idata = ret['data'];
 
     let logscale = true;

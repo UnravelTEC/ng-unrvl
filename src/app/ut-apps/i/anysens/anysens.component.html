@@ -27,8 +27,10 @@
     <div id="dygcontainerabs" [style.right]="currentSidebarWidth">
       <div id="dygcontainerrel">
         <app-ut-dygraph-in
-          [displayedData]="data"
+          [data]="data"
           [columnLabels]="labels"
+          showDeviation="true"
+          [rawLabels]="raw_labels"
           [roundDigits]="round_digits"
           [style]="graphstyle"
           [changeTrigger]="changeTrigger"

@@ -17,7 +17,7 @@ import cloneDeep from 'lodash-es/cloneDeep';
 
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { LocalStorageService } from '../../core/local-storage.service';
-import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
+import { SensorService } from '../sensor.service';
 
 @Component({
   selector: 'app-ut-dygraph-in',
@@ -83,6 +83,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     [1200, 'rgba(255, 166, 0, 0.5)'], // orange
     [20000, 'rgba(255, 0, 0, 0.5)'], // red
   ];
+
+  // uses rawLabels to get sensor type, and calculate deviation
+  @Input()
+  showDeviation = false;
+  @Input()
+  rawLabels: Array<any>;
 
   @Input()
   calculateRunningAvgFrom: Date;
@@ -172,7 +178,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   public pickerEndDate = new Date();
 
   @Input()
-  public displayedData = [];
+  public data = [];
+  public dataWithDev = []; // calculated from data if showDeviation is set
+  public displayedData = []; // either set to data or dataWithDev
+
   @Input()
   public dataReset = false;
   public lastValue = undefined;
@@ -227,9 +236,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   Dygraph: Dygraph;
 
   constructor(
-    private utFetchdataService: UtFetchdataService,
-    private localStorage: LocalStorageService,
-    private h: HelperFunctionsService
+    private h: HelperFunctionsService,
+    private sensorService: SensorService
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -283,7 +291,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
       this.dyGraphOptions['labels'] = this.columnLabels;
 
-      if (!this.displayedData.length) {
+      if (!this.data.length) {
         console.log('Dyg reset to no Data');
         this.noData = true;
         this.dataReset = true;
@@ -294,9 +302,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         return;
       }
       this.noData = false;
-      const newDataBeginTime = this.displayedData[0][0];
-      const newDataEndTime =
-        this.displayedData[this.displayedData.length - 1][0];
+      const newDataBeginTime = this.data[0][0];
+      const newDataEndTime = this.data[this.data.length - 1][0];
       if (
         newDataBeginTime.valueOf() != this.dataBeginTime.valueOf() ||
         newDataEndTime.valueOf() != this.dataEndTime.valueOf()
@@ -311,6 +318,16 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           this.dataBeginTime.valueOf(),
           this.dataEndTime.valueOf(),
         ];
+        if (this.checkDataDevOK()) {
+          if (this.dataWithDev.length == 0)
+            this.dataWithDev = this.sensorService.returnDataWithDeviations(
+              this.data,
+              this.rawLabels
+            );
+          this.displayedData = this.dataWithDev;
+        } else {
+          this.displayedData = this.data;
+        }
         this.dataReset = false;
       }
       if (this.colors && this.colors.length) {
@@ -326,29 +343,30 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         axes: this.dyGraphOptions.axes,
         visibility: this.dyGraphOptions.visibility,
         dateWindow: this.dyGraphOptions['dateWindow'],
+        customBars: this.showDeviation,
       });
-      // setTimeout(() => {
+      // setTimeout(() => { // FIXME while c'out?
       //   this.fullZoom();
       // }, 100);
 
-      if (this.minimal && this.displayedData.length > 10) {
-        const dateOfSecondPt = this.displayedData[1][0].valueOf();
+      if (this.minimal && this.data.length > 10) {
+        const dateOfSecondPt = this.data[1][0].valueOf();
         const fromZoom = this.Dygraph.xAxisRange()[0];
         if (fromZoom > dateOfSecondPt) {
           console.log('shorten graph');
-          this.displayedData.shift();
+          this.data.shift();
         }
       }
     } else {
       console.error('updateGraph: no Dygraph?');
-      this.handleInitialData(this.displayedData);
+      this.handleInitialData();
     }
   }
   waitForData() {
-    if (this.displayedData && this.displayedData.length > 1) {
-      this.handleInitialData(this.displayedData);
+    if (this.data && this.data.length > 1) {
+      this.handleInitialData();
     } else {
-      if (this.displayedData.length == 0 && this.columnLabels.length == 1) {
+      if (this.data.length == 0 && this.columnLabels.length == 1) {
         this.noData = true;
         this.waiting = false;
         return;
@@ -432,6 +450,14 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         }
       }
     }
+
+    if (
+      this.checkDataDevOK() &&
+      this.dataWithDev &&
+      this.dataWithDev.length > 1
+    )
+      this.dyGraphOptions['customBars'] = true;
+    else this.dyGraphOptions['customBars'] = false;
 
     // console.log('old:', cloneDeep(this.dyGraphOptions));
     // console.log('with:', cloneDeep(this.extraDyGraphConfig));
@@ -527,10 +553,35 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.y2Range = yranges[1];
     }
   }
+  checkDataDevOK() {
+    return (
+      this.showDeviation &&
+      this.rawLabels &&
+      this.data[0] &&
+      this.rawLabels.length == this.data[0].length
+    );
+  }
+  toggleDeviation() {
+    if (this.showDeviation) {
+      if (this.dataWithDev.length == 0)
+        this.dataWithDev = this.sensorService.returnDataWithDeviations(
+          this.data,
+          this.rawLabels
+        );
+      this.displayedData = this.dataWithDev;
+    } else {
+      this.displayedData = this.data;
+    }
+    this.Dygraph.updateOptions({
+      file: this.displayedData,
+      customBars: this.showDeviation,
+    });
+  }
 
-  handleInitialData(receivedData: Object) {
-    if (!this.displayedData.length) {
+  handleInitialData() {
+    if (!this.data.length) {
       console.error('no data');
+      this.noData = true;
       return;
     }
     if (!this.columnLabels || !this.columnLabels.length) {
@@ -538,7 +589,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
     this.noData = false;
-    // console.log('handleInitialData: received Data:', cloneDeep(receivedData));
 
     this.updateAverages();
 
@@ -588,12 +638,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     // console.log('COLORS:', cloneDeep(this.colors), cloneDeep(this.h.colorArray));
 
     console.log(cloneDeep(this.dyGraphOptions));
-    if (this.columnLabels.length != this.displayedData[0].length) {
+    if (this.columnLabels.length != this.data[0].length) {
       console.error(
         'mismatch columnlabels',
         this.columnLabels,
         'and datalen',
-        this.displayedData
+        this.data
       );
       return;
     }
@@ -621,6 +671,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       cloneDeep(this.displayedData),
       cloneDeep(this.dyGraphOptions)
     );
+    if (this.checkDataDevOK()) {
+      this.dataWithDev = this.sensorService.returnDataWithDeviations(
+        this.data,
+        this.rawLabels
+      );
+      this.displayedData = this.dataWithDev;
+    } else {
+      this.displayedData = this.data;
+    }
 
     this.Dygraph = new Dygraph(
       this.htmlID,
@@ -634,7 +693,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     // console.log('handleInitialData: dyoptions', this.dyGraphOptions);
     // console.log('handleInitialData: displayedData', this.displayedData);
 
-    if (this.displayedData.length === 0) {
+    if (this.data.length === 0) {
+      // FIXME isn't this catched by first check?
       console.log('no initial data, do not attempt to update');
       this.noData = true;
       return;
@@ -950,7 +1010,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.toFormDate = new FormControl(this.toZoom);
   }
 
-  calculateAverage(from?: Date, targetArray = this.displayedData) {
+  calculateAverage(from?: Date, targetArray = this.data) {
     const datalen = targetArray.length;
     if (!datalen) {
       return;
@@ -1001,7 +1061,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   updateAverages() {
     // FIXME is very inefficient, as it calculates it new every time - implment sort of running calculation
-    const data = this.displayedData;
+    const data = this.data;
     const datalen = data.length;
     if (!datalen) {
       console.log('updateAverages: datalen 0');
@@ -1108,9 +1168,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.currentXrange = this.h.parseToSeconds(this.startTime);
       } else {
         if (!this.dataBeginTime) {
-          this.dataBeginTime = this.displayedData[0][0];
+          this.dataBeginTime = this.data[0][0];
         }
-        dataEndTime = this.displayedData[this.displayedData.length - 1][0];
+        dataEndTime = this.data[this.data.length - 1][0];
         if (!this.dataEndTime) {
           this.dataEndTime = dataEndTime;
         }
@@ -1140,12 +1200,14 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   resetData() {
     // this.lastReset = new Date();
-    while (this.displayedData.length) {
-      this.displayedData.pop(); // fastest way to clear array
+    while (this.data.length) {
+      this.data.pop(); // fastest way to clear array
     }
     this.dataBeginTime = this.toZoom;
     this.dataEndTime = this.toZoom;
 
+    this.dataWithDev = this.data;
+    this.displayedData = this.data;
     this.Dygraph.updateOptions({ file: this.displayedData });
   }
 
@@ -1334,11 +1396,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   exportCSV(data?) {
     const labels = this.dyGraphOptions['labels'];
     if (!data) {
-      data = this.h.returnDataRange(
-        this.displayedData,
-        this.fromZoom,
-        this.toZoom
-      );
+      data = this.h.returnDataRange(this.data, this.fromZoom, this.toZoom);
     }
     let visibleLabels = [labels[0]]; // Date
     for (let i = 1; i < labels.length; i++) {
@@ -1370,9 +1428,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    const avgdata = this.displayedData.slice(
-      this.displayedData.length - item_count
-    );
+    const avgdata = this.data.slice(this.data.length - item_count);
     let sum = 0;
     avgdata.forEach((row) => {
       sum += row[index];

@@ -36,7 +36,6 @@ export class AnysensComponent implements OnInit {
         // axisLabelWidth: 60, // set on demand
       },
     },
-    customBars: true,
   };
   y2label = 'Atmospheric Pressure';
   labelBlackListT = ['host', 'serial', 'mean_*', 'topic'];
@@ -333,7 +332,6 @@ export class AnysensComponent implements OnInit {
     }
     const labels = ret['labels'];
     const idata = ret['data'];
-    let dataWithDev = []; // [[15xx, [1, 2, 3], [1, 2, 3]]];
     this.orig_labels = cloneDeep(ret['labels']);
     this.short_labels = ret['short_labels'];
     this.common_label = ret['common_label'];
@@ -387,16 +385,14 @@ export class AnysensComponent implements OnInit {
       console.log('scale: lin');
     }
 
-    dataWithDev = this.sensorService.returnDataWithDeviations(idata, this.raw_labels);
-
     this.startTime = this.userStartTime;
     const newLabels = ['Date'];
     newLabels.concat(this.short_labels);
     this.labels = ['Date'].concat(this.short_labels);
-    this.data = dataWithDev;
+    this.data = idata;
     this.colors = newColors;
     console.log(labels);
-    console.log(dataWithDev);
+    console.log(idata);
     this.changeTrigger = !this.changeTrigger;
     this.changeTrigger = !this.changeTrigger;
     this.queryRunning = false;
