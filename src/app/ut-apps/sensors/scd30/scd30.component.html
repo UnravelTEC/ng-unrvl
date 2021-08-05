@@ -1,6 +1,8 @@
 <app-ut-dygraph-in
   [data]="data['CO2']"
   [columnLabels]="labels['CO2']"
+  [rawLabels]="raw_labels['CO2']"
+  showDeviation="true"
   [style]="graphstyleTop"
   [changeTrigger]="changeTrigger"
   [extraDyGraphConfig]="extraDyGraphConfig"
@@ -15,6 +17,8 @@
 <app-ut-dygraph-in
   [data]="data['H']"
   [columnLabels]="labels['H']"
+  [rawLabels]="raw_labels['H']"
+  showDeviation="true"
   [style]="graphstyleBottom"
   [changeTrigger]="changeTrigger"
   [extraDyGraphConfig]="extraDyGraphConfig"

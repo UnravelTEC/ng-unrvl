@@ -107,6 +107,39 @@ export class SensorService {
         getDeviation: this.Devs.Bosch.P,
       },
     },
+    SCD30: {
+      CO2_ppm: {
+        round_digits: 1,
+        getDeviation: function (value, T = 25) {
+          if (T === undefined) T = 25;
+          if (value === null) return null;
+          if (isNaN(value) || value > 40000 || value < 0) {
+            return NaN;
+          }
+          if (T < 0 || T > 50) {
+            return [value, value, value];
+          }
+          // TODO accuracy drift ±50ppm over lifetime (15Y)
+          // TODO 2.5ppm/K temperature instability
+          const dev = 30 + value * 0.03;
+          return [value - dev, value, value + dev];
+        },
+      },
+      sensor_degC: {
+        round_digits: 1,
+        getDeviation: function (value) {
+          if (value === null) return null;
+          if (isNaN(value) || value > 120 || value < -40) {
+            return NaN;
+          }
+          if (value < 0 || value > 50) {
+            return [value, value, value];
+          }
+          const dev = 0.4 + 0.023 * (value - 25);
+          return [value - dev, value, value + dev];
+        }
+      }
+    },
     MPU9250: {
       sensor_degC: {
         round_digits: 1,

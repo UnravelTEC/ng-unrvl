@@ -54,6 +54,10 @@ export class Scd30Component implements OnInit {
     H: {},
     CO2: {},
   };
+  raw_labels = {
+    H: {},
+    CO2: {},
+  };
   data = {
     H: [],
     CO2: [],
@@ -223,6 +227,7 @@ export class Scd30Component implements OnInit {
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT, 's');
     console.log(id, 'received', ret);
     this.labels[id] = ret['labels'];
+    this.raw_labels[id] = ret['raw_labels'];
     this.data[id] = ret['data'];
     if (id == 'H') {
       this.colors['H'] = this.h.getColorsforLabels(ret['labels']);
