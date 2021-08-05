@@ -295,6 +295,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         console.log('Dyg reset to no Data');
         this.noData = true;
         this.dataReset = true;
+        this.displayedData = [];
+        this.dataWithDev = [];
         this.Dygraph.updateOptions({
           file: [],
           labels: [],
@@ -318,12 +320,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           this.dataBeginTime.valueOf(),
           this.dataEndTime.valueOf(),
         ];
+        this.displayedData = [];
+        this.dataWithDev = [];
         if (this.checkDataDevOK()) {
-          if (this.dataWithDev.length == 0)
-            this.dataWithDev = this.sensorService.returnDataWithDeviations(
-              this.data,
-              this.rawLabels
-            );
+          this.dataWithDev = this.sensorService.returnDataWithDeviations(
+            this.data,
+            this.rawLabels
+          );
           this.displayedData = this.dataWithDev;
         } else {
           this.displayedData = this.data;
@@ -359,11 +362,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       }
     } else {
       console.error('updateGraph: no Dygraph?');
-      this.handleInitialData();
+      // this.handleInitialData();
     }
   }
   waitForData() {
     if (this.data && this.data.length > 1) {
+      console.log('waitForData: received data');
       this.handleInitialData();
     } else {
       if (this.data.length == 0 && this.columnLabels.length == 1) {
@@ -665,21 +669,22 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     while (this.roundDigits.length < this.columnLabels.length) {
       this.roundDigits.push(2);
     }
-    console.log(
-      'creating Dyg',
-      this.htmlID,
-      cloneDeep(this.displayedData),
-      cloneDeep(this.dyGraphOptions)
-    );
     if (this.checkDataDevOK()) {
       this.dataWithDev = this.sensorService.returnDataWithDeviations(
         this.data,
         this.rawLabels
       );
       this.displayedData = this.dataWithDev;
+      this.dyGraphOptions['customBars'] = true;
     } else {
       this.displayedData = this.data;
     }
+    console.log(
+      'creating Dyg',
+      this.htmlID,
+      cloneDeep(this.displayedData),
+      cloneDeep(this.dyGraphOptions)
+    );
 
     this.Dygraph = new Dygraph(
       this.htmlID,
