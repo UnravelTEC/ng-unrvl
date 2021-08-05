@@ -170,6 +170,13 @@ export class Ds18b20Component implements OnInit {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.server.influxdb) {
+      console.log('db not yet set, wait');
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
     this.queryRunning++;
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
@@ -189,7 +196,6 @@ export class Ds18b20Component implements OnInit {
 
     let logscale = false;
     const newColors = this.h.getColorsforLabels(labels);
-    const numColumns = labels.length; // speed
 
     // console.log(cloneDeep(this.dygLabels));
     if (logscale) {

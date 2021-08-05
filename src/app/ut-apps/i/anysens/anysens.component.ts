@@ -82,6 +82,7 @@ export class AnysensComponent implements OnInit {
   latest_values = [];
   raw_labels = [];
   round_digits = [0];
+  show_deviation = true;
 
   appName = 'Any Sens';
 
@@ -119,7 +120,7 @@ export class AnysensComponent implements OnInit {
   }
 
   ngOnInit() {
-    ['userMeanS', 'userStartTime', 'tableShown', 'sideBarShown'].forEach(
+    ['userMeanS', 'userStartTime', 'tableShown', 'sideBarShown','show_deviation'].forEach(
       (element) => {
         const thing = this.localStorage.get(this.appName + element);
         if (thing !== null) {

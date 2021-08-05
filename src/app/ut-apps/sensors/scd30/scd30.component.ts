@@ -173,7 +173,7 @@ export class Scd30Component implements OnInit {
       timeQuery,
       params,
       this.meanS,
-      'CO2_ppm'
+      '/CO2_ppm/'
     );
     const queryH = this.utHTTP.influxMeanQuery(
       'gas',
@@ -202,6 +202,13 @@ export class Scd30Component implements OnInit {
   }
 
   launchQuery(clause: string, id: string) {
+    if (!this.globalSettings.server.influxdb) {
+      console.log('db not yet set, wait');
+      setTimeout(() => {
+        this.launchQuery(clause, id);
+      }, 1000);
+      return;
+    }
     this.queryRunning++;
     const q = this.utHTTP.buildInfluxQuery(clause, undefined, undefined, 's');
     this.utHTTP

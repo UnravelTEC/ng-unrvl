@@ -167,6 +167,13 @@ export class Tsl2561Component implements OnInit {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.server.influxdb) {
+      console.log('db not yet set, wait');
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
       .subscribe((data: Object) => this.handleData(data));

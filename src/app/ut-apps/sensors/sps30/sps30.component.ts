@@ -8,10 +8,9 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-sps30',
   templateUrl: './sps30.component.html',
-  styleUrls: ['./sps30.component.scss']
+  styleUrls: ['./sps30.component.scss'],
 })
 export class Sps30Component implements OnInit {
-
   colors = [];
   graphWidth = 1500;
   setGraphWidth(width) {
@@ -52,17 +51,17 @@ export class Sps30Component implements OnInit {
   labels = {
     pm: {},
     pn: {},
-    ps: {}
+    ps: {},
   };
   data = {
     pm: {},
     pn: {},
-    ps: {}
+    ps: {},
   };
   startTimes = {
     pm: this.startTime,
     pn: this.startTime,
-    ps: this.startTime
+    ps: this.startTime,
   };
   public meanS = 30;
   public currentres = 0;
@@ -173,22 +172,21 @@ export class Sps30Component implements OnInit {
       params,
       this.meanS,
       '/_ugpm3/'
-    ) ;
+    );
     const querypn = this.utHTTP.influxMeanQuery(
       'particulate_matter',
       timeQuery,
       params,
       this.meanS,
       '/_ppcm3/'
-    ) ;
+    );
     const queryps = this.utHTTP.influxMeanQuery(
       'particulate_matter',
       timeQuery,
       params,
       this.meanS,
       '/typpartsize_um/'
-    ) ;
-
+    );
 
     this.launchQuery(querypm, 'pm');
     this.launchQuery(querypn, 'pn');
@@ -210,6 +208,13 @@ export class Sps30Component implements OnInit {
   }
 
   launchQuery(clause: string, id: string) {
+    if (!this.globalSettings.server.influxdb) {
+      console.log('db not yet set, wait');
+      setTimeout(() => {
+        this.launchQuery(clause, id);
+      }, 1000);
+      return;
+    }
     const q = this.utHTTP.buildInfluxQuery(clause, undefined, undefined, 's');
     this.utHTTP
       .getHTTPData(q)
@@ -228,5 +233,4 @@ export class Sps30Component implements OnInit {
     this.startTimes[id] = this.userStartTime;
     this.changeTrigger = !this.changeTrigger;
   }
-
 }
