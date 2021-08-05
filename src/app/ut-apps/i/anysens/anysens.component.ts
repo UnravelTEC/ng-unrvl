@@ -385,25 +385,16 @@ export class AnysensComponent implements OnInit {
       console.log('scale: lin');
     }
 
-    function nullDevFun(value) {
-      return [value, value, value];
-    }
     const deviFunctions = [null];
     for (let c = 1; c < numColumns; c++) {
       deviFunctions[c] = this.gss.getDeviationFunction(this.raw_labels[c]);
-      if (!deviFunctions[c]) deviFunctions[c] = nullDevFun;
     }
 
     for (let r = 0; r < idata.length; r++) {
       const oldRow = idata[r];
       let newRow = [oldRow[0]]; // Date
       for (let c = 1; c < numColumns; c++) {
-        const point = oldRow[c];
-        if (deviFunctions[c]) {
-          newRow.push(deviFunctions[c](point));
-        } else {
-          newRow.push(point);
-        }
+        newRow.push(deviFunctions[c](oldRow[c]));
       }
       dataWithDev.push(newRow);
     }

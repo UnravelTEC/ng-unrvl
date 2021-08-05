@@ -678,8 +678,12 @@ export class GlobalSettingsService implements OnInit {
     }
     return undefined;
   }
+  nullDevFun(value) {
+    return [value, value, value];
+  }
   getDeviationFunction(raw_label) {
-    return this.getSensorPresetField(raw_label, 'getDeviation');
+    const defFun = this.getSensorPresetField(raw_label, 'getDeviation');
+    return defFun ? defFun : this.nullDevFun;
   }
 
   checkFullscreen() {
