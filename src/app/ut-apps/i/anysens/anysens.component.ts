@@ -88,6 +88,7 @@ export class AnysensComponent implements OnInit {
   changeTrigger = true;
 
   measurement = 'temperature';
+  ylabel = '';
   sensor: String;
   interval: string;
   host = '';
@@ -148,6 +149,10 @@ export class AnysensComponent implements OnInit {
         this[element] = thing;
       }
     });
+    this.ylabel = this.measurement
+      .replace('pressure', '')
+      .replace(',,', ',')
+      .replace(',', ', ');
 
     if (this.from && this.to) {
       this.from = Number(this.from);
