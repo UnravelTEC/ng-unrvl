@@ -351,8 +351,12 @@ $red2: #ff7f88;
         }
         th {
           font-weight: normal;
-          padding: 0.1em 0.2em;
+          padding: 0.1em 0.3em 0.1em 0;
           color: $editableFormsTextColor;
+        }
+        th.h {
+          width: 1.4em;
+          padding-left: 0.5rem;
         }
         th span.one {
           display: none;
@@ -363,8 +367,11 @@ $red2: #ff7f88;
           border-left-width: 0;
           padding: 0.1em 0;
         }
-        td.a {
-          padding: 0 5px;
+        td.d {
+          padding: 0 0 0 5px;
+        }
+        td.u {
+          padding: 0 5px 0 3px;
         }
       }
       tr.highlight,

@@ -860,12 +860,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     // console.log(data.dygraph);
     const parent = this['parent'];
     const showDevs = parent && parent.showDeviation;
-    let yvalues = [];
-    if (showDevs && data.x) {
-      yvalues = parent.getDeviationsofTS(data.x);
-      // console.log('legendFormatter', yvalues);
-      // console.log(data.series);
-    }
 
     // let html = '<table>';
     // html += '<tr><th colspan="3" class="header">' + (data.xHTML ? data.xHTML + ':' : 'Legend:') + '</th></tr>';
@@ -901,45 +895,52 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       const displayedValue = !series.hasOwnProperty('y')
         ? ''
         : parent.h.roundAccurately(series.y, parent.roundDigits[i + 1]);
-      const spanvis =
-        data.x == null || !series.hasOwnProperty('yHTML')
-          ? "style='visibility:hidden'"
-          : '';
       const cls = series.isHighlighted ? 'class="highlight"' : '';
       const hoverCallback = genHover(series.label, htmlID);
       const toggleCallback = genToggle(series.label, htmlID);
       const setSingleCallback = genSingleClick(series.label, htmlID);
       const textcolor = series.isVisible ? '' : ' style="color:gray" ';
-      let devtext = '';
-      if (showDevs) {
-        const values = yvalues[i + 1];
-        if (Array.isArray(values)) {
-          const dlower = parent.h.roundAccurately(
-            values[1] - values[0],
-            parent.roundDigits[i + 1]
-          );
-          const dupper = parent.h.roundAccurately(
-            values[2] - values[1],
-            parent.roundDigits[i + 1]
-          );
-          if (dlower == dupper) {
-            devtext = dlower ? '±' + String(dlower) : ''; // if no dev defined
-          } else {
-            devtext = '-' + String(dlower) + ' +' + String(dupper);
-          }
-        }
-      }
+
       const labeltext = series.labelHTML.replace(/\s?\((.*)\)$/, '');
-      let unit = data.x != null ? series.labelHTML.match(/\((.*)\)$/) : '';
-      if (unit) {
-        unit = unit[1];
+      let valcells = '';
+      let colon = '';
+      if (data.x) {
+        valcells = `<td ${toggleCallback} class='value'>${displayedValue}</td>`;
+
+        if (showDevs) {
+          let devtext = '';
+          const yvalues = parent.getDeviationsofTS(data.x);
+          const values = yvalues[i + 1];
+          if (Array.isArray(values)) {
+            const dlower = parent.h.roundAccurately(
+              values[1] - values[0],
+              parent.roundDigits[i + 1]
+            );
+            const dupper = parent.h.roundAccurately(
+              values[2] - values[1],
+              parent.roundDigits[i + 1]
+            );
+            if (dlower == dupper) {
+              devtext = dlower ? '±' + String(dlower) : ''; // if no dev defined
+            } else {
+              devtext = '-' + String(dlower) + ' +' + String(dupper);
+            }
+          }
+          valcells += '<td class="d">' + devtext + '</td>';
+        }
+
+        let unit = series.labelHTML.match(/\((.*)\)$/);
+        if (unit) {
+          unit = unit[1];
+        }
+        valcells += `<td class='u'>${unit}</td>`;
+        colon = ':';
       }
-      const dev = showDevs ? '<td class="a">' + devtext + '</td>' : '';
       html +=
         `<tr style='color:${series.color};' ${cls} ${hoverCallback} title='Toggle Display'>` +
-        `<th ${textcolor}><span class='dash'>${series.dashHTML}</span><span class='one' ${setSingleCallback} title='Display alone'>[1]</span></th>` +
-        `<th${textcolor} ${toggleCallback}>${labeltext}<span ${spanvis}>:</span>&thinsp;</th>` +
-        `<td ${toggleCallback} class='value'>${displayedValue}</td>${dev}<td class='a'>${unit}</td></tr>`;
+        `<th ${textcolor} class="h"><span class='dash'>${series.dashHTML}</span><span class='one' ${setSingleCallback} title='Display alone'>[1]</span></th>` +
+        `<th${textcolor} ${toggleCallback}>${labeltext}${colon}</th>` +
+        `${valcells}</tr>`;
     }
     return html + '</table>';
   }
@@ -951,33 +952,19 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.setAxisHighlight(name);
   }
-  getDeviationsofTS(ts) {
+  getDeviationsofTS(ts, debug = false) {
     // search for complete data row at timestamp (incl. deviations) for display in legend
     const datalen = this.data.length; // use data, array has a lower memory footprint
     let firstindex = 0;
     let firstts;
-    // const logoffset = this.data[firstindex][0].valueOf();
+    //
     let lastindex = datalen - 1;
     let lastts;
     let timeoutcounter = 0;
+
+    const logoffset = this.data[0][0].valueOf();
     while (timeoutcounter++ < 99) {
       firstts = this.data[firstindex][0].valueOf();
-
-      // console.log(
-      //   'BS count:',
-      //   timeoutcounter,
-      //   'firsti:',
-      //   firstindex,
-      //   'lasti:',
-      //   lastindex,
-      //   'firstts',
-      //   (firstts - logoffset)/1000,
-      //   'target',
-      //   (ts - logoffset)/1000,
-      //   'lastts',
-      //   (lastts - logoffset)/1000
-      // );
-
       if (firstts == ts) {
         return this.dataWithDev[firstindex];
       }
@@ -985,15 +972,49 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       if (lastts == ts) {
         return this.dataWithDev[lastindex];
       }
-      const new_half_ts = firstts + (lastts - firstts) / 2;
-      const new_half_index = Math.floor((lastindex - firstindex) / 2);
-      if (ts < new_half_ts) {
-        lastindex -= new_half_index;
+      if (debug) {
+        console.log(
+          'BS count:',
+          timeoutcounter,
+          'firsti:',
+          firstindex,
+          'lasti:',
+          lastindex,
+          'firstts',
+          (firstts - logoffset) / 1000,
+          'target',
+          (ts - logoffset) / 1000,
+          'lastts',
+          (lastts - logoffset) / 1000
+        );
+      }
+      const new_half_ts = firstts + (lastts - firstts) / 2; // overshoots ?
+      const new_half_index =
+        firstindex + Math.floor((lastindex - firstindex) / 2);
+      const new_half_index_ts = this.data[new_half_index][0]; // overshoots ?
+      if (ts < new_half_index_ts) {
+        lastindex = new_half_index;
       } else {
-        firstindex += new_half_index;
+        firstindex = new_half_index;
       }
     }
     console.error('getDeviationsofTS Timeout');
+
+    console.log(
+      'BS count:',
+      timeoutcounter,
+      'firsti:',
+      firstindex,
+      'lasti:',
+      lastindex,
+      'firstts',
+      (firstts - logoffset) / 1000,
+      'target',
+      (ts - logoffset) / 1000,
+      'lastts',
+      (lastts - logoffset) / 1000
+    );
+    if (!debug) this.getDeviationsofTS(ts, true);
   }
 
   // gets called after AfterDrawCallback
