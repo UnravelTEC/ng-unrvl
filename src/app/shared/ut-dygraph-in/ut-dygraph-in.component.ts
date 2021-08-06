@@ -892,7 +892,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     for (let i = 0; i < data.series.length; i++) {
       const series = data.series[i];
-      const displayedValue = !series.hasOwnProperty('y')
+      const displayedValue = !series.hasOwnProperty('y') || isNaN(series.y)
         ? ''
         : parent.h.roundAccurately(series.y, parent.roundDigits[i + 1]);
       const cls = series.isHighlighted ? 'class="highlight"' : '';
@@ -933,12 +933,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         if (unit) {
           unit = unit[1];
         }
-        valcells += `<td class='u'>${unit}</td>`;
+        valcells += `<td class='u'${textcolor}>${unit}</td>`;
         colon = ':';
       }
       html +=
         `<tr style='color:${series.color};' ${cls} ${hoverCallback} title='Toggle Display'>` +
-        `<th ${textcolor} class="h"><span class='dash'>${series.dashHTML}</span><span class='one' ${setSingleCallback} title='Display alone'>[1]</span></th>` +
+        `<th${textcolor} class="h"><span class='dash'>${series.dashHTML}</span><span class='one' ${setSingleCallback} title='Display alone'>[1]</span></th>` +
         `<th${textcolor} ${toggleCallback}>${labeltext}${colon}</th>` +
         `${valcells}</tr>`;
     }
