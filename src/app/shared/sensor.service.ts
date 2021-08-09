@@ -80,15 +80,25 @@ export class SensorService {
       },
       H2O_rel_percent: {
         round_digits: 2,
-        getDeviation: function (value) {
+        getDeviation: function (value, envParams = { T_degC: 25, age_d: 42 }) {
           if (value === null) return null;
           if (isNaN(value) || value > 100 || value < 0) {
             return NaN;
           }
+          if (
+            value > 80 ||
+            value < 20 ||
+            envParams.T_degC < -40 ||
+            envParams.T_degC > 85
+          ) {
+            return [value, value, value];
+          }
+
           const dev = 3; // %
           // TODO Log term stability ±0.5 % / Year 10...90%
           // TODO hysteresis ±1%
           // TODO nonlinearity 1%
+          // TODO operating range datasheet p.9
           return [value - dev, value, value + dev];
         },
       },
@@ -137,8 +147,8 @@ export class SensorService {
           }
           const dev = 0.4 + 0.023 * (value - 25);
           return [value - dev, value, value + dev];
-        }
-      }
+        },
+      },
     },
     MPU9250: {
       sensor_degC: {
