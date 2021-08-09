@@ -205,6 +205,13 @@ const appRoutes: Routes = [
       ),
   },
   {
+    path: 'Apps/Calibrations',
+    loadChildren: () =>
+      import('./ut-apps/calibration/calibration.module').then(
+        (m) => m.CalibrationModule
+      ),
+  },
+  {
     path: '',
     redirectTo: 'Dashboard',
     pathMatch: 'full',

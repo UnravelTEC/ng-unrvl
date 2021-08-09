@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "c8b0e82",
-  "SHA": "c8b0e82bdfb67587c7e0f0ca328a6a6fe9346433",
-  "branch": "bimbox",
+  "shortSHA": "aa96906",
+  "SHA": "aa9690640eec5c8632277ac957d45b47dc67c94d",
+  "branch": "develop",
   "lastCommitAuthor": "Michael Maier",
-  "lastCommitTime": "Fri Jul 2 16:48:21 2021 +0200",
-  "lastCommitMessage": "bimbox dashboard",
-  "lastCommitNumber": "1109"
+  "lastCommitTime": "Fri Aug 6 09:33:52 2021 +0200",
+  "lastCommitMessage": "legend revamp; more efficient",
+  "lastCommitNumber": "1229"
 }
