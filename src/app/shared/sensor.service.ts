@@ -32,7 +32,7 @@ export class SensorService {
       },
       P: function (value) {
         if (value === null) return null;
-        if (isNaN(value) || value > 1100 || value < 300) {
+        if (isNaN(value) || value > 1100 || value < 300) { // abs. max would be 20000 hPa ?
           return NaN;
         }
         const dev = 1; // hPa

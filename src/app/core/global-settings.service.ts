@@ -62,6 +62,25 @@ export class GlobalSettingsService implements OnInit {
     // cpu: 'unknown',
     // cpus: undefined,
     sensors: undefined, // checking for undef in html is easier than for {}
+    /*
+    { BME280: ['temperature', 'humidity', 'pressure']}
+    new:
+    {
+      BME280: {
+        measurements: [...],
+        id: {
+          'i2c-7_0x76: {
+            birthdate: $Date, // from cal table (or influx setup date default)
+            $fieldname: {
+              cals: [[ Date, n0:number, …,  n7, 'note:text' ], […]],
+              hw_recal: [[ Date, value (, -s) ], […]]
+            },
+            tags: {} // future use
+          }
+        }
+      }
+    }
+    */
     measurements: [],
     databaseStatus: 'unknown', // db status: up, down, unknown, waiting
     api: undefined,
@@ -248,9 +267,19 @@ export class GlobalSettingsService implements OnInit {
       if (sensor && sensor[1]) {
         sensorhere = true;
         const sname = sensor[1];
-        if (!this.server.sensors[sname]) this.server.sensors[sname] = [];
-        if (!this.server.sensors[sname].includes(measurement))
-          this.server.sensors[sname].push(measurement);
+        if (!this.server.sensors[sname]) this.server.sensors[sname] = {};
+        if (!this.server.sensors[sname].hasOwnProperty('measurements'))
+          this.server.sensors[sname]['measurements'] = [];
+        if (!this.server.sensors[sname]['measurements'].includes(measurement))
+          this.server.sensors[sname]['measurements'].push(measurement);
+        if (!this.server.sensors[sname].hasOwnProperty('id')) this.server.sensors[sname]['id'] = {};
+        const id = seri.match(/id=([-A-Za-z0-9|_/]*)/);
+        if (id && id[1]) {
+          const sid = id[1]
+          if (!this.server.sensors[sname]['id'].hasOwnProperty(sid))
+            this.server.sensors[sname]['id'][sid] = {}
+        }
+
       }
       // const host = seri.match(/host=([-A-Za-z0-9]*)/);
       // if (host && host[1] && !this.hosts.includes(host[1])) {
