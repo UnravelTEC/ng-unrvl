@@ -99,15 +99,22 @@ export class AppComponent implements OnInit {
         this.gss.handleInfluxSeries(data)
       );
   }
+
+  /*
+    fills gss.sensors obj with fields used later in looking up calibration data
+  */
   public getFieldsOfSeries() {
-    const sensors = this.gss.server.sensors
-    for (const sensorname in sensors) {
-      if (Object.prototype.hasOwnProperty.call(sensors, sensorname)) {
-        const sensor = sensors[sensorname];
-
-      }
-    }
-
+    const measurements = this.gss.server.measurements;
+    let fieldquery = '';
+    measurements.forEach(measurement => {
+      fieldquery += `SELECT LAST(*) FROM "${measurement}" group by sensor,id;`
+    });
+    // console.error(fieldquery);
+    this.utHTTP
+      .getHTTPData(this.utHTTP.buildInfluxQuery(fieldquery))
+      .subscribe((data: Object) =>
+      this.gss.acceptFieldsOfSeries(data)
+    );
   }
 
   public setTitle(newTitle?: string) {

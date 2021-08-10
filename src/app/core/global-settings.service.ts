@@ -70,12 +70,15 @@ export class GlobalSettingsService implements OnInit {
         id: {
           'i2c-7_0x76: {
             birthdate: $Date, // from cal table (or influx setup date default)
-            $fieldname: {
-              measurement: $measurement??
-              cals: [[ Date, n0:number, …,  n7, 'note:text' ], […]],
-              hw_recal: [[ Date, value (, -s) ], […]]
-            },
-            tags: {} // future use
+            measurements: {
+              $measurement: {
+                $fieldname: {
+                  cals: [[ Date, n0:number, …,  n7, 'note:text' ], […]],
+                  hw_recal: [[ Date, value (, -s) ], […]]
+                },
+                tags: {} // future use (eg hostname?)
+              }
+            }
           }
         }
       }
@@ -274,12 +277,11 @@ export class GlobalSettingsService implements OnInit {
           this.server.sensors[sname]['measurements'].push(measurement);
         if (!this.server.sensors[sname].hasOwnProperty('id')) this.server.sensors[sname]['id'] = {};
         const id = seri.match(/id=([-A-Za-z0-9|_/]*)/);
-        if (id && id[1]) {
-          const sid = id[1]
-          if (!this.server.sensors[sname]['id'].hasOwnProperty(sid))
-            this.server.sensors[sname]['id'][sid] = {}
-        }
-        this.emitChange({ InfluxSeriesThere: true }); // trigger scan for fields
+        console.log('idmatch:', id);
+
+        const sid = id && id[1] ? id[1] : '_'; // freely defined convention
+        if (!this.server.sensors[sname]['id'].hasOwnProperty(sid))
+          this.server.sensors[sname]['id'][sid] = {}
       }
       // const host = seri.match(/host=([-A-Za-z0-9]*)/);
       // if (host && host[1] && !this.hosts.includes(host[1])) {
@@ -288,13 +290,52 @@ export class GlobalSettingsService implements OnInit {
     }
     if (!sensorhere) {
       this.server.sensors = undefined; // checking for undef in html is easier than for {}
+    } else {
+      this.emitChange({ InfluxSeriesThere: true }); // trigger scan for fields
     }
     console.log('measurements:', this.server.measurements);
     console.log('sensors:', this.server.sensors);
   }
 
   public acceptFieldsOfSeries(data: Object) {
+    // console.error('acceptFieldsOfSeries');
+    const gsensors = this.server.sensors;
 
+    console.log(data);
+    if (!data['results']) {
+      console.error('influx acceptFieldsOfSeries: empty', data);
+      return;
+    }
+    data['results'].forEach(result => {
+      const series = result['series']; // Array
+      series.forEach(sensor => {
+        const measurement = sensor['name'];
+        let id = sensor['tags']['id'];
+        if(!id) id = "_"; // freely defined convention
+        const sensorname = sensor['tags']['sensor'];
+        if (!sensorname) {
+          return
+        }
+        // console.log('foreach series', sensor, sensorname);
+
+        const thisgsensor = gsensors[sensorname]['id'][id];
+        if (!thisgsensor.hasOwnProperty('measurements'))
+          thisgsensor['measurements'] = {}
+        if(!thisgsensor['measurements'].hasOwnProperty(measurement))
+          thisgsensor['measurements'][measurement] = {}
+
+        // console.log('sensor:',sensorname, sensor);
+
+        for (let i = 1; i < sensor['columns'].length; i++) {
+          const element = sensor['columns'][i];
+          if (sensor['values'][0][i] !== null) {
+            const fieldname = sensor['columns'][i].replace(/last_/,'');
+            thisgsensor['measurements'][measurement][fieldname] = {}
+          }
+        }
+      });
+    });
+    console.log(this.server.sensors);
   }
 
   setCurrentWebEndpoint(chosenBackendType, baseurl?: string) {
