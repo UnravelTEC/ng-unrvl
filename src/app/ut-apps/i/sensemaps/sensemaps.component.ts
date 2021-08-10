@@ -13,22 +13,39 @@ export class SensemapsComponent implements OnInit {
   sensors = {}; // BME: ['temperature','pressure']
   hosts = [];
 
+  public queryRunning = false;
+  public errorText = "";
+
   constructor(
     private globalSettings: GlobalSettingsService,
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService
   ) {
-    this.globalSettings.emitChange({ appName: 'All Sensors' });
+    this.globalSettings.emitChange({ appName: 'Geospatial Sensor Data' });
   }
   ngOnInit() {
     this.launchQuery('show series');
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.server.influxdb) {
+      console.log('db not yet set, wait');
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
+    this.queryRunning = true;
     const q = this.utHTTP.buildInfluxQuery(clause);
     this.utHTTP
       .getHTTPData(q)
-      .subscribe((data: Object) => this.handleData(data));
+      .subscribe((data: Object) => this.handleData(data), (error) => {
+        console.error(error);
+        this.queryRunning = false;
+        alert(
+          `HTTP error: ${error.status}, ${error.statusText}, ${error.message}`
+        );
+      })
   }
 
   handleData(data: Object) {
@@ -53,5 +70,6 @@ export class SensemapsComponent implements OnInit {
         this.hosts.push(host[1]);
       }
     }
+    this.queryRunning = false;
   }
 }
