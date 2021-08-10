@@ -16,7 +16,19 @@
     </div>
     <div *ngFor="let id of s.value['id'] | keyvalue" class="id">
 
-        {{ id.key }}
+        <h5>{{ id.key }}</h5>
+        <div *ngFor="let measurement of id.value['measurements'] | keyvalue" class="sensormeasurement">
+            <h6>{{ measurement.key }}</h6>
+            <div *ngFor="let field if measurement.value | keyvalue" class="field">
+                <div>
+                    {{ field.key }}
+                </div>
+                <div *ngIf="(field.value | json) == '{}'">
+                    Add Calibration!
+                </div>
+
+            </div>
+        </div>
     </div>
 
 
