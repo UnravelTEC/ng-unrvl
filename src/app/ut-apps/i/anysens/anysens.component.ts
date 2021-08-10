@@ -303,6 +303,7 @@ export class AnysensComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
+    this.queryRunning = true;
     if (!this.gss.server.influxdb) {
       console.log('db not yet set, wait');
       setTimeout(() => {
@@ -310,7 +311,6 @@ export class AnysensComponent implements OnInit {
       }, 1000);
       return;
     }
-    this.queryRunning = true;
     this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(clause)).subscribe(
       (data: Object) => this.handleData(data),
       (error) => {
