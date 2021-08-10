@@ -2,7 +2,6 @@ import { Component, OnInit, Input } from '@angular/core';
 
 import { interval, Subscription } from 'rxjs';
 
-import { HelperFunctionsService } from '../core/helper-functions.service';
 import { GlobalSettingsService } from '../core/global-settings.service';
 import { MqttService } from '../core/mqtt.service';
 
@@ -28,7 +27,6 @@ export class TopBarComponent implements OnInit {
   private intervalSubscription: Subscription;
 
   constructor(
-    private h: HelperFunctionsService,
     private gss: GlobalSettingsService,
     private mqtt: MqttService // used in html
   ) {}
@@ -49,7 +47,7 @@ export class TopBarComponent implements OnInit {
   }
 
   changeHostName(obj: Object) {
-    console.log('got', obj);
+    // console.log('got', obj);
     if (obj && obj.hasOwnProperty('hostname')) {
       this.hostName = obj['hostname'];
     }
