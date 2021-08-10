@@ -54,6 +54,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       description: 'Environmental',
       icon: 'manufacturers/Bosch.svg',
     },
+    GPS: {
+      description: 'GPS position',
+      icon: 'GPS.svg',
+      path: '/Apps/I/GPS'
+    }
   };
   SAR = this.sensorAppRegistry;
   // EXSENSOR = {

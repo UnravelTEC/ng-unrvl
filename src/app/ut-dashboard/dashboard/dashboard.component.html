@@ -24,7 +24,7 @@
       <app-ut-dashboard-tile
        *ngIf="SAR[s.key]"
        title="{{ s.key }} {{ SAR[s.key].description}}"
-       path="/Apps/Sensors/{{ s.key }}"
+       path="{{ SAR[s.key]['path'] ? SAR[s.key]['path'] : '/Apps/Sensors/' + s.key }}"
        icon="{{ SAR[s.key]['icon'] ? SAR[s.key]['icon'] : 'example.png' }}"
       bg="#FFF"
       ></app-ut-dashboard-tile>
