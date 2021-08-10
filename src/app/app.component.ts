@@ -30,13 +30,13 @@ export class AppComponent implements OnInit {
     private http: HttpClient,
     private utHTTP: UtFetchdataService,
     private titleService: Title,
-    private globalSettings: GlobalSettingsService
+    private gss: GlobalSettingsService
   ) {}
 
   ngOnInit() {
     this.setTitle('UnravelTEC');
 
-    this.globalSettings.changeEmitted$.subscribe((obj) => {
+    this.gss.changeEmitted$.subscribe((obj) => {
       console.log(obj);
       if (!obj) {
         return;
@@ -74,25 +74,40 @@ export class AppComponent implements OnInit {
         if (obj['InfluxUP'] === true) {
           this.getInfluxDBOverview();
         } else {
-          this.globalSettings.server.measurements = [];
-          this.globalSettings.server.sensors = {};
+          this.gss.server.measurements = [];
+          this.gss.server.sensors = {};
         }
+        return;
+      }
+      if (obj.hasOwnProperty('InfluxSeriesThere')) {
+        this.getFieldsOfSeries();
       }
     });
 
-    this.globalSettings.ngOnInit();
+    this.gss.ngOnInit();
 
-    if (this.globalSettings.isMobile()) {
+    if (this.gss.isMobile()) {
       console.log('mobile detected, remove footer');
       this.toggleFooter(false);
     }
   }
-  getInfluxDBOverview() { // here to avoid cyclic dependency gss <=> uthttp
+  getInfluxDBOverview() {
+    // here to avoid cyclic dependency gss <=> uthttp
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery('show series'))
       .subscribe((data: Object) =>
-        this.globalSettings.handleInfluxSeries(data)
+        this.gss.handleInfluxSeries(data)
       );
+  }
+  public getFieldsOfSeries() {
+    const sensors = this.gss.server.sensors
+    for (const sensorname in sensors) {
+      if (Object.prototype.hasOwnProperty.call(sensors, sensorname)) {
+        const sensor = sensors[sensorname];
+
+      }
+    }
+
   }
 
   public setTitle(newTitle?: string) {

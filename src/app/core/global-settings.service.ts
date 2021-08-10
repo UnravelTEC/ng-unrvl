@@ -63,7 +63,6 @@ export class GlobalSettingsService implements OnInit {
     // cpus: undefined,
     sensors: undefined, // checking for undef in html is easier than for {}
     /*
-    { BME280: ['temperature', 'humidity', 'pressure']}
     new:
     {
       BME280: {
@@ -72,6 +71,7 @@ export class GlobalSettingsService implements OnInit {
           'i2c-7_0x76: {
             birthdate: $Date, // from cal table (or influx setup date default)
             $fieldname: {
+              measurement: $measurement??
               cals: [[ Date, n0:number, …,  n7, 'note:text' ], […]],
               hw_recal: [[ Date, value (, -s) ], […]]
             },
@@ -79,7 +79,7 @@ export class GlobalSettingsService implements OnInit {
           }
         }
       }
-    }
+    } TODO somewhere include hostname (host=)
     */
     measurements: [],
     databaseStatus: 'unknown', // db status: up, down, unknown, waiting
@@ -279,7 +279,7 @@ export class GlobalSettingsService implements OnInit {
           if (!this.server.sensors[sname]['id'].hasOwnProperty(sid))
             this.server.sensors[sname]['id'][sid] = {}
         }
-
+        this.emitChange({ InfluxSeriesThere: true }); // trigger scan for fields
       }
       // const host = seri.match(/host=([-A-Za-z0-9]*)/);
       // if (host && host[1] && !this.hosts.includes(host[1])) {
@@ -292,6 +292,11 @@ export class GlobalSettingsService implements OnInit {
     console.log('measurements:', this.server.measurements);
     console.log('sensors:', this.server.sensors);
   }
+
+  public acceptFieldsOfSeries(data: Object) {
+
+  }
+
   setCurrentWebEndpoint(chosenBackendType, baseurl?: string) {
     switch (chosenBackendType) {
       case 'Current Web Endpoint':

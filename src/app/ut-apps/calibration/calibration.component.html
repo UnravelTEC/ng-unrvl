@@ -6,15 +6,16 @@
 </h3>
 
 
-<div *ngFor="let s of gss.server.sensors | keyvalue">
+<div *ngFor="let s of gss.server.sensors | keyvalue" class="sensor">
     <h4>
         {{ s.key }}
     </h4>
-    <div *ngIf="s.value['measurements'] && s.value['measurements'].length > 0">
+    <div *ngIf="s.value['measurements'] && s.value['measurements'].length > 0" class="measurements">
         <span *ngFor="let m of s.value['measurements']; let i = index"><span *ngIf="i > 0">, </span>{{ m }}</span>
         sensor
     </div>
-    <div *ngFor="let id of s.value['id'] | keyvalue">
+    <div *ngFor="let id of s.value['id'] | keyvalue" class="id">
+
         {{ id.key }}
     </div>
 
@@ -25,3 +26,5 @@
     No sensors in Database.
   </div>
 </div>
+
+<p>write operations only if user has write rights on DB</p>
