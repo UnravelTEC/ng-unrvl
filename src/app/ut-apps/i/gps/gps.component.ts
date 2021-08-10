@@ -50,6 +50,13 @@ export class GpsComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.server.influxdb) {
+      console.log('db not yet set, wait');
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
       .subscribe((data: Object) => this.handleData(data));
@@ -109,12 +116,17 @@ export class GpsComponent implements OnInit {
 
     let latcol = -1;
     let loncol = -1;
+    const nrCols = labels.length; // for speed
     let colorColumn: Number;
-    for (let i = 1; i < labels.length; i++) {
+    let speedColumn: Number;
+    for (let i = 1; i < nrCols; i++) {
       const element = labels[i];
 
-      if (element.search('hdop') > -1) {
+      if (element.search('speed')) {
         colorColumn = i;
+      }
+      if (element.search('speed')) {
+        speedColumn = i;
       }
 
       const lonmatch = element.match(/\blon\b/);
@@ -127,7 +139,9 @@ export class GpsComponent implements OnInit {
       if (latmatch && latmatch.length > 0 && latmatch[0] == 'lat') {
         latcol = i;
         console.log('latcol', i);
+        continue
       }
+      labels[i] = element.replace(/location /,'');
     }
 
     // let line: GeoJSON.Feature<any> = {
@@ -142,28 +156,32 @@ export class GpsComponent implements OnInit {
 
     let max = 20;
     let min = 0;
-    // for (let r = 0; r < idata.length; r++) {
-    //   const row = idata[r];
+    for (let r = 0; r < idata.length; r++) {
+      const row = idata[r];
 
-    //   for (let c = 1; c < row.length; c++) {
-    //     const element = row[c];
-    //     if (c == colorColumn) {
-    //       if (max < element) {
-    //         max = element;
-    //       } else if (min > element) {
-    //         min = element;
-    //       }
-    //     }
-    //   }
-    // }
+      for (let c = 1; c < nrCols; c++) {
+        const element = row[c];
+        if (c == colorColumn) {
+          if (max < element) {
+            max = element;
+          } else if (min > element) {
+            min = element;
+          }
+        }
+      }
+    }
+    labels.push('Speed ( km / h )'); // small spaces
     labels.push('color');
     const range = max - min;
     console.log('for', 'hdop', 'min:', min, 'max:', max, 'range', range);
     for (let r = 0; r < idata.length; r++) {
       const row = idata[r];
-      for (let c = 1; c < row.length; c++) {
+      for (let c = 1; c < nrCols; c++) {
+        const element = row[c];
+        if (c == speedColumn) {
+          row.push(element * 3.6)
+        }
         if (c == colorColumn) {
-          const element = row[c];
           const percentage = ((element - min) / range) * 100;
           row.push(this.h.returnColorForPercent(percentage));
           break;

@@ -39,7 +39,7 @@
       </td>
     </tr>
     <tr *ngFor="let nr of barArray; let i = index" [attr.data-index]="i">
-      <td style.background-color="{{ barColors[i] }}"></td>
+      <td style.background-color="{{ barColors[i] }}" title="{{ barValues[i] }}"></td>
     </tr>
     <tr>
       <td class="end" style.background-color="{{ begincolor }}">
@@ -157,6 +157,7 @@
   [style]="graphstyle"
   [extraDyGraphConfig]="extraDyGraphConfig"
   [startTime]="undefined"
+
   enableHighlightCallback="true"
   (returnHighlightedRow)="handleHighlightCallback($event)"
   [colors]="colors"

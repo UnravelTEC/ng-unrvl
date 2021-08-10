@@ -26,6 +26,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
     this.globalSettings.emitChange({ appName: this.appName });
     for (let i = 99; i > 1; i -= 2) {
       this.barArray.push(i);
+      this.barValues.push(String(i) + " %");
     }
   }
   colors = [];
@@ -100,6 +101,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
   public toTime: Date;
   public to: Number; // unix time from urlparam
   public queryRunning = false;
+  // public changeTrigger = true;
 
   public highlightDate: Date;
   public highlightValue: number;
@@ -115,6 +117,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
   ];
   barArray = [];
   barColors = [];
+  barValues = [];
   begincolor = 'black';
   endcolor = 'black';
 
@@ -193,6 +196,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
         return;
       }
     }
+    this.queryRunning = true;
 
     const timeQuery = fromTo
       ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
@@ -249,7 +253,13 @@ export class EnviromapComponent implements OnInit, OnDestroy {
   }
 
   launchQuery(clause: string) {
-    this.queryRunning = true;
+    if (!this.globalSettings.server.influxdb) {
+      console.log('db not yet set, wait');
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
     this.utHTTP
       .getHTTPData(
         this.utHTTP.buildInfluxQuery(clause) //, this.db, this.server)
@@ -361,9 +371,10 @@ export class EnviromapComponent implements OnInit, OnDestroy {
     lastmarkerOptions.color = '#000000';
 
     const graphlabels = [];
-    const maplabels = ['Date', 'location lat', 'location lat'];
     const graphdata = [];
-    const mapdata = [];
+
+    const raw_graphlabels = [];
+    const round_graphdigits = [0];
     let latlabelpos: number, lonlabelpos: number;
     for (let i = 0; i < labels.length; i++) {
       const element = labels[i];
@@ -373,20 +384,21 @@ export class EnviromapComponent implements OnInit, OnDestroy {
         lonlabelpos = i;
       } else {
         graphlabels.push(element);
-        this.raw_graphlabels.push(ret['raw_labels'][i]);
-        this.round_graphdigits.push(
+        raw_graphlabels.push(ret['raw_labels'][i]);
+        round_graphdigits.push(
           this.sensorService.getDigits(ret['raw_labels'][i])
         );
       }
     }
+    console.log('round_graphdigits', round_graphdigits);
+
     let labelunit = graphlabels[1].match(/\(\s?(.*)\s?\)$/);
     this.unit = labelunit && labelunit[1] ? labelunit[1] : this.unit;
-    let max = this.minmax.max;
-    let min = this.minmax.min;
+    let max = -Infinity;
+    let min = Infinity;
     for (let r = 0; r < idata.length; r++) {
       const row = idata[r];
       let newgrow = [row[0]];
-      let newmrow = [row[0]];
       let isValidRow = false;
       for (let c = 1; c < row.length; c++) {
         const element = row[c];
@@ -398,7 +410,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
           true;
         } else {
           newgrow.push(element);
-          if (element === null) {
+          if (element === null || isNaN(element)) {
             // delete row[c];
             // row[c] = NaN;
             continue;
@@ -419,11 +431,20 @@ export class EnviromapComponent implements OnInit, OnDestroy {
       }
       // mapdata.push(newmrow);//unused
     }
-    this.minmax.max = this.h.roundAccurately(max, this.round_graphdigits[1]);
-    this.minmax.min = this.h.roundAccurately(min, this.round_graphdigits[1]);
+    console.log('found min:', min, 'max:', max);
+
+    this.minmax.max = this.h.roundAccurately(max, round_graphdigits[1]);
+    this.minmax.min = this.h.roundAccurately(min, round_graphdigits[1]);
     if (this.column) {
       labels.push('color');
       const range = max - min;
+      for (let i = 0; i < this.barArray.length; i++) {
+        this.barValues[i] = String(
+          this.h.roundAccurately(
+            min + range * this.barArray[i] / 100,
+            round_graphdigits[1]))
+           + " " + this.unit;
+      }
       console.log('for', this.column, 'min:', min, 'max:', max, 'range', range);
       for (let r = 0; r < idata.length; r++) {
         const row = idata[r];
@@ -469,12 +490,25 @@ export class EnviromapComponent implements OnInit, OnDestroy {
     this.data = graphdata;
     this.gpsdata = idata;
     this.gpslabels = labels;
+    this.raw_graphlabels = raw_graphlabels;
+    this.round_graphdigits = round_graphdigits;
     this.colors = newColors;
+    // this.changeTrigger = !this.changeTrigger;
     console.log('graphlabels', labels);
     console.log('raw_graphlabels', this.raw_graphlabels);
 
     console.log('all data:', idata);
     console.log('graph data:', this.data);
+
+    this.layers[2] =  geoJSON(
+      this.h.influx2geojsonPoints(
+        [this.gpsdata[0]],
+        this.gpslabels
+      ),
+      {pointToLayer: function (feature, latlng) {
+        return circleMarker(latlng, {radius: 0, opacity: 0, fillOpacity: 0});
+      }}
+    ); // point with no styling to remove hover-induced circle
 
     this.queryRunning = false;
   }

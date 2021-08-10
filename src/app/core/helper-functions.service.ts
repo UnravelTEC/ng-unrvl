@@ -266,9 +266,9 @@ export class HelperFunctionsService {
       if (labels.length > 3) {
         for (let i = 1; i < labels.length; i++) {
           const label = labels[i];
-          if (i != latlabelpos && i != lonlabelpos) {
+          // if (i != latlabelpos && i != lonlabelpos) {
             point.properties[label] = element[i];
-          }
+          // }
         }
       }
       points.features.push(point);
@@ -883,12 +883,14 @@ export class HelperFunctionsService {
     if (feature.properties) {
       let text = '<table>';
       for (let [key, value] of Object.entries(feature.properties)) {
-        const v =
-          key == 'Date'
-            ? value['toLocaleDateString']('de-DE', timeFormatOptions)
-            : Number.isFinite(Number(value))
-            ? Math.round(Number(value) * 100) / 100
-            : value;
+        let v = value;
+        if (key == 'Date') {
+          v = value['toLocaleDateString']('de-DE', timeFormatOptions)
+        } else if(key.endsWith('lat') || key.endsWith ('lon')) {
+          v = Math.round(Number(value) * 1000000) / 1000000;
+        } else if(Number.isFinite(Number(value))) {
+          v = Math.round(Number(value) * 100) / 100;
+        }
         text += '<tr><th>' + key + ':</th><td>' + v + '</td></tr>';
       }
       text += '</table>';
