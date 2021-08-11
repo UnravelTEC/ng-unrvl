@@ -28,6 +28,14 @@ the calibration data consists of:
 either calibration factors or hardware recalibration have to be done (both also possible in one timestamp)
 
 */
+  displayAddRows = {}; // used in HTML
+  toggleRow(id) {
+    if (!this.displayAddRows.hasOwnProperty(id)) {
+      this.displayAddRows[id] = true;
+      return;
+    }
+    this.displayAddRows[id] = !this.displayAddRows[id];
+  }
 
   constructor (public gss: GlobalSettingsService) {
     this.gss.emitChange({ appName: 'Sensor Calibrations' }); }

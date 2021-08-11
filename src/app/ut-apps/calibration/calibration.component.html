@@ -35,7 +35,21 @@
               <th>Quadratic Offset (x²)</th>
               <th></th>
             </tr>
-            <tr *ngIf="(field.value | json) == '{}'">
+            <tr>
+                <td>t</td>
+                <td>d</td>
+                <td>k</td>
+                <td>x²</td>
+                <td><button title="delete calbration entry">×</button></td>
+            </tr>
+            <tr>
+                <td colspan="5" class="add">
+                    <button (click)="toggleRow(s.key + id.key + measurement.key + field.key)">
+                        {{ displayAddRows[s.key + id.key + measurement.key + field.key] ? "-" : "+" }}
+                    </button>
+                </td>
+            </tr>
+            <tr *ngIf="displayAddRows[s.key + id.key + measurement.key + field.key]">
               <td>
                   <input type="text">
                   <button>D</button>
@@ -50,7 +64,7 @@
                 <input type="text">
               </td>
               <td>
-                <button>+</button>
+                <button>Go</button>
               </td>
             </tr>
           </table>
