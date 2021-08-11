@@ -7,7 +7,7 @@
 --></div>
 
 <form class="settings" (submit)="reload()">
-  <div class="section">
+  <fieldset>
     <h3>Current Dataset:</h3>
     <div *ngIf="data.length == 0" style="height: 146px;">No data.</div>
     <div *ngIf="data.length">
@@ -21,8 +21,8 @@
       <span class="cRange">{{ currentRange }} </span><br /><br />
       Download <a (click)="exportGeojson()">geojson</a>
     </div>
-  </div>
-  <div class="section">
+  </fieldset>
+  <fieldset [disabled]="queryRunning == true">
     <h3>New Query:</h3>
 
     <br />
@@ -62,5 +62,5 @@
         Reload
       </button>
     </div>
-  </div>
+  </fieldset>
 </form>
