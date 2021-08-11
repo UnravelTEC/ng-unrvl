@@ -14,7 +14,7 @@
     </app-ut-dashboard-tile> -->
     <!-- referrer 'Dashboard' does only work because /Apps/I/Dashboard is invalid and gets redirected to Dashboard -->
     <!-- <app-ut-dashboard-tile title="Air Pressure" path="/Apps/I/Pressure" icon="320px-Pressure_gauge.svg.png"></app-ut-dashboard-tile> -->
-    <app-ut-dashboard-tile bg="#FFF" title="Temperature Map" path="/Apps/I/Enviromap" icon="noun_Temperature.png" [queryParams]="{ measurement: 'temperature', column:'°C', referrer: 'Dashboard' }"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile bg="#FFF" title="Temperature Map" path="/Apps/I/Enviromap" icon="noun_Temperature.png" [queryParams]="{ measurement: 'temperature', column:'°C', sensor:'DS18B20', referrer: 'Dashboard' }"></app-ut-dashboard-tile>
   </div>
   <hr>
 
@@ -47,8 +47,8 @@
     <app-ut-dashboard-tile title="Database Series" path="/Apps/I/Allsens" bg="#FFF" icon="influxdata-logo--symbol--pool-alpha.png"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="Influx Playground" path="/Apps/Influx-Test" bg="#FFF" icon="influxdata-logo--symbol--pool-alpha.png"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="Sensor Overview" path="/Apps/Sensors"  icon="manufacturers/Raspberry_Pi.svg"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="MQTT Test" path="/Apps/MQTT-Test" icon="mqtt.png"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="GPS" path="/Apps/I/GPS" icon="GPS.svg"></app-ut-dashboard-tile>
+    <!-- <app-ut-dashboard-tile title="MQTT Test" path="/Apps/MQTT-Test" icon="mqtt.png"></app-ut-dashboard-tile> -->
+    <!-- <app-ut-dashboard-tile title="GPS" path="/Apps/I/GPS" icon="GPS.svg"></app-ut-dashboard-tile> -->
   </div>
 
 </div>
