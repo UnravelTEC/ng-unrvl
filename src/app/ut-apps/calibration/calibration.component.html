@@ -1,42 +1,66 @@
 <div id="calappbody">
-<h2>Calibration</h2>
+  <h2>Calibration</h2>
 
-<h3>
-    Sensor list
-</h3>
+  <h3>Sensor list</h3>
 
-
-<div *ngFor="let s of gss.server.sensors | keyvalue" class="sensor">
+  <div *ngFor="let s of gss.server.sensors | keyvalue" class="sensor">
     <h4>
-        {{ s.key }}
+      {{ s.key }}
     </h4>
-    <div *ngIf="s.value['measurements'] && s.value['measurements'].length > 0" class="measurements">
-        <span *ngFor="let m of s.value['measurements']; let i = index"><span *ngIf="i > 0">, </span>{{ m }}</span>
-        sensor
+    <div
+      *ngIf="s.value['measurements'] && s.value['measurements'].length > 0"
+      class="measurements"
+    >
+      <span *ngFor="let m of s.value['measurements']; let i = index"
+        ><span *ngIf="i > 0">, </span>{{ m }}</span
+      >
+      sensor
     </div>
     <div *ngFor="let id of s.value['id'] | keyvalue" class="id">
-
-        <h5>{{ id.key }}</h5>
-        <div *ngFor="let measurement of id.value['measurements'] | keyvalue" class="sensormeasurement">
-            <h6>{{ measurement.key }}</h6>
-            <div *ngFor="let field if measurement.value | keyvalue" class="field">
-                <div>
-                    {{ field.key }}
-                </div>
-                <div *ngIf="(field.value | json) == '{}'">
-                    Add Calibration!
-                </div>
-
-            </div>
+      <h5>{{ id.key }}</h5>
+      <div
+        *ngFor="let measurement of id.value['measurements'] | keyvalue"
+        class="sensormeasurement"
+      >
+        <h6>{{ measurement.key }}</h6>
+        <div *ngFor="let field of measurement.value | keyvalue" class="field">
+          <div>
+            {{ field.key }}
+          </div>
+          <table>
+            <tr>
+              <th>Calibration Date</th>
+              <th>Linear Offset (d)</th>
+              <th>Mult. Offset (k)</th>
+              <th>Quadratic Offset (x²)</th>
+              <th></th>
+            </tr>
+            <tr *ngIf="(field.value | json) == '{}'">
+              <td>
+                  <input type="text">
+                  <button>D</button>
+              </td>
+              <td>
+                <input type="text">
+              </td>
+              <td>
+                <input type="text">
+              </td>
+              <td>
+                <input type="text">
+              </td>
+              <td>
+                <button>+</button>
+              </td>
+            </tr>
+          </table>
+          <div class="add"></div>
         </div>
+      </div>
     </div>
-
-
-</div>
-
-  <div *ngIf="!gss.server.sensors">
-    No sensors in Database.
   </div>
+
+  <div *ngIf="!gss.server.sensors">No sensors in Database.</div>
 </div>
 
 <p>write operations only if user has write rights on DB</p>

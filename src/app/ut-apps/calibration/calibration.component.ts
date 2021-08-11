@@ -30,7 +30,7 @@ either calibration factors or hardware recalibration have to be done (both also 
 */
 
   constructor (public gss: GlobalSettingsService) {
-    this.gss.emitChange({ appName: 'calibration' }); }
+    this.gss.emitChange({ appName: 'Sensor Calibrations' }); }
 
   ngOnInit(): void {
   }
