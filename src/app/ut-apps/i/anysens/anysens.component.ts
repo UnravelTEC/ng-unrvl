@@ -53,6 +53,7 @@ export class AnysensComponent implements OnInit {
   public userStartTime = this.startTime;
   public meanS = 30;
   public currentres = 0;
+  public currentresText = "0s";
   public userMeanS = this.meanS;
   public fromTime: Date;
   public toTime: Date;
@@ -168,6 +169,7 @@ export class AnysensComponent implements OnInit {
   reload(fromTo = false) {
     this.meanS = this.userMeanS;
     this.currentres = this.meanS;
+    this.currentresText = this.h.createHRTimeString(this.meanS);
     this.startTime = this.userStartTime;
 
     const timerange = fromTo
