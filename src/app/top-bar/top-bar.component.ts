@@ -19,6 +19,7 @@ export class TopBarComponent implements OnInit {
 
   public currentTime: Date;
   public hostName = 'uninitialized';
+  public statusText = '';
 
   public showMqttList = false;
 
@@ -38,18 +39,22 @@ export class TopBarComponent implements OnInit {
       this.hostName = tmpHostName;
     }
     this.titleSubscription$ = this.gss.changeEmitted$.subscribe((obj: Object) =>
-      this.changeHostName(obj)
+      this.actOnMsg(obj)
     );
 
     this.intervalSubscription = interval(60000).subscribe(counter => {
       this.currentTime = new Date(); //todo get from backend!
     });
   }
-
-  changeHostName(obj: Object) {
-    // console.log('got', obj);
-    if (obj && obj.hasOwnProperty('hostname')) {
+  actOnMsg(obj: Object) {
+    if (!obj) return;
+    console.log(new Date(), 'got', obj);
+    if (obj.hasOwnProperty('hostname')) {
       this.hostName = obj['hostname'];
+      return;
+    }
+    if (obj.hasOwnProperty('status')) {
+      this.statusText = obj['status'];
     }
   }
 }

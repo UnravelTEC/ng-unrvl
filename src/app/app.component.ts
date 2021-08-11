@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from '../environments/environment';
-import { HttpClient } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 
 import { GlobalSettingsService } from './core/global-settings.service';
@@ -27,7 +26,6 @@ export class AppComponent implements OnInit {
   public hostName = 'ng-unrvl';
 
   public constructor(
-    private http: HttpClient,
     private utHTTP: UtFetchdataService,
     private titleService: Title,
     private gss: GlobalSettingsService
@@ -93,6 +91,7 @@ export class AppComponent implements OnInit {
   }
   getInfluxDBOverview() {
     // here to avoid cyclic dependency gss <=> uthttp
+    this.gss.emitChange({ status: 'Influx fetching sensor list...' });
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery('show series'))
       .subscribe((data: Object) =>
@@ -110,10 +109,12 @@ export class AppComponent implements OnInit {
       fieldquery += `SELECT LAST(*) FROM "${measurement}" group by sensor,id;`
     });
     // console.error(fieldquery);
+    this.gss.emitChange({ status: 'Influx fetching sensor parameter list...' });
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery(fieldquery))
       .subscribe((data: Object) =>
-      this.gss.acceptFieldsOfSeries(data)
+      this.gss.acceptFieldsOfSeries(data),
+      (error) => this.gss.displayHTTPerror(error)
     );
   }
 

@@ -118,6 +118,8 @@ export class GlobalSettingsService implements OnInit {
   changeEmitted$ = this.emitChangeSource.asObservable();
   // Service message commands
   emitChange(change: any) {
+    console.log(new Date(), 'emit', change);
+
     this.emitChangeSource.next(change);
   }
   constructor(
@@ -254,6 +256,7 @@ export class GlobalSettingsService implements OnInit {
     this.emitChange({ InfluxUP: true });
   }
   public handleInfluxSeries(data: Object) {
+    this.emitChange({ status: 'Parsing sensors from Influx...' });
     // console.log('received', data);
     const series = this.h.getDeep(data, ['results', 0, 'series', 0, 'values']);
     console.log('series', series);
@@ -288,8 +291,10 @@ export class GlobalSettingsService implements OnInit {
       //   this.hosts.push(host[1]);
       // }
     }
+
     if (!sensorhere) {
       this.server.sensors = undefined; // checking for undef in html is easier than for {}
+      this.emitChange({ status: '' });
     } else {
       this.emitChange({ InfluxSeriesThere: true }); // trigger scan for fields
     }
@@ -304,8 +309,10 @@ export class GlobalSettingsService implements OnInit {
     console.log(data);
     if (!data['results']) {
       console.error('influx acceptFieldsOfSeries: empty', data);
+      this.emitChange({ status: '' });
       return;
     }
+    this.emitChange({ status: 'Parsing sensor parameters...' });
     data['results'].forEach(result => {
       const series = result['series']; // Array
       series.forEach(sensor => {
@@ -336,6 +343,8 @@ export class GlobalSettingsService implements OnInit {
       });
     });
     console.log(this.server.sensors);
+    this.emitChange({ status: '' });
+    // TODO fetch calibration table
   }
 
   setCurrentWebEndpoint(chosenBackendType, baseurl?: string) {
@@ -388,6 +397,7 @@ export class GlobalSettingsService implements OnInit {
   checkForInflux() {
     const influxServer = this.server.baseurl + '/influxdb';
     const InfluxHealthQuery = '/health';
+    this.emitChange({ status: 'Influx check health...' });
     this.http.get(influxServer + InfluxHealthQuery).subscribe(
       (data: Object) => {
         this.checkInfluxTestResponse(data);
@@ -418,6 +428,8 @@ export class GlobalSettingsService implements OnInit {
       this.server.influxVersion = data['version'];
       this.initializeInfluxCreds();
     } else {
+      this.emitChange({ status: '' });
+      this.server.databaseStatus = 'down';
       console.error('FAILURE: Influx on endpoint not ready', data);
     }
   }
@@ -554,5 +566,12 @@ export class GlobalSettingsService implements OnInit {
             document.msExitFullscreen();
         } */
     }
+  }
+  displayHTTPerror(error) {
+    console.error(error);
+    alert(
+      `HTTP error: ${error.status}, ${error.statusText}, ${error.message}`
+    );
+    this.emitChange({ status: ''});
   }
 }

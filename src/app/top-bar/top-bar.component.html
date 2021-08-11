@@ -54,3 +54,10 @@
     ><mat-icon>settings</mat-icon></a
   >
 </nav>
+
+
+<div id="statusbox" *ngIf="statusText != ''">
+  <div class="relcontainer">
+    {{ statusText }}
+  </div>
+</div>
