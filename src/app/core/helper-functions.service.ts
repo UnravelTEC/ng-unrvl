@@ -49,6 +49,9 @@ export class HelperFunctionsService {
     const angularRoute = this.loc.path();
     this.domainAndApp = url.replace(angularRoute, '');
     this.domain = this.domainAndApp.replace(/:[0-9]*$/, '').replace(/[?]/, '');
+    console.log('window.location.href:', url);
+    console.log('domainAndApp', this.domainAndApp);
+    console.log('domain', this.domain);
 
     for (let cWeightI = 0; cWeightI < this.colors.blue.length; cWeightI++) {
       for (let cOrderI = 0; cOrderI < this.colorOrder.length; cOrderI++) {
@@ -114,14 +117,15 @@ export class HelperFunctionsService {
   //   'orange:#FFA600',
   //   'red:#FF0000',
   //   '(dark)violet:#800080',
-  returnColorForPercent(
-    percent,
-    colorRamp = ['#00FF00', '#FFFF00', '#FFA600', '#FF0000', '#800080']
-  ) {
+  returnColorForPercent(percent, colorRamp?: Array<string>, debug = false) {
+    if (!colorRamp || colorRamp.length == 0) {
+      colorRamp = ['#00FF00', '#FFFF00', '#FFA600', '#FF0000', '#800080'];
+    }
     function colorFromPercent(
       percent: number,
       cfrom: string,
-      cto: string
+      cto: string,
+      cdebug = debug
     ): string {
       if (cfrom == cto) {
         return cto;
@@ -132,8 +136,19 @@ export class HelperFunctionsService {
       const hexstr = Math.floor(from_int + (percent / 100) * range).toString(
         16
       );
+      if (cdebug)
+        console.log(
+          'colorFromPercent:',
+          percent,
+          from_int,
+          to_int,
+          parseInt(hexstr, 16)
+        );
+
       return hexstr.length < 2 ? '0' + hexstr : hexstr;
     }
+    if (debug) console.log(percent, colorRamp);
+
     const nr_sections = colorRamp.length - 1;
     const section_len_percent = 100 / nr_sections;
     const needed_section =
@@ -160,11 +175,21 @@ export class HelperFunctionsService {
     const r_upper = upper_bound.substring(1, 3);
     const g_upper = upper_bound.substring(3, 5);
     const b_upper = upper_bound.substring(5, 7);
-    const new_r = colorFromPercent(percent, r_lower, r_upper);
-    const new_g = colorFromPercent(percent, g_lower, g_upper);
-    const new_b = colorFromPercent(percent, b_lower, b_upper);
+    if (debug)
+      console.log(
+        r_lower + g_lower + b_lower,
+        'to',
+        r_upper + g_upper + b_upper
+      );
+
+    const bucked_size = 100 / nr_sections;
+    const sec_percent =
+      percent != 100 ? (percent % bucked_size) * nr_sections : 100;
+    const new_r = colorFromPercent(sec_percent, r_lower, r_upper);
+    const new_g = colorFromPercent(sec_percent, g_lower, g_upper);
+    const new_b = colorFromPercent(sec_percent, b_lower, b_upper);
     // console.log('percent', percent, 'nr_sections', nr_sections, 'needed_section', needed_section, new_r, new_g, new_b );
-    // console.log(percent, 'rgb', new_r, new_g, new_b);
+    if (debug) console.log(percent, 'rgb #' + new_r + new_g + new_b);
 
     return '#' + new_r + new_g + new_b;
   }
@@ -241,14 +266,14 @@ export class HelperFunctionsService {
       if (labels.length > 3) {
         for (let i = 1; i < labels.length; i++) {
           const label = labels[i];
-          if (i != latlabelpos && i != lonlabelpos) {
+          // if (i != latlabelpos && i != lonlabelpos) {
             point.properties[label] = element[i];
-          }
+          // }
         }
       }
       points.features.push(point);
     }
-    console.log('geojson:', points);
+    // console.log('geojson:', points);
 
     return points;
   }
@@ -858,12 +883,14 @@ export class HelperFunctionsService {
     if (feature.properties) {
       let text = '<table>';
       for (let [key, value] of Object.entries(feature.properties)) {
-        const v =
-          key == 'Date'
-            ? value['toLocaleDateString']('de-DE', timeFormatOptions)
-            : Number.isFinite(Number(value))
-            ? Math.round(Number(value) * 100) / 100
-            : value;
+        let v = value;
+        if (key == 'Date') {
+          v = value['toLocaleDateString']('de-DE', timeFormatOptions)
+        } else if(key.endsWith('lat') || key.endsWith ('lon')) {
+          v = Math.round(Number(value) * 1000000) / 1000000;
+        } else if(Number.isFinite(Number(value))) {
+          v = Math.round(Number(value) * 100) / 100;
+        }
         text += '<tr><th>' + key + ':</th><td>' + v + '</td></tr>';
       }
       text += '</table>';

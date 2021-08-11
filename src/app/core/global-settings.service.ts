@@ -4,14 +4,13 @@ import { Injectable, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { HelperFunctionsService } from './helper-functions.service';
 import { LocalStorageService } from './local-storage.service';
+import { Location } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GlobalSettingsService implements OnInit {
-  private hostName = 'uninitialized';
-
   public graphBackgrounds = {
     CO2_ppm: [
       // the color acts for "everything below $value"
@@ -49,159 +48,64 @@ export class GlobalSettingsService implements OnInit {
     ],
   };
 
-  public sensorPresets = {
-    DS18B20: {
-      '*_degC': {
-        min: -55,
-        max: 125,
-        resolution_b: 16,
-        step: 0.0625, // 1/16°C
-        round_digits: 2,
-      },
-    },
-    BME280: {
-      '*_degC': {
-        round_digits: 2,
-      },
-      humidity_rel_percent: {
-        round_digits: 0,
-      },
-    },
-    MPU9250: {
-      sensor_degC: {
-        round_digits: 1,
-      },
-    },
-    'OPC-N3': {
-      sensor_degC: {
-        round_digits: 1,
-      },
-      humidity_rel_percent: {
-        round_digits: 0,
-      },
-      '*_ugpm3': {
-        round_digits: 1,
-      },
-    },
-    GPS: {
-      lat: {
-        round_digits: 7,
-      },
-      lon: {
-        round_digits: 7,
-      },
-      heading_deg: {
-        round_digits: 0,
-      },
-      height_m_sea: {
-        round_digits: 0,
-      },
-      height_m_wgs84: {
-        round_digits: 0,
-      },
-      sats_gps_view: {
-        round_digits: 1,
-      },
-    },
-    'NO2-B43F': {
-      NO2_ppm: {
-        round_digits: 4,
-      },
-      NO2_ugpm3: {
-        round_digits: 1,
-      },
-      '*_degC': {
-        round_digits: 1,
-      },
-    },
-    ADS1115: {
-      resolution_mV: {
-        round_digits: 3,
-      },
-      maxrange_V: {
-        round_digits: 3,
-      },
-      gain: {
-        round_digits: 0,
-      },
-      averaged_count: {
-        round_digits: 0,
-      },
-      ch12_V: {
-        round_digits: 4,
-      },
-      ch34_V: {
-        round_digits: 4,
-      },
-      ch1_V: {
-        round_digits: 4,
-      },
-      ch2_V: {
-        round_digits: 4,
-      },
-      ch3_V: {
-        round_digits: 4,
-      },
-      ch4_V: {
-        round_digits: 4,
-      },
-    },
-    DB: {
-      '*db': {
-        round_digits: 0,
-      },
-    },
-    RS04: {
-      total_Svph: {
-        round_digits: 10,
-      },
-      sensor_highvoltage_V: {
-        round_digits: 1,
-      },
-      sensor_voltage_V: {
-        round_digits: 1,
-      },
-      total_cps: {
-        round_digits: 1,
-      },
-      '*_degC': {
-        round_digits: 1,
-      },
-      sensor_current_mA: {
-        round_digits: 0,
-      },
-    },
-  };
-
-  private defaultAPIPath = '/api/';
-  private fallbackEndpoint = 'https://newton.unraveltec.com';
-  private fallbackAPI = this.fallbackEndpoint + '/api/';
+  public defaultAPIPath = '/api/';
 
   public server = {
+    chosenBackendType: undefined, //'Demo Server', 'Current Web Endpoint', 'Other'
     baseurl: '',
     serverName: '', // pure IP or hostname w/o protocol/port
-    protocol: 'http', // https or http
-    architecture: undefined,
+    protocol: '', // https or http
+    // architecture: undefined,
     type: 'unknown', // Tricorder || PublicServer
     hostname: 'uninitialized',
     hasscreen: undefined, // true || false
-    cpu: 'unknown',
-    cpus: 0,
-    sensors: [],
+    // cpu: 'unknown',
+    // cpus: undefined,
+    sensors: undefined, // checking for undef in html is easier than for {}
+    /*
+    new:
+    {
+      BME280: {
+        measurements: [...],
+        id: {
+          'i2c-7_0x76: {
+            birthdate: $Date, // from cal table (or influx setup date default)
+            measurements: {
+              $measurement: {
+                $fieldname: {
+                  cals: [[ Date, n0:number, …,  n7, 'note:text' ], […]],
+                  hw_recal: [[ Date, value (, -s) ], […]]
+                },
+                tags: {} // future use (eg hostname?)
+              }
+            }
+          }
+        }
+      }
+    } TODO somewhere include hostname (host=)
+    */
+    measurements: [],
     databaseStatus: 'unknown', // db status: up, down, unknown, waiting
     api: undefined,
-    influxdb: 'telegraf',
+    influxdb: '',
     influxuser: '',
     influxpass: '',
     influxVersion: '',
   };
   public client = {
-    type: 'unknown', // local || web
-    protocol: 'unknown', // http || https
+    host: '',
+    hostAndPort: '',
+    protocol: '', // http || https
+    baseurl: '', //http[s]://host:port
+    dev: undefined, // if running as ng serve (localhost:4200)
+
+    localscreen: undefined, // true if running on Henri/Device where Browser runs on same Hardware as server
+    isFullscreen: undefined,
+
     mobile: false,
   };
 
-  public networkStatus: Object;
+  public networkStatus: Object; // gets filled by MQTT service
 
   // for local javascript client IPs:
   private RTCPeerConnection =
@@ -219,7 +123,8 @@ export class GlobalSettingsService implements OnInit {
   constructor(
     private http: HttpClient,
     private h: HelperFunctionsService,
-    private localStorage: LocalStorageService
+    private localStorage: LocalStorageService,
+    private loc: Location
   ) {
     function mobilecheck() {
       // https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser
@@ -241,10 +146,23 @@ export class GlobalSettingsService implements OnInit {
       return check;
     }
     this.client.mobile = mobilecheck();
+
+    const url = window.location.href;
+    const angularRoute = this.loc.path();
+    this.client.baseurl = url.replace(angularRoute, '').replace(/\/$/, '');
+    this.client.protocol = this.client.baseurl.replace(/:\/\/.*$/, '');
+    this.client.hostAndPort = this.client.baseurl.replace(/^http[s]*:\/\//, '');
+    this.client.host = this.client.hostAndPort.replace(/:\d+$/, '');
+    this.client.dev = this.client.hostAndPort == 'localhost:4200';
+    this.client.localscreen = this.client.hostAndPort == 'localhost';
+    console.log('client:', this.client);
   }
 
   ngOnInit() {
-    this.reloadSettings();
+    // gets called in /app.component.ts
+    if (this.client.localscreen) {
+      this.emitChange({ TricorderLocal: true });
+    }
 
     // for local javascript client IPs:
     // if (this.RTCPeerConnection) {
@@ -273,10 +191,202 @@ export class GlobalSettingsService implements OnInit {
     //     'error in getLocalIPs: RTCPeerConnection could not be created'
     //   );
     // }
+    const chosenBackendType = this.localStorage.get(
+      'GlobalSettings.chosenBackendType'
+    );
+    const customServerURL = this.localStorage.get(
+      'GlobalSettings.customServerURL'
+    );
+    if (chosenBackendType) {
+      // something already in LS
+      this.setCurrentWebEndpoint(chosenBackendType, customServerURL);
+      // what todo if setting no longer correct?
+      // -> Do nothing atm, API can be seen in Top-Bar
+    } else {
+      if (this.client.dev) {
+        this.setCurrentWebEndpoint('Demo Server');
+      } else {
+        this.setCurrentWebEndpoint('Current Web Endpoint');
+      }
+    }
+    this.checkFullscreen();
   }
+  initializeInfluxCreds() {
+    if (this.server.protocol == 'http') {
+      this.server.influxdb = 'telegraf';
+      this.server.influxuser = '';
+      this.server.influxpass = '';
+      console.log(
+        'initializeInfluxCreds: http -> no auth, db',
+        this.server.influxdb
+      );
+      this.triggerDBScan();
+      return;
+    }
+    const lsinfluxdb = this.localStorage.get('influxdb');
+    const lsinfluxuser = this.localStorage.get('influxuser');
+    const lsinfluxpass = this.localStorage.get('influxpass');
+    if (lsinfluxdb && lsinfluxuser && lsinfluxpass) {
+      this.server.influxdb = lsinfluxdb;
+      this.server.influxuser = lsinfluxuser;
+      this.server.influxpass = lsinfluxpass;
+      console.log(
+        'initializeInfluxCreds from localStorage:',
+        lsinfluxdb,
+        lsinfluxuser,
+        lsinfluxpass
+      );
+      this.triggerDBScan();
+      return;
+    }
+    if (this.server.type == 'PublicServer') {
+      this.server.influxdb = 'koffer';
+      this.server.influxuser = 'public';
+      this.server.influxpass = 'unravelit42.14153';
+      console.log('initializeInfluxCreds to', this.server.influxdb);
+    } else {
+      console.error('initializeInfluxCreds ??');
+    }
+    this.triggerDBScan();
+  }
+  public triggerDBScan() {
+    // gets sent to root app.component, who fetches sensorlist (avoid cyclic dependency with uthttp)
+    this.emitChange({ InfluxUP: true });
+  }
+  public handleInfluxSeries(data: Object) {
+    // console.log('received', data);
+    const series = this.h.getDeep(data, ['results', 0, 'series', 0, 'values']);
+    console.log('series', series);
+    this.server.measurements = [];
+    this.server.sensors = {};
+    let sensorhere = false;
+    for (let i = 0; i < series.length; i++) {
+      const seri = series[i][0];
+      const measurement = seri.split(',')[0];
+      if (!this.server.measurements.includes(measurement)) {
+        this.server.measurements.push(measurement);
+      }
+      const sensor = seri.match(/sensor=([-A-Za-z0-9|]*)/);
+      if (sensor && sensor[1]) {
+        sensorhere = true;
+        const sname = sensor[1];
+        if (!this.server.sensors[sname]) this.server.sensors[sname] = {};
+        if (!this.server.sensors[sname].hasOwnProperty('measurements'))
+          this.server.sensors[sname]['measurements'] = [];
+        if (!this.server.sensors[sname]['measurements'].includes(measurement))
+          this.server.sensors[sname]['measurements'].push(measurement);
+        if (!this.server.sensors[sname].hasOwnProperty('id')) this.server.sensors[sname]['id'] = {};
+        const id = seri.match(/id=([-A-Za-z0-9|_/]*)/);
+        console.log('idmatch:', id);
+
+        const sid = id && id[1] ? id[1] : '_'; // freely defined convention
+        if (!this.server.sensors[sname]['id'].hasOwnProperty(sid))
+          this.server.sensors[sname]['id'][sid] = {}
+      }
+      // const host = seri.match(/host=([-A-Za-z0-9]*)/);
+      // if (host && host[1] && !this.hosts.includes(host[1])) {
+      //   this.hosts.push(host[1]);
+      // }
+    }
+    if (!sensorhere) {
+      this.server.sensors = undefined; // checking for undef in html is easier than for {}
+    } else {
+      this.emitChange({ InfluxSeriesThere: true }); // trigger scan for fields
+    }
+    console.log('measurements:', this.server.measurements);
+    console.log('sensors:', this.server.sensors);
+  }
+
+  public acceptFieldsOfSeries(data: Object) {
+    // console.error('acceptFieldsOfSeries');
+    const gsensors = this.server.sensors;
+
+    console.log(data);
+    if (!data['results']) {
+      console.error('influx acceptFieldsOfSeries: empty', data);
+      return;
+    }
+    data['results'].forEach(result => {
+      const series = result['series']; // Array
+      series.forEach(sensor => {
+        const measurement = sensor['name'];
+        let id = sensor['tags']['id'];
+        if(!id) id = "_"; // freely defined convention
+        const sensorname = sensor['tags']['sensor'];
+        if (!sensorname) {
+          return
+        }
+        // console.log('foreach series', sensor, sensorname);
+
+        const thisgsensor = gsensors[sensorname]['id'][id];
+        if (!thisgsensor.hasOwnProperty('measurements'))
+          thisgsensor['measurements'] = {}
+        if(!thisgsensor['measurements'].hasOwnProperty(measurement))
+          thisgsensor['measurements'][measurement] = {}
+
+        // console.log('sensor:',sensorname, sensor);
+
+        for (let i = 1; i < sensor['columns'].length; i++) {
+          const element = sensor['columns'][i];
+          if (sensor['values'][0][i] !== null) {
+            const fieldname = sensor['columns'][i].replace(/last_/,'');
+            thisgsensor['measurements'][measurement][fieldname] = {}
+          }
+        }
+      });
+    });
+    console.log(this.server.sensors);
+  }
+
+  setCurrentWebEndpoint(chosenBackendType, baseurl?: string) {
+    switch (chosenBackendType) {
+      case 'Current Web Endpoint':
+        this.server.baseurl = this.client.baseurl;
+        break;
+      case 'Demo Server':
+        this.server.baseurl = 'https://newton.unraveltec.com';
+        this.server.hasscreen = false;
+        break;
+      case 'Other':
+        if (!baseurl) {
+          console.error('setCurrentWebEndpoint: no baseurl provided');
+          return;
+        }
+        this.server.baseurl = baseurl;
+        this.localStorage.set('GlobalSettings.customServerURL', baseurl);
+        break;
+      default:
+        console.error('setCurrentWebEndpoint ??');
+        return;
+    }
+    this.server.chosenBackendType = chosenBackendType;
+    this.server.protocol = this.server.baseurl.replace(/:\/\/.*$/, '');
+    this.server.serverName = this.server.baseurl
+      .replace(/^http[s]*:\/\//, '')
+      .replace(/:\d+$/, '');
+    this.server.type =
+      this.server.protocol == 'https' ? 'PublicServer' : 'Tricorder';
+    this.server.api = this.server.baseurl + this.defaultAPIPath;
+
+    if (chosenBackendType != 'Demo Server') {
+      this.getScreen();
+    }
+
+    this.server.hostname = 'uninitialized';
+    this.fetchHostName();
+
+    this.localStorage.set(
+      'GlobalSettings.chosenBackendType',
+      chosenBackendType
+    );
+    console.log('setCurrentWebEndpoint', chosenBackendType, this.server);
+    this.checkForInfluxCounter = 0;
+    this.checkForInflux();
+  }
+
+  private checkForInfluxCounter = 0;
   checkForInflux() {
-    const influxServer =
-      this.server.protocol + this.server.serverName + '/influxdb';
+    const influxServer = this.server.baseurl + '/influxdb';
     const InfluxHealthQuery = '/health';
     this.http.get(influxServer + InfluxHealthQuery).subscribe(
       (data: Object) => {
@@ -289,9 +399,12 @@ export class GlobalSettingsService implements OnInit {
           ', 5s to next try.'
         );
         this.server.databaseStatus = 'down';
-        setTimeout(() => {
-          this.checkForInflux();
-        }, 5 * 1000);
+        this.checkForInfluxCounter++;
+        if (this.checkForInfluxCounter < 5) {
+          setTimeout(() => {
+            this.checkForInflux();
+          }, 5 * 1000);
+        }
       }
     );
   }
@@ -299,9 +412,11 @@ export class GlobalSettingsService implements OnInit {
   checkInfluxTestResponse(data: Object) {
     if (data['status'] && data['status'] === 'pass') {
       this.server.databaseStatus = 'up';
+      this.checkForInfluxCounter = 0;
 
       console.log('SUCCESS: Influx health:', data);
       this.server.influxVersion = data['version'];
+      this.initializeInfluxCreds();
     } else {
       console.error('FAILURE: Influx on endpoint not ready', data);
     }
@@ -333,206 +448,66 @@ export class GlobalSettingsService implements OnInit {
     return input;
   }
 
-  // we do not need to handle localhost in a special case - covered by $baseurl
-
-  // order - what is the criteria a server must met?
-  // prometheus running? - yes
-  // api running? - maybe
-  // 1. local storage settings
-  // 2. hostname of url (if api working)
-  // 3. fallback to Newton
-
-  // following use cases:
-  // • developing on localhost:4200 with ng
-  //   - default: connect to Newton
-  //   - connect to other tricorders on demand
-  // • connected to a Tricorder
-  //   - via webif
-  //   - on local screen (localhost)
-  // • using public Webif on Newton:
-  // - default: stay on newton
-  // - try out switching to another server
-  reloadSettings() {
-    const localSettings = this.localStorage.get('globalSettings');
-    const localStoredServer = this.h.getDeep(localSettings, [
-      'server',
-      'settings',
-    ]);
-    if (localStoredServer) {
-      let servername = this.h.getDeep(localStoredServer, [
-        'serverHostName',
-        'fieldValue',
-      ]);
-      if (servername.endsWith('/')) {
-        servername = servername.substr(0, -1);
-      }
-
-      this.server.serverName = this.stripProtPort(servername);
-
-      const apiPath = this.defaultAPIPath;
-
-      if (servername.search('.') > -1 && !servername.match('.[0-9]+$')) {
-        this.server.protocol = 'https://';
-      } else {
-        this.server.protocol = 'http://';
-      }
-      this.server.api = this.server.protocol + this.server.serverName + apiPath;
-      this.server.baseurl = this.server.protocol + servername;
-
-      this.fetchHostName(this.server.api);
-      this.getCPUinfo(this.server.api);
-      this.getScreen(this.server.api);
-      console.log(
-        'reloadSettings: got',
-        this.server.baseurl,
-        'from LocalStorage'
-      );
-    } else {
-      // see if an API i there
-      const firstURL = this.h.getBaseURL();
-      this.server.baseurl = firstURL;
-      this.server.serverName = this.stripProtPort(firstURL);
-      this.server.protocol = firstURL.startsWith('https://')
-        ? 'https://'
-        : 'http://';
-      console.log('No settings in LocalStorage, try our webendpoint', firstURL);
-
-      this.server.api = firstURL + this.defaultAPIPath;
-      this.http
-        .get(firstURL + this.defaultAPIPath + 'system/hostname.php')
-        .subscribe(
-          (data: Object) => {
-            this.setHostName(data);
-
-            // set screen
-            this.getScreen(this.server.api);
-
-            // check if on Raspi
-            this.getCPUinfo(this.server.api);
-          },
-          (error) => {
-            console.log('no UTapi running on', firstURL);
-            console.log(error);
-            this.server.api = false;
-            this.hostName = 'unknown';
-            this.emitChange({ hostname: this.hostName });
-
-            //TODO set fallback!
-          }
-        );
-    }
-    this.server.influxdb = this.localStorage.get('influxdb');
-    const isPublicServer = this.server.serverName.endsWith('.unraveltec.com');
-    if (!this.server.influxdb) {
-      // this.server.influxdb = isPublicServer ? 'public' : 'telegraf';
-      this.server.influxdb = isPublicServer ? 'koffer' : 'telegraf';
-    }
-    this.server.influxuser = this.localStorage.get('influxuser');
-    if (!this.server.influxuser && isPublicServer) {
-      this.server.influxuser = 'public';
-    }
-    this.server.influxpass = this.localStorage.get('influxpass');
-    if (!this.server.influxpass && isPublicServer) {
-      this.server.influxpass = 'unravelit42.14153';
-    }
-    this.checkForInflux();
-    if (window.location.href.search('localhost:4200') > -1) {
-      this.client.type = 'dev';
-    }
-  }
-
-  getCPUinfo(endpoint) {
-    this.http.get(endpoint + 'system/cpuinfo.php').subscribe(
-      (data: Object) => {
-        console.log('getCPUinfo got', data);
-        this.server.architecture = data['architecture'];
-        this.server.cpu = data['cpu'];
-        this.server.cpus = data['cpus'];
-        this.checkIfTricorder();
-      },
-      (error) => {
-        console.log('no cpuinfo from api');
-        this.server.architecture = 'unknown';
-        this.server.cpu = 'unknown';
-        this.server.cpus = undefined;
-        this.checkIfTricorder();
-      }
-    );
-  }
-  getScreen(endpoint) {
-    this.http.get(endpoint + 'screen/getBrightness.php').subscribe(
+  // getCPUinfo(endpoint) {
+  //   this.http.get(endpoint + 'system/cpuinfo.php').subscribe(
+  //     (data: Object) => {
+  //       console.log('getCPUinfo got', data);
+  //       this.server.architecture = data['architecture'];
+  //       this.server.cpu = data['cpu'];
+  //       this.server.cpus = data['cpus'];
+  //     },
+  //     (error) => {
+  //       console.log('no cpuinfo from api');
+  //       this.server.architecture = 'unknown';
+  //       this.server.cpu = 'unknown';
+  //       this.server.cpus = undefined;
+  //     }
+  //   );
+  // }
+  getScreen(api = this.server.api) {
+    this.server.hasscreen = undefined;
+    this.http.get(api + 'screen/getBrightness.php').subscribe(
       (data: Object) => {
         if (data && data['brightness']) {
+          console.log('api says server has a Raspi screen');
           this.server.hasscreen = true;
-
-          if (endpoint.startsWith('http://localhost')) {
-            console.log('we are on a Raspi with Raspi-Display!');
-            this.client.type = 'local';
-            this.emitChange({ TricorderLocal: true });
-          } else {
-            console.log('running on localhost without Rpi -> Developing');
-            this.client.type = 'web';
-          }
         } else {
-          console.log('no screen here.');
+          console.log('api says no Raspi screen here.');
           this.server.hasscreen = false;
-          if (window.location.href.search('localhost:4200') > -1) {
-            this.client.type = 'dev';
-          } else {
-            this.client.type = 'web';
-          }
         }
       },
       (error) => {
-        console.log('no raspi screen -> web client');
-        if (window.location.href.search('localhost:4200') > -1) {
-          this.client.type = 'dev';
-        } else {
-          this.client.type = 'web';
-        }
+        console.log('no screen api');
+        this.server.hasscreen = false;
       }
     );
   }
 
-  private fetchHostName(server: string) {
-    this.http.get(server + 'system/hostname.php').subscribe(
+  public fetchHostName(api = this.server.api) {
+    if (!api) {
+      console.error('fetchHostName: no api', api);
+      return;
+    }
+    this.http.get(api + 'system/hostname.php').subscribe(
       (data: Object) => this.setHostName(data),
       (error) => {
-        console.log('no UTapi running on', server);
+        console.log('no UTapi running on', api);
         console.log(error);
         this.server.api = false;
-        this.hostName = 'unknown';
-        this.emitChange({ hostname: this.hostName });
+        this.server.hostname = 'unknown';
+        this.emitChange({ hostname: this.server.hostname });
       }
     );
   }
   public setHostName(data: Object) {
     if (data['hostname']) {
-      this.hostName = data['hostname'];
+      this.server.hostname = data['hostname'];
     } else {
       console.error('hostname cmd returned no hostname');
-      this.hostName = 'undefined';
+      this.server.hostname = 'undefined';
     }
 
-    this.emitChange({ hostname: this.hostName });
-  }
-
-  public getHostName(): string {
-    return this.hostName;
-  }
-
-  checkIfTricorder() {
-    if (this.server.architecture === undefined) {
-      console.log('not enough information to check if I am on a Tricorder');
-      return;
-    }
-    if (this.server.architecture.startsWith('arm')) {
-      this.server.type = 'Tricorder';
-    } else {
-      this.server.type = 'PublicServer';
-    }
-
-    console.log('I am connected to a', this.server.type);
+    this.emitChange({ hostname: this.server.hostname });
   }
 
   getAPIEndpoint() {
@@ -543,33 +518,41 @@ export class GlobalSettingsService implements OnInit {
     return this.client.mobile;
   }
 
-  // FIXME a better place for this function would be nice, but depends on sensorPresets
-  roundSensorValue(value, raw_label = {}) {
-    return this.h.roundAccurately(value, this.getDigits(raw_label));
+  checkFullscreen() {
+    this.client.isFullscreen =
+      document['fullscreenElement'] && document['fullscreenElement'] !== null;
   }
-  getDigits(raw_label) {
-    if (
-      raw_label &&
-      raw_label.hasOwnProperty('tags') &&
-      raw_label['tags'].hasOwnProperty('sensor') &&
-      this.sensorPresets.hasOwnProperty(raw_label['tags']['sensor'])
-    ) {
-      const sensorPreset = this.sensorPresets[raw_label['tags']['sensor']];
-      const field = raw_label['field'].replace(/mean_/, ''); //optionally rm influx avg prefix
-      for (const physicalParam in sensorPreset) {
-        if (Object.prototype.hasOwnProperty.call(sensorPreset, physicalParam)) {
-          const sensorProperties = sensorPreset[physicalParam];
-          if (
-            sensorProperties.hasOwnProperty('round_digits') &&
-            (physicalParam == field ||
-              (physicalParam.startsWith('*') &&
-                field.endsWith(physicalParam.slice(1))))
-          ) {
-            return sensorProperties['round_digits'];
-          }
-        }
-      }
+  fullscreen() {
+    // https://stackoverflow.com/questions/36672561/how-to-exit-fullscreen-onclick-using-javascript
+    const isInFullScreen = this.client.isFullscreen;
+    /*||
+        (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
+        (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
+        (document.msFullscreenElement && document.msFullscreenElement !== null); */
+
+    const docElm = document.documentElement;
+    if (!isInFullScreen) {
+      if (docElm.requestFullscreen) {
+        docElm.requestFullscreen();
+        this.client.isFullscreen = true;
+      } /* else if (docElm.mozRequestFullScreen) {
+            docElm.mozRequestFullScreen();
+        } else if (docElm.webkitRequestFullScreen) {
+            docElm.webkitRequestFullScreen();
+        } else if (docElm.msRequestFullscreen) {
+            docElm.msRequestFullscreen();
+        } */
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+        this.client.isFullscreen = false;
+      } /* else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        } */
     }
-    return 2;
   }
 }

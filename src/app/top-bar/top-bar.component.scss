@@ -46,6 +46,25 @@ nav em {
   color: yellow;
 }
 
+#mqttList {
+  position: fixed;
+  top: 2.6em;
+  right: 4.5em;
+  left: 2em;
+  background: white;
+  z-index: 100;
+  border-radius: 0.5em;
+  ul {
+    list-style: circle;
+  }
+  li {
+    color: black;
+    white-space: nowrap;
+    text-align: left;
+    overflow-x: hidden;
+  }
+}
+
 nav a:hover {
   background: rgb(201, 201, 207);
 }
@@ -57,10 +76,19 @@ nav em.appname {
 nav > a.icon {
   padding-right: 0.5em;
   padding-left: 0.5em;
+  cursor:pointer;
 }
-nav .material-icons {
-  vertical-align: middle;
-  margin: 0;
-  height: 1.4em;
-  transform: translateY(-0.2em);
+nav {
+  .material-icons {
+    vertical-align: middle;
+    margin: 0;
+    height: 1.4em;
+    transform: translateY(-0.2em);
+  }
+  .fs .material-icons{
+    font-size: 1.7em;
+    // height: 1.7em;
+    // line-height: 1.4em;
+    // transform: translateY(-0.2em);
+  }
 }

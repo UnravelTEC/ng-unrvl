@@ -137,9 +137,7 @@ export class UtFetchdataService {
       database = this.globalSettingsService.server.influxdb;
     }
     if (serverstring === undefined) {
-      serverstring =
-        this.globalSettingsService.server.protocol +
-        this.globalSettingsService.server.serverName;
+      serverstring = this.globalSettingsService.server.baseurl;
     }
     return (
       serverstring +

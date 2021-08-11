@@ -154,7 +154,7 @@ style.padding-bottom="20vh"-->
     </div>
     <div
       class="logbuttons"
-      *ngIf="options == true && showLogscaleSwitcher == true"
+      *ngIf="options == true && showLogscaleSwitcher == true && !noData"
     >
       <div class="logy y1" (click)="switchLogScale()">
         <div
@@ -259,6 +259,31 @@ style.padding-bottom="20vh"-->
           >UTC
           <input type="checkbox" name="UTC" id="UTC" [(ngModel)]="exportUTC" />
         </label>
+      </form>
+
+      <form class="subbox">
+        <h5>Y linearity</h5>
+        <label for="log">Logarithmic</label>
+        <input
+          type="checkbox"
+          name="logarithmic"
+          id="log"
+          [(ngModel)]="dyGraphOptions.logscale"
+          (change)="switchLogScale()"
+        />
+      </form>
+
+      <form class="subbox">
+        <h5>Sensor Deviation</h5>
+        <label for="showdev">Show</label>
+        <input
+          type="checkbox"
+          name="showdev"
+          id="showdev"
+          [(ngModel)]="showDeviation"
+          [disabled]="! rawLabels || rawLabels.length < 2"
+          (change)="toggleDeviation()"
+        />
       </form>
 
       <form class="subbox">

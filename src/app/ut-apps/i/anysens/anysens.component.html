@@ -1,9 +1,13 @@
 <div id="anyapp">
   <div id="anyheader">
     <h2>
-      {{ sensor }} {{ measurement }} <small>( {{ common_label }} )</small>
+      {{ sensor }} {{ measurement }}
+      <small *ngIf="common_label != measurement">( {{ common_label }} )</small>
     </h2>
     <!-- small spaces in ( )-->
+    <div style="position: absolute; top: 0.8em; right: 7em; color: gray;" *ngIf="autoreload" title="Time until reload">
+      {{ reload_timer | number }}s
+    </div>
     <a
       id="backicon"
       [routerLink]="'/Apps/I/' + referrer"
@@ -11,24 +15,38 @@
       title="Return to overview"
       ><mat-icon>fullscreen_exit</mat-icon></a
     >
+    <button
+      id="toggleSidebar"
+      (click)="toggleSidebar(); R.resize()"
+      title="Toggle sidebar"
+    >
+      {{ sideBarShown ? '»' : '«' }}
+    </button>
   </div>
   <div id="anybody">
-    <app-ut-dygraph-in
-      [displayedData]="data"
-      [columnLabels]="labels"
-      [roundDigits]="round_digits"
-      [style]="graphstyle"
-      [changeTrigger]="changeTrigger"
-      [extraDyGraphConfig]="extraDyGraphConfig"
-      [startTime]="undefined"
-      enableHighlightCallback="true"
-      [colors]="colors"
-      [YLabel]="measurement"
-      (returnGraphWidthOnChange)="setGraphWidth($event)"
-      (returnCurrentZoom)="updateFromToTimes($event)"
-      #R
-    ></app-ut-dygraph-in>
-    <form class="settings" (submit)="reload(true)">
+    <div id="dygcontainerabs" [style.right]="currentSidebarWidth">
+      <div id="dygcontainerrel">
+        <app-ut-dygraph-in
+          [data]="data"
+          [columnLabels]="labels"
+          [showDeviation]="show_deviation"
+          [rawLabels]="raw_labels"
+          [style]="graphstyle"
+          [changeTrigger]="changeTrigger"
+          [extraDyGraphConfig]="extraDyGraphConfig"
+          [startTime]="undefined"
+          enableHighlightCallback="true"
+          [colors]="colors"
+          [YLabel]="ylabel"
+          [Y2Label]="y2label"
+          (returnGraphWidthOnChange)="setGraphWidth($event)"
+          (returnCurrentZoom)="updateFromToTimes($event)"
+          #R
+        ></app-ut-dygraph-in>
+      </div>
+    </div>
+
+    <form class="settings" (submit)="reload(true)" *ngIf="sideBarShown">
       <fieldset>
         <h3>Current Dataset:</h3>
         <label>Resolution:</label>
@@ -51,7 +69,7 @@
           >
         </p>
       </fieldset>
-      <fieldset [disabled]="queryRunning == true">
+      <fieldset [disabled]="queryRunning == true || autoreload">
         <h3>{{ queryRunning ? 'Query running...' : 'Query current view:' }}</h3>
         <label for="runningAvgPoints">Resolution (s):</label>
         <input
@@ -78,7 +96,7 @@
             [(ngModel)]="userStartTime"
             name="startTime"
             (closed)="changeMean(userStartTime)"
-            [disabled]="queryRunning == true"
+            [disabled]="queryRunning == true || autoreload"
           >
             <mat-option value="15m">15 min.</mat-option>
             <mat-option value="1h" selected="selected"> 1h</mat-option>
@@ -90,11 +108,30 @@
           </mat-select>
         </mat-form-field>
         <br />
-        <div style="width: 100%; text-align: right">
-          <!-- <mat-checkbox [(ngModel)]="autoreload" labelPosition="after">
+        <div style="width: 100%">
+          <mat-checkbox
+            [(ngModel)]="autoreload"
+            name="autoreload"
+            labelPosition="after"
+            (ngModelChange)="toggleAutoReload($event)"
+          >
             auto
-          </mat-checkbox> -->
-          <button (click)="reload()" type="button">
+          </mat-checkbox>
+          <label for="auto_s">every (s):</label>
+          <input
+            type="text"
+            id="auto_s"
+            name="auto_s"
+            [(ngModel)]="auto_interval"
+            (ngModelChange)="changeAutoS($event)"
+            style="width: 3em"
+          />
+          <button
+            (click)="reload()"
+            type="button"
+            [disabled]="autoreload"
+            style="margin-left: 3em"
+          >
             <mat-icon>refresh</mat-icon>
             Reload
           </button>
@@ -114,7 +151,10 @@
           <th>latest data</th>
           <th style="position: relative; padding-right: 2.2em">
             average
-            <button (click)="toggleTableShown(); R.resize()">
+            <button
+              (click)="toggleTableShown(); R.resize()"
+              title="Hide Data Table"
+            >
               <mat-icon>cancel</mat-icon>
             </button>
           </th>
@@ -140,7 +180,10 @@
           </td>
           <td>
             <!-- {{ round(R.averages[i], raw_labels[i + 1]) }} forces infinite updates?-->
-            {{ R.averages[i] | number: '1.' + round_digits[i + 1] + '-' + round_digits[i + 1] }}
+            {{
+              R.averages[i]
+                | number: '1.' + round_digits[i + 1] + '-' + round_digits[i + 1]
+            }}
           </td>
         </tr>
       </tbody>

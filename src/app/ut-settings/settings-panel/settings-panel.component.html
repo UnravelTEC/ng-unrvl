@@ -1,35 +1,67 @@
 <h1>Global Settings</h1>
 
-<div
-  class="settingspage"
-  *ngIf="
-    globalSettingsService.server.type != 'PublicServer' ||
-    globalSettingsService.client.type === 'dev'
-  "
->
+<div *ngIf="gss.client.localscreen == false">
+  <h2>Frontend Settings</h2>
+
+  <section>
+    <a (click)="gss.fullscreen()">Fullscreen</a>
+  </section>
+</div>
+
+<h2>Backend Settings</h2>
+
+<section>
+  <h2>Data Endpoint</h2>
+  <mat-radio-group
+    [(ngModel)]="chosenBackendType"
+    id="chosenBackend"
+    (change)="setEndpoint($event)"
+  >
+    <div>
+      <!-- //show if not dev - oder, egal simma eh selber -->
+      <mat-radio-button value="Current Web Endpoint">
+        This {{ gss.client.protocol == 'http' ? 'device' : 'server' }} ({{
+          gss.client.baseurl
+        }})
+      </mat-radio-button>
+    </div>
+    <div>
+      <mat-radio-button value="Demo Server">
+        UnravelTEC Demo Server
+      </mat-radio-button>
+    </div>
+    <div>
+      <mat-radio-button value="Other">
+        Other
+        {{
+          checkedCustomServerURL ? '(' + checkedCustomServerURL + ')' : ''
+        }}</mat-radio-button
+      >
+      <fieldset [disabled]="chosenBackendType != 'Other'">
+        <label for="customServerURL">Custom Endpoint URL</label>
+        <input type="text" id="customServerURL" [(ngModel)]="customServerURL" />
+        <button (click)="checkCustomEndpoint()">Check</button>
+        <!-- TODO: Discover LAN -->
+      </fieldset>
+    </div>
+  </mat-radio-group>
+</section>
+
+<div *ngIf="gss.server.type != 'PublicServer'">
   <section>
     <h2>Administration login</h2>
     <table>
       <tr>
         <th><label for="api_username">Username</label></th>
         <td>
-          <input
-            type="text"
-            class="form-control"
-            id="api_username"
-            [(ngModel)]="api_username"
-          />
+          <input type="text" id="api_username" [(ngModel)]="api_username" />
         </td>
       </tr>
       <tr>
         <th><label for="api_pass">Password</label></th>
-        <td>
-          <input
-            type="text"
-            class="form-control"
-            id="api_pass"
-            [(ngModel)]="api_pass"
-          />
+        <td class="auth">
+          <input type="{{ hidepw ? 'password' : 'text'}}" id="api_pass" [(ngModel)]="api_pass"
+          /><mat-icon (click)="hidepw = !hidepw">{{ hidepw ? 'visibility' : 'visibility_off' }}</mat-icon>
         </td>
       </tr>
       <tr>
@@ -42,8 +74,19 @@
   </section>
 </div>
 
-<div class="settingspage" *ngIf="auth == 'OK'">
-  <section *ngIf="globalSettingsService.server.hasscreen">
+<div *ngIf="gss.server.type == 'PublicServer'">
+  <section>
+    <section>
+      <app-influxsettings></app-influxsettings>
+    </section>
+  </section>
+</div>
+
+<div
+  class="{{ auth != 'OK' ? 'red' : '' }}"
+  *ngIf="gss.client.dev || (auth == 'OK' && gss.server.type == 'Tricorder')"
+>
+  <section *ngIf="gss.server.hasscreen">
     <h2>
       Screen Brightness:
       <span *ngIf="!bn.disabled"
@@ -56,18 +99,15 @@
     ></app-display-brightness>
   </section>
 
-  <section *ngIf="globalSettingsService.server.type == 'Tricorder'">
+  <section>
     <app-network></app-network>
   </section>
 
-  <section
-    *ngIf="globalSettingsService.server.type == 'Tricorder'"
-    class="{{ fanspeed.disabled ? 'hidden' : '' }}"
-  >
+  <section class="{{ fanspeed.disabled ? 'hidden' : '' }}">
     <app-fan-speed #fanspeed></app-fan-speed>
   </section>
 
-  <section *ngIf="globalSettingsService.server.type == 'Tricorder'">
+  <section>
     <h2>System Services</h2>
     <a routerLink="/Settings/Services" routerLinkActive="active"
       >System Services</a
@@ -78,121 +118,13 @@
     <app-system-time></app-system-time>
   </section>
 
-  <section
-    class="center"
-    *ngIf="globalSettingsService.server.type == 'Tricorder'"
-  >
+  <section class="center">
     <button (click)="halt()">Shut Down</button>
     <button (click)="reboot()">Reboot</button>
   </section>
 </div>
 
-<div class="settingspage" *ngIf="globalSettingsService.client.type === 'dev'">
-  <section *ngFor="let settingsSection of globalSettingsUnsaved | keyvalue">
-    <h2>{{ settingsSection.value.settingAttributes.title }}</h2>
-    <div
-      *ngIf="
-        settingsSection.value.settingAttributes.title == 'Backend Settings'
-      "
-      style="display: flex; flex-wrap: wrap"
-    >
-      <!-- <div style="margin-right:2em;">
-        <mat-form-field>
-          <mat-label>Endpoints</mat-label>
-          <mat-select [(ngModel)]="endpointValue" name="Endpoints">
-            <mat-option
-              *ngFor="let setting of settingsArray | keyvalue"
-              [value]="setting.key"
-            >
-              {{ setting.value.server.settings.serverName.fieldValue }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <button type="submit" class="btn btn-success" (click)="loadEndpoint()">
-          Load
-        </button>
-      </div> -->
-
-      <table class="th_right">
-        <!-- <tr>
-          <th>Backend Type:</th>
-          <td>{{ globalSettingsService.server.type }}</td>
-        </tr> -->
-        <tr>
-          <th>URL:</th>
-          <td>
-            <a href="{{ globalSettingsService.server.baseurl }}">{{
-              globalSettingsService.server.baseurl
-            }}</a>
-          </td>
-        </tr>
-        <!-- <tr>
-          <th>
-            Database:
-          </th>
-          <td>
-            {{ globalSettingsService.server.prometheus }}
-          </td>
-        </tr> -->
-        <tr>
-          <th>API:</th>
-          <td>{{ globalSettingsService.server.api }}</td>
-        </tr>
-      </table>
-    </div>
-
-    <!-- <section *ngFor="let entry of settingsSection.value.settings | keyvalue">
-      <div class="fields">
-        <label for="{{ settingsSection.key }}-{{ entry.key }}"
-          >{{ entry.value.fieldName }}:
-        </label>
-        <input
-          type="text"
-          class="form-control"
-          id="{{ settingsSection.key }}-{{ entry.key }}"
-          [(ngModel)]="entry.value.fieldValue"
-        />
-      </div>
-      <div class="valuedebug" *ngIf="debug == true">
-        Default: '{{
-          defaultSettings[settingsSection.key].settings[entry.key].fieldValue
-        }}',<br />
-        Global: '<span
-          *ngIf="
-            globalSettings &&
-            globalSettings[settingsSection.key] &&
-            globalSettings[settingsSection.key]['settings'] &&
-            globalSettings[settingsSection.key]['settings'][entry.key] &&
-            globalSettings[settingsSection.key]['settings'][entry.key][
-              'fieldValue'
-            ]
-          "
-          >{{
-            globalSettings[settingsSection.key].settings[entry.key].fieldValue
-          }}</span
-        >'
-      </div>
-    </section> -->
-    <section>
-      <div class="fields">
-        <label for="serverName"
-          >{{ globalSettingsUnsaved.server.settings.serverHostName.fieldName }}:
-        </label>
-        <input
-          type="text"
-          class="form-control"
-          id="serverName"
-          [(ngModel)]="
-            globalSettingsUnsaved.server.settings.serverHostName.fieldValue
-          "
-        />
-      </div>
-    </section>
-
-    <section id="submit" class="center">
-      <div>
-        <!-- div needed for text-align center -->
-        <button type="submit" class="btn btn-success" (click)="save()">
+<!-- <button type="submit" class="btn btn-success" (click)="save()">
           Save Settings
         </button>
         <button
@@ -212,22 +144,7 @@
           (click)="deleteStoredSettings()"
         >
           Delete Settings
-        </button>
-      </div>
-    </section>
-  </section>
-</div>
-
-<div
-  class="settingspage"
-  *ngIf="globalSettingsService.server.type == 'PublicServer'"
->
-  <section>
-    <section>
-      <app-influxsettings></app-influxsettings>
-    </section>
-  </section>
-</div>
+        </button> -->
 
 <div style="margin: 0.5em; text-align: right">
   {{ gitV.branch }}/<a

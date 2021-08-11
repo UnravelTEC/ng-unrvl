@@ -5,6 +5,7 @@ import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
 import { ActivatedRoute } from '@angular/router';
 import { cloneDeep } from 'lodash-es';
+import { SensorService } from 'app/shared/sensor.service';
 
 @Component({
   selector: 'app-anysens',
@@ -20,7 +21,7 @@ export class AnysensComponent implements OnInit {
   }
 
   extraDyGraphConfig = {
-    connectSeparatedPoints: true,
+    // connectSeparatedPoints: true,
     pointSize: 3,
     logscale: false,
     series: {
@@ -28,7 +29,7 @@ export class AnysensComponent implements OnInit {
         axis: 'y2',
       },
     },
-    y2label: 'Atmospheric Pressure (hPa)',
+
     axes: {
       y2: {
         independentTicks: true, // default opt here to have a filled object to access later
@@ -36,13 +37,16 @@ export class AnysensComponent implements OnInit {
       },
     },
   };
-  labelBlackListT = ['host', 'serial', 'mean_*'];
+  y2label = 'Atmospheric Pressure';
+  labelBlackListT = ['host', 'serial', 'mean_*', 'topic'];
+  private sidebarWidth = '15rem';
+  public currentSidebarWidth = this.sidebarWidth;
   graphstyle = {
     position: 'absolute',
     top: '0.5em',
     bottom: '0.5rem',
     left: '0.5rem',
-    right: '15rem',
+    right: '0.5rem',
   };
 
   public startTime = '6h';
@@ -78,12 +82,14 @@ export class AnysensComponent implements OnInit {
   latest_values = [];
   raw_labels = [];
   round_digits = [0];
+  show_deviation = true;
 
   appName = 'Any Sens';
 
   changeTrigger = true;
 
   measurement = 'temperature';
+  ylabel = '';
   sensor: String;
   interval: string;
   host = '';
@@ -93,26 +99,38 @@ export class AnysensComponent implements OnInit {
   public to: Number; // unix time from urlparam
 
   public queryRunning = false;
+
   public autoreload = false;
+  public auto_interval = 1; // gets set to userMeanS
+  public reload_timer = Infinity;
+  public last_reload: number;
+
   public tableShown = true;
+  public sideBarShown = true;
 
   constructor(
-    private globalSettings: GlobalSettingsService,
+    private gss: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService,
-    private router: ActivatedRoute
+    private router: ActivatedRoute,
+    private sensorService: SensorService
   ) {
-    this.globalSettings.emitChange({ appName: this.appName });
+    this.gss.emitChange({ appName: this.appName });
   }
 
   ngOnInit() {
-    ['userMeanS', 'userStartTime', 'tableShown'].forEach((element) => {
-      const thing = this.localStorage.get(this.appName + element);
-      if (thing !== null) {
-        this[element] = thing;
+    ['userMeanS', 'userStartTime', 'tableShown', 'sideBarShown','show_deviation'].forEach(
+      (element) => {
+        const thing = this.localStorage.get(this.appName + element);
+        if (thing !== null) {
+          this[element] = thing;
+        }
       }
-    });
+    );
+    this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
+    this.auto_interval = this.userMeanS;
+    this.reload_timer = this.auto_interval;
 
     [
       'host',
@@ -132,6 +150,10 @@ export class AnysensComponent implements OnInit {
         this[element] = thing;
       }
     });
+    this.ylabel = this.measurement
+      .replace('pressure', '')
+      .replace(',,', ',')
+      .replace(',', ', ');
 
     if (this.from && this.to) {
       this.from = Number(this.from);
@@ -147,6 +169,27 @@ export class AnysensComponent implements OnInit {
     this.meanS = this.userMeanS;
     this.currentres = this.meanS;
     this.startTime = this.userStartTime;
+
+    const timerange = fromTo
+      ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000
+      : this.h.parseToSeconds(this.startTime);
+    const nr_points = timerange / this.meanS;
+    if (nr_points > 10000) {
+      if (
+        !window.confirm(
+          'Database would be queried for up to ' +
+            Math.ceil(nr_points).toLocaleString() +
+            ' points of data, are you sure?'
+        )
+      ) {
+        console.log('user canceled query with', nr_points, 'points.');
+        if (!this.labels.length) {
+          // at start to show "no data"
+          this.labels = [''];
+        }
+        return;
+      }
+    }
 
     const timeQuery = fromTo
       ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
@@ -174,6 +217,52 @@ export class AnysensComponent implements OnInit {
 
     this.launchQuery(queries);
   }
+  changeAutoS(param) {
+    console.log(param);
+
+    if (!this.autoreload) {
+      this.reload_timer = param;
+    }
+  }
+
+  toggleAutoReload(param) {
+    console.log('autoreload:', this.autoreload);
+
+    if (this.autoreload) {
+      if (this.gss.server.protocol == 'https' && this.auto_interval < 5 * 60) {
+        if (
+          !confirm(
+            "autoreload < 180s do not make sense on public server, as DB doesn't get updated this often - are you sure?"
+          )
+        ) {
+          setTimeout(() => {
+            this.autoreload = false;
+          }, 50);
+          return;
+        }
+      }
+      this.last_reload = new Date().valueOf() / 1000;
+      setTimeout(() => this.updateReloadTimer(), 1000);
+      setTimeout(() => {
+        if (this.autoreload) {
+          this.reload();
+        }
+      }, this.auto_interval * 1000);
+    }
+  }
+
+  updateReloadTimer() {
+    if (this.autoreload) {
+      const now_utime = new Date().valueOf() / 1000;
+      const remaining = Math.round(
+        this.last_reload + Number(this.auto_interval) - now_utime
+      );
+      this.reload_timer = remaining > 0 ? remaining : 0;
+      // console.log(this.last_reload, this.auto_interval, now_utime);
+
+      setTimeout(() => this.updateReloadTimer(), 1000);
+    }
+  }
 
   calcMean(secondsRange) {
     const divider = Math.floor(secondsRange / this.graphWidth);
@@ -183,6 +272,8 @@ export class AnysensComponent implements OnInit {
     const rangeSeconds = this.h.parseToSeconds(param);
 
     this.userMeanS = this.calcMean(rangeSeconds);
+    this.auto_interval = this.userMeanS;
+    this.reload_timer = this.auto_interval;
 
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
     this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);
@@ -201,17 +292,35 @@ export class AnysensComponent implements OnInit {
       this.localStorage.get(this.appName + 'tableShown')
     );
   }
+  toggleSidebar() {
+    this.sideBarShown = !this.sideBarShown;
+    this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
+    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger = !this.changeTrigger;
+
+    this.localStorage.set(this.appName + 'sideBarShown', this.sideBarShown);
+    console.log('toggleSidebar', this.currentSidebarWidth);
+  }
 
   launchQuery(clause: string) {
     this.queryRunning = true;
-    this.utHTTP
-      .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
-      .subscribe((data: Object) => this.handleData(data),
+    if (!this.gss.server.influxdb) {
+      console.log('db not yet set, wait');
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
+    this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(clause)).subscribe(
+      (data: Object) => this.handleData(data),
       (error) => {
         console.error(error);
         this.queryRunning = false;
-        alert(`HTTP error: ${error.status}, ${error.statusText}, ${error.message}`);
-      });
+        alert(
+          `HTTP error: ${error.status}, ${error.statusText}, ${error.message}`
+        );
+      }
+    );
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -224,6 +333,7 @@ export class AnysensComponent implements OnInit {
     if (ret['error']) {
       alert('Influx Error: ' + ret['error']);
       this.queryRunning = false;
+      this.autoreload = false;
       return;
     }
     const labels = ret['labels'];
@@ -239,7 +349,8 @@ export class AnysensComponent implements OnInit {
 
     let logscale = true;
     const newColors = this.h.getColorsforLabels(labels);
-    for (let c = 1; c < labels.length; c++) {
+    const numColumns = labels.length;
+    for (let c = 1; c < numColumns; c++) {
       const item = labels[c];
 
       if (logscale == true) {
@@ -264,10 +375,13 @@ export class AnysensComponent implements OnInit {
           idata[r][c] = this.h.smoothNO2(idata[r][c]);
         }
       }
-      if (item.match(/pressure/)) {
+      if (item.match(/hPa/)) {
         this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
+        this.extraDyGraphConfig.series[this.short_labels[c - 1]] = {
+          axis: 'y2',
+        };
       }
-      this.round_digits.push(this.globalSettings.getDigits(this.raw_labels[c]));
+      this.round_digits.push(this.sensorService.getDigits(this.raw_labels[c]));
     }
     // console.log(cloneDeep(this.dygLabels));
     if (logscale) {
@@ -276,6 +390,7 @@ export class AnysensComponent implements OnInit {
     } else {
       console.log('scale: lin');
     }
+
     this.startTime = this.userStartTime;
     const newLabels = ['Date'];
     newLabels.concat(this.short_labels);
@@ -291,20 +406,28 @@ export class AnysensComponent implements OnInit {
     if (!this.data || !this.data[0]) {
       return;
     }
-    for (let column = 1; column < this.data[0].length; column++) {
-      for (let i = this.data.length - 1; i != 0; i--) {
-        const element = this.data[i][column];
+    for (let column = 1; column < numColumns; column++) {
+      for (let i = idata.length - 1; i != 0; i--) {
+        const element = idata[i][column];
         if (typeof element === 'number') {
           this.latest_values[column - 1] = this.h.roundAccurately(
             element,
             this.round_digits[column]
           );
-          this.latest_dates[column - 1] = this.data[i][0];
+          this.latest_dates[column - 1] = idata[i][0];
           break;
         }
       }
     }
     console.log('latest_values', this.latest_values);
     console.log('latest_dates', this.latest_dates);
+    this.last_reload = new Date().valueOf() / 1000;
+    if (this.autoreload) {
+      setTimeout(() => {
+        if (this.autoreload) {
+          this.reload();
+        }
+      }, this.auto_interval * 1000);
+    }
   }
 }

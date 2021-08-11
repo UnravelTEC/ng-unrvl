@@ -1,26 +1,30 @@
 <app-ut-dygraph-in
-  [displayedData]="data['CO2']"
+  [data]="data['CO2']"
   [columnLabels]="labels['CO2']"
+  [rawLabels]="raw_labels['CO2']"
+  showDeviation="true"
   [style]="graphstyleTop"
   [changeTrigger]="changeTrigger"
   [extraDyGraphConfig]="extraDyGraphConfig"
   [startTime]="startTimes['CO2']"
   [colors]="colors['CO2']"
-  YLabel="ppm"
+  YLabel="CO₂"
   [backGroundLevels]="globalSettings['graphBackgrounds']['CO2_ppm']"
   #CO2
 >
 </app-ut-dygraph-in>
 
 <app-ut-dygraph-in
-  [displayedData]="data['H']"
+  [data]="data['H']"
   [columnLabels]="labels['H']"
+  [rawLabels]="raw_labels['H']"
+  showDeviation="true"
   [style]="graphstyleBottom"
   [changeTrigger]="changeTrigger"
   [extraDyGraphConfig]="extraDyGraphConfig"
   [startTime]="startTimes['H']"
   [colors]="colors['H']"
-  YLabel="g&#8202;/&#8202;m³, °C"
+  YLabel="rH, T"
   #rH
 >
 </app-ut-dygraph-in>

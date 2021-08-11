@@ -168,6 +168,13 @@ export class HumidityComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.server.influxdb) {
+      console.log('db not yet set, wait');
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
     this.queryRunning++;
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery(clause))

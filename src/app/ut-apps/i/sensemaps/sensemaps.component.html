@@ -1,0 +1,56 @@
+<div class="abody">
+  <h2>Geospatial Sensor Data display</h2>
+
+  <p>Click measurements/sensors to show sensor data corellated with GPS data</p>
+
+  <div *ngIf="queryRunning">
+    query in progress...
+  </div>
+
+  <div *ngIf="measurements && measurements.length > 0">
+    <h3>Measurements</h3>
+    <table>
+      <tr *ngFor="let m of measurements">
+        <td>
+        <a
+          routerLink="/Apps/I/Enviromap"
+          [queryParams]="{ measurement: m, referrer: 'Sensemaps' }"
+          routerLinkActive="active"
+          >{{ m }}</a
+        ></td>
+      </tr>
+    </table>
+  </div>
+
+  <div *ngIf="(sensors | json) != '{}'">
+    <h3>Sensors</h3>
+    <table class="sensors">
+      <tr>
+        <th>
+          Sensor Name
+        </th>
+        <th>
+          Parameters
+        </th>
+      </tr>
+      <tr *ngFor="let s of sensors | keyvalue">
+        <td>
+          <a
+            routerLink="/Apps/I/Enviromap"
+            [queryParams]="{ sensor: s.key, measurement: s.value.join(','), referrer: 'Sensemaps' }"
+            routerLinkActive="active"
+            >{{ s.key }}</a
+          ></td>
+        <td>
+          <span *ngFor="let m of s.value">
+            <a
+              routerLink="/Apps/I/Enviromap"
+              [queryParams]="{ sensor: s.key, measurement: m, referrer: 'Sensemaps' }"
+              routerLinkActive="active"
+            >{{ m }}</a
+            >&nbsp;</span>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

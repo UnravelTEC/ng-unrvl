@@ -129,6 +129,13 @@ export class IndoorclimateComponent implements OnInit {
   }
 
   launchQuery(clause: string, id: string) {
+    if (!this.globalSettings.server.influxdb) {
+      console.log('db not yet set, wait');
+      setTimeout(() => {
+        this.launchQuery(clause, id);
+      }, 1000);
+      return;
+    }
     this.queryRunning++;
     const q = this.utHTTP.buildInfluxQuery(clause, undefined, undefined, 's');
     this.utHTTP

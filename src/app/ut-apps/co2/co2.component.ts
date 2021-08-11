@@ -24,7 +24,7 @@ export class Co2Component implements OnInit {
     logscale: false,
     strokeWidth: 2,
   };
-  labelBlackListT = ['host', 'serial', 'mean_*', 'id', 'sensor', 'mean'];
+  labelBlackListT = ['host', 'serial', 'mean_*', 'id', 'mean'];
   graphstyle = {
     position: 'absolute',
     top: '0.5em',
@@ -58,6 +58,7 @@ export class Co2Component implements OnInit {
   }
 
   labels = [];
+  raw_labels = [];
   data = [];
 
   appName = 'CO2-Graph';
@@ -170,6 +171,13 @@ export class Co2Component implements OnInit {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.server.influxdb) {
+      console.log('db not yet set, wait');
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
     this.queryRunning = true;
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
@@ -212,6 +220,7 @@ export class Co2Component implements OnInit {
     }
     this.startTime = this.userStartTime;
     this.labels = labels;
+    this.raw_labels = ret['raw_labels'];
     this.data = idata;
     this.colors = newColors;
     console.log(labels);

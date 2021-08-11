@@ -1,0 +1,29 @@
+#calappbody {
+    margin: 0 0.5rem 0.5rem 0.5rem;
+}
+
+.sensor, .measurement, .id, .sensormeasurement {
+    border: 1px solid gray;
+    padding: 0 6px 3px 6px;
+    margin: 3px 0;
+}
+.measurements {
+    margin-left: 3em;
+}
+.sensor {
+    margin-top: 10px ;
+}
+.add {
+    text-align: right;
+}
+
+h4 {
+    margin: 0.2em;
+}
+h5,h6 {
+    margin: 0;
+}
+table, td, th {
+    border-collapse: collapse;
+    border: 1px dashed gray;
+}

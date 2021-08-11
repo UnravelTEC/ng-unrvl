@@ -1,5 +1,8 @@
-div.settingspage {
-  padding: 0 0.5em;
+$buttonbg: #565656;
+div.red {
+  border: 2px solid red;
+  box-sizing: border-box;
+  margin: 0.5em;
 }
 
 h1 {
@@ -7,7 +10,7 @@ h1 {
   margin: 1rem;
 }
 h2 {
-  margin: 0 0 1rem 0;
+  margin: 0 0 1rem 0.5rem;
 }
 a {
   color: rgb(97, 97, 255);
@@ -17,7 +20,26 @@ section {
   border: 1px solid black;
   border-radius: 2px;
   padding: 10px;
-  margin: 0.5em auto 0.5em auto;
+  margin: 0.5em;
+
+  #chosenBackend {
+    div {
+      margin: 0.5rem;
+    }
+    fieldset {
+      border: 0;
+    }
+    fieldset:disabled {
+      opacity: 0.5;
+      input,
+      button {
+        cursor: not-allowed;
+      }
+      button:hover {
+        background-color: $buttonbg;
+      }
+    }
+  }
 
   section {
     border: 1px solid gray;
