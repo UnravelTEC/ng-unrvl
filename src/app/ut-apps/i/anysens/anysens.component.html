@@ -88,7 +88,7 @@
           </button>
         </div>
       </fieldset>
-      <fieldset [disabled]="queryRunning == true">
+      <fieldset [disabled]="queryRunning == true && !autoreload">
         <h3>{{ queryRunning ? 'Query running...' : 'Query latest data:' }}</h3>
         <mat-form-field>
           <mat-label>Show range from now</mat-label>
