@@ -262,6 +262,18 @@ style.padding-bottom="20vh"-->
       </form>
 
       <form class="subbox">
+        <h5>Show missing points</h5>
+        <label for="sepp">hide</label>
+        <input
+          type="checkbox"
+          name="sepp"
+          id="sepp"
+          [(ngModel)]="dyGraphOptions.connectSeparatedPoints"
+          (change)="toggleSeparatedPoints()"
+        />
+      </form>
+
+      <form class="subbox">
         <h5>Y linearity</h5>
         <label for="log">Logarithmic</label>
         <input

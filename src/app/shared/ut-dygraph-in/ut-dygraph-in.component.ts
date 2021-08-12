@@ -1457,6 +1457,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.dyGraphOptions['axes']
     );
   }
+  toggleSeparatedPoints() {
+
+    this.Dygraph.updateOptions({ connectSeparatedPoints: this.dyGraphOptions.connectSeparatedPoints });
+    console.log('new connectSeparatedPoints:', this.dyGraphOptions.connectSeparatedPoints);
+
+  }
   toggleLegend() {
     if (this.dyGraphOptions.legend == 'always') {
       this.dyGraphOptions.legend = 'never';
