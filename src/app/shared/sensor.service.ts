@@ -166,6 +166,39 @@ export class SensorService {
         round_digits: 1,
       },
     },
+    'PT1000': {
+      '*_degC': {
+        // PT1000: 0.15%
+        // R am Board  0.1%
+        // ADC: https://datasheets.maximintegrated.com/en/ds/MAX31865.pdf
+        // 15bit, spannungsteiler 1:4.3
+        // The output data is the ratio of the sensor resistance
+        // Page1: Nominal Temperature Resolution 0.03125 K
+        // Page3: ADC Full-Scale Error: ±1LSB, ADC Integral Nonlinearity: ±1LSB, ADC Offset Error: ±3LSB -> ±0.25°C (Table p20)
+        // Page6: ~±0.02K ADC Conversion error
+
+        round_digits: 3,
+        getDeviation: function (value) {
+          if (value === null) return null;
+          if (isNaN(value) || value > 550 || value < -200) {
+            return NaN;
+          }
+          // DIN EN 60751: https://temperatur-profis.de/wissen/temperaturfuehler/genauigkeit-pt100-pt1000/
+          // PLUS ADC uncertainty of ±0.25K
+
+          // class 0.10% (AA)
+          // const din_offset = 0.1;
+          // const din_mult = 0.0017
+          // class 0.15% (A)
+          const din_offset = 0.15;
+          const din_mult = 0.002;
+          const adc_offset = 0.25; // ca. between -30 and 40°C TODO formula
+          const sum_offset = din_offset + adc_offset
+          const dev = sum_offset + din_mult * value;
+          return [value - dev, value, value + dev];
+        },
+      }
+    },
     GPS: {
       lat: {
         round_digits: 7,
