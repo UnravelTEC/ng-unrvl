@@ -38,7 +38,7 @@ export class AnysensComponent implements OnInit {
     },
   };
   y2label = 'Atmospheric Pressure';
-  labelBlackListT = ['host', 'serial', 'mean_*', 'topic'];
+  labelBlackListT = ['host', 'mean_*']; // mean is when only 1 graph is returned
   private sidebarWidth = '15rem';
   public currentSidebarWidth = this.sidebarWidth;
   graphstyle = {
