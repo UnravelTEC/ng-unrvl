@@ -324,10 +324,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         console.log('data reset, restore viewport');
         this.dataBeginTime = newDataBeginTime;
         this.dataEndTime = newDataEndTime;
-        this.dyGraphOptions['dateWindow'] = [
-          this.dataBeginTime.valueOf(),
-          this.dataEndTime.valueOf(),
-        ];
+        this.updateDateWindow();
+
         this.displayedData = [];
         this.dataWithDev = [];
         if (this.checkDataDevOK()) {
@@ -352,6 +350,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.Dygraph.updateOptions({
         file: this.displayedData,
         labels: this.columnLabels,
+        xlabel: this.XLabel,
         axes: this.dyGraphOptions.axes,
         visibility: this.dyGraphOptions.visibility,
         dateWindow: this.dyGraphOptions['dateWindow'],
@@ -607,9 +606,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.updateRoundDigits();
 
     this.updateDateWindow();
-    this.dyGraphOptions['xlabel'] = this.returnXrangeText(
-      (this.toZoom.valueOf() - this.fromZoom.valueOf()) / 1000
-    );
 
     console.log('startin auto unit label for', this.YLabel);
     if (this.YLabel.search(/\(.*\)$/) == -1) {
@@ -892,9 +888,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     for (let i = 0; i < data.series.length; i++) {
       const series = data.series[i];
-      const displayedValue = !series.hasOwnProperty('y') || isNaN(series.y)
-        ? ''
-        : parent.h.roundAccurately(series.y, parent.roundDigits[i + 1]);
+      const displayedValue =
+        !series.hasOwnProperty('y') || isNaN(series.y)
+          ? ''
+          : parent.h.roundAccurately(series.y, parent.roundDigits[i + 1]);
       const cls = series.isHighlighted ? 'class="highlight"' : '';
       const hoverCallback = genHover(series.label, htmlID);
       const toggleCallback = genToggle(series.label, htmlID);
@@ -1277,22 +1274,20 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     let dataEndTime = new Date();
     // this.endTime === 'now' ? new Date() : new Date(this.endTime);
 
-    if (!this.currentXrange) {
-      // initial call from handleInitialData
-      if (this.startTime) {
-        this.currentXrange = this.h.parseToSeconds(this.startTime);
-      } else {
-        if (!this.dataBeginTime) {
-          this.dataBeginTime = this.data[0][0];
-        }
-        dataEndTime = this.data[this.data.length - 1][0];
-        if (!this.dataEndTime) {
-          this.dataEndTime = dataEndTime;
-        }
-
-        this.currentXrange =
-          (dataEndTime.valueOf() - this.dataBeginTime.valueOf()) / 1000;
+    if (this.startTime) {
+      // show last X Minutes, even if not all data yet in DB (publich servers), e-g- on auto-reload
+      this.currentXrange = this.h.parseToSeconds(this.startTime);
+    } else {
+      if (!this.dataBeginTime) {
+        this.dataBeginTime = this.data[0][0];
       }
+      dataEndTime = this.data[this.data.length - 1][0];
+      if (!this.dataEndTime) {
+        this.dataEndTime = dataEndTime;
+      }
+
+      this.currentXrange =
+        (dataEndTime.valueOf() - this.dataBeginTime.valueOf()) / 1000;
     }
 
     const dataBeginTime = new Date(
@@ -1310,6 +1305,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     ];
     this.fromZoom = dataBeginTime;
     this.toZoom = dataEndTime;
+    this.XLabel = this.returnXrangeText(
+      (this.toZoom.valueOf() - this.fromZoom.valueOf()) / 1000
+    );
+    this.dyGraphOptions['xlabel'] = this.XLabel;
+
     this.returnCurrentZoom.emit(this.dyGraphOptions['dateWindow']);
   }
 
@@ -1458,10 +1458,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     );
   }
   toggleSeparatedPoints() {
-
-    this.Dygraph.updateOptions({ connectSeparatedPoints: this.dyGraphOptions.connectSeparatedPoints });
-    console.log('new connectSeparatedPoints:', this.dyGraphOptions.connectSeparatedPoints);
-
+    this.Dygraph.updateOptions({
+      connectSeparatedPoints: this.dyGraphOptions.connectSeparatedPoints,
+    });
+    console.log(
+      'new connectSeparatedPoints:',
+      this.dyGraphOptions.connectSeparatedPoints
+    );
   }
   toggleLegend() {
     if (this.dyGraphOptions.legend == 'always') {

@@ -50,6 +50,7 @@ export class AnysensComponent implements OnInit {
   };
 
   public startTime = '6h';
+  public dygStartTime:string; // used on autoUpdate
   public userStartTime = this.startTime;
   public meanS = 30;
   public currentres = 0;
@@ -171,6 +172,7 @@ export class AnysensComponent implements OnInit {
     this.currentres = this.meanS;
     this.currentresText = this.h.createHRTimeString(this.meanS);
     this.startTime = this.userStartTime;
+    this.dygStartTime = fromTo ? undefined : this.startTime;
 
     const timerange = fromTo
       ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000
