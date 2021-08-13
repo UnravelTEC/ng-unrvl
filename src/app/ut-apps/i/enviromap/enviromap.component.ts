@@ -123,7 +123,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
 
   public sideBarShown = true;
 
-  public minmax = { min: Infinity, max: -Infinity };
+  public minmax = { min: Infinity, max: -Infinity, smin: "from", smax: "to" }; // s*: string, for view
   updateFromToTimes(timearray, interval = '') {
     // console.log(timearray);
     this.fromTime = new Date(timearray[0]);
@@ -435,6 +435,8 @@ export class EnviromapComponent implements OnInit, OnDestroy {
 
     this.minmax.max = this.h.roundAccurately(max, round_graphdigits[1]);
     this.minmax.min = this.h.roundAccurately(min, round_graphdigits[1]);
+    this.minmax.smax = this.h.shortenNumber(this.minmax.max, 1);
+    this.minmax.smin = this.h.shortenNumber(this.minmax.min, 1);
     if (this.column) {
       labels.push('color');
       const range = max - min;

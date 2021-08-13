@@ -267,7 +267,7 @@ export class HelperFunctionsService {
         for (let i = 1; i < labels.length; i++) {
           const label = labels[i];
           // if (i != latlabelpos && i != lonlabelpos) {
-            point.properties[label] = element[i];
+          point.properties[label] = element[i];
           // }
         }
       }
@@ -885,10 +885,10 @@ export class HelperFunctionsService {
       for (let [key, value] of Object.entries(feature.properties)) {
         let v = value;
         if (key == 'Date') {
-          v = value['toLocaleDateString']('de-DE', timeFormatOptions)
-        } else if(key.endsWith('lat') || key.endsWith ('lon')) {
+          v = value['toLocaleDateString']('de-DE', timeFormatOptions);
+        } else if (key.endsWith('lat') || key.endsWith('lon')) {
           v = Math.round(Number(value) * 1000000) / 1000000;
-        } else if(Number.isFinite(Number(value))) {
+        } else if (Number.isFinite(Number(value))) {
           v = Math.round(Number(value) * 100) / 100;
         }
         text += '<tr><th>' + key + ':</th><td>' + v + '</td></tr>';
@@ -923,5 +923,34 @@ export class HelperFunctionsService {
         'e-' +
         String(decPlaces)
     );
+  }
+
+  // from https://medium.com/@thunderroid/angular-short-number-suffix-pipe-1k-2m-3b-dded4af82fb4
+  shortenNumber(nr: number, rounder = 10): string {
+    if (isNaN(nr)) return 'NaN';
+    if (nr === null) return 'null';
+    if (nr === 0) return '0';
+    let abs = Math.abs(nr);
+    const isNegative = nr < 0; // will also work for Negative numbers
+    let key = '';
+
+    const powers = [
+      { key: 'E', value: 10e15 },
+      { key: 'T', value: 10e12 },
+      { key: 'G', value: 10e9 },
+      { key: 'M', value: 10e6 },
+      { key: 'K', value: 1000 },
+    ];
+
+    for (let i = 0; i < powers.length; i++) {
+      let reduced = abs / powers[i].value;
+      reduced = Math.round(reduced * rounder) / rounder;
+      if (reduced >= 1) {
+        abs = reduced;
+        key = powers[i].key;
+        break;
+      }
+    }
+    return (isNegative ? '-' : '') + abs + " " + key; // " " is a thin space
   }
 }

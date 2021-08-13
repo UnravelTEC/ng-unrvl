@@ -35,7 +35,7 @@
         class="end"
         style.background-color="{{ endcolor }}"
       >
-      <span *ngIf="minmax.max !== -Infinity">{{ minmax.max }}</span>
+      <span *ngIf="minmax.max !== -Infinity">{{ minmax.smax }}</span>
       </td>
     </tr>
     <tr *ngFor="let nr of barArray; let i = index" [attr.data-index]="i">
@@ -43,7 +43,7 @@
     </tr>
     <tr>
       <td class="end" style.background-color="{{ begincolor }}">
-        <span *ngIf="minmax.min !== Infinity">{{ minmax.min }}</span>
+        <span *ngIf="minmax.min !== Infinity">{{ minmax.smin }}</span>
       </td>
     </tr>
   </table>
