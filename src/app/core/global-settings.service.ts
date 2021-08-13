@@ -280,7 +280,7 @@ export class GlobalSettingsService implements OnInit {
           this.server.sensors[sname]['measurements'].push(measurement);
         if (!this.server.sensors[sname].hasOwnProperty('id')) this.server.sensors[sname]['id'] = {};
         const id = seri.match(/id=([-A-Za-z0-9|_/]*)/);
-        console.log('idmatch:', id);
+        // console.log('idmatch:', id);
 
         const sid = id && id[1] ? id[1] : '_'; // freely defined convention
         if (!this.server.sensors[sname]['id'].hasOwnProperty(sid))
