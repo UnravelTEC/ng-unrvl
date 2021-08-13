@@ -951,6 +951,40 @@ export class HelperFunctionsService {
         break;
       }
     }
-    return (isNegative ? '-' : '') + abs + " " + key; // " " is a thin space
+    return (isNegative ? '-' : '') + abs + ' ' + key; // " " is a thin space
+  }
+
+  formatFieldName(fieldname) {
+    fieldname = fieldname.replace(/H2O_/, 'H₂O_');
+    fieldname = fieldname.replace(/CO2_/, 'CO₂_');
+    fieldname = fieldname.replace(/NO2_/, 'NO₂_');
+    fieldname = fieldname.replace(/O3_/, 'O₃_');
+    fieldname = fieldname.replace(/NH3_/, 'NH₃_');
+    fieldname = fieldname.replace(/H2_/, 'H₂_');
+    fieldname = fieldname.replace(/percent$/, '%');
+    fieldname = fieldname.replace(/_%/, '-%');
+    fieldname = fieldname.replace(/degC$/, '°C');
+    fieldname = fieldname.replace(/deg$/, '°'); // heading
+    fieldname = fieldname.replace(/hdop/, 'HDOP');
+    fieldname = fieldname.replace(/p([0-9.]*)_ugpm3$/, 'pm$1 ( µg / m³ )'); //spaces in () are thin-spaces
+    fieldname = fieldname.replace(/_ugpm3$/, ' ( µg / m³ )');
+    fieldname = fieldname.replace(/_gpm3$/, ' ( g / m³ )');
+    fieldname = fieldname.replace(/_degps$/, ' ( ° / s )');
+    fieldname = fieldname.replace(/_mps2$/, ' ( m / s² )');
+    fieldname = fieldname.replace(/_mps$/, ' ( m / s )');
+    fieldname = fieldname.replace(/uT$/, 'µT');
+    fieldname = fieldname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm ( # / cm³ )');
+    fieldname = fieldname.replace(/dewPoint/, 'dew point');
+    fieldname = fieldname.replace(/gps_view/, '#');
+    fieldname = fieldname.replace(/air_rel/, 'apparent wind');
+    fieldname = fieldname.replace(/sensor_voltage/, 'sensor voltage'); //RS04
+    fieldname = fieldname.replace(/sensor_current/, 'sensor current'); //RS04
+    fieldname = fieldname.replace(/sensor_highvoltage/, 'sensor high-voltage'); //RS04
+    fieldname = fieldname.replace(/_cps$/, ' ( # / s )');
+    fieldname = fieldname.replace(/_Svph$/, ' ( Sv / h )');
+    // fieldname = fieldname.replace(/interval_s/, 'interval ( s )'); // not a field, but a tag
+
+    fieldname = fieldname.replace(/_(\S+)$/, ' ( $1 )');
+    return fieldname;
   }
 }
