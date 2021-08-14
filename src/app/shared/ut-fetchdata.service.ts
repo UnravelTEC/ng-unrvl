@@ -17,10 +17,6 @@ export class UtFetchdataService {
     private h: HelperFunctionsService
   ) {}
 
-  Config = {};
-
-  queryDefaultStep = 1000; // ms
-
   getHTTPData(
     thisurl: string,
     user = this.globalSettingsService.server.influxuser,
@@ -47,8 +43,33 @@ export class UtFetchdataService {
     return this.http.get(thisurl);
   }
 
-  postData(url: string, data: any) {
-    this.http.post(url, data).subscribe(
+  postData(
+    url: string,
+    data: any,
+    user = this.globalSettingsService.server.influxuser,
+    pass = this.globalSettingsService.server.influxpass,
+    forceauth = false
+  ) {
+    console.log('postData:', url, data, user, pass);
+
+    if (forceauth || (url.startsWith('https') && url.search(/\/influxdb\//))) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          Authorization: 'Basic ' + btoa(user + ':' + pass),
+        }),
+      };
+      console.log('HEADERS', httpOptions);
+      return this.http.post(url, data, httpOptions).subscribe(
+        (res: any) => {
+          console.log(res);
+        },
+        (error: any) => {
+          console.log(error);
+        }
+      );
+    }
+
+    return this.http.post(url, data).subscribe(
       (res: any) => {
         console.log(res);
       },
@@ -56,8 +77,6 @@ export class UtFetchdataService {
         console.log(error);
       }
     );
-
-    console.log(['postData', url, data]);
   }
 
   influxTimeString(param1: any, param2: Date = undefined) {
@@ -147,6 +166,31 @@ export class UtFetchdataService {
       epoch +
       '&q=' +
       cleanClause
+    );
+  }
+  buildInfluxWriteUrl(database?: string, serverstring?: string) {
+    if (database === undefined) {
+      database = this.globalSettingsService.server.influxdb;
+    }
+    if (serverstring === undefined) {
+      serverstring = this.globalSettingsService.server.baseurl;
+    }
+    return serverstring + '/influxdb/write?db=' + database;
+  }
+  buildInfluxDelQuery(
+    clause: string,
+    database?: string,
+    serverstring?: string
+  ) {
+    const cleanClause = clause.replace(/;/g, '%3B');
+    if (database === undefined) {
+      database = this.globalSettingsService.server.influxdb;
+    }
+    if (serverstring === undefined) {
+      serverstring = this.globalSettingsService.server.baseurl;
+    }
+    return (
+      serverstring + '/influxdb/query?db=' + database + '&q=' + cleanClause // &epoch=s
     );
   }
 

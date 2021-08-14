@@ -1,29 +1,69 @@
 #calappbody {
-    margin: 0 0.5rem 0.5rem 0.5rem;
+  margin: 0 0.5rem 0.5rem 0.5rem;
 }
 
-.sensor, .measurement, .id, .sensormeasurement {
-    border: 1px solid gray;
-    padding: 0 6px 3px 6px;
-    margin: 3px 0;
+.sensor,
+.measurement,
+.id,
+.sensormeasurement {
+  border: 1px solid gray;
+  padding: 0 6px 3px 6px;
+  margin: 3px 0;
 }
 .measurements {
-    margin-left: 3em;
+  margin-left: 3em;
 }
 .sensor {
-    margin-top: 10px ;
+  margin-top: 10px;
 }
 .add {
-    text-align: right;
+  text-align: right;
 }
 
 h4 {
-    margin: 0.2em;
+  margin: 0.2em;
 }
-h5,h6 {
-    margin: 0;
+h5,
+h6 {
+  margin: 0;
 }
-table, td, th {
+.field {
+  div {
+    margin-top: 0.5rem;
+  }
+  table {
     border-collapse: collapse;
-    border: 1px dashed gray;
+    margin-left: 1em;
+    margin-bottom: 1em;
+    form {
+        display: table-row;
+    }
+    td,
+    th {
+      border: 1px dotted gray;
+    }
+    th.note {
+        width: 10rem;
+    }
+    th:first-child {
+        width: 10rem;
+    }
+    input#note {
+        width: 9.2rem;
+    }
+  }
+
+}
+#calappbody {
+  // # needed to overrule global stylesheet for button
+  th,
+  td {
+    padding: 2px 8px;
+    button {
+      padding: 2px;
+    }
+  }
+}
+.new input[type='text'] {
+  width: 5rem;
 }

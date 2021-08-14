@@ -73,7 +73,9 @@ export class GlobalSettingsService implements OnInit {
             measurements: {
               $measurement: {
                 $fieldname: {
-                  cals: [[ Date, n0:number, …,  n7, 'note:text' ], […]],
+                  displayname: ""
+                  unit: ""
+                  cals: [[ Date, 'note:text', n0:number, …,  n7 ], […]],
                   hw_recal: [[ Date, value (, -s) ], […]]
                 },
                 tags: {} // future use (eg hostname?)
@@ -85,6 +87,7 @@ export class GlobalSettingsService implements OnInit {
     } TODO somewhere include hostname (host=)
     */
     measurements: [],
+    calibrations: false,
     databaseStatus: 'unknown', // db status: up, down, unknown, waiting
     api: undefined,
     influxdb: '',
@@ -266,6 +269,10 @@ export class GlobalSettingsService implements OnInit {
     for (let i = 0; i < series.length; i++) {
       const seri = series[i][0];
       const measurement = seri.split(',')[0];
+      if (measurement == 'calibrations') {
+        this.server.calibrations = true;
+        continue;
+      }
       if (!this.server.measurements.includes(measurement)) {
         this.server.measurements.push(measurement);
       }
@@ -278,13 +285,14 @@ export class GlobalSettingsService implements OnInit {
           this.server.sensors[sname]['measurements'] = [];
         if (!this.server.sensors[sname]['measurements'].includes(measurement))
           this.server.sensors[sname]['measurements'].push(measurement);
-        if (!this.server.sensors[sname].hasOwnProperty('id')) this.server.sensors[sname]['id'] = {};
+        if (!this.server.sensors[sname].hasOwnProperty('id'))
+          this.server.sensors[sname]['id'] = {};
         const id = seri.match(/id=([-A-Za-z0-9|_/]*)/);
         // console.log('idmatch:', id);
 
         const sid = id && id[1] ? id[1] : '_'; // freely defined convention
         if (!this.server.sensors[sname]['id'].hasOwnProperty(sid))
-          this.server.sensors[sname]['id'][sid] = {}
+          this.server.sensors[sname]['id'][sid] = {};
       }
       // const host = seri.match(/host=([-A-Za-z0-9]*)/);
       // if (host && host[1] && !this.hosts.includes(host[1])) {
@@ -313,38 +321,88 @@ export class GlobalSettingsService implements OnInit {
       return;
     }
     this.emitChange({ status: 'Parsing sensor parameters...' });
-    data['results'].forEach(result => {
+    data['results'].forEach((result) => {
       const series = result['series']; // Array
-      series.forEach(sensor => {
+      series.forEach((sensor) => {
         const measurement = sensor['name'];
         let id = sensor['tags']['id'];
-        if(!id) id = "_"; // freely defined convention
+        if (!id) id = '_'; // freely defined convention
         const sensorname = sensor['tags']['sensor'];
         if (!sensorname) {
-          return
+          return;
         }
         // console.log('foreach series', sensor, sensorname);
 
         const thisgsensor = gsensors[sensorname]['id'][id];
         if (!thisgsensor.hasOwnProperty('measurements'))
-          thisgsensor['measurements'] = {}
-        if(!thisgsensor['measurements'].hasOwnProperty(measurement))
-          thisgsensor['measurements'][measurement] = {}
+          thisgsensor['measurements'] = {};
+        if (!thisgsensor['measurements'].hasOwnProperty(measurement))
+          thisgsensor['measurements'][measurement] = {};
 
         // console.log('sensor:',sensorname, sensor);
 
         for (let i = 1; i < sensor['columns'].length; i++) {
           const element = sensor['columns'][i];
           if (sensor['values'][0][i] !== null) {
-            const fieldname = sensor['columns'][i].replace(/last_/,'');
-            thisgsensor['measurements'][measurement][fieldname] = {}
+            const fieldname = sensor['columns'][i].replace(/last_/, '');
+            const niceField = this.h.formatFieldName(fieldname);
+            const dname = niceField.replace(/\s?\((.*)\)$/, '');
+            const unitmatch = niceField.match(/\(\s?(.*)\s?\)$/);
+            let unit = unitmatch ? unitmatch[1].trim() : null;
+            if (unit && unit.match(/^count|[#]$/)) unit = null;
+            thisgsensor['measurements'][measurement][fieldname] = {
+              displayname: dname,
+              unit: unit,
+              cals: []
+            };
           }
         }
       });
     });
     console.log(this.server.sensors);
     this.emitChange({ status: '' });
-    // TODO fetch calibration table
+    if (this.server.calibrations) {
+      this.emitChange({ readyToFetchCalibrations: true });
+    }
+  }
+  acceptCalibrations(data) {
+    console.log(data);
+    if (!data['results']) {
+      console.error('influx acceptCalibrations: empty', data);
+      this.emitChange({ status: '' });
+      return;
+    }
+    this.emitChange({ status: 'Parsing Calibrations...' });
+    const series = this.h.getDeep(data, ['results', 0, 'series']);
+    if (!series) {
+      console.error('cals asked, but none there');
+      this.emitChange({ status: '' });
+      return;
+    }
+    series.forEach((entry) => {
+      const tags = entry['tags'];
+      const sensor = tags['sensor'];
+      const id = tags['id'];
+      const meas = tags['meas'];
+      const field = tags['field'];
+      const targetobj = this.h.getDeep(this.server.sensors, [
+        sensor,
+        'id',
+        id,
+        'measurements',
+        meas,
+        field,
+      ]);
+      if (targetobj) {
+        targetobj['cals'] = entry['values'];
+        targetobj['cals'].forEach((row) => {
+          row[0] = new Date(row[0]);
+        });
+      }
+    });
+    console.log('sensors', this.server.sensors);
+
+    this.emitChange({ status: '' });
   }
 
   setCurrentWebEndpoint(chosenBackendType, baseurl?: string) {
@@ -569,9 +627,7 @@ export class GlobalSettingsService implements OnInit {
   }
   displayHTTPerror(error) {
     console.error(error);
-    alert(
-      `HTTP error: ${error.status}, ${error.statusText}, ${error.message}`
-    );
-    this.emitChange({ status: ''});
+    alert(`HTTP error: ${error.status}, ${error.statusText}, ${error.message}`);
+    this.emitChange({ status: '' });
   }
 }
