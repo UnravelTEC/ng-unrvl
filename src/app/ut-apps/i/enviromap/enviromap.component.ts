@@ -26,7 +26,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
     this.globalSettings.emitChange({ appName: this.appName });
     for (let i = 99; i > 1; i -= 2) {
       this.barArray.push(i);
-      this.barValues.push(String(i) + " %");
+      this.barValues.push(String(i) + ' %');
     }
   }
   colors = [];
@@ -123,7 +123,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
 
   public sideBarShown = true;
 
-  public minmax = { min: Infinity, max: -Infinity, smin: "from", smax: "to" }; // s*: string, for view
+  public minmax = { min: Infinity, max: -Infinity, smin: 'from', smax: 'to' }; // s*: string, for view
   updateFromToTimes(timearray, interval = '') {
     // console.log(timearray);
     this.fromTime = new Date(timearray[0]);
@@ -141,7 +141,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    ['userMeanS', 'userStartTime','sideBarShown'].forEach((element) => {
+    ['userMeanS', 'userStartTime', 'sideBarShown'].forEach((element) => {
       const thing = this.localStorage.get(this.appName + element);
       if (thing !== null) {
         this[element] = thing;
@@ -185,12 +185,21 @@ export class EnviromapComponent implements OnInit, OnDestroy {
     this.currentres = this.meanS;
     this.startTime = this.userStartTime;
 
-    const timerange = fromTo ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000 : this.h.parseToSeconds(this.startTime);
+    const timerange = fromTo
+      ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000
+      : this.h.parseToSeconds(this.startTime);
     const nr_points = timerange / this.meanS;
     if (nr_points > 10000) {
-      if (!window.confirm('Database would be queried for up to ' + Math.ceil(nr_points).toLocaleString() + ' points of data, are you sure?')) {
+      if (
+        !window.confirm(
+          'Database would be queried for up to ' +
+            Math.ceil(nr_points).toLocaleString() +
+            ' points of data, are you sure?'
+        )
+      ) {
         console.log('user canceled query with', nr_points, 'points.');
-        if (!this.labels.length) { // at start to show "no data"
+        if (!this.labels.length) {
+          // at start to show "no data"
           this.labels = [''];
         }
         return;
@@ -268,13 +277,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
       )
       .subscribe(
         (data: Object) => this.handleData(data),
-        (error) => {
-          console.error(error);
-          this.queryRunning = false;
-          alert(
-            `HTTP error: ${error.status}, ${error.statusText}, ${error.message}`
-          );
-        }
+        (error) => this.globalSettings.displayHTTPerror(error)
       );
   }
   saveMean(param) {
@@ -441,11 +444,15 @@ export class EnviromapComponent implements OnInit, OnDestroy {
       labels.push('color');
       const range = max - min;
       for (let i = 0; i < this.barArray.length; i++) {
-        this.barValues[i] = String(
-          this.h.roundAccurately(
-            min + range * this.barArray[i] / 100,
-            round_graphdigits[1]))
-           + " " + this.unit;
+        this.barValues[i] =
+          String(
+            this.h.roundAccurately(
+              min + (range * this.barArray[i]) / 100,
+              round_graphdigits[1]
+            )
+          ) +
+          ' ' +
+          this.unit;
       }
       console.log('for', this.column, 'min:', min, 'max:', max, 'range', range);
       for (let r = 0; r < idata.length; r++) {
@@ -502,14 +509,17 @@ export class EnviromapComponent implements OnInit, OnDestroy {
     console.log('all data:', idata);
     console.log('graph data:', this.data);
 
-    this.layers[2] =  geoJSON(
-      this.h.influx2geojsonPoints(
-        [this.gpsdata[0]],
-        this.gpslabels
-      ),
-      {pointToLayer: function (feature, latlng) {
-        return circleMarker(latlng, {radius: 0, opacity: 0, fillOpacity: 0});
-      }}
+    this.layers[2] = geoJSON(
+      this.h.influx2geojsonPoints([this.gpsdata[0]], this.gpslabels),
+      {
+        pointToLayer: function (feature, latlng) {
+          return circleMarker(latlng, {
+            radius: 0,
+            opacity: 0,
+            fillOpacity: 0,
+          });
+        },
+      }
     ); // point with no styling to remove hover-induced circle
 
     this.queryRunning = false;
