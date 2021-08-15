@@ -6,7 +6,7 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
 @Component({
   selector: 'app-allsens',
   templateUrl: './allsens.component.html',
-  styleUrls: ['./allsens.component.scss']
+  styleUrls: ['./allsens.component.scss'],
 })
 export class AllsensComponent implements OnInit {
   measurements = [];
@@ -38,6 +38,9 @@ export class AllsensComponent implements OnInit {
     for (let i = 0; i < series.length; i++) {
       const seri = series[i][0];
       const measurement = seri.split(',')[0];
+      if (measurement == 'calibrations') {
+        continue;
+      }
       if (!this.measurements.includes(measurement)) {
         this.measurements.push(measurement);
       }
