@@ -46,7 +46,6 @@ either calibration factors or hardware recalibration have to be done (both also 
   public s2 = 0;
   public note = '';
 
-
   public calDate = new FormControl(this.newcaldate);
 
   constructor(
@@ -76,7 +75,7 @@ either calibration factors or hardware recalibration have to be done (both also 
     this.utHTTP.postData(this.utHTTP.buildInfluxWriteUrl(), influxstring);
     this.newcaldate = new Date();
     this.calDate = new FormControl(this.newcaldate);
-    this.gss.emitChange({ readyToFetchCalibrations: true });
+    this.reload(500);
   }
   delCal(timestamp, sensor, id, measurement, field) {
     console.log('del cal for', timestamp, sensor, id, measurement, field);
@@ -91,12 +90,14 @@ either calibration factors or hardware recalibration have to be done (both also 
         (data: Object) => this.checkDel(data),
         (error) => this.gss.displayHTTPerror(error)
       );
-    setTimeout(() => {
-      this.gss.emitChange({ readyToFetchCalibrations: true });
-    }, 500)
-
+    this.reload(500);
   }
   checkDel(data) {
     console.log('after del', data);
+  }
+  reload(timeout = 0) {
+    setTimeout(() => {
+      this.gss.emitChange({ readyToFetchCalibrations: true });
+    }, timeout);
   }
 }
