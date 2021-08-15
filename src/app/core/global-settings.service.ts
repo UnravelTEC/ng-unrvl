@@ -61,7 +61,7 @@ export class GlobalSettingsService implements OnInit {
     hasscreen: undefined, // true || false
     // cpu: 'unknown',
     // cpus: undefined,
-    sensors: undefined, // checking for undef in html is easier than for {}
+    sensors: <Object>undefined, // checking for undef in html is easier than for {}
     /*
     new:
     {
@@ -353,7 +353,7 @@ export class GlobalSettingsService implements OnInit {
             thisgsensor['measurements'][measurement][fieldname] = {
               displayname: dname,
               unit: unit,
-              cals: []
+              cals: [],
             };
           }
         }
@@ -371,6 +371,26 @@ export class GlobalSettingsService implements OnInit {
       console.error('influx acceptCalibrations: empty', data);
       this.emitChange({ status: '' });
       return;
+    }
+    for (const sensor in this.server.sensors) {
+      if (Object.prototype.hasOwnProperty.call(this.server.sensors, sensor)) {
+        const sIdObj = this.server.sensors[sensor]['id'];
+        for (const id in sIdObj) {
+          if (Object.prototype.hasOwnProperty.call(sIdObj, id)) {
+            const measurements = sIdObj[id]['measurements'];
+            for (const meas in measurements) {
+              if (Object.prototype.hasOwnProperty.call(measurements, meas)) {
+                const mObj = measurements[meas];
+                for (const fieldname in mObj) {
+                  if (Object.prototype.hasOwnProperty.call(mObj, fieldname)) {
+                    mObj[fieldname]['cals'] = [];
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
     this.emitChange({ status: 'Parsing Calibrations...' });
     const series = this.h.getDeep(data, ['results', 0, 'series']);
@@ -629,5 +649,164 @@ export class GlobalSettingsService implements OnInit {
     console.error(error);
     alert(`HTTP error: ${error.status}, ${error.statusText}, ${error.message}`);
     this.emitChange({ status: '' });
+  }
+
+  // merge with Devition calculation later for speed
+  returnCalibratedData(data: Array<Array<any>>, raw_labels): Array<Array<any>> {
+    console.log('returnCalibratedData', data, raw_labels);
+
+    const nrcols = raw_labels.length;
+    const datalen = data.length;
+    const calParams = [[]]; // [ for every column: (0=Date), [[ Date, 'note:text', n0:number, …,  n7 ], […]]
+    const dataWithCal = [];
+    let somethingToCal = false;
+    for (let c = 1; c < nrcols; c++) {
+      const rowCalParams = this.getCalParams(raw_labels[c]);
+      calParams[c] = rowCalParams;
+      if (rowCalParams.length) {
+        somethingToCal = true;
+      }
+    }
+    if (!somethingToCal) {
+      console.log('nothing to cal');
+      return data;
+    }
+    console.log('calParams', calParams);
+
+    // todo: search for valid cal timerange
+    // if len calParams[c] = 1 - only one timestamp, use this.
+    // if len calParams[c] = 2 - two timestamp, linear inter/extrapolate for EACH datapoint!!.
+
+    // do it row after row, so we can accerlerate processing if there are no calibration data for some columns
+    // date first
+    const rawRowTSs = []; // speed
+    for (let r = 0; r < datalen; r++) {
+      const rowDate = data[r][0];
+      dataWithCal.push([rowDate]);
+      rawRowTSs.push(rowDate.valueOf());
+    }
+    for (let c = 1; c < nrcols; c++) {
+      const colCalParams = calParams[c];
+      const calPlen = colCalParams.length;
+      console.log('returnCalibratedData col', c, 'colCalParams len', calPlen);
+      if (!calPlen) {
+        for (let r = 0; r < datalen; r++) {
+          dataWithCal[r].push(data[c][r]);
+        }
+      } else if (calPlen == 1) {
+
+        // most simple case: everything after calDate gets corrected
+        const cccp = colCalParams[0]; // current col cal params
+        const cccplen = cccp.length; // speed
+        // 0 is Date, 1 is note, ...
+        const calTS = cccp[0].valueOf(); // TS: (unix) TimeStamp, ms
+        const d = cccp[2];
+        const k = cccp[3];
+        for (let r = 0; r < datalen; r++) {
+          const currentNewRow = dataWithCal[r];
+          const rowTS = rawRowTSs[r];
+          const origVal = data[r][c];
+          if (rowTS >= calTS) {
+            let newVal = d + k * origVal;
+            for (let i = 4; i < cccplen; i++) {
+              // FIXME check if this is the correct way to implement
+              const pow = i - 2;
+              newVal += cccp[i] * Math.pow(origVal, pow);
+            }
+            currentNewRow.push(newVal);
+          } else {
+            currentNewRow.push(origVal);
+          }
+        }
+      } else {
+        // TODO inter/extrapolate
+        for (let r = 0; r < datalen; r++) {
+          const currentNewRow = dataWithCal[r];
+          const rowTS = rawRowTSs[r];
+          const origVal = data[r][c];
+          // cases:
+          // * row before first cal, do nothing
+          // * row between two cals, interpolate
+          // * row after last cal, extrapolate between the two last cals (?)
+          const calDate0 = colCalParams[0][0].valueOf();
+          if (rowTS < calDate0) {
+            // < Date at i=0, do nothing
+            currentNewRow.push(origVal);
+          } else {
+            let isBetween = false;
+            for (let i = 1; i < colCalParams.length; i++) {
+              // search for in between which cal-points the row is
+              const cccp = colCalParams[i];
+              const calTS = cccp[0].valueOf();
+              if (rowTS < calTS) {
+                // between last and this
+                const lastCCParams = colCalParams[i - 1];
+                const interpolatedCCParams: Array<number> = [null, undefined];
+                const lastCalTS = lastCCParams[0].valueOf();
+                const calTSDiff = calTS - lastCalTS;
+                const timeFromLowerCalTS = rowTS - lastCalTS;
+                const rowTSFraction = timeFromLowerCalTS / calTSDiff; // should be < 1
+                const cccplen = cccp.length;
+                for (let calFac_i = 2; calFac_i < cccplen; calFac_i++) {
+                  const lastCalFactor = lastCCParams[calFac_i];
+                  const calFacDelta = cccp[calFac_i] - lastCalFactor;
+                  const ipCalFac = lastCalFactor + calFacDelta * rowTSFraction;
+                  interpolatedCCParams.push(ipCalFac);
+                }
+                const d = interpolatedCCParams[2];
+                const k = interpolatedCCParams[3];
+                let newVal = d + k * origVal;
+                for (let i = 4; i < cccplen; i++) {
+                  // FIXME check if this is the correct way to implement
+                  const pow = i - 2;
+                  newVal += interpolatedCCParams[i] * Math.pow(origVal, pow);
+                }
+                currentNewRow.push(newVal);
+                isBetween = true;
+                break;
+              }
+            }
+            if (!isBetween) {
+              // is newer than last cal
+              // TODO extrapolate (FIXME really?), atm use last value
+              const lastCalParams = colCalParams[colCalParams.length - 1];
+              const d = lastCalParams[2];
+              const k = lastCalParams[3];
+              let newVal = d + k * origVal;
+              for (let i = 4; i < lastCalParams.length; i++) {
+                // FIXME check if this is the correct way to implement
+                const pow = i - 2;
+                newVal += lastCalParams[i] * Math.pow(origVal, pow);
+              }
+              currentNewRow.push(newVal);
+            }
+          }
+        }
+      }
+    }
+    console.log('calibrated, result', dataWithCal);
+
+    return dataWithCal;
+  }
+  getCalParams(raw_label: Object): Array<Array<any>> {
+    const sensor = raw_label['tags']['sensor'];
+    let id = raw_label['tags']['id'];
+    if (!id) id = '_';
+
+    const measurement = raw_label['metric'];
+    const field = raw_label['field'].replace(/^mean_/,'');
+    console.log('getCalParams, s:', sensor );
+
+
+    const calparams = this.h.getDeep(this.server.sensors, [
+      sensor,
+      'id',
+      id,
+      'measurements',
+      measurement,
+      field,
+      'cals',
+    ]);
+    return calparams ? calparams : [];
   }
 }

@@ -18,6 +18,7 @@ import cloneDeep from 'lodash-es/cloneDeep';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { SensorService } from '../sensor.service';
+import { GlobalSettingsService } from 'app/core/global-settings.service';
 
 @Component({
   selector: 'app-ut-dygraph-in',
@@ -88,6 +89,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   rawLabels: Array<any>;
   public roundDigits: Array<number> = [null];
+
+  @Input()
+  calibrate = true;
+  calibratedData = [];
 
   @Input()
   calculateRunningAvgFrom: Date;
@@ -236,7 +241,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   constructor(
     private h: HelperFunctionsService,
-    private sensorService: SensorService
+    private sensorService: SensorService,
+    private gss: GlobalSettingsService
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -326,16 +332,23 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.dataEndTime = newDataEndTime;
         this.updateDateWindow();
 
+        let workingData = [];
+        if (this.calibrate) {
+          this.calibratedData = this.gss.returnCalibratedData(this.data, this.rawLabels);
+          workingData = this.calibratedData;
+        } else {
+          workingData = this.data;
+        }
         this.displayedData = [];
         this.dataWithDev = [];
         if (this.checkDataDevOK()) {
           this.dataWithDev = this.sensorService.returnDataWithDeviations(
-            this.data,
+            workingData,
             this.rawLabels
           );
           this.displayedData = this.dataWithDev;
         } else {
-          this.displayedData = this.data;
+          this.displayedData = workingData;
         }
         this.updateRoundDigits();
         this.dataReset = false;
@@ -675,15 +688,24 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     while (this.roundDigits.length < this.columnLabels.length) {
       this.roundDigits.push(2);
     }
+    //
+
+    let workingData = [];
+    if (this.calibrate) {
+      this.calibratedData = this.gss.returnCalibratedData(this.data, this.rawLabels); //TODO
+      workingData = this.calibratedData;
+    } else {
+      workingData = this.data;
+    }
     if (this.checkDataDevOK()) {
       this.dataWithDev = this.sensorService.returnDataWithDeviations(
-        this.data,
+        workingData,
         this.rawLabels
       );
       this.displayedData = this.dataWithDev;
       this.dyGraphOptions['customBars'] = true;
     } else {
-      this.displayedData = this.data;
+      this.displayedData = workingData;
     }
     console.log(
       'creating Dyg',
