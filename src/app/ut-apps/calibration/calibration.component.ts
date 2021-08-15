@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { GlobalSettingsService } from 'app/core/global-settings.service';
 import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
 import { FormControl } from '@angular/forms';
+import { now } from 'lodash-es';
 
 @Component({
   selector: 'app-calibration',
@@ -38,14 +39,15 @@ either calibration factors or hardware recalibration have to be done (both also 
     this.displayAddRows[id] = !this.displayAddRows[id];
   }
 
-  newcaldate = new Date();
-  d = 0;
-  k = 1;
-  s2 = 0;
-  note = '';
-
   public now = new Date();
-  public calDate = new FormControl(new Date());
+  public newcaldate = this.now;
+  public d = 0;
+  public k = 1;
+  public s2 = 0;
+  public note = '';
+
+
+  public calDate = new FormControl(this.newcaldate);
 
   constructor(
     public gss: GlobalSettingsService,
@@ -73,6 +75,7 @@ either calibration factors or hardware recalibration have to be done (both also 
 
     this.utHTTP.postData(this.utHTTP.buildInfluxWriteUrl(), influxstring);
     this.newcaldate = new Date();
+    this.calDate = new FormControl(this.newcaldate);
     this.gss.emitChange({ readyToFetchCalibrations: true });
   }
   delCal(timestamp, sensor, id, measurement, field) {
