@@ -27,35 +27,55 @@ h5,
 h6 {
   margin: 0;
 }
-.field {
-  div {
-    margin-top: 0.5rem;
-  }
-  table {
-    border-collapse: collapse;
-    margin-left: 1em;
-    margin-bottom: 1em;
-    form {
+#calappbody {
+  // # needed to overrule global stylesheet for button
+  .field {
+    div {
+      margin-top: 0.5rem;
+    }
+    table {
+      border-collapse: collapse;
+      margin-left: 1em;
+      margin-bottom: 1em;
+      form {
         display: table-row;
-    }
-    td,
-    th {
-      border: 1px dotted gray;
-    }
-    th.note {
+      }
+      td,
+      th {
+        border: 1px dotted gray;
+      }
+      th.note {
         width: 10rem;
-    }
-    th:first-child {
-        width: 10rem;
-    }
-    input#note {
+      }
+      th:first-child {
+        width: 11rem;
+      }
+      input#note {
         width: 9.2rem;
+      }
+      mat-form-field {
+        width: 5em;
+        height: 1em;
+        margin-top: -2.35em;
+        font-family: inherit;
+
+        .mat-form-field-wrapper {
+          padding-bottom: 0; // stretched out of bottom and created scrollbar
+        }
+        input {
+          cursor: pointer;
+        }
+      }
+      mat-form-field.mat-form-field-appearance-legacy .mat-form-field-infix {
+        padding: 0;
+        border-top: 0;
+      }
+      input[type='number'] {
+        width: 2.5em; // incl up/down buttons
+      }
     }
   }
 
-}
-#calappbody {
-  // # needed to overrule global stylesheet for button
   th,
   td {
     padding: 2px 8px;

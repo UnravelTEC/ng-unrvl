@@ -82,26 +82,35 @@
                   id="newcaldate"
                   name="newcaldate"
                   [(ngModel)]="newcaldate"
-                /> -->
-                <div
-                  class="fromDate"
+
                   (click)="pickerF.open()"
-                >
-                  <mat-form-field>
-                    <input
-                      matInput
-                      [matDatepicker]="pickerF"
-                      [formControl]="calDate"
-                      (dateChange)="changeCalDate($event)"
-                      [max]="now"
-                    />
-                    <mat-datepicker-toggle
-                      matSuffix
-                      [for]="pickerF"
-                    ></mat-datepicker-toggle>
-                    <mat-datepicker #pickerF></mat-datepicker>
-                  </mat-form-field>
-                </div>
+                /> -->
+
+                <mat-form-field (click)="pickerF.open()">
+                  <input
+                    matInput
+                    [matDatepicker]="pickerF"
+                    [formControl]="calDate"
+                    (dateChange)="changeCalDate($event)"
+                    [max]="now"
+                  />
+                  <mat-datepicker #pickerF></mat-datepicker>
+                </mat-form-field>
+                <input
+                  type="number"
+                  id="hours"
+                  name="hours"
+                  [(ngModel)]="hours"
+                  min="0"
+                  max="59"
+                />:<input
+                  type="number"
+                  id="minutes"
+                  name="minutes"
+                  [(ngModel)]="minutes"
+                  min="0"
+                  max="59"
+                />
               </td>
               <td>
                 <input type="text" id="d" name="d" [(ngModel)]="d" />
@@ -136,5 +145,5 @@
 <p>write operations only if user has write rights on DB</p>
 
 <p>
-    <button (click)="reload()">Reload</button>
+  <button (click)="reload()">Reload</button>
 </p>

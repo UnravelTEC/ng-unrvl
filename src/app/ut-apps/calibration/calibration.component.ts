@@ -47,6 +47,17 @@ either calibration factors or hardware recalibration have to be done (both also 
   public note = '';
 
   public calDate = new FormControl(this.newcaldate);
+  public minutes = 0;
+  public hours = 0;
+  splitDates() {
+    this.minutes = this.newcaldate.getMinutes();
+    this.hours = this.newcaldate.getHours();
+    this.newcaldate.setHours(0);
+    this.newcaldate.setMinutes(0);
+    this.newcaldate.setSeconds(0);
+    this.newcaldate.setMilliseconds(0);
+    this.calDate = new FormControl(this.newcaldate);
+  }
 
   constructor(
     public gss: GlobalSettingsService,
@@ -55,7 +66,9 @@ either calibration factors or hardware recalibration have to be done (both also 
     this.gss.emitChange({ appName: 'Sensor Calibrations' });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.splitDates();
+  }
 
   changeCalDate($event) {
     this.newcaldate = $event['value'];
@@ -66,7 +79,11 @@ either calibration factors or hardware recalibration have to be done (both also 
     console.log('cal factors:', this.d, this.k, this.s2, this.note);
     id = id.replace(/([&\s])/g, '\\$1');
     const timestamp_str =
-      String(Math.round(this.newcaldate.valueOf() / 1000)) + '000000000';
+      String(
+        Math.round(this.newcaldate.valueOf() / 1000) +
+          this.hours * 3600 +
+          this.minutes * 60
+      ) + '000000000';
     let influxstring = `calibrations,sensor=${sensor},id=${id},meas=${measurement},field=${field}`;
     //note: note has to be sent, it has to be the empty string because otherwise one column would be missing
     influxstring += ` x0=${this.d},x1=${this.k},x2=${this.s2},note="${this.note}" ${timestamp_str}`;
@@ -74,7 +91,8 @@ either calibration factors or hardware recalibration have to be done (both also 
 
     this.utHTTP.postData(this.utHTTP.buildInfluxWriteUrl(), influxstring);
     this.newcaldate = new Date();
-    this.calDate = new FormControl(this.newcaldate);
+    this.splitDates();
+
     this.reload(500);
   }
   delCal(timestamp, sensor, id, measurement, field) {
