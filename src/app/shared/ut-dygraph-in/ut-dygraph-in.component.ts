@@ -92,7 +92,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input()
   calibrate = true;
-  calibratedData = [];
 
   @Input()
   calculateRunningAvgFrom: Date;
@@ -183,8 +182,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input()
   public data = [];
+  public calibratedData = []; // calculated from data if calibrate is set
   public dataWithDev = []; // calculated from data if showDeviation is set
-  public displayedData = []; // either set to data or dataWithDev
+  public dataWithCalDev = [];
+  public displayedData = []; // either set to one of the above
 
   @Input()
   public dataReset = false;
@@ -332,23 +333,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.dataEndTime = newDataEndTime;
         this.updateDateWindow();
 
-        let workingData = [];
-        if (this.calibrate) {
-          this.calibratedData = this.gss.returnCalibratedData(this.data, this.rawLabels);
-          workingData = this.calibratedData;
-        } else {
-          workingData = this.data;
-        }
         this.displayedData = [];
         this.dataWithDev = [];
-        if (this.checkDataDevOK()) {
-          this.dataWithDev = this.sensorService.returnDataWithDeviations(
-            workingData,
-            this.rawLabels
-          );
-          this.displayedData = this.dataWithDev;
-        } else {
-          this.displayedData = workingData;
+        this.dataWithCalDev = [];
+        this.setDDandCalcIfNeeded();
+        if (this.checkOK4Dev()) {
         }
         this.updateRoundDigits();
         this.dataReset = false;
@@ -476,11 +465,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
 
-    if (
-      this.checkDataDevOK() &&
-      this.dataWithDev &&
-      this.dataWithDev.length > 1
-    )
+    if (this.checkOK4Dev() && this.dataWithDev && this.dataWithDev.length > 1)
       this.dyGraphOptions['customBars'] = true;
     else this.dyGraphOptions['customBars'] = false;
 
@@ -578,7 +563,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.y2Range = yranges[1];
     }
   }
-  checkDataDevOK() {
+  checkOK4Dev() {
     return (
       this.showDeviation &&
       this.rawLabels &&
@@ -586,21 +571,61 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.rawLabels.length == this.data[0].length
     );
   }
+  checkOK4Cal() {
+    return (
+      this.calibrate &&
+      this.rawLabels &&
+      this.data[0] &&
+      this.rawLabels.length == this.data[0].length
+    );
+  }
   toggleDeviation() {
-    if (this.showDeviation) {
-      if (this.dataWithDev.length == 0)
-        this.dataWithDev = this.sensorService.returnDataWithDeviations(
-          this.data,
-          this.rawLabels
-        );
-      this.displayedData = this.dataWithDev;
-    } else {
-      this.displayedData = this.data;
-    }
+    this.setDDandCalcIfNeeded();
     this.Dygraph.updateOptions({
       file: this.displayedData,
       customBars: this.showDeviation,
     });
+  }
+  toggleCalibration() {
+    this.setDDandCalcIfNeeded();
+    this.Dygraph.updateOptions({
+      file: this.displayedData,
+    });
+  }
+  setDDandCalcIfNeeded() {
+    // 1st step: calibrate data
+    if (this.checkOK4Cal()) {
+      if (this.calibratedData.length != this.data.length) {
+        this.calibratedData = this.gss.returnCalibratedData(
+          this.data,
+          this.rawLabels
+        );
+      }
+      this.displayedData = this.calibratedData;
+    } else {
+      this.displayedData = this.data;
+    }
+    // 2nd step: calc dev, if whished
+    if (this.checkOK4Dev()) {
+      if (this.checkOK4Cal()) {
+        if (this.dataWithCalDev.length != this.data.length) {
+          this.dataWithCalDev = this.sensorService.returnDataWithDeviations(
+            this.calibratedData,
+            this.rawLabels
+          );
+        }
+        this.displayedData = this.dataWithCalDev;
+      } else {
+        // cal == no
+        if (this.dataWithDev.length != this.data.length) {
+          this.dataWithDev = this.sensorService.returnDataWithDeviations(
+            this.data,
+            this.rawLabels
+          );
+        }
+        this.displayedData = this.dataWithDev;
+      }
+    }
   }
 
   handleInitialData() {
@@ -690,23 +715,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     //
 
-    let workingData = [];
-    if (this.calibrate) {
-      this.calibratedData = this.gss.returnCalibratedData(this.data, this.rawLabels); //TODO
-      workingData = this.calibratedData;
-    } else {
-      workingData = this.data;
-    }
-    if (this.checkDataDevOK()) {
-      this.dataWithDev = this.sensorService.returnDataWithDeviations(
-        workingData,
-        this.rawLabels
-      );
-      this.displayedData = this.dataWithDev;
+    this.setDDandCalcIfNeeded();
+    if (this.checkOK4Dev()) {
       this.dyGraphOptions['customBars'] = true;
-    } else {
-      this.displayedData = workingData;
     }
+
     console.log(
       'creating Dyg',
       this.htmlID,
@@ -985,11 +998,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     while (timeoutcounter++ < 99) {
       firstts = this.data[firstindex][0].valueOf();
       if (firstts == ts) {
-        return this.dataWithDev[firstindex];
+        return this.displayedData[firstindex];
       }
       lastts = this.data[lastindex][0].valueOf();
       if (lastts == ts) {
-        return this.dataWithDev[lastindex];
+        return this.displayedData[lastindex];
       }
       if (debug) {
         console.log(
