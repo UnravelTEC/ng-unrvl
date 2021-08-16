@@ -92,9 +92,7 @@ either calibration factors or hardware recalibration have to be done (both also 
     this.utHTTP
       .postData(this.utHTTP.buildInfluxWriteUrl(), influxstring)
       .subscribe(
-        (res: any) => {
-          console.log(res);
-        },
+        (res: any) => console.log(res),
         (error) => this.gss.displayHTTPerror(error)
       );
     this.newcaldate = new Date();
