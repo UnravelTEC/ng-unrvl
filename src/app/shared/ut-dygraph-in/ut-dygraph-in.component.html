@@ -154,7 +154,7 @@ style.padding-bottom="20vh"-->
     </div>
     <div
       class="logbuttons"
-      *ngIf="options == true && showLogscaleSwitcher == true"
+      *ngIf="options == true && showLogscaleSwitcher == true && !noData"
     >
       <div class="logy y1" (click)="switchLogScale()">
         <div
@@ -214,9 +214,8 @@ style.padding-bottom="20vh"-->
   <div *ngIf="options == true && optionsOpen == true" class="optionsarea">
     <div class="options">
       <form class="subbox">
-        <h5>Data</h5>
-        <small style="float: left">
-          #Points:
+        <h5>#Data Points</h5>
+        <small style="float: left; margin-top: 0.5em;">
           {{
             !displayedData.length
               ? 0
@@ -254,11 +253,62 @@ style.padding-bottom="20vh"-->
 
       <form class="subbox">
         <h5>Export</h5>
-        <button (click)="exportCSV()">CSV</button>
         <label for="UTC"
           >UTC
           <input type="checkbox" name="UTC" id="UTC" [(ngModel)]="exportUTC" />
         </label>
+        <button (click)="exportCSV()">CSV</button>
+      </form>
+
+      <form class="subbox">
+        <h5>Data Gaps</h5>
+        <label for="sepp">hide
+        <input
+          type="checkbox"
+          name="sepp"
+          id="sepp"
+          [(ngModel)]="dyGraphOptions.connectSeparatedPoints"
+          (change)="toggleSeparatedPoints()"
+        /></label>
+      </form>
+
+      <form class="subbox">
+        <h5>Y axis linearity</h5>
+        <label for="log">Logarithmic
+        <input
+          type="checkbox"
+          name="logarithmic"
+          id="log"
+          [(ngModel)]="dyGraphOptions.logscale"
+          (change)="switchLogScale()"
+        /></label>
+      </form>
+
+      <form class="subbox">
+        <h5>Uncertainty</h5>
+        <label for="showdev">Show
+        <input
+          type="checkbox"
+          name="showdev"
+          id="showdev"
+          [(ngModel)]="showDeviation"
+          [disabled]="! rawLabels || rawLabels.length < 2"
+          (change)="toggleDeviation()"
+        />
+      </label>
+      </form>
+
+      <form class="subbox">
+        <h5>Calibration</h5>
+        <label for="calibrate">Enable
+        <input
+          type="checkbox"
+          name="calibrate"
+          id="calibrate"
+          [(ngModel)]="calibrate"
+          [disabled]="! rawLabels || rawLabels.length < 2"
+          (change)="toggleCalibration()"
+        /></label>
       </form>
 
       <form class="subbox">

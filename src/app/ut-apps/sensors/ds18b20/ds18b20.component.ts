@@ -33,31 +33,6 @@ export class Ds18b20Component implements OnInit {
     right: '15rem',
   };
 
-  // according to Datasheet for VDD > 4.3V
-  public getDeviation(value) {
-    if (value === null) {
-      return null;
-    }
-    if (isNaN(value)) {
-      return NaN;
-    }
-    if (value > 0 && value < 70) {
-      return [value - 0.5, value, value + 0.5];
-    }
-    if (value > 125 || value < -55) {
-      return NaN;
-    }
-    if (value >= 85) {
-      return [value - (1 + (value - 85) / 20), value, value + 1];
-    }
-    if (value >= 70) {
-      return [value - 1, value, value + 1];
-    }
-    if (value <= 0) {
-      return [value - 1, value, value + (1 + (-value / 55) * 4)];
-    }
-  }
-
   public startTime = '6h';
   public userStartTime = this.startTime;
   public meanS = 30;
@@ -83,6 +58,7 @@ export class Ds18b20Component implements OnInit {
   }
 
   labels = [];
+  raw_labels = [];
   data = [];
 
   appName = 'DS18B20';
@@ -104,7 +80,7 @@ export class Ds18b20Component implements OnInit {
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService,
-    private router: ActivatedRoute
+    private router: ActivatedRoute,
   ) {
     this.globalSettings.emitChange({ appName: this.appName });
   }
@@ -194,6 +170,13 @@ export class Ds18b20Component implements OnInit {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.server.influxdb) {
+      console.log('db not yet set, wait');
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
     this.queryRunning++;
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
@@ -209,21 +192,10 @@ export class Ds18b20Component implements OnInit {
     console.log('parsed', ret);
     const labels = ret['labels'];
     const idata = ret['data']; // [[date, x1, x2], [date, x1, x2]]
-    const dataWithDev = []; // [[1500, [1, 2, 3], [1, 2, 3]]];
+    this.raw_labels = ret['raw_labels'];
 
     let logscale = false;
     const newColors = this.h.getColorsforLabels(labels);
-    const numColumns = labels.length; // speed
-    for (let r = 0; r < idata.length; r++) {
-      const oldRow = idata[r];
-      let newRow = [oldRow[0]]; // Date
-      for (let c = 1; c < numColumns; c++) {
-        const point = oldRow[c];
-
-        newRow.push(this.getDeviation(point));
-      }
-      dataWithDev.push(newRow);
-    }
 
     // console.log(cloneDeep(this.dygLabels));
     if (logscale) {
@@ -234,7 +206,7 @@ export class Ds18b20Component implements OnInit {
     }
     this.startTime = this.userStartTime;
     this.labels = labels;
-    this.data = dataWithDev;
+    this.data = idata;
     this.colors = newColors;
     console.log(labels);
     console.log(this.data);

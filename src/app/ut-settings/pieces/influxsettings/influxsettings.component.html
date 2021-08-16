@@ -1,50 +1,80 @@
-<h2>
-  Influx Settings
-</h2>
-<table>
-  <tr>
-    <th>
+<h2>Influx Settings</h2>
+
+<div class="flexcontainer">
+  <div class="flow auth">
+    <h3>Authentication</h3>
+    <label for="influxuser"> Username </label
+    ><input
+      type="text"
+      id="influxuser"
+      [(ngModel)]="username"
+      [disabled]="gss.server.databaseStatus != 'up'"
+    /><br />
+
+    <label for="influxpass"> Password </label
+    ><input
+      type="{{ hidepw ? 'password' : 'text' }}"
+      id="influxpass"
+      [(ngModel)]="password"
+      [disabled]="gss.server.databaseStatus != 'up'"
+    /><mat-icon (click)="hidepw = !hidepw">{{
+      hidepw ? 'visibility' : 'visibility_off'
+    }}</mat-icon
+    ><br />
+    <label *ngIf="note">{{ note }}</label>
+    <label *ngIf="errortext" class="error">{{ errortext }}</label>
+    <button (click)="login()">Login</button>
+  </div>
+
+  <div class="flow">
+    <form [formGroup]="myDBs">
       <label for="influxdb">
         Database
-      </label>
+        <!--{{ dbname }}--></label
+      >
+      <select
+        size="{{ databases.length > 1 ? databases.length : 2 }}"
+        [style.height.rem]="1.55 * databases.length"
+        formControlName="databasesForm"
+        (change)="changeDB($event)"
+      >
+        <option *ngIf="databases.length == 0" disabled>
+          No Available Databases, log in first
+        </option>
+        <option
+          *ngFor="let cdbname of databases"
+          [selected]="dbname === cdbname"
+        >
+          {{ cdbname }}
+        </option>
+      </select>
+    </form>
+  </div>
+</div>
+
+<!-- <table>
+  <tr>
+    <th>
+      <label for="influxdb"> Database </label>
     </th>
     <td>
-      <input
-        type="text"
-        class="form-control"
-        id="influxdb"
-        [(ngModel)]="gss.server.influxdb"
-      />
+      <input type="text" id="influxdb" [(ngModel)]="gss.server.influxdb" />
     </td>
   </tr>
   <tr>
     <th>
-      <label for="influxuser">
-        Username
-      </label>
+       <label for="influxuser"> Username </label>
     </th>
     <td>
-      <input
-        type="text"
-        class="form-control"
-        id="influxuser"
-        [(ngModel)]="gss.server.influxuser"
-      />
+      <input type="text" id="influxuser" [(ngModel)]="gss.server.influxuser" />
     </td>
   </tr>
   <tr>
     <th>
-      <label for="influxpass">
-        Password
-      </label>
+      <label for="influxpass"> Password </label>
     </th>
     <td>
-      <input
-        type="text"
-        class="form-control"
-        id="influxpass"
-        [(ngModel)]="gss.server.influxpass"
-      />
+      <input type="text" id="influxpass" [(ngModel)]="gss.server.influxpass" />
     </td>
   </tr>
-</table>
+</table> -->

@@ -7,14 +7,11 @@
   flex-direction: column;
   display: flex;
 
-  label {
-    margin-left: 2em;
-  }
   #anyheader {
     width: 100%;
     text-align: left;
     h2 {
-      margin: 0.5rem;
+      margin: 0.6rem 5em 0.1rem 0.6rem;
       font-size: 1.2rem;
       small {
         font-weight: normal;
@@ -26,10 +23,16 @@
       color: #c7c7c7;
       text-align: right;
       top: 0.5em;
-      right: 1em;
+      right: 4em;
     }
     #backicon:hover {
       color: white;
+    }
+    #toggleSidebar {
+      position: absolute;
+      text-align: right;
+      top: 0.5em;
+      right: 1em;
     }
   }
 
@@ -37,6 +40,16 @@
     flex: 1;
     overflow-y: auto;
     position: relative;
+    #dygcontainerabs {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      #dygcontainerrel {
+        width: 100%;
+        height: 100%;
+      }
+    }
   }
   #anyfooter {
     padding: 0.5em;
@@ -51,7 +64,7 @@
       button {
         position: fixed;
         right: 0.5em;
-        bottom: 1.5em;
+        bottom: 0.5em;
         z-index: +5;
       }
     }
@@ -68,7 +81,7 @@
           position: absolute;
           top: 0;
           right: 0;
-          font-size: 0.60em;
+          font-size: 0.6em;
           border: 0;
           padding: 0.3rem;
           background: transparent;
@@ -81,6 +94,9 @@
       td + td {
         text-align: right;
       }
+    }
+    tr:hover td {
+      background-color: #3f3f3f;
     }
   }
 }

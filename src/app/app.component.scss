@@ -48,6 +48,24 @@ $labelcolor: #999;
     background-color: #565656;
     color: #c7c7c7;
   }
+  ::ng-deep input[type='password'] {
+    padding: 0.3em;
+    border: 2px solid black;
+    background-color: #565656;
+    color: #c7c7c7;
+  }
+  ::ng-deep input[type='number'] {
+    padding: 0.3em;
+    border: 2px solid black;
+    background-color: #565656;
+    color: #c7c7c7;
+  }
+  ::ng-deep .auth input + .mat-icon {
+    margin: 0 0 0 0.2em;
+    height: 1.4em;
+    transform: translateY(0.3em);
+  }
+
   ::ng-deep form.settings {
     position: absolute;
     bottom: 2em;
@@ -109,9 +127,16 @@ $labelcolor: #999;
       input[type='text'] {
         border-color: #373737;
       }
+      input[type='password'] {
+        border-color: #373737;
+      }
       button:hover {
         background-color: $buttonbg;
       }
+    }
+    button:disabled {
+      border-color: #373737;
+      cursor: not-allowed;
     }
   }
 }

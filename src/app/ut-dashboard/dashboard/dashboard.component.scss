@@ -11,6 +11,11 @@ div.panel {
   flex-wrap: wrap;
   justify-content: space-around;
   align-content: flex-start; */
+  .appcontainer {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+  }
 }
 .panel > * {
   margin: 0 auto;

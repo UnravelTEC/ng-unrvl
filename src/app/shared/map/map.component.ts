@@ -14,6 +14,7 @@ import {
   tileLayer,
   ZoomAnimEvent,
   geoJSON,
+  Control,
 } from 'leaflet';
 
 @Component({
@@ -73,35 +74,46 @@ export class MapComponent implements OnInit, OnDestroy {
     },
     overlays: { Data: this.layers },
   };
+  public LLayersControlObj: Control;
 
   public map: Map;
   public zoom: number;
 
-  constructor() {}
+  public htmlID: string;
+  constructor() {
+    this.htmlID = 'map_' + (Math.random() + 1).toString();
+  }
 
   ngOnInit() {
     console.log('x:', this.x, 'y:', this.y, 'z:', this.z);
   }
 
-  ngOnDestroy() {
-    console.log('map ngOnDestroy called');
-
-    this.map.clearAllEventListeners();
-    console.log('map clearAllEventListeners() called');
-    // this.map.remove();
-    console.log('map removed');
-  }
-
   onMapReady(map: Map) {
     this.map = map;
+    this.LLayersControlObj = new Control.Layers(this.layersControl.baseLayers);
+    this.LLayersControlObj.addTo(this.map);
     this.map.setView([this.y, this.x], this.z);
     this.map$.emit(map);
     this.zoom = map.getZoom();
     this.zoom$.emit(this.zoom);
+    console.log(map);
+  }
+
+  async ngOnDestroy() {
+    console.log('map ngOnDestroy called');
+    this.layers.length = 0;
+    this.LLayersControlObj.remove();
+    // this.map.clearAllEventListeners(); // was try to workaround Leaflet bug
+    console.log('map clearAllEventListeners() called');
+    // this.map.remove(); // do not remove manually (triggers Uncaught (in promise): Error: Map container is being reused by another instance)
+    console.log('map removed');
   }
 
   onMapZoomEnd(e: ZoomAnimEvent) {
     this.zoom = e.target.getZoom();
     this.zoom$.emit(this.zoom);
+  }
+  zoomToBounds() {
+    this.map.fitBounds(this.layers[0].getBounds());
   }
 }

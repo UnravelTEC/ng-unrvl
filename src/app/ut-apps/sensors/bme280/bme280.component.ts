@@ -11,7 +11,6 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./bme280.component.scss'],
 })
 export class Bme280Component implements OnInit {
-
   colors = [];
   graphWidth = 1500;
   setGraphWidth(width) {
@@ -24,7 +23,7 @@ export class Bme280Component implements OnInit {
     pointSize: 3,
     logscale: false,
     series: {
-      'pressure': {
+      pressure: {
         axis: 'y2',
       },
     },
@@ -36,7 +35,7 @@ export class Bme280Component implements OnInit {
       },
     },
   };
-  labelBlackListT = ['host', 'serial', 'mean_*', 'id', 'sensor', 'mean'];
+  labelBlackListT = ['host', 'serial', 'mean_*', 'sensor'];
   graphstyle = {
     position: 'absolute',
     top: '0.5em',
@@ -70,6 +69,7 @@ export class Bme280Component implements OnInit {
   }
 
   labels = [];
+  raw_labels = [];
   data = [];
 
   appName = 'BME280';
@@ -153,19 +153,21 @@ export class Bme280Component implements OnInit {
     //   params['host'] = this.host;
     // }
 
-    const queries = this.utHTTP.influxMeanQuery(
-      'humidity',
-      timeQuery,
-      params,
-      this.meanS,
-      '/H2O_rel_percent|sensor_degC/'
-    ) + this.utHTTP.influxMeanQuery(
-      'pressure',
-      timeQuery,
-      params,
-      this.meanS,
-      'air_hPa'
-    );
+    const queries =
+      this.utHTTP.influxMeanQuery(
+        'humidity',
+        timeQuery,
+        params,
+        this.meanS,
+        '/H2O_rel_percent|sensor_degC/'
+      ) +
+      this.utHTTP.influxMeanQuery(
+        'pressure',
+        timeQuery,
+        params,
+        this.meanS,
+        '/air_hPa/'
+      );
 
     this.launchQuery(queries);
   }
@@ -185,6 +187,13 @@ export class Bme280Component implements OnInit {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.server.influxdb) {
+      console.log('db not yet set, wait');
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
       .subscribe((data: Object) => this.handleData(data));
@@ -198,11 +207,17 @@ export class Bme280Component implements OnInit {
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('parsed', ret);
     const labels = ret['labels'];
+    this.raw_labels = ret['raw_labels'];
+
     const idata = ret['data'];
 
     let logscale = true;
     const newColors = this.h.getColorsforLabels(labels);
     for (let c = 1; c < labels.length; c++) {
+      labels[c] = labels[c]
+        .replace(/^[a-z]* /, '') // rm measurement name, which is misleading
+        .replace(/[a-z]* \( °C \)/, 'temperature ( °C )')
+        .replace(/air \( hPa \)/, 'pressure ( hPa )');
       const item = labels[c];
 
       if (logscale == true) {
@@ -215,8 +230,12 @@ export class Bme280Component implements OnInit {
           }
         }
       }
-      if (item.match(/pressure/)) {
+
+      if (item.match(/hPa/)) {
         this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
+        this.extraDyGraphConfig.series[labels[c]] = {
+          axis: 'y2',
+        };
       }
     }
     // console.log(cloneDeep(this.dygLabels));

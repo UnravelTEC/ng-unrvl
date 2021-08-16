@@ -4,19 +4,56 @@
   [routerLink]="'/Apps/I/' + referrer"
   routerLinkActive="active"
   title="Return to overview"
+  [style.right]="sideBarShown ? '3rem' : '2rem'"
   ><mat-icon>fullscreen_exit</mat-icon></a
 >
+<button
+  id="toggleSidebar"
+  (click)="sideBarShown = !sideBarShown; R.resize()"
+  title="Toggle sidebar"
+  [style.right]="sideBarShown ? '1rem' : '0.4rem'"
+>
+  {{ sideBarShown ? '»' : '«' }}
+</button>
 
-<div class="fs-container">
+<div class="fs-container" [style.right]="sideBarShown ? '18rem': '3.5rem'">
   <app-map [x]="15.46" [y]="47.07" [z]="13" [layers]="layers"></app-map>
 </div>
 
-<form class="settings" (submit)="reload(true)">
+<div
+  class="colorlegend"
+  *ngIf="column"
+  [style.top]="sideBarShown ? '0.5rem' : '2.8rem'"
+  [style.right]="sideBarShown ? '15rem' : '0.5rem'"
+>
+  <table>
+    <tr>
+      <th class="end">{{ unit }}</th>
+    </tr>
+    <tr>
+      <td
+        class="end"
+        style.background-color="{{ endcolor }}"
+      >
+      <span *ngIf="minmax.max !== -Infinity">{{ minmax.smax }}</span>
+      </td>
+    </tr>
+    <tr *ngFor="let nr of barArray; let i = index" [attr.data-index]="i">
+      <td style.background-color="{{ barColors[i] }}" title="{{ barValues[i] }}"></td>
+    </tr>
+    <tr>
+      <td class="end" style.background-color="{{ begincolor }}">
+        <span *ngIf="minmax.min !== Infinity">{{ minmax.smin }}</span>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<form class="settings" (submit)="reload(true)" *ngIf="sideBarShown">
   <fieldset>
     <h3>Current Dataset:</h3>
     <p>
-      <label>#Points:</label
-      ><span class="cRange">{{ data.length }}</span>
+      <label>#Points:</label><span class="cRange">{{ data.length }}</span>
     </p>
     <p>
       <label>Resolution:</label>
@@ -44,6 +81,21 @@
         >Permalink</a
       >
     </p>
+    <!--
+    <hr />
+     <p>
+      <span class="cRange"
+        >{{ highlightDate | date: 'shortDate' }}
+        {{ highlightDate | date: 'shortTime' }}
+        <span
+          *ngIf="highlightDate !== undefined && highlightValue !== undefined"
+          >|</span
+        >
+        {{ highlightValue }}&thinsp;<span *ngIf="highlightValue !== undefined"
+          >°C</span
+        >
+      </span>
+    </p> -->
   </fieldset>
 
   <fieldset [disabled]="queryRunning == true">
@@ -98,16 +150,21 @@
 </form>
 
 <app-ut-dygraph-in
-  [displayedData]="data"
+  [data]="data"
   [columnLabels]="labels"
+  [rawLabels]="raw_graphlabels"
+  showDeviation="true"
   [style]="graphstyle"
   [extraDyGraphConfig]="extraDyGraphConfig"
   [startTime]="undefined"
+
   enableHighlightCallback="true"
+  (returnHighlightedRow)="handleHighlightCallback($event)"
   [colors]="colors"
   [YLabel]="measurement"
   (returnGraphWidthOnChange)="setGraphWidth($event)"
   (returnCurrentZoom)="updateFromToTimes($event)"
+  showLogscaleSwitcher="false"
   #R
 ></app-ut-dygraph-in>
 <!-- [startTime]="startTime" -->

@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from '../environments/environment';
-import { HttpClient } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 
 import { GlobalSettingsService } from './core/global-settings.service';
+import { UtFetchdataService } from './shared/ut-fetchdata.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
   title = 'SDARS - Sensor Data Access and Retrieval System';
@@ -26,26 +26,32 @@ export class AppComponent implements OnInit {
   public hostName = 'ng-unrvl';
 
   public constructor(
-    private http: HttpClient,
+    private utHTTP: UtFetchdataService,
     private titleService: Title,
-    private globalSettings: GlobalSettingsService
+    private gss: GlobalSettingsService
   ) {}
 
   ngOnInit() {
     this.setTitle('UnravelTEC');
 
-    this.globalSettings.changeEmitted$.subscribe(obj => {
+    this.gss.changeEmitted$.subscribe((obj) => {
       console.log(obj);
-      if (obj && obj.hasOwnProperty('fullscreen')) {
+      if (!obj) {
+        return;
+      }
+      if (obj.hasOwnProperty('fullscreen')) {
         this.toggleFullScreen(obj['fullscreen']);
+        return;
       }
-      if (obj && obj.hasOwnProperty('appName')) {
+      if (obj.hasOwnProperty('appName')) {
         this.setAppName(obj['appName']);
+        return;
       }
-      if (obj && obj.hasOwnProperty('footer')) {
+      if (obj.hasOwnProperty('footer')) {
         this.toggleFooter(obj['footer']);
+        return;
       }
-      if (obj && obj.hasOwnProperty('TricorderLocal')) {
+      if (obj.hasOwnProperty('TricorderLocal')) {
         if (obj['TricorderLocal'] === true) {
           this.cursor = 'none';
           this.toggleFooter(false);
@@ -55,19 +61,68 @@ export class AppComponent implements OnInit {
           this.toggleFooter(true);
           this.cursor = 'auto';
         }
+        return;
       }
-      if (obj && obj.hasOwnProperty('hostname')) {
+      if (obj.hasOwnProperty('hostname')) {
         this.hostName = obj['hostname'];
         this.setTitle();
+        return;
+      }
+      if (obj.hasOwnProperty('InfluxUP')) {
+        if (obj['InfluxUP'] === true) {
+          this.getInfluxDBOverview();
+        } else {
+          this.gss.server.measurements = [];
+          this.gss.server.sensors = {};
+        }
+        return;
+      }
+      if (obj.hasOwnProperty('InfluxSeriesThere')) {
+        this.getFieldsOfSeries();
+      }
+      if (obj.hasOwnProperty('readyToFetchCalibrations')) {
+        this.getCalibrations();
       }
     });
 
-    this.globalSettings.ngOnInit();
+    this.gss.ngOnInit();
 
-    if (this.globalSettings.isMobile()) {
+    if (this.gss.isMobile()) {
       console.log('mobile detected, remove footer');
       this.toggleFooter(false);
     }
+  }
+  getInfluxDBOverview() {
+    // here to avoid cyclic dependency gss <=> uthttp
+    this.gss.emitChange({ status: 'Influx fetching sensor list...' });
+    this.utHTTP
+      .getHTTPData(this.utHTTP.buildInfluxQuery('show series'))
+      .subscribe((data: Object) => this.gss.handleInfluxSeries(data));
+  }
+
+  /*
+    fills gss.sensors obj with fields used later in looking up calibration data
+  */
+  public getFieldsOfSeries() {
+    const measurements = this.gss.server.measurements;
+    let fieldquery = '';
+    measurements.forEach((measurement) => {
+      fieldquery += `SELECT LAST(*) FROM "${measurement}" group by sensor,id;`;
+    });
+    // console.error(fieldquery);
+    this.gss.emitChange({ status: 'Influx fetching sensor parameter list...' });
+    this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(fieldquery)).subscribe(
+      (data: Object) => this.gss.acceptFieldsOfSeries(data),
+      (error) => this.gss.displayHTTPerror(error)
+    );
+  }
+  public getCalibrations() {
+    const calquery = 'select * from calibrations GROUP BY * ORDER BY time';
+    this.gss.emitChange({ status: 'Influx fetching calibratoins...' });
+    this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(calquery, undefined, undefined)).subscribe(
+      (data: Object) => this.gss.acceptCalibrations(data),
+      (error) => this.gss.displayHTTPerror(error)
+    )
   }
 
   public setTitle(newTitle?: string) {
