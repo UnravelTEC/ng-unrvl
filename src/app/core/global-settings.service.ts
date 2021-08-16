@@ -6,6 +6,7 @@ import { HelperFunctionsService } from './helper-functions.service';
 import { LocalStorageService } from './local-storage.service';
 import { Location } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { cloneDeep } from 'lodash-es';
 
 @Injectable({
   providedIn: 'root',
@@ -333,6 +334,9 @@ export class GlobalSettingsService implements OnInit {
         }
         // console.log('foreach series', sensor, sensorname);
 
+        if (!gsensors[sensorname]) {
+          console.error('missing', sensorname, 'in', cloneDeep(gsensors));
+        }
         const thisgsensor = gsensors[sensorname]['id'][id];
         if (!thisgsensor.hasOwnProperty('measurements'))
           thisgsensor['measurements'] = {};
@@ -694,7 +698,6 @@ export class GlobalSettingsService implements OnInit {
           dataWithCal[r].push(data[c][r]);
         }
       } else if (calPlen == 1) {
-
         // most simple case: everything after calDate gets corrected
         const cccp = colCalParams[0]; // current col cal params
         const cccplen = cccp.length; // speed
@@ -794,9 +797,8 @@ export class GlobalSettingsService implements OnInit {
     if (!id) id = '_';
 
     const measurement = raw_label['metric'];
-    const field = raw_label['field'].replace(/^mean_/,'');
-    console.log('getCalParams, s:', sensor );
-
+    const field = raw_label['field'].replace(/^mean_/, '');
+    console.log('getCalParams, s:', sensor);
 
     const calparams = this.h.getDeep(this.server.sensors, [
       sensor,

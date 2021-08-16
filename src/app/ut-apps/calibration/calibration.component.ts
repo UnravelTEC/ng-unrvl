@@ -89,7 +89,14 @@ either calibration factors or hardware recalibration have to be done (both also 
     influxstring += ` x0=${this.d},x1=${this.k},x2=${this.s2},note="${this.note}" ${timestamp_str}`;
     console.log('data');
 
-    this.utHTTP.postData(this.utHTTP.buildInfluxWriteUrl(), influxstring);
+    this.utHTTP
+      .postData(this.utHTTP.buildInfluxWriteUrl(), influxstring)
+      .subscribe(
+        (res: any) => {
+          console.log(res);
+        },
+        (error) => this.gss.displayHTTPerror(error)
+      );
     this.newcaldate = new Date();
     this.splitDates();
 

@@ -59,24 +59,10 @@ export class UtFetchdataService {
         }),
       };
       console.log('HEADERS', httpOptions);
-      return this.http.post(url, data, httpOptions).subscribe(
-        (res: any) => {
-          console.log(res);
-        },
-        (error: any) => {
-          console.log(error);
-        }
-      );
+      return this.http.post(url, data, httpOptions);
     }
 
-    return this.http.post(url, data).subscribe(
-      (res: any) => {
-        console.log(res);
-      },
-      (error: any) => {
-        console.log(error);
-      }
-    );
+    return this.http.post(url, data);
   }
 
   influxTimeString(param1: any, param2: Date = undefined) {
