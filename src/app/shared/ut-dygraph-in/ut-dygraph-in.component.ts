@@ -18,6 +18,7 @@ import cloneDeep from 'lodash-es/cloneDeep';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { SensorService } from '../sensor.service';
+import { GlobalSettingsService } from 'app/core/global-settings.service';
 
 @Component({
   selector: 'app-ut-dygraph-in',
@@ -88,6 +89,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   rawLabels: Array<any>;
   public roundDigits: Array<number> = [null];
+
+  @Input()
+  calibrate = true;
 
   @Input()
   calculateRunningAvgFrom: Date;
@@ -178,8 +182,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input()
   public data = [];
+  public calibratedData = []; // calculated from data if calibrate is set
   public dataWithDev = []; // calculated from data if showDeviation is set
-  public displayedData = []; // either set to data or dataWithDev
+  public dataWithCalDev = [];
+  public displayedData = []; // either set to one of the above
 
   @Input()
   public dataReset = false;
@@ -236,7 +242,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   constructor(
     private h: HelperFunctionsService,
-    private sensorService: SensorService
+    private sensorService: SensorService,
+    private gss: GlobalSettingsService
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -324,20 +331,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         console.log('data reset, restore viewport');
         this.dataBeginTime = newDataBeginTime;
         this.dataEndTime = newDataEndTime;
-        this.dyGraphOptions['dateWindow'] = [
-          this.dataBeginTime.valueOf(),
-          this.dataEndTime.valueOf(),
-        ];
+        this.updateDateWindow();
+
         this.displayedData = [];
         this.dataWithDev = [];
-        if (this.checkDataDevOK()) {
-          this.dataWithDev = this.sensorService.returnDataWithDeviations(
-            this.data,
-            this.rawLabels
-          );
-          this.displayedData = this.dataWithDev;
-        } else {
-          this.displayedData = this.data;
+        this.dataWithCalDev = [];
+        this.setDDandCalcIfNeeded();
+        if (this.checkOK4Dev()) {
         }
         this.updateRoundDigits();
         this.dataReset = false;
@@ -352,6 +352,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.Dygraph.updateOptions({
         file: this.displayedData,
         labels: this.columnLabels,
+        xlabel: this.XLabel,
         axes: this.dyGraphOptions.axes,
         visibility: this.dyGraphOptions.visibility,
         dateWindow: this.dyGraphOptions['dateWindow'],
@@ -464,11 +465,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
 
-    if (
-      this.checkDataDevOK() &&
-      this.dataWithDev &&
-      this.dataWithDev.length > 1
-    )
+    if (this.checkOK4Dev() && this.dataWithDev && this.dataWithDev.length > 1)
       this.dyGraphOptions['customBars'] = true;
     else this.dyGraphOptions['customBars'] = false;
 
@@ -566,7 +563,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.y2Range = yranges[1];
     }
   }
-  checkDataDevOK() {
+  checkOK4Dev() {
     return (
       this.showDeviation &&
       this.rawLabels &&
@@ -574,21 +571,61 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.rawLabels.length == this.data[0].length
     );
   }
+  checkOK4Cal() {
+    return (
+      this.calibrate &&
+      this.rawLabels &&
+      this.data[0] &&
+      this.rawLabels.length == this.data[0].length
+    );
+  }
   toggleDeviation() {
-    if (this.showDeviation) {
-      if (this.dataWithDev.length == 0)
-        this.dataWithDev = this.sensorService.returnDataWithDeviations(
-          this.data,
-          this.rawLabels
-        );
-      this.displayedData = this.dataWithDev;
-    } else {
-      this.displayedData = this.data;
-    }
+    this.setDDandCalcIfNeeded();
     this.Dygraph.updateOptions({
       file: this.displayedData,
       customBars: this.showDeviation,
     });
+  }
+  toggleCalibration() {
+    this.setDDandCalcIfNeeded();
+    this.Dygraph.updateOptions({
+      file: this.displayedData,
+    });
+  }
+  setDDandCalcIfNeeded() {
+    // 1st step: calibrate data
+    if (this.checkOK4Cal()) {
+      if (this.calibratedData.length != this.data.length) {
+        this.calibratedData = this.gss.returnCalibratedData(
+          this.data,
+          this.rawLabels
+        );
+      }
+      this.displayedData = this.calibratedData;
+    } else {
+      this.displayedData = this.data;
+    }
+    // 2nd step: calc dev, if whished
+    if (this.checkOK4Dev()) {
+      if (this.checkOK4Cal()) {
+        if (this.dataWithCalDev.length != this.data.length) {
+          this.dataWithCalDev = this.sensorService.returnDataWithDeviations(
+            this.calibratedData,
+            this.rawLabels
+          );
+        }
+        this.displayedData = this.dataWithCalDev;
+      } else {
+        // cal == no
+        if (this.dataWithDev.length != this.data.length) {
+          this.dataWithDev = this.sensorService.returnDataWithDeviations(
+            this.data,
+            this.rawLabels
+          );
+        }
+        this.displayedData = this.dataWithDev;
+      }
+    }
   }
 
   handleInitialData() {
@@ -607,9 +644,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.updateRoundDigits();
 
     this.updateDateWindow();
-    this.dyGraphOptions['xlabel'] = this.returnXrangeText(
-      (this.toZoom.valueOf() - this.fromZoom.valueOf()) / 1000
-    );
 
     console.log('startin auto unit label for', this.YLabel);
     if (this.YLabel.search(/\(.*\)$/) == -1) {
@@ -679,16 +713,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     while (this.roundDigits.length < this.columnLabels.length) {
       this.roundDigits.push(2);
     }
-    if (this.checkDataDevOK()) {
-      this.dataWithDev = this.sensorService.returnDataWithDeviations(
-        this.data,
-        this.rawLabels
-      );
-      this.displayedData = this.dataWithDev;
+    //
+
+    this.setDDandCalcIfNeeded();
+    if (this.checkOK4Dev()) {
       this.dyGraphOptions['customBars'] = true;
-    } else {
-      this.displayedData = this.data;
     }
+
     console.log(
       'creating Dyg',
       this.htmlID,
@@ -892,9 +923,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     for (let i = 0; i < data.series.length; i++) {
       const series = data.series[i];
-      const displayedValue = !series.hasOwnProperty('y') || isNaN(series.y)
-        ? ''
-        : parent.h.roundAccurately(series.y, parent.roundDigits[i + 1]);
+      const displayedValue =
+        !series.hasOwnProperty('y') || isNaN(series.y)
+          ? ''
+          : parent.h.roundAccurately(series.y, parent.roundDigits[i + 1]);
       const cls = series.isHighlighted ? 'class="highlight"' : '';
       const hoverCallback = genHover(series.label, htmlID);
       const toggleCallback = genToggle(series.label, htmlID);
@@ -966,11 +998,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     while (timeoutcounter++ < 99) {
       firstts = this.data[firstindex][0].valueOf();
       if (firstts == ts) {
-        return this.dataWithDev[firstindex];
+        return this.displayedData[firstindex];
       }
       lastts = this.data[lastindex][0].valueOf();
       if (lastts == ts) {
-        return this.dataWithDev[lastindex];
+        return this.displayedData[lastindex];
       }
       if (debug) {
         console.log(
@@ -1277,22 +1309,20 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     let dataEndTime = new Date();
     // this.endTime === 'now' ? new Date() : new Date(this.endTime);
 
-    if (!this.currentXrange) {
-      // initial call from handleInitialData
-      if (this.startTime) {
-        this.currentXrange = this.h.parseToSeconds(this.startTime);
-      } else {
-        if (!this.dataBeginTime) {
-          this.dataBeginTime = this.data[0][0];
-        }
-        dataEndTime = this.data[this.data.length - 1][0];
-        if (!this.dataEndTime) {
-          this.dataEndTime = dataEndTime;
-        }
-
-        this.currentXrange =
-          (dataEndTime.valueOf() - this.dataBeginTime.valueOf()) / 1000;
+    if (this.startTime) {
+      // show last X Minutes, even if not all data yet in DB (publich servers), e-g- on auto-reload
+      this.currentXrange = this.h.parseToSeconds(this.startTime);
+    } else {
+      if (!this.dataBeginTime) {
+        this.dataBeginTime = this.data[0][0];
       }
+      dataEndTime = this.data[this.data.length - 1][0];
+      if (!this.dataEndTime) {
+        this.dataEndTime = dataEndTime;
+      }
+
+      this.currentXrange =
+        (dataEndTime.valueOf() - this.dataBeginTime.valueOf()) / 1000;
     }
 
     const dataBeginTime = new Date(
@@ -1310,6 +1340,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     ];
     this.fromZoom = dataBeginTime;
     this.toZoom = dataEndTime;
+    this.XLabel = this.returnXrangeText(
+      (this.toZoom.valueOf() - this.fromZoom.valueOf()) / 1000
+    );
+    this.dyGraphOptions['xlabel'] = this.XLabel;
+
     this.returnCurrentZoom.emit(this.dyGraphOptions['dateWindow']);
   }
 
@@ -1455,6 +1490,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       axis,
       axisob[y]['logscale'],
       this.dyGraphOptions['axes']
+    );
+  }
+  toggleSeparatedPoints() {
+    this.Dygraph.updateOptions({
+      connectSeparatedPoints: this.dyGraphOptions.connectSeparatedPoints,
+    });
+    console.log(
+      'new connectSeparatedPoints:',
+      this.dyGraphOptions.connectSeparatedPoints
     );
   }
   toggleLegend() {

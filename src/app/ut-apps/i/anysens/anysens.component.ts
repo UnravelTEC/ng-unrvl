@@ -38,7 +38,7 @@ export class AnysensComponent implements OnInit {
     },
   };
   y2label = 'Atmospheric Pressure';
-  labelBlackListT = ['host', 'serial', 'mean_*', 'topic'];
+  labelBlackListT = ['host', 'mean_*']; // mean is when only 1 graph is returned
   private sidebarWidth = '15rem';
   public currentSidebarWidth = this.sidebarWidth;
   graphstyle = {
@@ -50,9 +50,11 @@ export class AnysensComponent implements OnInit {
   };
 
   public startTime = '6h';
+  public dygStartTime:string; // used on autoUpdate
   public userStartTime = this.startTime;
   public meanS = 30;
   public currentres = 0;
+  public currentresText = "0s";
   public userMeanS = this.meanS;
   public fromTime: Date;
   public toTime: Date;
@@ -168,7 +170,9 @@ export class AnysensComponent implements OnInit {
   reload(fromTo = false) {
     this.meanS = this.userMeanS;
     this.currentres = this.meanS;
+    this.currentresText = this.h.createHRTimeString(this.meanS);
     this.startTime = this.userStartTime;
+    this.dygStartTime = fromTo ? undefined : this.startTime;
 
     const timerange = fromTo
       ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000

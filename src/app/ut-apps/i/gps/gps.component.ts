@@ -16,6 +16,7 @@ export class GpsComponent implements OnInit {
   public appName = 'GPS';
 
   public minmax = { min: Infinity, max: -Infinity };
+  public queryRunning = false;
 
   // public displayed_line = {};
   public displayed_points = {};
@@ -50,16 +51,21 @@ export class GpsComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
+    this.queryRunning = true;
     if (!this.globalSettings.server.influxdb) {
       console.log('db not yet set, wait');
+      this.globalSettings.emitChange({ status: 'Waiting for Influx Connection to finish...' });
       setTimeout(() => {
         this.launchQuery(clause);
       }, 1000);
       return;
     }
+    this.globalSettings.emitChange({ status: 'Influx query in progress...' });
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
-      .subscribe((data: Object) => this.handleData(data));
+      .subscribe((data: Object) => this.handleData(data),
+      (error) => this.globalSettings.displayHTTPerror(error)
+      );
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -90,6 +96,7 @@ export class GpsComponent implements OnInit {
   public layers = [];
 
   reload() {
+    this.globalSettings.emitChange({ status: 'Creating Influx query...' });
     this.meanS = this.userMeanS;
     this.currentres = this.meanS;
     this.startTime = this.userStartTime;
@@ -108,12 +115,19 @@ export class GpsComponent implements OnInit {
     this.launchQuery(queries);
   }
   handleData(data: Object) {
+    this.globalSettings.emitChange({ status: 'Influx data received, parsing...' });
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      this.queryRunning = false;
+      this.globalSettings.emitChange({ status: '' });
+      return;
+    }
     console.log('parsed', ret);
     const labels = ret['labels'];
     const idata = ret['data'];
-
+    this.globalSettings.emitChange({ status: 'Parsing geo data...' });
     let latcol = -1;
     let loncol = -1;
     const nrCols = labels.length; // for speed
@@ -199,6 +213,7 @@ export class GpsComponent implements OnInit {
     };
     let points = this.h.influx2geojsonPoints(idata, labels);
     this.displayed_points = points;
+    this.globalSettings.emitChange({ status: 'Creating map data layer' });
     this.layers[0] = geoJSON(points, {
       pointToLayer: function (feature, latlng) {
         if (feature.properties['color']) {
@@ -218,6 +233,8 @@ export class GpsComponent implements OnInit {
     }
     console.log(labels);
     console.log(idata);
+    this.queryRunning = false;
+    this.globalSettings.emitChange({ status: '' });
   }
   exportGeojson() {
     this.h.exportGeojson(this.displayed_points);

@@ -92,3 +92,19 @@ nav {
     // transform: translateY(-0.2em);
   }
 }
+#statusbox {
+  position: absolute;
+  top: 6px;
+  left: 10em;
+  right: 10em;
+  text-align: center;
+  div {
+    display: inline-block;
+  //  left: -50%;
+    min-width: 10em;
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 3px 10px;
+    background-color: rgba(128, 128, 128, 0.5);
+  }
+}

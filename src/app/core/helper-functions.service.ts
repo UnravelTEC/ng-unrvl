@@ -267,7 +267,7 @@ export class HelperFunctionsService {
         for (let i = 1; i < labels.length; i++) {
           const label = labels[i];
           // if (i != latlabelpos && i != lonlabelpos) {
-            point.properties[label] = element[i];
+          point.properties[label] = element[i];
           // }
         }
       }
@@ -885,10 +885,10 @@ export class HelperFunctionsService {
       for (let [key, value] of Object.entries(feature.properties)) {
         let v = value;
         if (key == 'Date') {
-          v = value['toLocaleDateString']('de-DE', timeFormatOptions)
-        } else if(key.endsWith('lat') || key.endsWith ('lon')) {
+          v = value['toLocaleDateString']('de-DE', timeFormatOptions);
+        } else if (key.endsWith('lat') || key.endsWith('lon')) {
           v = Math.round(Number(value) * 1000000) / 1000000;
-        } else if(Number.isFinite(Number(value))) {
+        } else if (Number.isFinite(Number(value))) {
           v = Math.round(Number(value) * 100) / 100;
         }
         text += '<tr><th>' + key + ':</th><td>' + v + '</td></tr>';
@@ -923,5 +923,68 @@ export class HelperFunctionsService {
         'e-' +
         String(decPlaces)
     );
+  }
+
+  // from https://medium.com/@thunderroid/angular-short-number-suffix-pipe-1k-2m-3b-dded4af82fb4
+  shortenNumber(nr: number, rounder = 10): string {
+    if (isNaN(nr)) return 'NaN';
+    if (nr === null) return 'null';
+    if (nr === 0) return '0';
+    let abs = Math.abs(nr);
+    const isNegative = nr < 0; // will also work for Negative numbers
+    let key = '';
+
+    const powers = [
+      { key: 'E', value: 10e15 },
+      { key: 'T', value: 10e12 },
+      { key: 'G', value: 10e9 },
+      { key: 'M', value: 10e6 },
+      { key: 'K', value: 1000 },
+    ];
+
+    for (let i = 0; i < powers.length; i++) {
+      let reduced = abs / powers[i].value;
+      reduced = Math.round(reduced * rounder) / rounder;
+      if (reduced >= 1) {
+        abs = reduced;
+        key = powers[i].key;
+        break;
+      }
+    }
+    return (isNegative ? '-' : '') + abs + ' ' + key; // " " is a thin space
+  }
+
+  formatFieldName(fieldname) {
+    fieldname = fieldname.replace(/H2O_/, 'H₂O_');
+    fieldname = fieldname.replace(/CO2_/, 'CO₂_');
+    fieldname = fieldname.replace(/NO2_/, 'NO₂_');
+    fieldname = fieldname.replace(/O3_/, 'O₃_');
+    fieldname = fieldname.replace(/NH3_/, 'NH₃_');
+    fieldname = fieldname.replace(/H2_/, 'H₂_');
+    fieldname = fieldname.replace(/percent$/, '%');
+    fieldname = fieldname.replace(/_%/, '-%');
+    fieldname = fieldname.replace(/degC$/, '°C');
+    fieldname = fieldname.replace(/deg$/, '°'); // heading
+    fieldname = fieldname.replace(/hdop/, 'HDOP');
+    fieldname = fieldname.replace(/p([0-9.]*)_ugpm3$/, 'pm$1 ( µg / m³ )'); //spaces in () are thin-spaces
+    fieldname = fieldname.replace(/_ugpm3$/, ' ( µg / m³ )');
+    fieldname = fieldname.replace(/_gpm3$/, ' ( g / m³ )');
+    fieldname = fieldname.replace(/_degps$/, ' ( ° / s )');
+    fieldname = fieldname.replace(/_mps2$/, ' ( m / s² )');
+    fieldname = fieldname.replace(/_mps$/, ' ( m / s )');
+    fieldname = fieldname.replace(/uT$/, 'µT');
+    fieldname = fieldname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm ( # / cm³ )');
+    fieldname = fieldname.replace(/dewPoint/, 'dew point');
+    fieldname = fieldname.replace(/gps_view/, '#');
+    fieldname = fieldname.replace(/air_rel/, 'apparent wind');
+    fieldname = fieldname.replace(/sensor_voltage/, 'sensor voltage'); //RS04
+    fieldname = fieldname.replace(/sensor_current/, 'sensor current'); //RS04
+    fieldname = fieldname.replace(/sensor_highvoltage/, 'sensor high-voltage'); //RS04
+    fieldname = fieldname.replace(/_cps$/, ' ( # / s )');
+    fieldname = fieldname.replace(/_Svph$/, ' ( Sv / h )');
+    // fieldname = fieldname.replace(/interval_s/, 'interval ( s )'); // not a field, but a tag
+
+    fieldname = fieldname.replace(/_(\S+)$/, ' ( $1 )');
+    return fieldname;
   }
 }

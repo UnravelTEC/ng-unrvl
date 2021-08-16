@@ -1,6 +1,10 @@
 <div id="calappbody">
   <h2>Calibration</h2>
 
+  <p>
+    &nbsp;&nbsp;&nbsp;&nbsp;y = d + k&thinsp;·&thinsp;x + s&thinsp;·&thinsp;x²
+  </p>
+
   <h3>Sensor list</h3>
 
   <div *ngFor="let s of gss.server.sensors | keyvalue" class="sensor">
@@ -25,46 +29,107 @@
         <h6>{{ measurement.key }}</h6>
         <div *ngFor="let field of measurement.value | keyvalue" class="field">
           <div>
-            {{ field.key }}
+            •&nbsp;&nbsp;{{ field.value['displayname'] }} ({{ field.key }}),
+            {{ field.value['unit'] ? field.value['unit'] : 'unitless' }}
           </div>
-          <table>
+          <table *ngIf="field.value['unit']">
             <tr>
               <th>Calibration Date</th>
               <th>Linear Offset (d)</th>
-              <th>Mult. Offset (k)</th>
-              <th>Quadratic Offset (x²)</th>
-              <th></th>
+              <th>Multiplicator (k)</th>
+              <th>Quadratic Factor (s)</th>
+              <th class="note">Note [text]</th>
+              <th>
+                <button
+                  (click)="
+                    toggleRow(s.key + id.key + measurement.key + field.key)
+                  "
+                >
+                  {{
+                    displayAddRows[s.key + id.key + measurement.key + field.key]
+                      ? '-'
+                      : '+'
+                  }}
+                </button>
+              </th>
             </tr>
-            <tr>
-                <td>t</td>
-                <td>d</td>
-                <td>k</td>
-                <td>x²</td>
-                <td><button title="delete calbration entry">×</button></td>
+            <tr *ngFor="let cal of field.value['cals']">
+              <td>{{ cal[0] | date: 'dd.MM.yyyy HH:mm:ss' }}</td>
+              <td>{{ cal[2] }}</td>
+              <td>{{ cal[3] }}</td>
+              <td>{{ cal[4] }}</td>
+              <td class="note">{{ cal[1] }}</td>
+              <td>
+                <button
+                  title="delete calbration entry"
+                  (click)="
+                    delCal(cal[0], s.key, id.key, measurement.key, field.key)
+                  "
+                >
+                  ×
+                </button>
+              </td>
             </tr>
-            <tr>
-                <td colspan="5" class="add">
-                    <button (click)="toggleRow(s.key + id.key + measurement.key + field.key)">
-                        {{ displayAddRows[s.key + id.key + measurement.key + field.key] ? "-" : "+" }}
-                    </button>
-                </td>
-            </tr>
-            <tr *ngIf="displayAddRows[s.key + id.key + measurement.key + field.key]">
+            <tr
+              *ngIf="
+                displayAddRows[s.key + id.key + measurement.key + field.key]
+              "
+              class="new"
+            >
               <td>
-                  <input type="text">
-                  <button>D</button>
+                <!-- <input
+                  type="text"
+                  id="newcaldate"
+                  name="newcaldate"
+                  [(ngModel)]="newcaldate"
+
+                  (click)="pickerF.open()"
+                /> -->
+
+                <mat-form-field (click)="pickerF.open()">
+                  <input
+                    matInput
+                    [matDatepicker]="pickerF"
+                    [formControl]="calDate"
+                    (dateChange)="changeCalDate($event)"
+                    [max]="now"
+                  />
+                  <mat-datepicker #pickerF></mat-datepicker>
+                </mat-form-field>
+                <input
+                  type="number"
+                  id="hours"
+                  name="hours"
+                  [(ngModel)]="hours"
+                  min="0"
+                  max="59"
+                />:<input
+                  type="number"
+                  id="minutes"
+                  name="minutes"
+                  [(ngModel)]="minutes"
+                  min="0"
+                  max="59"
+                />
               </td>
               <td>
-                <input type="text">
+                <input type="text" id="d" name="d" [(ngModel)]="d" />
               </td>
               <td>
-                <input type="text">
+                <input type="text" id="k" name="k" [(ngModel)]="k" />
               </td>
               <td>
-                <input type="text">
+                <input type="text" id="s2" name="s2" [(ngModel)]="s2" />
               </td>
               <td>
-                <button>Go</button>
+                <input type="text" id="note" name="note" [(ngModel)]="note" />
+              </td>
+              <td>
+                <button
+                  (click)="sendCal(s.key, id.key, measurement.key, field.key)"
+                >
+                  Go
+                </button>
               </td>
             </tr>
           </table>
@@ -78,3 +143,7 @@
 </div>
 
 <p>write operations only if user has write rights on DB</p>
+
+<p>
+  <button (click)="reload()">Reload</button>
+</p>

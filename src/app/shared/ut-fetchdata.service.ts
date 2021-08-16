@@ -17,10 +17,6 @@ export class UtFetchdataService {
     private h: HelperFunctionsService
   ) {}
 
-  Config = {};
-
-  queryDefaultStep = 1000; // ms
-
   getHTTPData(
     thisurl: string,
     user = this.globalSettingsService.server.influxuser,
@@ -47,17 +43,26 @@ export class UtFetchdataService {
     return this.http.get(thisurl);
   }
 
-  postData(url: string, data: any) {
-    this.http.post(url, data).subscribe(
-      (res: any) => {
-        console.log(res);
-      },
-      (error: any) => {
-        console.log(error);
-      }
-    );
+  postData(
+    url: string,
+    data: any,
+    user = this.globalSettingsService.server.influxuser,
+    pass = this.globalSettingsService.server.influxpass,
+    forceauth = false
+  ) {
+    console.log('postData:', url, data, user, pass);
 
-    console.log(['postData', url, data]);
+    if (forceauth || (url.startsWith('https') && url.search(/\/influxdb\//))) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          Authorization: 'Basic ' + btoa(user + ':' + pass),
+        }),
+      };
+      console.log('HEADERS', httpOptions);
+      return this.http.post(url, data, httpOptions);
+    }
+
+    return this.http.post(url, data);
   }
 
   influxTimeString(param1: any, param2: Date = undefined) {
@@ -147,6 +152,31 @@ export class UtFetchdataService {
       epoch +
       '&q=' +
       cleanClause
+    );
+  }
+  buildInfluxWriteUrl(database?: string, serverstring?: string) {
+    if (database === undefined) {
+      database = this.globalSettingsService.server.influxdb;
+    }
+    if (serverstring === undefined) {
+      serverstring = this.globalSettingsService.server.baseurl;
+    }
+    return serverstring + '/influxdb/write?db=' + database;
+  }
+  buildInfluxDelQuery(
+    clause: string,
+    database?: string,
+    serverstring?: string
+  ) {
+    const cleanClause = clause.replace(/;/g, '%3B');
+    if (database === undefined) {
+      database = this.globalSettingsService.server.influxdb;
+    }
+    if (serverstring === undefined) {
+      serverstring = this.globalSettingsService.server.baseurl;
+    }
+    return (
+      serverstring + '/influxdb/query?db=' + database + '&q=' + cleanClause // &epoch=s
     );
   }
 
@@ -258,39 +288,8 @@ export class UtFetchdataService {
             colname = colname.replace(/^mean_/, '');
           }
 
-          colname = colname.replace(/H2O_/, 'H₂O_');
-          colname = colname.replace(/CO2_/, 'CO₂_');
-          colname = colname.replace(/NO2_/, 'NO₂_');
-          colname = colname.replace(/O3_/, 'O₃_');
-          colname = colname.replace(/NH3_/, 'NH₃_');
-          colname = colname.replace(/H2_/, 'H₂_');
-          colname = colname.replace(/percent$/, '%');
-          colname = colname.replace(/_%/, '-%');
-          colname = colname.replace(/degC$/, '°C');
-          colname = colname.replace(/deg$/, '°'); // heading
-          colname = colname.replace(/hdop/, 'HDOP');
-          colname = colname.replace(/p([0-9.]*)_ugpm3$/, 'pm$1 ( µg / m³ )'); //spaces in () are thin-spaces
-          colname = colname.replace(/_ugpm3$/, ' ( µg / m³ )');
-          colname = colname.replace(/_gpm3$/, ' ( g / m³ )');
-          colname = colname.replace(/_degps$/, ' ( ° / s )');
-          colname = colname.replace(/_mps2$/, ' ( m / s² )');
-          colname = colname.replace(/_mps$/, ' ( m / s )');
-          colname = colname.replace(/uT$/, 'µT');
-          colname = colname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm ( # / cm³ )');
-          colname = colname.replace(/dewPoint/, 'dew point');
-          colname = colname.replace(/gps_view/, '#');
-          colname = colname.replace(/air_rel/, 'apparent wind');
-          colname = colname.replace(/sensor_voltage/, 'sensor voltage'); //RS04
-          colname = colname.replace(/sensor_current/, 'sensor current'); //RS04
-          colname = colname.replace(
-            /sensor_highvoltage/,
-            'sensor high-voltage'
-          ); //RS04
-          colname = colname.replace(/_cps$/, ' ( # / s )');
-          colname = colname.replace(/_Svph$/, ' ( Sv / h )');
-          // colname = colname.replace(/interval_s/, 'interval ( s )'); // not a field, but a tag
+          colname = this.h.formatFieldName(colname);
 
-          colname = colname.replace(/_(\S+)$/, ' ( $1 )');
           const collabel = colname
             ? serieslabel + ' ' + colname
             : serieslabel.replace(/,$/, '');

@@ -2,6 +2,8 @@ import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 
+
+// fetch Prometheus Metrics!
 @Component({
   selector: 'app-ut-fetchmetrics',
   templateUrl: './ut-fetchmetrics.component.html',

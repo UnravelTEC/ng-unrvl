@@ -55,8 +55,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       icon: 'manufacturers/Bosch.svg',
     },
     GPS: {
-      description: 'GPS position',
-      icon: 'GPS.svg',
+      description: 'position',
+      icon: 'transformap.png',
       path: '/Apps/I/GPS'
     }
   };

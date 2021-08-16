@@ -36,6 +36,11 @@ $labelcolor: #999;
       border-top: 1px solid transparent;
       background-clip: padding-box;
       vertical-align: middle;
+      span {
+        display: inline-block;
+        width: 3rem;
+        overflow: visible;
+      }
     }
   }
 }

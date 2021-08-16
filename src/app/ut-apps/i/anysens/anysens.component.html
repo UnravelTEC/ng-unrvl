@@ -34,7 +34,7 @@
           [style]="graphstyle"
           [changeTrigger]="changeTrigger"
           [extraDyGraphConfig]="extraDyGraphConfig"
-          [startTime]="undefined"
+          [startTime]="dygStartTime"
           enableHighlightCallback="true"
           [colors]="colors"
           [YLabel]="ylabel"
@@ -50,7 +50,7 @@
       <fieldset>
         <h3>Current Dataset:</h3>
         <label>Resolution:</label>
-        <span class="cRange">{{ currentres }}s</span><br />
+        <span class="cRange" title="{{currentres}}&thinsp;s">{{ currentresText }}</span><br />
 
         <!-- <label style="display: inline-block">Range:</label> -->
         <!-- <span class="cRange">{{ currentRange }}</span> -->
@@ -88,7 +88,7 @@
           </button>
         </div>
       </fieldset>
-      <fieldset [disabled]="queryRunning == true">
+      <fieldset [disabled]="queryRunning == true && !autoreload">
         <h3>{{ queryRunning ? 'Query running...' : 'Query latest data:' }}</h3>
         <mat-form-field>
           <mat-label>Show range from now</mat-label>
