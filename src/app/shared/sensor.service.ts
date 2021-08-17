@@ -193,7 +193,7 @@ export class SensorService {
           const din_offset = 0.15;
           const din_mult = 0.002;
           const adc_offset = 0.25; // ca. between -30 and 40°C TODO formula
-          const sum_offset = din_offset + adc_offset
+          const sum_offset = din_offset + adc_offset;
           const dev = sum_offset + din_mult * value;
           return [value - dev, value, value + dev];
         },
