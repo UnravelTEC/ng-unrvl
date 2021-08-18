@@ -96,7 +96,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   calculateRunningAvgFrom: Date;
   @Output()
-  returnRunningAvg = new EventEmitter<number>();
+  returnRunningAvg = new EventEmitter<Object>();
 
   @Input()
   enableHighlightCallback = false;
@@ -350,6 +350,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           true
         );
       }
+
+      this.updateAverages();
+
       this.Dygraph.updateOptions({
         file: this.displayedData,
         labels: this.columnLabels,
@@ -603,6 +606,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.Dygraph.updateOptions({
       file: this.displayedData,
     });
+    this.updateAverages();
   }
   setDDandCalcIfNeeded() {
     // 1st step: calibrate data
@@ -1157,9 +1161,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     parent.returnCurrentZoom.emit([from, to]);
     parent.checkAndUpdateGraphWidth();
 
-    if (parent.optionsOpen) {
-      parent.updateAverages();
-    }
+    parent.updateAverages();
   }
   updateFromToPickers() {
     if (this.minimal) {
@@ -1220,12 +1222,18 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   updateAverages() {
     // FIXME is very inefficient, as it calculates it new every time - implment sort of running calculation
-    const data = this.data;
+    const data = (this.calibrate && this.calibratedData.length > 1) ? this.calibratedData : this.data;
     const datalen = data.length;
     if (!datalen) {
       console.log('updateAverages: datalen 0');
       return;
     }
+    // console.log('updateAverages', data, 'round digits:', cloneDeep(this.roundDigits));
+    if (this.roundDigits.length < 2) {
+      this.updateRoundDigits();
+    }
+    // console.log('round digits:', cloneDeep(this.roundDigits));
+
     const nr_series = data[0].length;
     const visibleFrom = this.fromZoom ? this.fromZoom.valueOf() : 0;
     const visibleTo = this.toZoom ? this.toZoom.valueOf() : Infinity;
@@ -1260,12 +1268,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       let mean = sum / series_count;
       this.averages[series_i - 1] = this.h.roundAccurately(
         mean,
-        this.roundDigits[series_i]
+        this.roundDigits[series_i] + 1
       );
       let visibleMean = visibleSum / visibleCount;
       this.visibleAverages[series_i - 1] = this.h.roundAccurately(
         visibleMean,
-        this.roundDigits[series_i]
+        this.roundDigits[series_i] + 1
       );
 
       // and now, the std dev.
@@ -1307,7 +1315,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     for (let i = 0; i < this.visibleAverages.length; i++) {
       sum += this.visibleAverages[i];
     }
+    console.log('avgs:', this.averages, 'visible avg:', this.visibleAverages);
+
     this.visibleAverage = sum / this.visibleAverages.length;
+    this.returnRunningAvg.emit({ all: this.averages, visible: this.visibleAverages})
   }
 
   // following cases:

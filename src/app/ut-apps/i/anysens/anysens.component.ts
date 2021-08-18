@@ -86,6 +86,9 @@ export class AnysensComponent implements OnInit {
   round_digits = [0];
   show_deviation = true;
 
+  public allAverages = [];
+  public visibleAverages = [];
+
   appName = 'Any Sens';
 
   changeTrigger = true;
@@ -433,5 +436,9 @@ export class AnysensComponent implements OnInit {
         }
       }, this.auto_interval * 1000);
     }
+  }
+  handleRunningAvg(dataObj: Object) {
+    this.allAverages = dataObj['all'];
+    this.visibleAverages = dataObj['visible'];
   }
 }

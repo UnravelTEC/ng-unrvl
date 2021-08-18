@@ -41,6 +41,7 @@
           [Y2Label]="y2label"
           (returnGraphWidthOnChange)="setGraphWidth($event)"
           (returnCurrentZoom)="updateFromToTimes($event)"
+          (returnRunningAvg)="handleRunningAvg($event)"
           #R
         ></app-ut-dygraph-in>
       </div>
@@ -149,8 +150,9 @@
           <th>Series</th>
           <th>latest value</th>
           <th>latest data</th>
+          <th>average (all)</th>
           <th style="position: relative; padding-right: 2.2em">
-            average
+            average (visible)
             <button
               (click)="toggleTableShown(); R.resize()"
               title="Hide Data Table"
@@ -179,10 +181,15 @@
             {{ latest_dates[i] | date: 'shortTime' }}
           </td>
           <td>
-            <!-- {{ round(R.averages[i], raw_labels[i + 1]) }} forces infinite updates?-->
             {{
-              R.averages[i]
-                | number: '1.' + round_digits[i + 1] + '-' + round_digits[i + 1]
+              allAverages[i]
+                | number: '1.' + (round_digits[i + 1] + 1) + '-' + (round_digits[i + 1] + 1)
+            }}
+          </td>
+          <td>
+            {{
+              visibleAverages[i]
+                | number: '1.' + (round_digits[i + 1] + 1 ) + '-' + (round_digits[i + 1] + 1)
             }}
           </td>
         </tr>
