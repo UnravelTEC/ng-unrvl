@@ -30,10 +30,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   contentWidth: number;
 
   sensorAppRegistry = {
-    // '': {
-    //   description: '',
-    //   icon: '',
-    // },
+    // default sensor app path: /Apps/Sensors/$SENSORNAME
+    // any sensor without own app (with queryParams) gets its path and params set to Anysens in Constructor
     ADS1115: {
       description: 'Voltages',
       icon: 'manufacturers/TI_copyrighted.svg',
@@ -58,7 +56,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       icon: 'manufacturers/Ams.svg  ',
     },
     GPS: {
-      description: 'position',
+      description: 'Position',
       icon: 'transformap.png',
       path: '/Apps/I/GPS'
     },
@@ -77,8 +75,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       icon: 'manufacturers/alphasense.png',
       queryParams: { measurement: 'particulate_matter', value: '/^p/' },
     },
-
-
     SCD30: {
       description: 'NDIR CO₂',
       icon: 'manufacturers/sensirion.png',
@@ -87,8 +83,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       description: 'Particulate Matter',
       icon: 'manufacturers/sensirion.png',
     },
-
-
   };
   SAR = this.sensorAppRegistry;
   // EXSENSOR = {
