@@ -139,6 +139,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     gridLineColor: this.gridlineActiveColor,
     axisLineColor: 'yellow',
     axisLineWidth: 0.001,
+    labelsKMB: true,
     xAxisHeight: 34, // xlabel is 18 high
     // yRangePad: 200, // spacing for data points inside graph
     logscale: true, // must be true, otherwise we cant enable it for y/y2
@@ -468,6 +469,17 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     if (this.checkOK4Dev() && this.dataWithDev && this.dataWithDev.length > 1)
       this.dyGraphOptions['customBars'] = true;
     else this.dyGraphOptions['customBars'] = false;
+
+    if (this.rawLabels) {
+      for (let i = 1; i < this.rawLabels.length; i++) {
+        const metric = this.rawLabels[i]['metric']
+        if(metric == "disk" || metric == "mem" || metric == "swap"){
+          this.dyGraphOptions['labelsKMG2'] = true;
+          this.dyGraphOptions.labelsKMB = false;
+          break;
+        }
+      }
+    }
 
     // console.log('old:', cloneDeep(this.dyGraphOptions));
     // console.log('with:', cloneDeep(this.extraDyGraphConfig));
