@@ -2,11 +2,11 @@
 
   <h2>Graphs</h2>
   <div class="panel">
-    <!-- <app-ut-dashboard-tile title="Indoor Climate" path="/Apps/I/IndoorClimate"></app-ut-dashboard-tile> -->
+    <app-ut-dashboard-tile title="Indoor Climate" path="/Apps/I/IndoorClimate"></app-ut-dashboard-tile>
 
-    <!-- <app-ut-dashboard-tile title="CO₂ Graph" path="/Apps/CO2" icon="284px-Carbon_dioxide_3D_spacefill.png"></app-ut-dashboard-tile> -->
+    <app-ut-dashboard-tile title="CO₂ Graph" path="/Apps/CO2" icon="284px-Carbon_dioxide_3D_spacefill.png"></app-ut-dashboard-tile>
     <!-- <app-ut-dashboard-tile title="Air Temperature" path="/Apps/Sensors/DS18B20" icon="noun_Temperature.png"></app-ut-dashboard-tile> -->
-    <!-- <app-ut-dashboard-tile title="Humidity" path="/Apps/I/Humidity" icon="320px-Water_molecule.svg.png"></app-ut-dashboard-tile> -->
+    <app-ut-dashboard-tile title="Humidity" path="/Apps/I/Humidity" icon="320px-Water_molecule.svg.png"></app-ut-dashboard-tile>
     <!-- template for quick link:<app-ut-dashboard-tile
       title="CO₂ Graph"
       path="/Apps/I/Anysens"
@@ -14,22 +14,24 @@
     </app-ut-dashboard-tile> -->
     <!-- referrer 'Dashboard' does only work because /Apps/I/Dashboard is invalid and gets redirected to Dashboard -->
     <!-- <app-ut-dashboard-tile title="Air Pressure" path="/Apps/I/Pressure" icon="320px-Pressure_gauge.svg.png"></app-ut-dashboard-tile> -->
-    <app-ut-dashboard-tile bg="#FFF" title="Temperature Map" path="/Apps/I/Enviromap" icon="noun_Temperature.png" [queryParams]="{ measurement: 'temperature', column:'°C', sensor:'DS18B20', referrer: 'Dashboard' }"></app-ut-dashboard-tile>
   </div>
+
   <hr>
 
   <h2>Sensors</h2>
   <div class="panel">
-    <!-- <app-ut-dashboard-tile bg="#FFF" title="DS18B20 Temperature" path="/Apps/Sensors/DS18B20" icon="manufacturers/Maxim_Integrated.svg"></app-ut-dashboard-tile> -->
-    <app-ut-dashboard-tile
+    <div *ngFor="let s of gss.server.sensors | keyvalue" class="appcontainer">
+      <app-ut-dashboard-tile
+       *ngIf="SAR[s.key]"
+       title="{{ s.key }} {{ SAR[s.key].description}}"
+       path="{{ SAR[s.key]['path'] ? SAR[s.key]['path'] : '/Apps/Sensors/' + s.key }}"
+       icon="{{ SAR[s.key]['icon'] ? SAR[s.key]['icon'] : 'example.png' }}"
       bg="#FFF"
-      title="DS18B20 Temperature"
-      path="/Apps/I/Anysens"
-      icon="manufacturers/Maxim_Integrated.svg"
-      [queryParams]="{ sensor: 'DS18B20', measurement: 'temperature', referrer: 'Dashboard' }"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile bg="#FFF" title="GPS" path="/Apps/I/GPS" icon="transformap.png"></app-ut-dashboard-tile>
-
-
+      ></app-ut-dashboard-tile>
+    </div>
+    <div *ngIf="!gss.server.sensors">
+      No sensors in Database.
+    </div>
   </div>
 
   <!-- <h2>Influx Apps</h2>
@@ -48,13 +50,14 @@
   <div class="panel">
     <app-ut-dashboard-tile title="Database Series" path="/Apps/I/Allsens" bg="#FFF" icon="influxdata-logo--symbol--pool-alpha.png"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="Influx Playground" path="/Apps/Influx-Test" bg="#FFF" icon="influxdata-logo--symbol--pool-alpha.png"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Sensor Overview" path="/Apps/Sensors"  icon="manufacturers/Raspberry_Pi.svg"></app-ut-dashboard-tile>
-    <!-- <app-ut-dashboard-tile title="MQTT Test" path="/Apps/MQTT-Test" icon="mqtt.png"></app-ut-dashboard-tile> -->
-    <!-- <app-ut-dashboard-tile title="GPS" path="/Apps/I/GPS" icon="GPS.svg"></app-ut-dashboard-tile> -->
+    <app-ut-dashboard-tile title="Sensor Overview" *ngIf="gss.server.type == 'Tricorder'" path="/Apps/Sensors"  icon="manufacturers/Raspberry_Pi.svg"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="MQTT Test" path="/Apps/MQTT-Test" icon="mqtt.png"></app-ut-dashboard-tile>
+
   </div>
   <h2>Beta Apps</h2>
   <div class="panel">
     <app-ut-dashboard-tile title="Calibrations" path="/Apps/Calibrations" bg="#FFF" icon="calibration.svg"></app-ut-dashboard-tile>
+
     <app-ut-dashboard-tile title="Geoplots" path="/Apps/I/Sensemaps" bg="#FFF" icon="map.svg"></app-ut-dashboard-tile>
   </div>
 </div>
