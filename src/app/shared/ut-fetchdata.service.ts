@@ -180,6 +180,7 @@ export class UtFetchdataService {
     );
   }
 
+  private telegrafMetrics = ["mem", "disk", "io", "processes","swap"];
   parseInfluxData(
     data: Object,
     labelBlackList: string[] = [],
@@ -276,8 +277,9 @@ export class UtFetchdataService {
           seriesValidColumns[i][colindex] = validColCount; // where should it be in the end
           let colname = series['columns'][colindex];
           orig_labels.push(serieslabel + ' ' + colname);
+          const metric = series['name']
           raw_labels.push({
-            metric: series['name'],
+            metric: metric,
             tags: tags,
             field: colname,
           });
@@ -288,7 +290,12 @@ export class UtFetchdataService {
             colname = colname.replace(/^mean_/, '');
           }
 
-          colname = this.h.formatFieldName(colname);
+          // exclude telegraf metrics from formatting
+          if (!this.telegrafMetrics.includes(metric)) {
+            colname = this.h.formatFieldName(colname);
+          } else {
+            colname = colname.replace(/_percent$/, ' %').replace(/_/g, ' ');
+          }
 
           const collabel = colname
             ? serieslabel + ' ' + colname
