@@ -4,9 +4,14 @@
   <div class="panel">
     <app-ut-dashboard-tile title="Indoor Climate" path="/Apps/I/IndoorClimate"></app-ut-dashboard-tile>
 
-    <app-ut-dashboard-tile title="CO₂ Graph" path="/Apps/CO2" icon="284px-Carbon_dioxide_3D_spacefill.png"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="CO₂ Graph"
+      *ngIf="gss.server.sensors && (gss.server.sensors['SCD30'] || gss.server.sensors['SCD40'])"
+      path="/Apps/CO2" icon="284px-Carbon_dioxide_3D_spacefill.png"></app-ut-dashboard-tile>
     <!-- <app-ut-dashboard-tile title="Air Temperature" path="/Apps/Sensors/DS18B20" icon="noun_Temperature.png"></app-ut-dashboard-tile> -->
-    <app-ut-dashboard-tile title="Humidity" path="/Apps/I/Humidity" icon="320px-Water_molecule.svg.png"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="Humidity"
+      *ngIf="gss.server.measurements.includes('humidity')"
+      path="/Apps/I/Humidity"
+      icon="320px-Water_molecule.svg.png"></app-ut-dashboard-tile>
     <!-- template for quick link:<app-ut-dashboard-tile
       title="CO₂ Graph"
       path="/Apps/I/Anysens"
@@ -14,9 +19,15 @@
     </app-ut-dashboard-tile> -->
     <!-- referrer 'Dashboard' does only work because /Apps/I/Dashboard is invalid and gets redirected to Dashboard -->
     <app-ut-dashboard-tile title="All Temperatures"
-    path="/Apps/I/Anysens"
-    icon="noun_Temperature.png"
-    [queryParams]="{ measurement: 'temperature', referrer: 'Dashboard' }"></app-ut-dashboard-tile>
+      *ngIf="gss.server.measurements.includes('temperature')"
+      path="/Apps/I/Anysens"
+      icon="noun_Temperature.png"
+      [queryParams]="{ measurement: 'temperature', referrer: 'Dashboard' }"></app-ut-dashboard-tile>
+      <app-ut-dashboard-tile title="Air Pressure"
+      *ngIf="gss.server.measurements.includes('pressure')"
+      path="/Apps/I/Anysens"
+      icon="320px-Pressure_gauge.svg.png"
+      [queryParams]="{ measurement: 'pressure', value: '/air_hPa/', referrer: 'Dashboard' }"></app-ut-dashboard-tile>
     <!-- <app-ut-dashboard-tile title="Air Pressure" path="/Apps/I/Pressure" icon="320px-Pressure_gauge.svg.png"></app-ut-dashboard-tile> -->
     <!-- <app-ut-dashboard-tile bg="#FFF" title="Temperature Map" path="/Apps/I/Enviromap" icon="noun_Temperature.png" [queryParams]="{ measurement: 'temperature', column:'°C', sensor:'DS18B20', referrer: 'Dashboard' }"></app-ut-dashboard-tile> -->
 
