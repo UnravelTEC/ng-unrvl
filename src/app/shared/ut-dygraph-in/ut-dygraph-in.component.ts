@@ -105,6 +105,34 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   public yRange = [undefined, undefined];
   public y2Range = [undefined, undefined];
+  public yModes: {
+    y1min: string;
+    y2min: string;
+    y1max: string;
+    y2max: string;
+  } = {
+    y1min: 'dyn',
+    y2min: 'dyn',
+    y1max: 'dyn',
+    y2max: 'dyn',
+  };
+  public yFixedRanges: {
+    y1min: number;
+    y2min: number;
+    y1max: number;
+    y2max: number;
+  } = {
+    y1min: null,
+    y2min: null,
+    y1max: null,
+    y2max: null,
+  };
+  public yRSelShown = {
+    y1min: false,
+    y2min: false,
+    y1max: false,
+    y2max: false,
+  };
 
   private gridlineActiveWidth = 1.5;
   private gridlineInactiveWidth = 0.0001;
@@ -297,86 +325,87 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     console.log('roundDigits:', this.roundDigits);
   }
   updateGraph() {
-    if (this.Dygraph) {
-      while (
-        this.dyGraphOptions.visibility.length <
-        this.columnLabels.length - 1
-      ) {
-        this.dyGraphOptions.visibility.push(true);
-      }
-
-      this.dyGraphOptions['labels'] = this.columnLabels;
-
-      if (!this.data.length) {
-        console.log('Dyg reset to no Data');
-        this.noData = true;
-        this.dataReset = true;
-        this.displayedData = [];
-        this.dataWithDev = [];
-        this.Dygraph.updateOptions({
-          file: [],
-          labels: [],
-        });
-        return;
-      }
-      this.noData = false;
-      const newDataBeginTime = this.data[0][0];
-      const newDataEndTime = this.data[this.data.length - 1][0];
-      if (
-        newDataBeginTime.valueOf() != this.dataBeginTime.valueOf() ||
-        newDataEndTime.valueOf() != this.dataEndTime.valueOf()
-      ) {
-        this.dataReset = true;
-      }
-      if (this.dataReset) {
-        console.log('data reset, restore viewport');
-        this.dataBeginTime = newDataBeginTime;
-        this.dataEndTime = newDataEndTime;
-        this.updateDateWindow();
-
-        this.displayedData = [];
-        this.dataWithDev = [];
-        this.dataWithCalDev = [];
-        this.setDDandCalcIfNeeded();
-        if (this.checkOK4Dev()) {
-        }
-        this.updateRoundDigits();
-        this.dataReset = false;
-      }
-      if (this.colors && this.colors.length) {
-        this.dyGraphOptions['colors'] = this.colors;
-        this.Dygraph.updateOptions(
-          { colors: this.dyGraphOptions['colors'] },
-          true
-        );
-      }
-
-      this.updateAverages();
-
-      this.Dygraph.updateOptions({
-        file: this.displayedData,
-        labels: this.columnLabels,
-        xlabel: this.XLabel,
-        axes: this.dyGraphOptions.axes,
-        visibility: this.dyGraphOptions.visibility,
-        dateWindow: this.dyGraphOptions['dateWindow'],
-        customBars: this.showDeviation,
-      });
-      // setTimeout(() => { // FIXME while c'out?
-      //   this.fullZoom();
-      // }, 100);
-
-      if (this.minimal && this.data.length > 10) {
-        const dateOfSecondPt = this.data[1][0].valueOf();
-        const fromZoom = this.Dygraph.xAxisRange()[0];
-        if (fromZoom > dateOfSecondPt) {
-          console.log('shorten graph');
-          this.data.shift();
-        }
-      }
-    } else {
+    if (!this.Dygraph) {
       console.error('updateGraph: no Dygraph?');
       // this.handleInitialData();
+      return;
+    }
+
+    while (
+      this.dyGraphOptions.visibility.length <
+      this.columnLabels.length - 1
+    ) {
+      this.dyGraphOptions.visibility.push(true);
+    }
+
+    this.dyGraphOptions['labels'] = this.columnLabels;
+
+    if (!this.data.length) {
+      console.log('Dyg reset to no Data');
+      this.noData = true;
+      this.dataReset = true;
+      this.displayedData = [];
+      this.dataWithDev = [];
+      this.Dygraph.updateOptions({
+        file: [],
+        labels: [],
+      });
+      return;
+    }
+    this.noData = false;
+    const newDataBeginTime = this.data[0][0];
+    const newDataEndTime = this.data[this.data.length - 1][0];
+    if (
+      newDataBeginTime.valueOf() != this.dataBeginTime.valueOf() ||
+      newDataEndTime.valueOf() != this.dataEndTime.valueOf()
+    ) {
+      this.dataReset = true;
+    }
+    if (this.dataReset) {
+      console.log('data reset, restore viewport');
+      this.dataBeginTime = newDataBeginTime;
+      this.dataEndTime = newDataEndTime;
+      this.updateDateWindow();
+
+      this.displayedData = [];
+      this.dataWithDev = [];
+      this.dataWithCalDev = [];
+      this.setDDandCalcIfNeeded();
+      if (this.checkOK4Dev()) {
+      }
+      this.updateRoundDigits();
+      this.dataReset = false;
+    }
+    if (this.colors && this.colors.length) {
+      this.dyGraphOptions['colors'] = this.colors;
+      this.Dygraph.updateOptions(
+        { colors: this.dyGraphOptions['colors'] },
+        true
+      );
+    }
+
+    this.updateAverages();
+
+    this.Dygraph.updateOptions({
+      file: this.displayedData,
+      labels: this.columnLabels,
+      xlabel: this.XLabel,
+      axes: this.dyGraphOptions.axes,
+      visibility: this.dyGraphOptions.visibility,
+      dateWindow: this.dyGraphOptions['dateWindow'],
+      customBars: this.showDeviation,
+    });
+    // setTimeout(() => { // FIXME while c'out?
+    //   this.fullZoom();
+    // }, 100);
+
+    if (this.minimal && this.data.length > 10) {
+      const dateOfSecondPt = this.data[1][0].valueOf();
+      const fromZoom = this.Dygraph.xAxisRange()[0];
+      if (fromZoom > dateOfSecondPt) {
+        console.log('shorten graph');
+        this.data.shift();
+      }
     }
   }
   waitForData() {
@@ -763,7 +792,17 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     this.checkAndUpdateGraphWidth();
-    this.setYranges();
+    // this.setYranges();
+    const yranges = this.Dygraph.yAxisRanges();
+    this.yRange = yranges[0];
+    this.yFixedRanges.y1min = this.yRange[0];
+    this.yFixedRanges.y1max = this.yRange[1];
+    if (yranges[1]) {
+      this.y2Range = yranges[1];
+      this.yFixedRanges.y2min = this.y2Range[0];
+      this.yFixedRanges.y2max = this.y2Range[1];
+    }
+    console.log('yFixedRanges', this.yFixedRanges);
   }
   updateRoll() {
     this.Dygraph.adjustRoll(this.runningAvgPoints);
@@ -1739,5 +1778,59 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.Dygraph.updateOptions({
       dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()],
     });
+  }
+  toggleYRSel(sel: string) {
+    this.yRSelShown[sel] = !this.yRSelShown[sel];
+  }
+  changeYMode($event, sel) {
+    // also gets called when number input box is changed
+    console.log('changeYMode', $event, sel);
+    if (sel == 'y1min' || sel == 'y1max') {
+
+      const r: [number, number] = [null, null];
+      if (this.yModes.y1min == 'fix') {
+        r[0] = this.yFixedRanges.y1min;
+        if (this.dyGraphOptions.axes.y.logscale && r[0] <= 0){
+          alert('Ymin ≤ 0 not possible in log scale view')
+          this.yFixedRanges.y1min = 1;
+          return;
+        }
+      }
+      if (this.yModes.y1max == 'fix') {
+        r[1] = this.yFixedRanges.y1max;
+        if (this.dyGraphOptions.axes.y.logscale && r[1] <= 0){
+          alert('Ymax ≤ 0 not possible in log scale view')
+          this.yFixedRanges.y1max = 1;
+          return;
+        }
+      }
+      this.dyGraphOptions.axes.y['valueRange'] = r;
+      this.Dygraph.updateOptions({
+        axes: this.dyGraphOptions.axes,
+      });
+    }
+    if (sel == 'y2min' || sel == 'y2max') {
+      const r: [number, number] = [null, null];
+      if (this.yModes.y2min == 'fix') {
+        r[0] = this.yFixedRanges.y2min;
+        if (this.dyGraphOptions.axes.y2.logscale && r[0] <= 0){
+          alert('Y2min ≤ 0 not possible in log scale view')
+          this.yFixedRanges.y2min = 1;
+          return;
+        }
+      }
+      if (this.yModes.y2max == 'fix') {
+        r[1] = this.yFixedRanges.y2max;
+        if (this.dyGraphOptions.axes.y2.logscale && r[1] <= 0){
+          alert('Y2min ≤ 0 not possible in log scale view')
+          this.yFixedRanges.y2max = 1;
+          return;
+        }
+      }
+      this.dyGraphOptions.axes.y2['valueRange'] = r;
+      this.Dygraph.updateOptions({
+        axes: this.dyGraphOptions.axes,
+      });
+    }
   }
 }

@@ -67,6 +67,7 @@ style.padding-bottom="20vh"-->
       class="ymin {{ XLabel == '' ? 'noxlabel' : '' }}"
       *ngIf="dyGraphOptions['drawAxis'] !== false"
       [style.transform]="'translateX(' + yO + 'px)'"
+      (click)="toggleYRSel('y1min')"
     >
       {{ yRange[0] | dygNr }}
     </div>
@@ -74,6 +75,7 @@ style.padding-bottom="20vh"-->
       class="y2min {{ XLabel == '' ? 'noxlabel' : '' }}"
       *ngIf="dyGraphOptions['drawAxis'] !== false && y2Range[0] !== undefined"
       [style.border-right-width]="y2O + 'px'"
+      (click)="toggleYRSel('y2min')"
     >
       {{ y2Range[0] | dygNr }}
     </div>
@@ -81,6 +83,7 @@ style.padding-bottom="20vh"-->
       class="ymax"
       *ngIf="dyGraphOptions['drawAxis'] !== false"
       [style.transform]="'translateX(' + yO + 'px)'"
+      (click)="toggleYRSel('y1max')"
     >
       {{ yRange[1] | dygNr }}
     </div>
@@ -88,9 +91,31 @@ style.padding-bottom="20vh"-->
       class="y2max"
       *ngIf="dyGraphOptions['drawAxis'] !== false && y2Range[1] !== undefined"
       [style.border-right-width]="y2O + 'px'"
+      (click)="toggleYRSel('y2max')"
     >
       {{ y2Range[1] | dygNr }}
     </div>
+    <form *ngFor="let entry of yModes | keyvalue" class="{{ entry.key }}Sel">
+      <mat-radio-group
+        [(ngModel)]="yModes[entry.key]"
+        id="ymode_{{ entry.key }}"
+        name="ymode_{{ entry.key }}"
+        (change)="changeYMode($event, entry.key)"
+        *ngIf="yRSelShown[entry.key]"
+      >
+        <mat-radio-button value="dyn"> Dynamic </mat-radio-button><br />
+        <mat-radio-button value="fix">
+          Fixed:
+          <input
+            type="number"
+            id="yrange_{{ entry.key }}"
+            name="yrange_{{ entry.key }}"
+            [(ngModel)]="yFixedRanges[entry.key]"
+          />
+        </mat-radio-button>
+        <!--number input box also activates change event on radio group -->
+      </mat-radio-group>
+    </form>
     <div
       class="xmin"
       *ngIf="dyGraphOptions['drawAxis'] !== false"
@@ -156,55 +181,31 @@ style.padding-bottom="20vh"-->
       class="logbuttons"
       *ngIf="options == true && showLogscaleSwitcher == true && !noData"
     >
-      <div class="logy y1" (click)="switchLogScale()">
-        <div
-          class="{{
-            dyGraphOptions['axes'] &&
-            dyGraphOptions['axes']['y'] &&
-            dyGraphOptions['axes']['y']['logscale']
-              ? 'active'
-              : ''
-          }}"
-        >
+      <div
+        class="logy y1"
+        (click)="switchLogScale()"
+        *ngIf="yRange[0] > 0 && yRange[1] > 0"
+      >
+        <div class="{{ dyGraphOptions.axes.y.logscale ? 'active' : '' }}">
           log
         </div>
-        <div
-          class="{{
-            dyGraphOptions['axes'] &&
-            dyGraphOptions['axes']['y'] &&
-            dyGraphOptions['axes']['y']['logscale']
-              ? ''
-              : 'active'
-          }}"
-        >
+        <div class="{{ dyGraphOptions.axes.y.logscale ? '' : 'active' }}">
           lin
         </div>
       </div>
       <div
         class="logy y2"
-        *ngIf="dyGraphOptions['drawAxis'] !== false && y2Range[1] !== undefined"
+        *ngIf="
+          dyGraphOptions['drawAxis'] !== false &&
+          y2Range[0] > 0 &&
+          y2Range[1] > 0
+        "
         (click)="switchLogScale('y2')"
       >
-        <div
-          class="{{
-            dyGraphOptions['axes'] &&
-            dyGraphOptions['axes']['y2'] &&
-            dyGraphOptions['axes']['y2']['logscale']
-              ? 'active'
-              : ''
-          }}"
-        >
+        <div class="{{ dyGraphOptions.axes.y2.logscale ? 'active' : '' }}">
           log
         </div>
-        <div
-          class="{{
-            dyGraphOptions['axes'] &&
-            dyGraphOptions['axes']['y2'] &&
-            dyGraphOptions['axes']['y2']['logscale']
-              ? ''
-              : 'active'
-          }}"
-        >
+        <div class="{{ dyGraphOptions.axes.y2.logscale ? '' : 'active' }}">
           lin
         </div>
       </div>
@@ -215,7 +216,7 @@ style.padding-bottom="20vh"-->
     <div class="options">
       <form class="subbox">
         <h5>#Data Points</h5>
-        <small style="float: left; margin-top: 0.5em;">
+        <small style="float: left; margin-top: 0.5em">
           {{
             !displayedData.length
               ? 0
@@ -262,52 +263,56 @@ style.padding-bottom="20vh"-->
 
       <form class="subbox">
         <h5>Data Gaps</h5>
-        <label for="sepp">hide
-        <input
-          type="checkbox"
-          name="sepp"
-          id="sepp"
-          [(ngModel)]="dyGraphOptions.connectSeparatedPoints"
-          (change)="toggleSeparatedPoints()"
+        <label for="sepp"
+          >hide
+          <input
+            type="checkbox"
+            name="sepp"
+            id="sepp"
+            [(ngModel)]="dyGraphOptions.connectSeparatedPoints"
+            (change)="toggleSeparatedPoints()"
         /></label>
       </form>
 
-      <form class="subbox">
+      <!-- <form class="subbox">
         <h5>Y axis linearity</h5>
-        <label for="log">Logarithmic
-        <input
-          type="checkbox"
-          name="logarithmic"
-          id="log"
-          [(ngModel)]="dyGraphOptions.logscale"
-          (change)="switchLogScale()"
+        <label for="log"
+          >Logarithmic
+          <input
+            type="checkbox"
+            name="logarithmic"
+            id="log"
+            [(ngModel)]="dyGraphOptions.logscale"
+            (change)="switchLogScale()"
         /></label>
-      </form>
+      </form> -->
 
       <form class="subbox">
         <h5>Uncertainty</h5>
-        <label for="showdev">Show
-        <input
-          type="checkbox"
-          name="showdev"
-          id="showdev"
-          [(ngModel)]="showDeviation"
-          [disabled]="! rawLabels || rawLabels.length < 2"
-          (change)="toggleDeviation()"
-        />
-      </label>
+        <label for="showdev"
+          >Show
+          <input
+            type="checkbox"
+            name="showdev"
+            id="showdev"
+            [(ngModel)]="showDeviation"
+            [disabled]="!rawLabels || rawLabels.length < 2"
+            (change)="toggleDeviation()"
+          />
+        </label>
       </form>
 
       <form class="subbox">
         <h5>Calibration</h5>
-        <label for="calibrate">Enable
-        <input
-          type="checkbox"
-          name="calibrate"
-          id="calibrate"
-          [(ngModel)]="calibrate"
-          [disabled]="! rawLabels || rawLabels.length < 2"
-          (change)="toggleCalibration()"
+        <label for="calibrate"
+          >Enable
+          <input
+            type="checkbox"
+            name="calibrate"
+            id="calibrate"
+            [(ngModel)]="calibrate"
+            [disabled]="!rawLabels || rawLabels.length < 2"
+            (change)="toggleCalibration()"
         /></label>
       </form>
 

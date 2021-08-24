@@ -116,7 +116,7 @@ $red2: #ff7f88;
     padding: 0.35em;
     height: 1em;
     line-height: 1em;
-    cursor: default;
+    cursor: pointer;
   }
 
   .fromDate,
@@ -147,9 +147,14 @@ $red2: #ff7f88;
   .fromDate:hover,
   .toDate:hover,
   .xmin:hover,
-  .xmax:hover {
+  .xmax:hover,
+  .y2min:hover,
+  .y2max:hover,
+  .ymin:hover,
+  .ymax:hover {
     background-color: $buttonactivebg;
     color: $buttontext;
+    border-right-color: $buttonactivebg;
     b,
     b.hide {
       opacity: 1;
@@ -180,7 +185,6 @@ $red2: #ff7f88;
   .toDate,
   .xmin,
   .xmax {
-    cursor: pointer;
     width: 5.1em;
   }
   .lastTime {
@@ -238,7 +242,6 @@ $red2: #ff7f88;
     height: 0;
     top: 29px;
     padding: 0;
-    cursor: pointer;
     div {
       padding: 0.35em 0.35em 0 0.35em; // to rm "g" bottom height increase
       line-height: 1em;
@@ -262,6 +265,42 @@ $red2: #ff7f88;
       padding-top: 0.1em;
     }
   }
+  .y1minSel,
+  .y1maxSel,
+  .y2minSel,
+  .y2maxSel {
+    position: absolute;
+    mat-radio-group {
+      border: 1px solid black;
+      height: 3.5em;
+      display: block;
+      border-radius: 5px;
+      background: $mainbg;
+      font-size: $dygfontsize;
+      color: $editableFormsTextColor;
+      padding: 7px;
+      input[type='number'] {
+        width: 6em;
+      }
+    }
+  }
+  .y1minSel,
+  .y2minSel {
+    bottom: 56px;
+  }
+  .y1maxSel,
+  .y2maxSel {
+    top: 5px;
+  }
+  .y1minSel,
+  .y1maxSel {
+    left: 60px;
+  }
+  .y2minSel,
+  .y2maxSel {
+    right: 75px;
+  }
+
   .overlapTickTexthider {
     background-color: $mainbg;
     font-size: $dygfontsize;
