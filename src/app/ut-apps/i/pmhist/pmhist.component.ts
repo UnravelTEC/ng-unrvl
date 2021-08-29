@@ -191,6 +191,14 @@ export class PmhistComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.server.influxdb) {
+      console.log('db not yet set, wait');
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
+
     const q = this.utHTTP.buildInfluxQuery(clause, this.db, this.server);
     this.utHTTP
       .getHTTPData(q, 'grazweb', '.RaVNaygexThM')

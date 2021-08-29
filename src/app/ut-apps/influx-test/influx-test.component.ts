@@ -91,6 +91,14 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.server.influxdb) {
+      console.log('db not yet set, wait');
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
+
     const qWithTime = clause.replace(/{{T}}/g, this.startTime);
     const q = this.utHTTP.buildInfluxQuery(qWithTime);
     this.utHTTP
