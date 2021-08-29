@@ -115,7 +115,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     // http://dygraphs.com/options.html
     drawCallback: this.afterDrawCallback,
     zoomCallback: this.afterZoomCallback,
-    // clickCallback: this.clickCallback,
+    clickCallback: this.clickCallback,
 
     // panEdgeFraction: 0.9,
 
@@ -475,8 +475,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     if (this.rawLabels) {
       for (let i = 1; i < this.rawLabels.length; i++) {
-        const metric = this.rawLabels[i]['metric']
-        if(metric == "disk" || metric == "mem" || metric == "swap"){
+        const metric = this.rawLabels[i]['metric'];
+        if (metric == 'disk' || metric == 'mem' || metric == 'swap') {
           this.dyGraphOptions['labelsKMG2'] = true;
           this.dyGraphOptions.labelsKMB = false;
           break;
@@ -847,25 +847,63 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     console.log('new grid:', grid, this.dyGraphOptions.axes);
   }
 
+  public clickHighLightedPoint = -1;
+  clickCallback(e, point) {
+    console.log('clickCallback', e, point);
+
+    const tscalm: unknown = this;
+    const g: Dygraph = <Dygraph>tscalm;
+
+    const sel = g.getSelection();
+    if (g.isSeriesLocked()) {
+      console.log('clear selection');
+
+      g.clearSelection();
+      if (sel > -1 && g['parent']) {
+        g['parent']['clickHighLightedPoint'] = -1;
+      }
+    } else {
+      if (sel > -1 && g['parent']) {
+        g['parent']['clickHighLightedPoint'] = sel;
+      }
+      const highlSeries = g.getHighlightSeries();
+      console.log('sel:', sel, 'hl:', highlSeries);
+      g.setSelection(sel, undefined, true);
+    }
+  }
+
   highlightCallback(event, x, points, row, seriesName) {
+    const tscalm: unknown = this;
+    const g: Dygraph = <Dygraph>tscalm;
+
     // note: do not use log scale, dygraph does return only displayed data (no values == 0)
     if (!this.hasOwnProperty('parent')) {
       console.error('highlightCallback: No parent');
       return;
     }
-    const parent = this['parent'];
+    const parent = g['parent'];
 
     const values = { points: points, seriesName: seriesName };
     parent.returnHighlightedRow.emit(values);
+    const sel = parent['clickHighLightedPoint'];
+    if (sel > -1) {
+      g.setSelection(sel);
+    }
+    // console.log(parent['clickHighLightedPoint']);
 
-    if (this['numAxes']() < 2) {
+    if (g.numAxes() < 2) {
       return;
     }
     parent.setAxisHighlight(seriesName);
   }
   unhighlightCallback(event) {
-    this['clearSelection']();
-    if (this['numAxes']() < 2 || !this['parent']) {
+    const tscalm: unknown = this;
+    const g: Dygraph = <Dygraph>tscalm;
+
+    if (!g.isSeriesLocked()) {
+      g.clearSelection();
+    }
+    if (g.numAxes() < 2 || !this['parent']) {
       return;
     }
     // console.log('unhighlight');
@@ -957,31 +995,33 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
         if (showDevs) {
           let devtext = '';
-          const yvalues = parent.getDeviationsofTS(data.x);
-          const values = yvalues[i + 1];
-          if (Array.isArray(values)) {
-            const dlower = parent.h.roundAccurately(
-              values[1] - values[0],
-              parent.roundDigits[i + 1]
-            );
-            const dupper = parent.h.roundAccurately(
-              values[2] - values[1],
-              parent.roundDigits[i + 1]
-            );
-            if (dlower == dupper) {
-              devtext = dlower ? '±' + String(dlower) : ''; // if no dev defined
-            } else {
-              devtext = '-' + String(dlower) + ' +' + String(dupper);
+          if (!isNaN(series.y)) {
+            const yvalues = parent.getDeviationsofTS(data.x);
+            const values = yvalues[i + 1];
+            if (Array.isArray(values)) {
+              const dlower = parent.h.roundAccurately(
+                values[1] - values[0],
+                parent.roundDigits[i + 1]
+              );
+              const dupper = parent.h.roundAccurately(
+                values[2] - values[1],
+                parent.roundDigits[i + 1]
+              );
+              if (dlower == dupper) {
+                devtext = dlower ? '±' + String(dlower) : ''; // if no dev defined
+              } else {
+                devtext = '-' + String(dlower) + ' +' + String(dupper);
+              }
             }
           }
-          valcells += '<td class="d">' + devtext + '</td>';
+          valcells += `<td class="d" ${toggleCallback}>` + devtext + '</td>';
         }
 
         let unit = series.labelHTML.match(/\((.*)\)$/);
         if (unit) {
           unit = unit[1];
         }
-        valcells += `<td class='u'${textcolor}>${unit}</td>`;
+        valcells += `<td class='u'${textcolor} ${toggleCallback}>${unit}</td>`;
         colon = ':';
       }
       html +=
@@ -994,7 +1034,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
   selectSeries(name: string) {
     // this.Dygraph.clearSelection();
-    this.Dygraph.setSelection(false, name);
+    const highlightedRow =
+      this.clickHighLightedPoint > -1 ? this.clickHighLightedPoint : false;
+    this.Dygraph.setSelection(highlightedRow, name);
     if (this.Dygraph.numAxes() < 2) {
       return;
     }
@@ -1222,7 +1264,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   updateAverages() {
     // FIXME is very inefficient, as it calculates it new every time - implment sort of running calculation
-    const data = (this.calibrate && this.calibratedData.length > 1) ? this.calibratedData : this.data;
+    const data =
+      this.calibrate && this.calibratedData.length > 1
+        ? this.calibratedData
+        : this.data;
     const datalen = data.length;
     if (!datalen) {
       console.log('updateAverages: datalen 0');
@@ -1318,7 +1363,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     console.log('avgs:', this.averages, 'visible avg:', this.visibleAverages);
 
     this.visibleAverage = sum / this.visibleAverages.length;
-    this.returnRunningAvg.emit({ all: this.averages, visible: this.visibleAverages})
+    this.returnRunningAvg.emit({
+      all: this.averages,
+      visible: this.visibleAverages,
+    });
   }
 
   // following cases:
