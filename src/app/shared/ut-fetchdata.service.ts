@@ -180,7 +180,7 @@ export class UtFetchdataService {
     );
   }
 
-  private telegrafMetrics = ["mem", "disk", "io", "processes","swap"];
+  private telegrafMetrics = ["mem", "disk", "io", "processes","swap","cpu"];
   parseInfluxData(
     data: Object,
     labelBlackList: string[] = [],

@@ -139,6 +139,7 @@ export class MqttService {
     this.client.connect({
       onSuccess: () => this.onConnect(),
       onFailure: (obj: Object) => this.onFailure(obj),
+      keepAliveInterval: 30,
     });
     this.status = 'connecting';
   }
