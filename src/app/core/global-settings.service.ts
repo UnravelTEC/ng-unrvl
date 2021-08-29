@@ -288,7 +288,7 @@ export class GlobalSettingsService implements OnInit {
           this.server.sensors[sname]['measurements'].push(measurement);
         if (!this.server.sensors[sname].hasOwnProperty('id'))
           this.server.sensors[sname]['id'] = {};
-        const id = seri.match(/id=([-A-Za-z0-9|_/]*)/);
+        const id = seri.match(/id=([-A-Za-z0-9|_"/]*)/); // " because of former sw-error enlosing tags in ""
         // console.log('idmatch:', id);
 
         const sid = id && id[1] ? id[1] : '_'; // freely defined convention
@@ -315,7 +315,7 @@ export class GlobalSettingsService implements OnInit {
     // console.error('acceptFieldsOfSeries');
     const gsensors = this.server.sensors;
 
-    console.log(data);
+    // console.log(data, 'sensor before:', cloneDeep(gsensors));
     if (!data['results']) {
       console.error('influx acceptFieldsOfSeries: empty', data);
       this.emitChange({ status: '' });
@@ -333,11 +333,30 @@ export class GlobalSettingsService implements OnInit {
           return;
         }
         // console.log('foreach series', sensor, sensorname);
-
-        if (!gsensors[sensorname]) {
+        const gsensor = gsensors[sensorname];
+        if (!gsensor) {
           console.error('missing', sensorname, 'in', cloneDeep(gsensors));
+          return;
         }
-        const thisgsensor = gsensors[sensorname]['id'][id];
+        if (!gsensor.hasOwnProperty('id')) {
+          console.error('missing field id', gsensor);
+          return;
+        }
+        if (!gsensor['id'].hasOwnProperty(id)) {
+          // for (const key in gsensor['id']) {
+          //   if (Object.prototype.hasOwnProperty.call(gsensor['id'], key)) {
+          //     const value = gsensor['id'][key];
+          //     if (key == id) {
+          //       console.log('found', key, '==', id);
+          //     } else {
+          //       console.log(key, '!=', id);
+          //     }
+          //   }
+          // }
+          console.error('missing id', id, 'in', cloneDeep(gsensor['id']));
+          return;
+        }
+        const thisgsensor = gsensor['id'][id];
         if (!thisgsensor.hasOwnProperty('measurements'))
           thisgsensor['measurements'] = {};
         if (!thisgsensor['measurements'].hasOwnProperty(measurement))
@@ -363,7 +382,7 @@ export class GlobalSettingsService implements OnInit {
         }
       });
     });
-    console.log(this.server.sensors);
+    console.log('acceptFieldsOfSeries finished:', this.server.sensors);
     this.emitChange({ status: '' });
     if (this.server.calibrations) {
       this.emitChange({ readyToFetchCalibrations: true });
