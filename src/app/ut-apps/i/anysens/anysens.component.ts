@@ -50,11 +50,11 @@ export class AnysensComponent implements OnInit {
   };
 
   public startTime = '6h';
-  public dygStartTime:string; // used on autoUpdate
+  public dygStartTime: string; // used on autoUpdate
   public userStartTime = this.startTime;
   public meanS = 30;
   public currentres = 0;
-  public currentresText = "0s";
+  public currentresText = '0s';
   public userMeanS = this.meanS;
   public fromTime: Date;
   public toTime: Date;
@@ -125,14 +125,18 @@ export class AnysensComponent implements OnInit {
   }
 
   ngOnInit() {
-    ['userMeanS', 'userStartTime', 'tableShown', 'sideBarShown','show_deviation'].forEach(
-      (element) => {
-        const thing = this.localStorage.get(this.appName + element);
-        if (thing !== null) {
-          this[element] = thing;
-        }
+    [
+      'userMeanS',
+      'userStartTime',
+      'tableShown',
+      'sideBarShown',
+      'show_deviation',
+    ].forEach((element) => {
+      const thing = this.localStorage.get(this.appName + element);
+      if (thing !== null) {
+        this[element] = thing;
       }
-    );
+    });
     this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
     this.auto_interval = this.userMeanS;
     this.reload_timer = this.auto_interval;
@@ -181,22 +185,14 @@ export class AnysensComponent implements OnInit {
       ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000
       : this.h.parseToSeconds(this.startTime);
     const nr_points = timerange / this.meanS;
-    if (nr_points > 10000) {
-      if (
-        !window.confirm(
-          'Database would be queried for up to ' +
-            Math.ceil(nr_points).toLocaleString() +
-            ' points of data, are you sure?'
-        )
-      ) {
-        console.log('user canceled query with', nr_points, 'points.');
-        if (!this.labels.length) {
-          // at start to show "no data"
-          this.labels = [''];
-        }
-        return;
+    if (nr_points > 10000 && !this.h.bigQconfirm(nr_points)) {
+      if (!this.labels.length) {
+        // at start to show "no data"
+        this.labels = [''];
       }
+      return;
     }
+    this.queryRunning = true;
 
     const timeQuery = fromTo
       ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
@@ -310,7 +306,6 @@ export class AnysensComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
-    this.queryRunning = true;
     if (!this.gss.server.influxdb) {
       console.log('db not yet set, wait');
       setTimeout(() => {

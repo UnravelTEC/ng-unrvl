@@ -987,4 +987,18 @@ export class HelperFunctionsService {
     fieldname = fieldname.replace(/_(\S+)$/, ' ( $1 )');
     return fieldname;
   }
+  bigQconfirm(nr_points) {
+    if (
+      window.confirm(
+        'Database would be queried for up to ' +
+          Math.ceil(nr_points).toLocaleString() +
+          ' points of data, are you sure?'
+      )
+    ) {
+      return true;
+    } else {
+      console.log('user canceled query with', nr_points, 'points.');
+      return false;
+    }
+  }
 }

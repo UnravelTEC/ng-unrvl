@@ -189,21 +189,12 @@ export class EnviromapComponent implements OnInit, OnDestroy {
       ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000
       : this.h.parseToSeconds(this.startTime);
     const nr_points = timerange / this.meanS;
-    if (nr_points > 10000) {
-      if (
-        !window.confirm(
-          'Database would be queried for up to ' +
-            Math.ceil(nr_points).toLocaleString() +
-            ' points of data, are you sure?'
-        )
-      ) {
-        console.log('user canceled query with', nr_points, 'points.');
-        if (!this.labels.length) {
-          // at start to show "no data"
-          this.labels = [''];
-        }
-        return;
+    if (nr_points > 10000 && !this.h.bigQconfirm(nr_points)) {
+      if (!this.labels.length) {
+        // at start to show "no data"
+        this.labels = [''];
       }
+      return;
     }
     this.queryRunning = true;
 

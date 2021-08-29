@@ -101,6 +101,16 @@ export class GpsComponent implements OnInit {
     this.currentres = this.meanS;
     this.startTime = this.userStartTime;
 
+    const timerange = this.h.parseToSeconds(this.startTime);
+    const nr_points = timerange / this.meanS;
+    if (nr_points > 10000 && !this.h.bigQconfirm(nr_points)) {
+      if (!this.labels.length) {
+        // at start to show "no data"
+        this.labels = [''];
+      }
+      return;
+    }
+
     const timeQuery = this.utHTTP.influxTimeString(this.startTime);
 
     let params = { sensor: [] };

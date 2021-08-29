@@ -51,8 +51,8 @@ export class Scd30Component implements OnInit {
     CO2: ['#842BFF'],
   };
   labels = {
-    H: {},
-    CO2: {},
+    H: [],
+    CO2: [],
   };
   raw_labels = {
     H: {},
@@ -155,6 +155,19 @@ export class Scd30Component implements OnInit {
     this.meanS = this.userMeanS;
     this.currentres = this.meanS;
     this.startTime = this.userStartTime;
+
+    const timerange = fromTo
+      ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000
+      : this.h.parseToSeconds(this.startTime);
+    const nr_points = timerange / this.meanS;
+    if (nr_points > 10000 && !this.h.bigQconfirm(nr_points)) {
+      if (!this.labels['CO2'].length) {
+        // at start to show "no data"
+        this.labels['CO2'] = [''];
+        this.labels['H'] = [''];
+      }
+      return;
+    }
 
     const timeQuery = fromTo
       ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
