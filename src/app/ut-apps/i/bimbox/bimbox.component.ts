@@ -193,20 +193,24 @@ export class BimboxComponent implements OnInit {
   }
 
   launchQuery(clause: string, id: string) {
-    console.log("launchQuery", this.globalSettings.server.baseurl);
+    console.log('launchQuery', this.globalSettings.server.baseurl);
 
     if (this.globalSettings.server.baseurl.startsWith('https')) {
       const q = this.utHTTP.buildInfluxQuery(clause, this.db, this.server);
 
       this.utHTTP
         .getHTTPData(q, 'bimweb', 'D,OEZ4UL+[hGgMQA(@<){W[kd')
-        .subscribe((data: Object) => this.handleData(data, id));
+        .subscribe(
+          (data: Object) => this.handleData(data, id),
+          (error) => this.globalSettings.displayHTTPerror(error)
+        );
     } else {
       const q = this.utHTTP.buildInfluxQuery(clause);
 
-      this.utHTTP
-        .getHTTPData(q, "", "")
-        .subscribe((data: Object) => this.handleData(data, id));
+      this.utHTTP.getHTTPData(q, '', '').subscribe(
+        (data: Object) => this.handleData(data, id),
+        (error) => this.globalSettings.displayHTTPerror(error)
+      );
     }
   }
 

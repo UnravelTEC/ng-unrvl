@@ -5,7 +5,7 @@ import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 @Component({
   selector: 'app-noir',
   templateUrl: './noir.component.html',
-  styleUrls: ['./noir.component.scss']
+  styleUrls: ['./noir.component.scss'],
 })
 export class NoirComponent implements OnInit, OnDestroy {
   ledstatus = 'off';
@@ -44,13 +44,19 @@ export class NoirComponent implements OnInit, OnDestroy {
   start() {
     this.utFetchdataService
       .getHTTPData(this.globalSettings.getAPIEndpoint() + 'noir/running.php')
-      .subscribe((data: Object) => this.ack(data));
+      .subscribe(
+        (data: Object) => this.ack(data),
+        (error) => this.globalSettings.displayHTTPerror(error)
+      );
   }
 
   stop() {
     this.utFetchdataService
       .getHTTPData(this.globalSettings.getAPIEndpoint() + 'noir/stopping.php')
-      .subscribe((data: Object) => this.ack(data));
+      .subscribe(
+        (data: Object) => this.ack(data),
+        (error) => this.globalSettings.displayHTTPerror(error)
+      );
   }
 
   ack(data: Object) {
@@ -109,14 +115,20 @@ export class NoirComponent implements OnInit, OnDestroy {
           'noir/ir-led.php?irstatus=' +
           newstat
       )
-      .subscribe((data: Object) => this.ack(data));
+      .subscribe(
+        (data: Object) => this.ack(data),
+        (error) => this.globalSettings.displayHTTPerror(error)
+      );
 
     this.ledstatus = 'pending';
   }
   photo() {
     this.utFetchdataService
       .getHTTPData(this.globalSettings.getAPIEndpoint() + 'noir/takephoto.php')
-      .subscribe((data: Object) => this.acceptPhoto(data));
+      .subscribe(
+        (data: Object) => this.acceptPhoto(data),
+        (error) => this.globalSettings.displayHTTPerror(error)
+      );
   }
   closePreview() {
     this.lastimage = '';

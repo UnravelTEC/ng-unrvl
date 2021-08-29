@@ -243,7 +243,10 @@ export class EnvirooneComponent implements OnInit {
     this.utHTTP
       // .getHTTPData(q)
       .getHTTPData(q, 'grazweb', '.RaVNaygexThM')
-      .subscribe((data: Object) => this.handleData(data));
+      .subscribe(
+        (data: Object) => this.handleData(data),
+        (error) => this.globalSettings.displayHTTPerror(error)
+      );
   }
   setAvg(t) {
     this.userMeanS = t;

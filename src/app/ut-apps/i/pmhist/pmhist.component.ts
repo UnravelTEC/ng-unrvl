@@ -7,11 +7,11 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
 @Component({
   selector: 'app-pmhist',
   templateUrl: './pmhist.component.html',
-  styleUrls: ['./pmhist.component.scss']
+  styleUrls: ['./pmhist.component.scss'],
 })
 export class PmhistComponent implements OnInit {
   sensorsEnabled = {
-    'OPC-N3': true
+    'OPC-N3': true,
     // SPS30: true
   };
 
@@ -20,22 +20,22 @@ export class PmhistComponent implements OnInit {
     pointSize: 3,
     series: {
       'sensor: OPC-N3, pm10 (µg/m³)': {
-        axis: 'y2'
+        axis: 'y2',
       },
       'sensor: OPC-N3, pm2.5 (µg/m³)': {
-        axis: 'y2'
+        axis: 'y2',
       },
       'sensor: OPC-N3, pm1 (µg/m³)': {
-        axis: 'y2'
-      }
+        axis: 'y2',
+      },
     },
     y2label: 'Particulate Mass (&#8202;µg&#8202;/&#8202;m³&#8202;)',
     axes: {
       y2: {
         independentTicks: true,
         // note: do not use log scale, dygraph does return only displayed data (no values == 0)
-      }
-    }
+      },
+    },
   };
   labelBlackListT = ['host', 'serial', 'particulate_matter', 'mean_*'];
   graphstyle = {
@@ -43,7 +43,7 @@ export class PmhistComponent implements OnInit {
     top: '4em',
     bottom: '30%',
     left: '1rem',
-    right: '15rem'
+    right: '15rem',
   };
 
   public startTime = '6h';
@@ -107,13 +107,13 @@ export class PmhistComponent implements OnInit {
     '34 µm',
     '37 µm',
     '40 µm',
-    ''
+    '',
   ];
   public barChartType = 'bar';
   public barChartLegend = true;
   public barChartData = [
     // { data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A' },
-    { data: [1, 0], label: 'OPC-N3' }
+    { data: [1, 0], label: 'OPC-N3' },
   ];
   public barChartOptions = {
     scaleShowVerticalLines: false,
@@ -124,14 +124,14 @@ export class PmhistComponent implements OnInit {
         {
           scaleLabel: {
             display: true,
-            labelString: 'Particles / cm³'
-          }
-        }
-      ]
-    }
+            labelString: 'Particles / cm³',
+          },
+        },
+      ],
+    },
   };
   public particle_values = {
-    '10': 0
+    '10': 0,
   };
 
   constructor(
@@ -200,9 +200,10 @@ export class PmhistComponent implements OnInit {
     }
 
     const q = this.utHTTP.buildInfluxQuery(clause, this.db, this.server);
-    this.utHTTP
-      .getHTTPData(q, 'grazweb', '.RaVNaygexThM')
-      .subscribe((data: Object) => this.handleData(data));
+    this.utHTTP.getHTTPData(q, 'grazweb', '.RaVNaygexThM').subscribe(
+      (data: Object) => this.handleData(data),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
   setAvg(t) {
     this.userMeanS = t;
@@ -301,7 +302,7 @@ export class PmhistComponent implements OnInit {
       console.log('maxVal:', this.maxVal);
       this.handleHighlightCallback({
         seriesName: this.labels[1], // first non-date
-        points: points
+        points: points,
       });
     }
   }
@@ -322,7 +323,7 @@ export class PmhistComponent implements OnInit {
     const tmpBarChartLabels = [];
     let chartSeriesData = {
       data: [],
-      label: sensor
+      label: sensor,
     };
     const sortedValues = [];
     for (let i = 0; i < dataObj['points'].length; i++) {

@@ -141,7 +141,8 @@ export class LuftdatenComponent implements OnInit {
     this.utHTTP
       // .getHTTPData(q)
       .getHTTPData(q, 'luftweb', 'YQ9xYNKWk4Pqkmr0')
-      .subscribe((data: Object) => this.handleData(data));
+      .subscribe((data: Object) => this.handleData(data),
+      (error) => this.globalSettings.displayHTTPerror(error));
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);

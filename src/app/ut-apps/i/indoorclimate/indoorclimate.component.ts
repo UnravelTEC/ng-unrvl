@@ -138,9 +138,10 @@ export class IndoorclimateComponent implements OnInit {
     }
     this.queryRunning++;
     const q = this.utHTTP.buildInfluxQuery(clause, undefined, undefined, 's');
-    this.utHTTP
-      .getHTTPData(q)
-      .subscribe((data: Object) => this.handleData(data, id));
+    this.utHTTP.getHTTPData(q).subscribe(
+      (data: Object) => this.handleData(data, id),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
 
   handleData(data: Object, id: string) {

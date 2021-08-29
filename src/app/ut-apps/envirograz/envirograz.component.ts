@@ -8,7 +8,7 @@ import { stringify } from 'querystring';
 @Component({
   selector: 'app-envirograz',
   templateUrl: './envirograz.component.html',
-  styleUrls: ['./envirograz.component.scss']
+  styleUrls: ['./envirograz.component.scss'],
 })
 export class EnvirograzComponent implements OnInit {
   graphstyle = {
@@ -16,14 +16,14 @@ export class EnvirograzComponent implements OnInit {
     top: '0',
     bottom: '0.5rem',
     left: '0.5rem',
-    right: '1rem'
+    right: '1rem',
   };
   graphstylePM = {
     position: 'absolute',
     top: '0',
     bottom: '0.5rem',
     left: '15rem',
-    right: '0.5rem'
+    right: '0.5rem',
   };
   multiplicateFactors = [1000];
 
@@ -33,18 +33,18 @@ export class EnvirograzComponent implements OnInit {
     pointSize: 3,
     axes: {
       y: {
-        axisLabelWidth: 60
-      }
-    }
+        axisLabelWidth: 60,
+      },
+    },
   };
   extraDyGraphConfigPM = {
     connectSeparatedPoints: true,
     pointSize: 3,
     axes: {
       y: {
-        logscale: true
-      }
-    }
+        logscale: true,
+      },
+    },
   };
 
   isNaN(a) {
@@ -64,21 +64,21 @@ export class EnvirograzComponent implements OnInit {
     H: {},
     P: {},
     PM: {},
-    N: {}
+    N: {},
   };
   data = {
     T: [],
     H: [],
     P: [],
     PM: [],
-    N: []
+    N: [],
   };
   startTimes = {
     T: this.startTime,
     H: this.startTime,
     P: this.startTime,
     PM: this.startTime,
-    N: this.startTime
+    N: this.startTime,
   };
   graphWidth = 1000;
   setGraphWidth(width) {
@@ -105,7 +105,7 @@ export class EnvirograzComponent implements OnInit {
     'id',
     'host',
     'mean_*',
-    'mean'
+    'mean',
   ];
 
   ngOnInit() {
@@ -175,9 +175,10 @@ export class EnvirograzComponent implements OnInit {
   launchQuery(clause: string, id: string) {
     const q = this.utHTTP.buildInfluxQuery(clause, this.db, this.server);
 
-    this.utHTTP
-      .getHTTPData(q, 'grazweb', '.RaVNaygexThM')
-      .subscribe((data: Object) => this.handleData(data, id));
+    this.utHTTP.getHTTPData(q, 'grazweb', '.RaVNaygexThM').subscribe(
+      (data: Object) => this.handleData(data, id),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
 
   handleData(data: Object, id: string) {

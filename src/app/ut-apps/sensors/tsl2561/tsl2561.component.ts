@@ -8,10 +8,9 @@ import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
 @Component({
   selector: 'app-tsl2561',
   templateUrl: './tsl2561.component.html',
-  styleUrls: ['./tsl2561.component.scss']
+  styleUrls: ['./tsl2561.component.scss'],
 })
 export class Tsl2561Component implements OnInit {
-
   colors = [];
   graphWidth = 1500;
   setGraphWidth(width) {
@@ -174,9 +173,10 @@ export class Tsl2561Component implements OnInit {
       }, 1000);
       return;
     }
-    this.utHTTP
-      .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
-      .subscribe((data: Object) => this.handleData(data));
+    this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(clause)).subscribe(
+      (data: Object) => this.handleData(data),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -221,5 +221,4 @@ export class Tsl2561Component implements OnInit {
     this.changeTrigger = !this.changeTrigger;
     this.changeTrigger = !this.changeTrigger;
   }
-
 }

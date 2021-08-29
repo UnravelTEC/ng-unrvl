@@ -7,7 +7,7 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
 @Component({
   selector: 'app-pressure',
   templateUrl: './pressure.component.html',
-  styleUrls: ['./pressure.component.scss']
+  styleUrls: ['./pressure.component.scss'],
 })
 export class PressureComponent implements OnInit {
   extraDyGraphConfig = { pointSize: 3 };
@@ -17,7 +17,7 @@ export class PressureComponent implements OnInit {
     top: '4em',
     bottom: '0rem',
     left: '0rem',
-    right: '15rem'
+    right: '15rem',
   };
 
   public startTime = '24h';
@@ -28,7 +28,7 @@ export class PressureComponent implements OnInit {
   labels = [];
   data = [];
 
-  appName = 'Air Pressure'
+  appName = 'Air Pressure';
 
   changeTrigger = true;
 
@@ -84,9 +84,10 @@ export class PressureComponent implements OnInit {
       return;
     }
     const q = this.utHTTP.buildInfluxQuery(clause);
-    this.utHTTP
-      .getHTTPData(q)
-      .subscribe((data: Object) => this.handleData(data));
+    this.utHTTP.getHTTPData(q).subscribe(
+      (data: Object) => this.handleData(data),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -101,5 +102,4 @@ export class PressureComponent implements OnInit {
     this.startTime = this.userStartTime;
     // this.changeTrigger = !this.changeTrigger;
   }
-
 }

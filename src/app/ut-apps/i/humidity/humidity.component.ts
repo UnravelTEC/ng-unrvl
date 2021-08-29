@@ -8,10 +8,9 @@ import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 @Component({
   selector: 'app-humidity',
   templateUrl: './humidity.component.html',
-  styleUrls: ['./humidity.component.scss']
+  styleUrls: ['./humidity.component.scss'],
 })
 export class HumidityComponent implements OnInit {
-
   colors = [];
   graphWidth = 1500;
   setGraphWidth(width) {
@@ -176,9 +175,10 @@ export class HumidityComponent implements OnInit {
       return;
     }
     this.queryRunning++;
-    this.utHTTP
-      .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
-      .subscribe((data: Object) => this.handleData(data));
+    this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(clause)).subscribe(
+      (data: Object) => this.handleData(data),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -224,5 +224,4 @@ export class HumidityComponent implements OnInit {
     this.changeTrigger = !this.changeTrigger;
     this.queryRunning--;
   }
-
 }

@@ -80,7 +80,7 @@ export class Ds18b20Component implements OnInit {
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService,
-    private router: ActivatedRoute,
+    private router: ActivatedRoute
   ) {
     this.globalSettings.emitChange({ appName: this.appName });
   }
@@ -190,9 +190,10 @@ export class Ds18b20Component implements OnInit {
       return;
     }
     this.queryRunning++;
-    this.utHTTP
-      .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
-      .subscribe((data: Object) => this.handleData(data));
+    this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(clause)).subscribe(
+      (data: Object) => this.handleData(data),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);

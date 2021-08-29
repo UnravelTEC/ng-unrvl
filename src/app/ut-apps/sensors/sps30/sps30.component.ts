@@ -216,9 +216,10 @@ export class Sps30Component implements OnInit {
       return;
     }
     const q = this.utHTTP.buildInfluxQuery(clause, undefined, undefined, 's');
-    this.utHTTP
-      .getHTTPData(q)
-      .subscribe((data: Object) => this.handleData(data, id));
+    this.utHTTP.getHTTPData(q).subscribe(
+      (data: Object) => this.handleData(data, id),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);

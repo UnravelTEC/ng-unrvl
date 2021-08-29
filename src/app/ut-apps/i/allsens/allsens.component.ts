@@ -33,9 +33,10 @@ export class AllsensComponent implements OnInit {
       return;
     }
     const q = this.utHTTP.buildInfluxQuery(clause);
-    this.utHTTP
-      .getHTTPData(q)
-      .subscribe((data: Object) => this.handleData(data));
+    this.utHTTP.getHTTPData(q).subscribe(
+      (data: Object) => this.handleData(data),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
 
   handleData(data: Object) {

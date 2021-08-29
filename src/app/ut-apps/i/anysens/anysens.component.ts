@@ -316,11 +316,8 @@ export class AnysensComponent implements OnInit {
     this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(clause)).subscribe(
       (data: Object) => this.handleData(data),
       (error) => {
-        console.error(error);
         this.queryRunning = false;
-        alert(
-          `HTTP error: ${error.status}, ${error.statusText}, ${error.message}`
-        );
+        this.gss.displayHTTPerror(error);
       }
     );
   }

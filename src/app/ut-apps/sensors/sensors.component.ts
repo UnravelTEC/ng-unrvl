@@ -7,12 +7,12 @@ import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 @Component({
   selector: 'app-sensors',
   templateUrl: './sensors.component.html',
-  styleUrls: ['./sensors.component.scss']
+  styleUrls: ['./sensors.component.scss'],
 })
 export class SensorsComponent implements OnInit {
   services = [];
   i2cDevices = {};
-  onewDevices = {}
+  onewDevices = {};
   loading = true;
   loadingText = 'Initializing...';
 
@@ -37,14 +37,17 @@ export class SensorsComponent implements OnInit {
   getServices() {
     this.utHTTP
       .getHTTPData(this.globalSettings.getAPIEndpoint() + 'system/services.php')
-      .subscribe((data: Object) => this.acceptServices(data));
+      .subscribe(
+        (data: Object) => this.acceptServices(data),
+        (error) => this.globalSettings.displayHTTPerror(error)
+      );
     this.loadingText = 'Loading...';
   }
   acceptServices(data: Object) {
     console.log('services:', data);
     if (data && data['services']) {
       this.services = [];
-      data['services'].forEach(item => {
+      data['services'].forEach((item) => {
         item.UpperCaseName = item.name.toUpperCase();
         if (item['sensor']) {
           console.log(item);
@@ -61,7 +64,7 @@ export class SensorsComponent implements OnInit {
 
   startService(service: string) {
     console.log('starting', service);
-    this.services.forEach(serviceItem => {
+    this.services.forEach((serviceItem) => {
       if (serviceItem['name'] == service) {
         serviceItem['running'] = undefined;
       }
@@ -70,7 +73,7 @@ export class SensorsComponent implements OnInit {
   }
   stopService(service: string) {
     console.log('stopping', service);
-    this.services.forEach(serviceItem => {
+    this.services.forEach((serviceItem) => {
       if (serviceItem['name'] == service) {
         serviceItem['running'] = undefined;
       }
@@ -79,7 +82,7 @@ export class SensorsComponent implements OnInit {
   }
   enableService(service: string) {
     console.log('enabling', service);
-    this.services.forEach(serviceItem => {
+    this.services.forEach((serviceItem) => {
       if (serviceItem['name'] == service) {
         serviceItem['onboot'] = undefined;
       }
@@ -88,7 +91,7 @@ export class SensorsComponent implements OnInit {
   }
   disableService(service: string) {
     console.log('disabling', service);
-    this.services.forEach(serviceItem => {
+    this.services.forEach((serviceItem) => {
       if (serviceItem['name'] == service) {
         serviceItem['onboot'] = undefined;
       }
@@ -105,7 +108,10 @@ export class SensorsComponent implements OnInit {
           '&service=' +
           service
       )
-      .subscribe((data: Object) => this.checkSuccessOfCommand(data));
+      .subscribe(
+        (data: Object) => this.checkSuccessOfCommand(data),
+        (error) => this.globalSettings.displayHTTPerror(error)
+      );
   }
 
   checkSuccessOfCommand(data: Object) {
@@ -120,7 +126,10 @@ export class SensorsComponent implements OnInit {
   getI2C() {
     this.utHTTP
       .getHTTPData(this.globalSettings.getAPIEndpoint() + 'system/i2c.php')
-      .subscribe((data: Object) => this.acceptI2C(data));
+      .subscribe(
+        (data: Object) => this.acceptI2C(data),
+        (error) => this.globalSettings.displayHTTPerror(error)
+      );
   }
   acceptI2C(data) {
     console.log('services:', data);
@@ -131,7 +140,10 @@ export class SensorsComponent implements OnInit {
   get1W() {
     this.utHTTP
       .getHTTPData(this.globalSettings.getAPIEndpoint() + 'system/1w.php')
-      .subscribe((data: Object) => this.accept1w(data));
+      .subscribe(
+        (data: Object) => this.accept1w(data),
+        (error) => this.globalSettings.displayHTTPerror(error)
+      );
   }
   accept1w(data) {
     console.log('services:', data);

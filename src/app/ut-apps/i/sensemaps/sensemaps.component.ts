@@ -6,7 +6,7 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
 @Component({
   selector: 'app-sensemaps',
   templateUrl: './sensemaps.component.html',
-  styleUrls: ['./sensemaps.component.scss']
+  styleUrls: ['./sensemaps.component.scss'],
 })
 export class SensemapsComponent implements OnInit {
   measurements = [];
@@ -14,7 +14,7 @@ export class SensemapsComponent implements OnInit {
   hosts = [];
 
   public queryRunning = false;
-  public errorText = "";
+  public errorText = '';
 
   constructor(
     private globalSettings: GlobalSettingsService,
@@ -37,15 +37,13 @@ export class SensemapsComponent implements OnInit {
     }
     this.queryRunning = true;
     const q = this.utHTTP.buildInfluxQuery(clause);
-    this.utHTTP
-      .getHTTPData(q)
-      .subscribe((data: Object) => this.handleData(data), (error) => {
-        console.error(error);
+    this.utHTTP.getHTTPData(q).subscribe(
+      (data: Object) => this.handleData(data),
+      (error) => {
         this.queryRunning = false;
-        alert(
-          `HTTP error: ${error.status}, ${error.statusText}, ${error.message}`
-        );
-      })
+        this.globalSettings.displayHTTPerror(error);
+      }
+    );
   }
 
   handleData(data: Object) {
