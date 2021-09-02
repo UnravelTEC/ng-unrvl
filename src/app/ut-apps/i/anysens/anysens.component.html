@@ -37,6 +37,7 @@
           [startTime]="dygStartTime"
           enableHighlightCallback="true"
           [colors]="colors"
+          [backGroundLevels]="gss['graphBackgrounds'][background]"
           [YLabel]="ylabel"
           [Y2Label]="y2label"
           (returnGraphWidthOnChange)="setGraphWidth($event)"

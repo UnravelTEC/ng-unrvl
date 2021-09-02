@@ -97,6 +97,7 @@ export class AnysensComponent implements OnInit {
   ylabel = '';
   sensor: String;
   interval: string;
+  background: string;
   host = '';
   value = '*';
   referrer = 'Allsens';
@@ -114,7 +115,7 @@ export class AnysensComponent implements OnInit {
   public sideBarShown = true;
 
   constructor(
-    private gss: GlobalSettingsService,
+    public gss: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService,
@@ -145,6 +146,7 @@ export class AnysensComponent implements OnInit {
       'host',
       'measurement',
       'sensor',
+      'background',
       'referrer',
       'from',
       'to',
@@ -163,6 +165,10 @@ export class AnysensComponent implements OnInit {
       .replace('pressure', '')
       .replace(',,', ',')
       .replace(',', ', ');
+    const ylabel = this.router.snapshot.queryParamMap.get('ylabel');
+    if (ylabel) {
+      this.ylabel = ylabel;
+    }
 
     if (this.from && this.to) {
       this.from = Number(this.from);
