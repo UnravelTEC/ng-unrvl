@@ -740,7 +740,7 @@ export class GlobalSettingsService implements OnInit {
       console.log('returnCalibratedData col', c, 'colCalParams len', calPlen);
       if (!calPlen) {
         for (let r = 0; r < datalen; r++) {
-          dataWithCal[r].push(data[c][r]);
+          dataWithCal[r].push(data[r][c]);
         }
       } else if (calPlen == 1) {
         // most simple case: everything after calDate gets corrected
@@ -752,8 +752,12 @@ export class GlobalSettingsService implements OnInit {
         const k = cccp[3];
         for (let r = 0; r < datalen; r++) {
           const currentNewRow = dataWithCal[r];
-          const rowTS = rawRowTSs[r];
           const origVal = data[r][c];
+          if (origVal === null || isNaN(origVal)) {
+            currentNewRow.push(origVal);
+            continue;
+          }
+          const rowTS = rawRowTSs[r];
           if (rowTS >= calTS) {
             let newVal = d + k * origVal;
             for (let i = 4; i < cccplen; i++) {
@@ -770,8 +774,12 @@ export class GlobalSettingsService implements OnInit {
         // TODO inter/extrapolate
         for (let r = 0; r < datalen; r++) {
           const currentNewRow = dataWithCal[r];
-          const rowTS = rawRowTSs[r];
           const origVal = data[r][c];
+          if (origVal === null || isNaN(origVal)) {
+            currentNewRow.push(origVal);
+            continue;
+          }
+          const rowTS = rawRowTSs[r];
           // cases:
           // * row before first cal, do nothing
           // * row between two cals, interpolate
