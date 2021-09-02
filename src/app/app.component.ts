@@ -97,7 +97,13 @@ export class AppComponent implements OnInit {
     this.gss.emitChange({ status: 'Influx fetching sensor list...' });
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery('show series'))
-      .subscribe((data: Object) => this.gss.handleInfluxSeries(data));
+      .subscribe(
+        (data: Object) => this.gss.handleInfluxSeries(data),
+        (error) => {
+          this.gss.server.databaseStatus = 'error';
+          this.gss.displayHTTPerror(error);
+        }
+      );
   }
 
   /*
@@ -119,10 +125,12 @@ export class AppComponent implements OnInit {
   public getCalibrations() {
     const calquery = 'select * from calibrations GROUP BY * ORDER BY time';
     this.gss.emitChange({ status: 'Influx fetching calibratoins...' });
-    this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(calquery, undefined, undefined)).subscribe(
-      (data: Object) => this.gss.acceptCalibrations(data),
-      (error) => this.gss.displayHTTPerror(error)
-    )
+    this.utHTTP
+      .getHTTPData(this.utHTTP.buildInfluxQuery(calquery, undefined, undefined))
+      .subscribe(
+        (data: Object) => this.gss.acceptCalibrations(data),
+        (error) => this.gss.displayHTTPerror(error)
+      );
   }
 
   public setTitle(newTitle?: string) {

@@ -302,7 +302,7 @@ style.padding-bottom="20vh"-->
         </label>
       </form>
 
-      <form class="subbox">
+      <form class="subbox" *ngIf="gss.server.calibrations">
         <h5>Calibration</h5>
         <label for="calibrate"
           >Enable

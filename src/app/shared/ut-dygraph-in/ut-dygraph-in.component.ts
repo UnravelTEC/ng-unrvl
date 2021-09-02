@@ -272,7 +272,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   constructor(
     private h: HelperFunctionsService,
     private sensorService: SensorService,
-    private gss: GlobalSettingsService
+    public gss: GlobalSettingsService
   ) {}
 
   ngOnChanges(changes: SimpleChanges) {
@@ -758,8 +758,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     while (this.roundDigits.length < this.columnLabels.length) {
       this.roundDigits.push(2);
     }
-    //
 
+    // calibrations may not be there yet...
     this.setDDandCalcIfNeeded();
     if (this.checkOK4Dev()) {
       this.dyGraphOptions['customBars'] = true;

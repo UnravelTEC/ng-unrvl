@@ -88,8 +88,11 @@ export class GlobalSettingsService implements OnInit {
     } TODO somewhere include hostname (host=)
     */
     measurements: [],
-    calibrations: false,
-    databaseStatus: 'unknown', // db status: up, down, unknown, waiting
+    calibrations: undefined, // undef: not here yet;
+    // null: table exists on server, but not fetched yet;
+    // false: no cals exist;
+    // true: cals there
+    databaseStatus: 'unknown', // db status: up, down, unknown, waiting, error
     api: undefined,
     influxdb: '',
     influxuser: '',
@@ -126,6 +129,16 @@ export class GlobalSettingsService implements OnInit {
 
     this.emitChangeSource.next(change);
   }
+
+  /* things that happen on start:
+    setCurrentWebEndpoint() -> checkForInflux() { http /health query } -> checkInfluxTestResponse()
+      -> initializeInfluxCreds() -> triggerDBScan() { emits InfluxUP: true } -(app.component.ts)->
+      -> app.getInfluxDBOverview() -> gss.handleInfluxSeries() { emits InfluxSeriesThere } -(app.component.ts)->
+      -> app-getFieldsOfSeries() -> gss.acceptFieldsOfSeries() { emits readyToFetchCalibrations } -(app.component.ts)->
+      -> app.getCalibrations() -> gss.acceptCalibrations()
+
+  */
+
   constructor(
     private http: HttpClient,
     private h: HelperFunctionsService,
@@ -271,7 +284,7 @@ export class GlobalSettingsService implements OnInit {
       const seri = series[i][0];
       const measurement = seri.split(',')[0];
       if (measurement == 'calibrations') {
-        this.server.calibrations = true;
+        this.server.calibrations = null;
         continue;
       }
       if (!this.server.measurements.includes(measurement)) {
@@ -384,8 +397,10 @@ export class GlobalSettingsService implements OnInit {
     });
     console.log('acceptFieldsOfSeries finished:', this.server.sensors);
     this.emitChange({ status: '' });
-    if (this.server.calibrations) {
+    if (this.server.calibrations === null) {
       this.emitChange({ readyToFetchCalibrations: true });
+    } else {
+      this.server.calibrations = false;
     }
   }
   acceptCalibrations(data) {
@@ -393,6 +408,7 @@ export class GlobalSettingsService implements OnInit {
     if (!data['results']) {
       console.error('influx acceptCalibrations: empty', data);
       this.emitChange({ status: '' });
+      this.server.calibrations = false;
       return;
     }
     for (const sensor in this.server.sensors) {
@@ -420,6 +436,7 @@ export class GlobalSettingsService implements OnInit {
     if (!series) {
       console.error('cals asked, but none there');
       this.emitChange({ status: '' });
+      this.server.calibrations = false;
       return;
     }
     series.forEach((entry) => {
@@ -446,6 +463,7 @@ export class GlobalSettingsService implements OnInit {
     console.log('sensors', this.server.sensors);
 
     this.emitChange({ status: '' });
+    this.server.calibrations = true;
   }
 
   setCurrentWebEndpoint(chosenBackendType, baseurl?: string) {
@@ -677,11 +695,13 @@ export class GlobalSettingsService implements OnInit {
   // merge with Devition calculation later for speed
   returnCalibratedData(data: Array<Array<any>>, raw_labels): Array<Array<any>> {
     console.log('returnCalibratedData', data, raw_labels);
+    if (!this.server.calibrations) {
+      console.error('no calibrations');
+      return data;
+    }
 
     const nrcols = raw_labels.length;
-    const datalen = data.length;
     const calParams = [[]]; // [ for every column: (0=Date), [[ Date, 'note:text', n0:number, …,  n7 ], […]]
-    const dataWithCal = [];
     let somethingToCal = false;
     for (let c = 1; c < nrcols; c++) {
       const rowCalParams = this.getCalParams(raw_labels[c]);
@@ -695,12 +715,16 @@ export class GlobalSettingsService implements OnInit {
       return data;
     }
     console.log('calParams', calParams);
+    console.log('orig data:', cloneDeep(data));
+
+    const datalen = data.length;
+    const dataWithCal = [];
 
     // todo: search for valid cal timerange
     // if len calParams[c] = 1 - only one timestamp, use this.
     // if len calParams[c] = 2 - two timestamp, linear inter/extrapolate for EACH datapoint!!.
 
-    // do it row after row, so we can accerlerate processing if there are no calibration data for some columns
+    // do it row after row, so we can accelerate processing if there are no calibration data for some columns
     // date first
     const rawRowTSs = []; // speed
     for (let r = 0; r < datalen; r++) {
@@ -806,7 +830,7 @@ export class GlobalSettingsService implements OnInit {
         }
       }
     }
-    console.log('calibrated, result', dataWithCal);
+    console.log('calibrated, result', cloneDeep(dataWithCal));
 
     return dataWithCal;
   }
@@ -829,5 +853,17 @@ export class GlobalSettingsService implements OnInit {
       'cals',
     ]);
     return calparams ? calparams : [];
+  }
+  influxReady() {
+    if (!this.server.influxdb || this.server.databaseStatus != 'up') {
+      return false;
+    }
+    if (
+      this.server.calibrations === undefined ||
+      this.server.calibrations === null
+    ) {
+      return false;
+    }
+    return true;
   }
 }
