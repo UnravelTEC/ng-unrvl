@@ -732,6 +732,8 @@ export class GlobalSettingsService implements OnInit {
       dataWithCal.push([rowDate]);
       rawRowTSs.push(rowDate.valueOf());
     }
+
+    // FIXME somewhere in there is an error, that if mixed colums (with or without cals), x/y columns in data table get mixed badly
     for (let c = 1; c < nrcols; c++) {
       const colCalParams = calParams[c];
       const calPlen = colCalParams.length;
