@@ -1019,7 +1019,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       const displayedValue =
         !series.hasOwnProperty('y') || isNaN(series.y)
           ? ''
-          : parent.h.roundAccurately(series.y, parent.roundDigits[i + 1]);
+          : parent.h
+              .roundAccurately(series.y, parent.roundDigits[i + 1])
+              .toLocaleString();
       const cls = series.isHighlighted ? 'class="highlight"' : '';
       const hoverCallback = genHover(series.label, htmlID);
       const toggleCallback = genToggle(series.label, htmlID);
@@ -1056,13 +1058,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           valcells += `<td class="d" ${toggleCallback}>` + devtext + '</td>';
         }
 
-        let unit = series.labelHTML.match(/\((.*)\)$/);
-        if (unit) {
-          unit = unit[1];
-        }
-        valcells += `<td class='u'${textcolor} ${toggleCallback}>${unit}</td>`;
         colon = ':';
       }
+      let unit = series.labelHTML.match(/\((.*)\)$/);
+      unit = unit ? unit[1] : '';
+      const unittext = data.x || !unit ? unit : '(' + unit + ')';
+      valcells += `<td class='u'${textcolor} ${toggleCallback}>${unittext}</td>`;
       html +=
         `<tr style='color:${series.color};' ${cls} ${hoverCallback} title='Toggle Display'>` +
         `<th${textcolor} class="h"><span class='dash'>${series.dashHTML}</span><span class='one' ${setSingleCallback} title='Display alone'>[1]</span></th>` +
@@ -1786,20 +1787,19 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     // also gets called when number input box is changed
     console.log('changeYMode', $event, sel);
     if (sel == 'y1min' || sel == 'y1max') {
-
       const r: [number, number] = [null, null];
       if (this.yModes.y1min == 'fix') {
         r[0] = this.yFixedRanges.y1min;
-        if (this.dyGraphOptions.axes.y.logscale && r[0] <= 0){
-          alert('Ymin ≤ 0 not possible in log scale view')
+        if (this.dyGraphOptions.axes.y.logscale && r[0] <= 0) {
+          alert('Ymin ≤ 0 not possible in log scale view');
           this.yFixedRanges.y1min = 1;
           return;
         }
       }
       if (this.yModes.y1max == 'fix') {
         r[1] = this.yFixedRanges.y1max;
-        if (this.dyGraphOptions.axes.y.logscale && r[1] <= 0){
-          alert('Ymax ≤ 0 not possible in log scale view')
+        if (this.dyGraphOptions.axes.y.logscale && r[1] <= 0) {
+          alert('Ymax ≤ 0 not possible in log scale view');
           this.yFixedRanges.y1max = 1;
           return;
         }
@@ -1813,16 +1813,16 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       const r: [number, number] = [null, null];
       if (this.yModes.y2min == 'fix') {
         r[0] = this.yFixedRanges.y2min;
-        if (this.dyGraphOptions.axes.y2.logscale && r[0] <= 0){
-          alert('Y2min ≤ 0 not possible in log scale view')
+        if (this.dyGraphOptions.axes.y2.logscale && r[0] <= 0) {
+          alert('Y2min ≤ 0 not possible in log scale view');
           this.yFixedRanges.y2min = 1;
           return;
         }
       }
       if (this.yModes.y2max == 'fix') {
         r[1] = this.yFixedRanges.y2max;
-        if (this.dyGraphOptions.axes.y2.logscale && r[1] <= 0){
-          alert('Y2min ≤ 0 not possible in log scale view')
+        if (this.dyGraphOptions.axes.y2.logscale && r[1] <= 0) {
+          alert('Y2min ≤ 0 not possible in log scale view');
           this.yFixedRanges.y2max = 1;
           return;
         }
