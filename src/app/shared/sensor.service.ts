@@ -32,7 +32,8 @@ export class SensorService {
       },
       P: function (value) {
         if (value === null) return null;
-        if (isNaN(value) || value > 1100 || value < 300) { // abs. max would be 20000 hPa ?
+        if (isNaN(value) || value > 1100 || value < 300) {
+          // abs. max would be 20000 hPa ?
           return NaN;
         }
         const dev = 1; // hPa
@@ -166,7 +167,7 @@ export class SensorService {
         round_digits: 1,
       },
     },
-    'PT1000': {
+    PT1000: {
       '*_degC': {
         // PT1000: 0.15%
         // R am Board  0.1%
@@ -197,7 +198,7 @@ export class SensorService {
           const dev = sum_offset + din_mult * value;
           return [value - dev, value, value + dev];
         },
-      }
+      },
     },
     GPS: {
       lat: {
@@ -295,7 +296,21 @@ export class SensorService {
     return this.h.roundAccurately(value, this.getDigits(raw_label));
   }
   getDigits(raw_label) {
+    const metric = raw_label['metric'];
+    if (
+      metric == 'mem' ||
+      metric == 'disk' ||
+      metric == 'swap' ||
+      metric == 'processes'
+    ) {
+      const field = raw_label['field'];
+      if (field.endsWith('percent')) {
+        return 1;
+      }
+      return 0;
+    }
     const retval = this.getSensorPresetField(raw_label, 'round_digits');
+    console.log('getDigits for', raw_label, '=', retval);
     return retval !== undefined ? retval : 2;
   }
   getSensorPresetField(raw_label, fieldname) {

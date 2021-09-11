@@ -180,7 +180,7 @@ export class UtFetchdataService {
     );
   }
 
-  private telegrafMetrics = ["mem", "disk", "io", "processes","swap","cpu"];
+  private telegrafMetrics = ['mem', 'disk', 'io', 'processes', 'swap', 'cpu'];
   parseInfluxData(
     data: Object,
     labelBlackList: string[] = [],
@@ -277,7 +277,7 @@ export class UtFetchdataService {
           seriesValidColumns[i][colindex] = validColCount; // where should it be in the end
           let colname = series['columns'][colindex];
           orig_labels.push(serieslabel + ' ' + colname);
-          const metric = series['name']
+          const metric = series['name'];
           raw_labels.push({
             metric: metric,
             tags: tags,
