@@ -217,6 +217,10 @@ export class PmhistComponent implements OnInit {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     // console.log('parsed', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
 
     // custom sort
     const oldLabels = ret['labels'];

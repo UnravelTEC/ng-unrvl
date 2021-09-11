@@ -110,6 +110,10 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
   printResult(data: Object) {
     console.log(cloneDeep(data));
     let ret = this.utHTTP.parseInfluxData(data);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
 
     this.dygLabels = ret['labels'];
     console.log(cloneDeep(this.dygLabels));

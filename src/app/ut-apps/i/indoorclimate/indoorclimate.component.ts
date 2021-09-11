@@ -147,6 +147,11 @@ export class IndoorclimateComponent implements OnInit {
   handleData(data: Object, id: string) {
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT, 's');
     console.log(id, 'received', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      this.queryRunning--
+      return;
+    }
     this.labels[id] = ret['labels'];
     this.data[id] = ret['data'];
     // console.log(cloneDeep(this.dygLabels));

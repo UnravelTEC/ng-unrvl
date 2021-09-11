@@ -101,6 +101,10 @@ export class CoretempsComponent implements OnInit {
   handleData(data: Object) {
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('received', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
     this.labels = ret['labels'];
     this.data = ret['data'];
     // console.log(cloneDeep(this.dygLabels));

@@ -183,6 +183,10 @@ export class EnvirograzComponent implements OnInit {
 
   handleData(data: Object, id: string) {
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
     console.log(id, 'received', ret);
     this.labels[id] = ret['labels'];
     this.data[id] = ret['data'];

@@ -54,6 +54,10 @@ export class FlickerComponent implements OnInit {
   printResult(data: Object) {
     console.log(data);
     let ret = this.utHTTP.parseInfluxData(data);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
 
     this.dygLabels = ret['labels'];
 

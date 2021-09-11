@@ -219,6 +219,10 @@ export class Bme280Component implements OnInit {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('parsed', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
     const labels = ret['labels'];
     this.raw_labels = ret['raw_labels'];
 

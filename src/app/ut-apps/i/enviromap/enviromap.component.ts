@@ -282,8 +282,8 @@ export class EnviromapComponent implements OnInit, OnDestroy {
     if (ret['error']) {
       alert('Influx Error: ' + ret['error']);
       this.queryRunning = false;
-      this.data = [];
-      this.labels = ['']; // to signalise no data
+      // this.data = [];
+      // this.labels = ['']; // to signalise no data
       return;
     }
     const labels = ret['labels'];

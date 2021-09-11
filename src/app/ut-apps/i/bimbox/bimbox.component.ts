@@ -217,6 +217,10 @@ export class BimboxComponent implements OnInit {
   handleData(data: Object, id: string) {
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log(id, 'received', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
     this.labels[id] = ret['labels'];
     this.data[id] = ret['data'];
     // if (id == 'N') {

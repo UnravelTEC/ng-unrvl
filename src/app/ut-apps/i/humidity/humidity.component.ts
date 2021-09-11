@@ -188,6 +188,11 @@ export class HumidityComponent implements OnInit {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('parsed', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      this.queryRunning--;
+      return;
+    }
     const labels = ret['labels'];
     const idata = ret['data'];
 

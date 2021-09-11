@@ -150,6 +150,10 @@ export class LuftdatenComponent implements OnInit {
   handleData(data: Object) {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
     console.log('parsed', ret);
     const labels = ret['labels'];
     const idata = ret['data'];
