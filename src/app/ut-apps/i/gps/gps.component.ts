@@ -52,8 +52,7 @@ export class GpsComponent implements OnInit {
 
   launchQuery(clause: string) {
     this.queryRunning = true;
-    if (!this.globalSettings.server.influxdb) {
-      console.log('db not yet set, wait');
+    if (!this.globalSettings.influxReady()) {
       this.globalSettings.emitChange({ status: 'Waiting for Influx Connection to finish...' });
       setTimeout(() => {
         this.launchQuery(clause);

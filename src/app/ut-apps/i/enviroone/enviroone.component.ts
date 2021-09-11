@@ -231,8 +231,7 @@ export class EnvirooneComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
-    if (!this.globalSettings.server.influxdb) {
-      console.log('db not yet set, wait');
+    if (!this.globalSettings.influxReady()) {
       setTimeout(() => {
         this.launchQuery(clause);
       }, 1000);

@@ -208,8 +208,7 @@ export class Sps30Component implements OnInit {
   }
 
   launchQuery(clause: string, id: string) {
-    if (!this.globalSettings.server.influxdb) {
-      console.log('db not yet set, wait');
+    if (!this.globalSettings.influxReady()) {
       setTimeout(() => {
         this.launchQuery(clause, id);
       }, 1000);

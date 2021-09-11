@@ -866,12 +866,20 @@ export class GlobalSettingsService implements OnInit {
   }
   influxReady() {
     if (!this.server.influxdb || this.server.databaseStatus != 'up') {
+      console.log(
+        'influx',
+        this.server.influxdb,
+        'not ready, status',
+        this.server.databaseStatus
+      );
+
       return false;
     }
     if (
       this.server.calibrations === undefined ||
       this.server.calibrations === null
     ) {
+      console.log('influxReady: calibrations not there yet');
       return false;
     }
     return true;

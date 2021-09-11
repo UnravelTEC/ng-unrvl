@@ -313,7 +313,6 @@ export class AnysensComponent implements OnInit {
 
   launchQuery(clause: string) {
     if (!this.gss.influxReady()) {
-      console.log('influx not ready, wait');
       setTimeout(() => {
         this.launchQuery(clause);
       }, 1000);
