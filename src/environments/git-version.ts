@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "aa96906",
-  "SHA": "aa9690640eec5c8632277ac957d45b47dc67c94d",
-  "branch": "develop",
+  "shortSHA": "0cd53d2",
+  "SHA": "0cd53d21bd1348ab397f879720a1431395bcdc53",
+  "branch": "co2-bme-logger",
   "lastCommitAuthor": "Michael Maier",
-  "lastCommitTime": "Fri Aug 6 09:33:52 2021 +0200",
-  "lastCommitMessage": "legend revamp; more efficient",
-  "lastCommitNumber": "1229"
+  "lastCommitTime": "Fri Sep 17 10:02:20 2021 +0200",
+  "lastCommitMessage": "no wrap in labels",
+  "lastCommitNumber": "1315"
 }

@@ -2,11 +2,11 @@
 
   <h2>Graphs</h2>
   <div class="panel">
-    <app-ut-dashboard-tile title="Indoor Climate" path="/Apps/I/IndoorClimate"></app-ut-dashboard-tile>
+    <!-- <app-ut-dashboard-tile title="Indoor Climate" path="/Apps/I/IndoorClimate"></app-ut-dashboard-tile> -->
 
-    <app-ut-dashboard-tile title="CO₂ Graph"
+    <!-- <app-ut-dashboard-tile title="CO₂ Graph"
       *ngIf="gss.server.sensors && (gss.server.sensors['SCD30'] || gss.server.sensors['SCD40'])"
-      path="/Apps/CO2" icon="284px-Carbon_dioxide_3D_spacefill.png"></app-ut-dashboard-tile>
+      path="/Apps/CO2" icon="284px-Carbon_dioxide_3D_spacefill.png"></app-ut-dashboard-tile> -->
     <!-- <app-ut-dashboard-tile title="Air Temperature" path="/Apps/Sensors/DS18B20" icon="noun_Temperature.png"></app-ut-dashboard-tile> -->
 
     <app-ut-dashboard-tile title="NDIR CO₂"
@@ -26,12 +26,13 @@
       [queryParams]="{ sensor: 'SCD30', measurement: 'gas', value: 'CO2_ppm', referrer: 'Dashboard' }">
     </app-ut-dashboard-tile> -->
     <!-- referrer 'Dashboard' does only work because /Apps/I/Dashboard is invalid and gets redirected to Dashboard -->
-    <app-ut-dashboard-tile title="All Temperatures"
+    <!-- <app-ut-dashboard-tile title="All Temperatures"
       *ngIf="gss.server.measurements.includes('temperature')"
       path="/Apps/I/Anysens"
       icon="noun_Temperature.png"
-      [queryParams]="{ measurement: 'temperature', referrer: 'Dashboard' }"></app-ut-dashboard-tile>
-      <app-ut-dashboard-tile title="Air Pressure"
+      [queryParams]="{ measurement: 'temperature', referrer: 'Dashboard' }"></app-ut-dashboard-tile> -->
+
+    <app-ut-dashboard-tile title="Air Pressure"
       *ngIf="gss.server.measurements.includes('pressure')"
       path="/Apps/I/Anysens"
       icon="320px-Pressure_gauge.svg.png"
@@ -75,7 +76,7 @@
   <h2>Tools</h2>
   <div class="panel">
     <app-ut-dashboard-tile title="Database Series" path="/Apps/I/Allsens" bg="#FFF" icon="influxdata-logo--symbol--pool-alpha.png"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Influx Playground" path="/Apps/Influx-Test" bg="#FFF" icon="influxdata-logo--symbol--pool-alpha.png"></app-ut-dashboard-tile>
+    <!-- <app-ut-dashboard-tile title="Influx Playground" path="/Apps/Influx-Test" bg="#FFF" icon="influxdata-logo--symbol--pool-alpha.png"></app-ut-dashboard-tile> -->
     <app-ut-dashboard-tile title="Sensor Overview" *ngIf="gss.server.type == 'Tricorder'" path="/Apps/Sensors"  icon="manufacturers/Raspberry_Pi.svg"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="MQTT Test" path="/Apps/MQTT-Test" icon="mqtt.png"></app-ut-dashboard-tile>
 
@@ -84,6 +85,6 @@
   <div class="panel">
     <app-ut-dashboard-tile title="Calibrations" path="/Apps/Calibrations" bg="#FFF" icon="calibration.svg"></app-ut-dashboard-tile>
 
-    <app-ut-dashboard-tile title="Geoplots" path="/Apps/I/Sensemaps" bg="#FFF" icon="map.svg"></app-ut-dashboard-tile>
+    <!-- <app-ut-dashboard-tile title="Geoplots" path="/Apps/I/Sensemaps" bg="#FFF" icon="map.svg"></app-ut-dashboard-tile> -->
   </div>
 </div>
