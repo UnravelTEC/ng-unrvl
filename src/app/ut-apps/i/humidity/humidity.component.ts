@@ -23,7 +23,7 @@ export class HumidityComponent implements OnInit {
     pointSize: 3,
     logscale: false,
   };
-  labelBlackListT = ['host', 'serial', 'mean_*', 'id', 'sensor', 'mean'];
+  labelBlackListT = ['host', 'serial', 'mean_*', 'mean'];
   graphstyle = {
     position: 'absolute',
     top: '0.5em',
