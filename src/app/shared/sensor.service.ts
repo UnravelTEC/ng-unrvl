@@ -97,7 +97,7 @@ export class SensorService {
 
           const dev = 3; // %
           // TODO Log term stability ±0.5 % / Year 10...90%
-          // TODO hysteresis ±1%
+          // TODO hysteresis ±1% ... use only if values are changing!
           // TODO nonlinearity 1%
           // TODO operating range datasheet p.9
           return [value - dev, value, value + dev];
