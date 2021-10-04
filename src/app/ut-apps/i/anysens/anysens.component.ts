@@ -96,6 +96,7 @@ export class AnysensComponent implements OnInit {
   measurement = 'temperature';
   ylabel = '';
   sensor: String;
+  id: String;
   interval: string;
   background: string;
   host = '';
@@ -150,6 +151,7 @@ export class AnysensComponent implements OnInit {
       'referrer',
       'from',
       'to',
+      'id',
       'value',
       'interval',
     ].forEach((element) => {
@@ -214,6 +216,9 @@ export class AnysensComponent implements OnInit {
     }
     if (this.host) {
       params['host'] = this.host;
+    }
+    if (this.id) {
+      params['id'] = this.id;
     }
 
     const queries = this.utHTTP.influxMeanQuery(
