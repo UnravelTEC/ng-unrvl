@@ -1014,7 +1014,38 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         : '';
     }
 
-    for (let i = 0; i < data.series.length; i++) {
+    const nrSeries = data.series.length;
+    let currentUnit = '';
+    let currentIndex = -1;
+    let currentY = -Infinity;
+    const units = [];
+    for (let i = 0; i < nrSeries; i++) {
+      const series = data.series[i];
+      const unitArr = series.labelHTML.match(/\((.*)\)$/);
+      if (unitArr) {
+        units[i] = unitArr[1];
+        if (series.isHighlighted) {
+          currentUnit = unitArr[1];
+          currentIndex = i;
+          currentY = series.y;
+        }
+      } else {
+        units[i] = '';
+      }
+    }
+    let seriesWithSameUnit = 0;
+    if (currentUnit) {
+      for (let i = 0; i < nrSeries; i++) {
+        if (i == currentIndex) {
+          continue;
+        }
+        if (currentUnit == units[i]) {
+          seriesWithSameUnit += 1;
+        }
+      }
+    }
+
+    for (let i = 0; i < nrSeries; i++) {
       const series = data.series[i];
       const displayedValue =
         !series.hasOwnProperty('y') || isNaN(series.y)
@@ -1022,7 +1053,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           : parent.h
               .roundAccurately(series.y, parent.roundDigits[i + 1])
               .toLocaleString();
-      const cls = series.isHighlighted ? 'class="highlight"' : '';
+      const isHighlighted = series.isHighlighted;
+      const cls = isHighlighted ? 'class="highlight"' : '';
       const hoverCallback = genHover(series.label, htmlID);
       const toggleCallback = genToggle(series.label, htmlID);
       const setSingleCallback = genSingleClick(series.label, htmlID);
@@ -1060,10 +1092,37 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
         colon = ':';
       }
-      let unit = series.labelHTML.match(/\((.*)\)$/);
-      unit = unit ? unit[1] : '';
+
+      const unit = units[i];
       const unittext = data.x || !unit ? unit : '(' + unit + ')';
       valcells += `<td class='u'${textcolor} ${toggleCallback}>${unittext}</td>`;
+      if (data.x && seriesWithSameUnit > 0) {
+        valcells += `<td class='c' ${toggleCallback}>`;
+
+        if (!isNaN(series.y)) {
+          let compareText = '';
+          if (unit == currentUnit) {
+            if (i == currentIndex) {
+              valcells = valcells.replace(/class='c'/, "class='s'");
+              compareText = '•';
+            } else {
+              compareText = 'Δ ';
+              const diff = series.y - currentY;
+              if (diff > 0) {
+                compareText += '+';
+              }
+              compareText +=
+                String(
+                  parent.h.roundAccurately(diff, parent.roundDigits[i + 1])
+                ) +
+                '&thinsp;' +
+                unit;
+            }
+          }
+          valcells += compareText;
+        }
+        valcells += '</td>';
+      }
       html +=
         `<tr style='color:${series.color};' ${cls} ${hoverCallback} title='Toggle Display'>` +
         `<th${textcolor} class="h"><span class='dash'>${series.dashHTML}</span><span class='one' ${setSingleCallback} title='Display alone'>[1]</span></th>` +
