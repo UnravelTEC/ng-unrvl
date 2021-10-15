@@ -31,6 +31,13 @@ const appRoutes: Routes = [
         (m) => m.ServicesModule
       ),
   },
+  // {
+  //   path: 'Settings/Sensors/SCD30',
+  //   loadChildren: () =>
+  //     import('./ut-settings/sensors/scd30-cfg/scd30-cfg.module').then(
+  //       (m) => m.Scd30CfgModule
+  //     ),
+  // },
   {
     path: 'Dashboard',
     loadChildren: () =>

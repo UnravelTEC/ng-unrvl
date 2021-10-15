@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { FanSpeedComponent } from './pieces/fan-speed/fan-speed.component';
 import { NetworkComponent } from './pieces/network/network.component';
 import { InfluxsettingsComponent } from './pieces/influxsettings/influxsettings.component';
+import { Scd30CfgComponent } from './sensors/scd30-cfg/scd30-cfg.component';
 
 
 @NgModule({
@@ -33,6 +34,7 @@ import { InfluxsettingsComponent } from './pieces/influxsettings/influxsettings.
     FanSpeedComponent,
     NetworkComponent,
     InfluxsettingsComponent,
+    Scd30CfgComponent
   ],
 })
 export class UtSettingsModule {}
