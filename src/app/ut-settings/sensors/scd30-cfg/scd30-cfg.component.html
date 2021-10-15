@@ -1,0 +1,35 @@
+<p>scd30-cfg works!</p>
+
+service status frc - button cal_ppm - number altitude - number asc - checkbox
+interval - number
+
+<h3>Measurement interval</h3>
+
+<p>Current interval: {{ interval }}s</p>
+
+<p>
+  Set new interval:
+  <input
+    type="number"
+    id="interval"
+    name="interval"
+    [(ngModel)]="userInterval"
+    style="width: 4em"
+  />(min 1, max 1800)
+  <button (click)="reload()" type="button">Set</button>
+</p>
+
+<h2>Calibration</h2>
+
+<h3>Automatic Self-Calibration (ASC)</h3>
+
+<p>Current Status: {{ </p>
+
+<mat-checkbox
+  [(ngModel)]="autoreload"
+  name="autoreload"
+  labelPosition="after"
+  (ngModelChange)="toggleAutoReload($event)"
+>
+  auto
+</mat-checkbox>
