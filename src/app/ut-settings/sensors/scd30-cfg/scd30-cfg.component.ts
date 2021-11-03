@@ -24,6 +24,10 @@ export class Scd30CfgComponent implements OnInit {
 
   public altitude: number;
   public userAltitude: number;
+
+  public services = []; // only gets filled with 1 entry
+  public loadingText = 'Initializing...';
+
   private ls_api_user;
   private ls_api_pass;
 
@@ -34,6 +38,7 @@ export class Scd30CfgComponent implements OnInit {
   reload() {
     this.ls_api_user = this.localStorage.get('api_user');
     this.ls_api_pass = this.localStorage.get('api_pass');
+    this.getService();
     this.getInterval();
     this.getASC();
     this.getFRCval();
@@ -122,5 +127,85 @@ export class Scd30CfgComponent implements OnInit {
   }
   setAltitude() {
     alert('setAltitude');
+  }
+
+  // copied & modified from services.component TODO split into ng service
+  getService() {
+    this.utHTTP
+      .getHTTPData(
+        this.gss.getAPIEndpoint() + 'system/services.php?service=scd30'
+      )
+      .subscribe((data: Object) => this.acceptService(data));
+    this.loadingText = 'Loading...';
+  }
+  acceptService(data: Object) {
+    console.log('services:', data);
+    if (data && data['services']) {
+      this.services = data['services'];
+      this.loadingText = '';
+    } else {
+      this.loadingText = 'Error, no SCD30 service.';
+    }
+  }
+
+  // copied from services.component TODO split into ng service
+  startService(service: string) {
+    console.log('starting', service);
+    this.services.forEach((serviceItem) => {
+      if (serviceItem['name'] == service) {
+        serviceItem['running'] = undefined;
+      }
+    });
+    this.sendCmd(service, 'start');
+  }
+  stopService(service: string) {
+    console.log('stopping', service);
+    this.services.forEach((serviceItem) => {
+      if (serviceItem['name'] == service) {
+        serviceItem['running'] = undefined;
+      }
+    });
+    this.sendCmd(service, 'stop');
+  }
+  enableService(service: string) {
+    console.log('enabling', service);
+    this.services.forEach((serviceItem) => {
+      if (serviceItem['name'] == service) {
+        serviceItem['onboot'] = undefined;
+      }
+    });
+    this.sendCmd(service, 'enable');
+  }
+  disableService(service: string) {
+    console.log('disabling', service);
+    this.services.forEach((serviceItem) => {
+      if (serviceItem['name'] == service) {
+        serviceItem['onboot'] = undefined;
+      }
+    });
+    this.sendCmd(service, 'disable');
+  }
+
+  sendCmd(service: String, cmd: String) {
+    this.utHTTP
+      .getHTTPData(
+        this.gss.getAPIEndpoint() +
+          'system/service.php?cmd=' +
+          cmd +
+          '&service=' +
+          service,
+        this.ls_api_user,
+        this.ls_api_pass,
+        true
+      )
+      .subscribe((data: Object) => this.checkSuccessOfCommand(data));
+  }
+  checkSuccessOfCommand(data: Object) {
+    console.log('success:', data);
+    if (!data['success']) {
+      alert('last command unsuccessful');
+    } else {
+      this.getService();
+    }
   }
 }

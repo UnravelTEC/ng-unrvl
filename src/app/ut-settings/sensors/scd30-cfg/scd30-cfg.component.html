@@ -3,21 +3,82 @@
 service status frc - button cal_ppm - number altitude - number asc - checkbox
 interval - number
 
+<table>
+  <tr>
+    <th>Service Name</th>
+    <th>Description</th>
+    <th>Installed</th>
+    <th>Start on Boot</th>
+    <th>Currently Running</th>
+  </tr>
+  <tr *ngIf="loadingText">
+    <td colspan="5">{{ loadingText }}</td>
+  </tr>
+  <tr *ngFor="let service of services">
+    <td>
+      {{ service['name'] }}.service
+    </td>
+    <td>{{ service['description'] }}</td>
+    <td style="text-align: center">
+      <span>{{ service['installed'] ? 'Yes' : 'No' }}</span>
+    </td>
+    <td style="text-align: center" class="{{ service['onboot'] ? 'true' : 'false' }}">
+      <span *ngIf="service['installed']">
+        <span class="status">
+          {{
+          service['onboot']
+          ? 'Yes'
+          : service['onboot'] === undefined
+          ? '...'
+          : 'No'
+          }}
+        </span>
+        <button *ngIf="service['onboot']" type="submit" (click)="disableService(service['name'])"
+          title="Disable Service">
+          <mat-icon>highlight_off</mat-icon>
+        </button>
+        <button *ngIf="service['onboot'] === false" type="submit" (click)="enableService(service['name'])"
+          title="Enable Service">
+          <mat-icon>slideshow</mat-icon>
+        </button>
+        <button *ngIf="service['onboot'] === undefined">
+          <mat-icon>access_time</mat-icon>
+        </button>
+      </span>
+    </td>
+    <td style="text-align: center" class="{{ service['running'] ? 'true' : 'false' }}">
+      <span *ngIf="service['installed']">
+        <span *ngIf="service['running']"><span class="status">Yes</span>
+          <button type="submit" (click)="stopService(service['name'])" title="Stop Service">
+            <mat-icon>pause_circle_outline</mat-icon>
+          </button>
+        </span>
+        <span *ngIf="service['running'] === false">
+          <span class="status">No</span>
+          <button type="submit" (click)="startService(service['name'])" title="Start Service">
+            <mat-icon>play_circle_outline</mat-icon>
+          </button>
+        </span>
+        <span *ngIf="service['running'] === undefined">
+          <span class="status">...</span>
+          <button>
+            <mat-icon>access_time</mat-icon>
+          </button>
+        </span>
+      </span>
+    </td>
+  </tr>
+</table>
+
 <fieldset [disabled]="interval === undefined">
   <h3>Measurement interval</h3>
 
-  <p>Current interval: {{ interval }}s</p>
+  <p>Current interval: {{ interval ? interval : '?' }}&thinsp;s</p>
 
   <p>
     Set new interval:
-    <input
-      type="number"
-      id="interval"
-      name="interval"
-      [(ngModel)]="userInterval"
-      style="width: 4em"
-    />(min 1, max 1800)
-    <button (click)="setInterval()" type="button">Set</button>
+    <input type="number" id="interval" name="interval" [(ngModel)]="userInterval" style="width: 4em" />(min 1, max 1800)
+    <button (click)="setInterval()" type="button" [disabled]="interval === undefined">Set</button>
   </p>
 </fieldset>
 
@@ -27,33 +88,23 @@ interval - number
   <fieldset [disabled]="asc === undefined">
     <h3>Automatic Self-Calibration (ASC)</h3>
 
-    <p>Current Status: {{ asc ? 'Enabled' : 'Disabled' }}</p>
+    <p>Current Status: {{ asc === undefined ? '?' : asc ? 'Enabled' : 'Disabled' }}</p>
 
-    <mat-checkbox
-      [(ngModel)]="asc"
-      id="asc"
-      name="asc"
-      labelPosition="after"
-      (ngModelChange)="toggleASC($event)"
-
-    >
+    <mat-checkbox [(ngModel)]="asc" id="asc" name="asc" labelPosition="after" (ngModelChange)="toggleASC($event)"
+      [disabled]="asc === undefined">
       ASC
     </mat-checkbox>
   </fieldset>
+
   <fieldset [disabled]="calibration_ppm === undefined">
     <h3>Forced Recalibration (FRC)</h3>
     <p>
       Before triggering FRC, the sensor has to be in stable conditions for at
       least 2 minutes!
     </p>
-    <p>Target Value: <input
-      type="number"
-      id="calibration_ppm"
-      name="calibration_ppm"
-      [(ngModel)]="calibration_ppm"
-      style="width: 4em"
-    /> ppm</p>
-    <button (click)="FRC()" type="button">Calibrate!</button>
+    <p>Target Value: <input type="number" id="calibration_ppm" name="calibration_ppm" [(ngModel)]="calibration_ppm"
+        style="width: 4em" /> ppm</p>
+    <button (click)="FRC()" type="button" [disabled]="calibration_ppm === undefined">Calibrate!</button>
 
   </fieldset>
 </section>
@@ -61,18 +112,12 @@ interval - number
 <fieldset [disabled]="altitude === undefined">
   <h3>Operating Altitude</h3>
 
-  <p>Configured altitude: {{ altitude }}m</p>
+  <p>Configured altitude: {{ altitude === undefined ? '?' : altitude}}&thinsp;m</p>
 
   <p>
     Set new altitude:
-    <input
-      type="number"
-      id="altitude"
-      name="altitude"
-      [(ngModel)]="userAltitude"
-      style="width: 4em"
-    />(m)
-    <button (click)="setAltitude()" type="button">Set</button>
+    <input type="number" id="altitude" name="altitude" [(ngModel)]="userAltitude" style="width: 4em" /> m
+    <button (click)="setAltitude()" type="button" [disabled]="altitude === undefined">Set</button>
   </p>
 </fieldset>
 
