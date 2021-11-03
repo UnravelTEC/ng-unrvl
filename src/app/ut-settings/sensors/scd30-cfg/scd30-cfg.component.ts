@@ -54,8 +54,10 @@ export class Scd30CfgComponent implements OnInit {
         this.ls_api_pass,
         true
       )
-      .subscribe((data: Object) => this.acceptKey(data, key)),
-      (error) => this.gss.displayHTTPerror(error);
+      .subscribe(
+        (data: Object) => this.acceptKey(data, key),
+        (error) => this.gss.displayHTTPerror(error)
+      );
   }
   acceptKey(data, key) {
     let rv;
@@ -135,7 +137,10 @@ export class Scd30CfgComponent implements OnInit {
       .getHTTPData(
         this.gss.getAPIEndpoint() + 'system/services.php?service=scd30'
       )
-      .subscribe((data: Object) => this.acceptService(data));
+      .subscribe(
+        (data: Object) => this.acceptService(data),
+        (error) => this.gss.displayHTTPerror(error)
+      );
     this.loadingText = 'Loading...';
   }
   acceptService(data: Object) {
@@ -198,7 +203,10 @@ export class Scd30CfgComponent implements OnInit {
         this.ls_api_pass,
         true
       )
-      .subscribe((data: Object) => this.checkSuccessOfCommand(data));
+      .subscribe(
+        (data: Object) => this.checkSuccessOfCommand(data),
+        (error) => this.gss.displayHTTPerror(error)
+      );
   }
   checkSuccessOfCommand(data: Object) {
     console.log('success:', data);
