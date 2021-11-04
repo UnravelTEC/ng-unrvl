@@ -12,16 +12,12 @@
 
 <section>
   <h2>Data Endpoint</h2>
-  <mat-radio-group
-    [(ngModel)]="chosenBackendType"
-    id="chosenBackend"
-    (change)="setEndpoint($event)"
-  >
+  <mat-radio-group [(ngModel)]="chosenBackendType" id="chosenBackend" (change)="setEndpoint($event)">
     <div>
       <!-- //show if not dev - oder, egal simma eh selber -->
       <mat-radio-button value="Current Web Endpoint">
         This {{ gss.client.protocol == 'http' ? 'device' : 'server' }} ({{
-          gss.client.baseurl
+        gss.client.baseurl
         }})
       </mat-radio-button>
     </div>
@@ -34,9 +30,8 @@
       <mat-radio-button value="Other">
         Other
         {{
-          checkedCustomServerURL ? '(' + checkedCustomServerURL + ')' : ''
-        }}</mat-radio-button
-      >
+        checkedCustomServerURL ? '(' + checkedCustomServerURL + ')' : ''
+        }}</mat-radio-button>
       <fieldset [disabled]="chosenBackendType != 'Other'">
         <label for="customServerURL">Custom Endpoint URL</label>
         <input type="text" id="customServerURL" [(ngModel)]="customServerURL" />
@@ -60,8 +55,8 @@
       <tr>
         <th><label for="api_pass">Password</label></th>
         <td class="auth">
-          <input type="{{ hidepw ? 'password' : 'text'}}" id="api_pass" [(ngModel)]="api_pass"
-          /><mat-icon (click)="hidepw = !hidepw">{{ hidepw ? 'visibility' : 'visibility_off' }}</mat-icon>
+          <input type="{{ hidepw ? 'password' : 'text'}}" id="api_pass" [(ngModel)]="api_pass" />
+          <mat-icon (click)="hidepw = !hidepw">{{ hidepw ? 'visibility' : 'visibility_off' }}</mat-icon>
         </td>
       </tr>
       <tr>
@@ -82,21 +77,13 @@
   </section>
 </div>
 
-<div
-  class="{{ auth != 'OK' ? 'red' : '' }}"
-  *ngIf="gss.client.dev || (auth == 'OK' && gss.server.type == 'Tricorder')"
->
+<div class="{{ auth != 'OK' ? 'red' : '' }}" *ngIf="gss.client.dev || (auth == 'OK' && gss.server.type == 'Tricorder')">
   <section *ngIf="gss.server.hasscreen">
     <h2>
       Screen Brightness:
-      <span *ngIf="!bn.disabled"
-        >{{ (currentBrightness / 255) * 100 | number: '1.0-0' }}&#8239;%</span
-      >
+      <span *ngIf="!bn.disabled">{{ (currentBrightness / 255) * 100 | number: '1.0-0' }}&#8239;%</span>
     </h2>
-    <app-display-brightness
-      (brightnessEvent)="setNewBN($event)"
-      #bn
-    ></app-display-brightness>
+    <app-display-brightness (brightnessEvent)="setNewBN($event)" #bn></app-display-brightness>
   </section>
 
   <section>
@@ -109,18 +96,30 @@
 
   <section>
     <h2>System Services</h2>
-    <a routerLink="/Settings/Services" routerLinkActive="active"
-      >System Services</a
-    >
+    <a routerLink="/Settings/Services" routerLinkActive="active">System Services</a>
     <hr />
 
     <h2>System Time</h2>
     <app-system-time></app-system-time>
   </section>
 
-  <section>
-    <h2>Sensor Config</h2>
-    <app-scd30-cfg></app-scd30-cfg>
+  <section *ngIf="gss.server.sensors && gss.server.sensors['SCD30']">
+    <h2>Sensors Config</h2>
+    <table class="sensors">
+      <tr>
+        <th>Sensor</th>
+        <th>Parameter</th>
+        <th>Edit</th>
+      </tr>
+      <tr *ngFor="let s of gss.server.sensors | keyvalue">
+        <td>{{ s.key }}</td>
+        <td><span *ngFor="let m of s.value['measurements']">{{ m }}</span></td>
+        <td>
+          <a routerLink="/Settings/Sensors/SCD30" routerLinkActive="active" class="small"
+            *ngIf="s.key == 'SCD30'">Configuration</a>
+        </td>
+      </tr>
+    </table>
   </section>
 
   <section class="center">
@@ -152,10 +151,7 @@
         </button> -->
 
 <div style="margin: 0.5em; text-align: right">
-  {{ gitV.branch }}/<a
-    href="https://github.com/UnravelTEC/ng-unrvl/commit/{{ gitV.SHA }}"
-    >{{ gitV.shortSHA }}</a
-  >
+  {{ gitV.branch }}/<a href="https://github.com/UnravelTEC/ng-unrvl/commit/{{ gitV.SHA }}">{{ gitV.shortSHA }}</a>
   @ <span title="{{ gitV.lastCommitMessage }}">{{ gitV.lastCommitTime }}</span>
   <!-- {{ gitV.lastCommitAuthor }} -->
 </div>
