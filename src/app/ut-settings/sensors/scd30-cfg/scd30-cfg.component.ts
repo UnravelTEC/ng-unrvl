@@ -17,13 +17,18 @@ export class Scd30CfgComponent implements OnInit {
 
   public interval: number;
   public userInterval: number;
+  public intervalText = '';
 
   public asc: boolean;
+  public ascText = '';
 
   public calibration_ppm: number;
+  public calibrationText = '';
+  public do_frc = false;
 
   public altitude: number;
   public userAltitude: number;
+  public altitudeText = '';
 
   public services = []; // only gets filled with 1 entry
   public loadingText = 'Initializing...';
@@ -97,38 +102,127 @@ export class Scd30CfgComponent implements OnInit {
   getInterval() {
     this.getEntry('interval');
   }
-  acceptInterval(data: Object) {
-    if (data && data['interval']) {
-      this.interval = data['interval'];
-      console.log('got ', this.interval);
-    } else {
-      alert('sensor interval fetch error');
-      console.error('sensor interval fetch error', data);
-    }
-  }
+
   setInterval() {
-    alert('setInterval');
+    // alert('setInterval');
+    this.intervalText = 'Setting interval...';
+    this.stopService('scd30');
+    this.utHTTP
+      .getHTTPData(
+        this.gss.getAPIEndpoint() +
+          'system/ut-config.php?cmd=set&service=scd30&k=interval&v=' +
+          this.userInterval,
+        this.ls_api_user,
+        this.ls_api_pass,
+        true
+      )
+      .subscribe(
+        (data: Object) => {
+          this.acceptKey(data, 'interval');
+          this.intervalText = 'Reloading Service...';
+          this.startService('scd30');
+        },
+        (error) => this.gss.displayHTTPerror(error)
+      );
   }
 
   getASC() {
     this.getEntry('asc');
   }
   toggleASC($event) {
-    alert('toggleASC');
+    this.stopService('scd30');
+    const webparam = this.asc ? 'yes' : 'no';
+    this.ascText = 'Setting asc to ' + webparam + '...';
+    // alert('toggleASC to ' + webparam);
+    this.utHTTP
+      .getHTTPData(
+        this.gss.getAPIEndpoint() +
+          'system/ut-config.php?cmd=set&service=scd30&k=asc&v=' +
+          webparam,
+        this.ls_api_user,
+        this.ls_api_pass,
+        true
+      )
+      .subscribe(
+        (data: Object) => {
+          this.acceptKey(data, 'asc');
+          this.ascText = 'Reloading Service...';
+          this.startService('scd30');
+        },
+        (error) => this.gss.displayHTTPerror(error)
+      );
   }
 
   getFRCval() {
     this.getEntry('calibration_ppm');
   }
   FRC() {
-    alert('FRC');
+    // alert('FRC');
+    this.calibrationText = 'Setting FRC calibration ppm...';
+    this.utHTTP
+      .getHTTPData(
+        this.gss.getAPIEndpoint() +
+          'system/ut-config.php?cmd=set&service=scd30&k=calibration_ppm&v=' +
+          this.calibration_ppm,
+        this.ls_api_user,
+        this.ls_api_pass,
+        true
+      )
+      .subscribe(
+        (data: Object) => {
+          this.acceptKey(data, 'calibration_ppm');
+          this.do_frc = true;
+          this.calibrationText =
+            'Stopping running measurement for recalibration...';
+          this.stopService('scd30'); // function kickFRC continues when service stopped
+        },
+        (error) => this.gss.displayHTTPerror(error)
+      );
+  }
+  kickFRC() { // called from acceptService when stopping completed
+    this.calibrationText = 'Starting Recalibration...';
+    this.utHTTP
+      .getHTTPData(
+        this.gss.getAPIEndpoint() + 'system/frc.php?service=scd30',
+        this.ls_api_user,
+        this.ls_api_pass,
+        true
+      )
+      .subscribe(
+        (data: Object) => {
+          this.do_frc = false;
+          this.calibrationText =
+            'Recalibration ' + (data['success'] ? 'done.' : 'failed.');
+          this.startService('scd30');
+        },
+        (error) => this.gss.displayHTTPerror(error)
+      );
   }
 
   getAltitude() {
     this.getEntry('altitude');
   }
   setAltitude() {
-    alert('setAltitude');
+    // alert('setAltitude');
+    this.altitudeText = 'Setting altitude...';
+    this.stopService('scd30');
+    this.utHTTP
+      .getHTTPData(
+        this.gss.getAPIEndpoint() +
+          'system/ut-config.php?cmd=set&service=scd30&k=altitude&v=' +
+          this.userAltitude,
+        this.ls_api_user,
+        this.ls_api_pass,
+        true
+      )
+      .subscribe(
+        (data: Object) => {
+          this.acceptKey(data, 'altitude');
+          this.altitudeText = 'Reloading Service...';
+          this.startService('scd30');
+        },
+        (error) => this.gss.displayHTTPerror(error)
+      );
   }
 
   // copied & modified from services.component TODO split into ng service
@@ -148,6 +242,13 @@ export class Scd30CfgComponent implements OnInit {
     if (data && data['services']) {
       this.services = data['services'];
       this.loadingText = '';
+      this.intervalText = '';
+      this.altitudeText = '';
+      this.ascText = '';
+      this.calibrationText = '';
+      if (this.services[0]['running'] === false && this.do_frc) {
+        this.kickFRC();
+      }
     } else {
       this.loadingText = 'Error, no SCD30 service.';
     }

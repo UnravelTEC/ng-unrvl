@@ -1,8 +1,5 @@
 <h2>SCD30</h2>
 
-service status frc - button cal_ppm - number altitude - number asc - checkbox
-interval - number
-
 <table>
   <tr>
     <th>Service Name</th>
@@ -80,6 +77,7 @@ interval - number
     <input type="number" id="interval" name="interval" [(ngModel)]="userInterval" style="width: 4em" />(min 1, max 1800)
     <button (click)="setInterval()" type="button" [disabled]="interval === undefined">Set</button>
   </p>
+  <p>&nbsp;{{ intervalText }}</p>
 </fieldset>
 
 <section>
@@ -94,6 +92,7 @@ interval - number
       [disabled]="asc === undefined">
       ASC
     </mat-checkbox>
+    <p>&nbsp;{{ ascText }}</p>
   </fieldset>
 
   <fieldset [disabled]="calibration_ppm === undefined">
@@ -105,7 +104,7 @@ interval - number
     <p>Target Value: <input type="number" id="calibration_ppm" name="calibration_ppm" [(ngModel)]="calibration_ppm"
         style="width: 4em" /> ppm</p>
     <button (click)="FRC()" type="button" [disabled]="calibration_ppm === undefined">Calibrate!</button>
-
+    <p>&nbsp;{{ calibrationText }}</p>
   </fieldset>
 </section>
 
@@ -119,6 +118,7 @@ interval - number
     <input type="number" id="altitude" name="altitude" [(ngModel)]="userAltitude" style="width: 4em" /> m
     <button (click)="setAltitude()" type="button" [disabled]="altitude === undefined">Set</button>
   </p>
+  <p>&nbsp;{{ altitudeText }}</p>
 </fieldset>
 
 <button (click)="reload()" type="button">Reload Settings from Device</button>
