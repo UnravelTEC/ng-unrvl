@@ -44,8 +44,8 @@ export class Scd30CfgComponent implements OnInit {
     this.ls_api_user = this.localStorage.get('api_user');
     this.ls_api_pass = this.localStorage.get('api_pass');
     this.getService();
-    this.getInterval();
-    this.getASC();
+    // this.getInterval();
+    // this.getASC();
     this.getFRCval();
     this.getAltitude();
   }
