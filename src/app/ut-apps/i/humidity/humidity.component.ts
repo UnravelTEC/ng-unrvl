@@ -8,10 +8,9 @@ import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 @Component({
   selector: 'app-humidity',
   templateUrl: './humidity.component.html',
-  styleUrls: ['./humidity.component.scss']
+  styleUrls: ['./humidity.component.scss'],
 })
 export class HumidityComponent implements OnInit {
-
   colors = [];
   graphWidth = 1500;
   setGraphWidth(width) {
@@ -24,7 +23,7 @@ export class HumidityComponent implements OnInit {
     pointSize: 3,
     logscale: false,
   };
-  labelBlackListT = ['host', 'serial', 'mean_*', 'id', 'sensor', 'mean'];
+  labelBlackListT = ['host', 'serial', 'mean_*', 'mean'];
   graphstyle = {
     position: 'absolute',
     top: '0.5em',
@@ -168,10 +167,17 @@ export class HumidityComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.influxReady()) {
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
     this.queryRunning++;
-    this.utHTTP
-      .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
-      .subscribe((data: Object) => this.handleData(data));
+    this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(clause)).subscribe(
+      (data: Object) => this.handleData(data),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -181,6 +187,11 @@ export class HumidityComponent implements OnInit {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('parsed', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      this.queryRunning--;
+      return;
+    }
     const labels = ret['labels'];
     const idata = ret['data'];
 
@@ -217,5 +228,4 @@ export class HumidityComponent implements OnInit {
     this.changeTrigger = !this.changeTrigger;
     this.queryRunning--;
   }
-
 }

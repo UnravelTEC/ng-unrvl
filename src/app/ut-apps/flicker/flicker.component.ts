@@ -5,7 +5,7 @@ import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 @Component({
   selector: 'app-flicker',
   templateUrl: './flicker.component.html',
-  styleUrls: ['./flicker.component.scss']
+  styleUrls: ['./flicker.component.scss'],
 })
 export class FlickerComponent implements OnInit {
   public dygLabels = [];
@@ -17,8 +17,8 @@ export class FlickerComponent implements OnInit {
     highlightSeriesOpts: {
       strokeWidth: 1,
       strokeBorderWidth: 1,
-      highlightCircleSize: 3
-    }
+      highlightCircleSize: 3,
+    },
   };
   changeTrigger = true;
 
@@ -46,21 +46,26 @@ export class FlickerComponent implements OnInit {
       this.globalSettings.server.serverName +
       '/influxdb/query?db=telegraf&epoch=ms&q=' +
       q;
-    this.utHTTP
-      .getHTTPData(influxquery)
-      .subscribe((data: Object) => this.printResult(data));
+    this.utHTTP.getHTTPData(influxquery).subscribe(
+      (data: Object) => this.printResult(data),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
   printResult(data: Object) {
     console.log(data);
     let ret = this.utHTTP.parseInfluxData(data);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
 
     this.dygLabels = ret['labels'];
 
     this.dygData = ret['data'];
-    const firstd = this.dygData[0][0]
-    const numvalues = this.dygData.length
-    const lastd = this.dygData[numvalues-1][0]
-    const seconds = lastd.valueOf() - firstd.valueOf()
+    const firstd = this.dygData[0][0];
+    const numvalues = this.dygData.length;
+    const lastd = this.dygData[numvalues - 1][0];
+    const seconds = lastd.valueOf() - firstd.valueOf();
     this.frequency = numvalues / seconds;
   }
 }

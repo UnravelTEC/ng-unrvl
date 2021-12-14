@@ -51,6 +51,10 @@ export class Scd30Component implements OnInit {
     CO2: ['#842BFF'],
   };
   labels = {
+    H: [],
+    CO2: [],
+  };
+  raw_labels = {
     H: {},
     CO2: {},
   };
@@ -152,6 +156,19 @@ export class Scd30Component implements OnInit {
     this.currentres = this.meanS;
     this.startTime = this.userStartTime;
 
+    const timerange = fromTo
+      ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000
+      : this.h.parseToSeconds(this.startTime);
+    const nr_points = timerange / this.meanS;
+    if (nr_points > 10000 && !this.h.bigQconfirm(nr_points)) {
+      if (!this.labels['CO2'].length) {
+        // at start to show "no data"
+        this.labels['CO2'] = [''];
+        this.labels['H'] = [''];
+      }
+      return;
+    }
+
     const timeQuery = fromTo
       ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
       : this.utHTTP.influxTimeString(this.startTime);
@@ -173,7 +190,7 @@ export class Scd30Component implements OnInit {
       timeQuery,
       params,
       this.meanS,
-      'CO2_ppm'
+      '/CO2_ppm/'
     );
     const queryH = this.utHTTP.influxMeanQuery(
       'gas',
@@ -202,11 +219,18 @@ export class Scd30Component implements OnInit {
   }
 
   launchQuery(clause: string, id: string) {
+    if (!this.globalSettings.influxReady()) {
+      setTimeout(() => {
+        this.launchQuery(clause, id);
+      }, 1000);
+      return;
+    }
     this.queryRunning++;
     const q = this.utHTTP.buildInfluxQuery(clause, undefined, undefined, 's');
-    this.utHTTP
-      .getHTTPData(q)
-      .subscribe((data: Object) => this.handleData(data, id));
+    this.utHTTP.getHTTPData(q).subscribe(
+      (data: Object) => this.handleData(data, id),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -215,7 +239,13 @@ export class Scd30Component implements OnInit {
   handleData(data: Object, id: string) {
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT, 's');
     console.log(id, 'received', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      this.queryRunning--;
+      return;
+    }
     this.labels[id] = ret['labels'];
+    this.raw_labels[id] = ret['raw_labels'];
     this.data[id] = ret['data'];
     if (id == 'H') {
       this.colors['H'] = this.h.getColorsforLabels(ret['labels']);

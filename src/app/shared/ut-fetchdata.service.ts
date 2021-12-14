@@ -8,7 +8,7 @@ import { HttpHeaders } from '@angular/common/http';
 import { cloneDeep } from 'lodash-es';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UtFetchdataService {
   constructor(
@@ -16,10 +16,6 @@ export class UtFetchdataService {
     private globalSettingsService: GlobalSettingsService,
     private h: HelperFunctionsService
   ) {}
-
-  Config = {};
-
-  queryDefaultStep = 1000; // ms
 
   getHTTPData(
     thisurl: string,
@@ -29,11 +25,14 @@ export class UtFetchdataService {
   ) {
     console.log('getHTTPData:', thisurl, user, pass);
 
-    if (forceauth || (thisurl.startsWith('https') && thisurl.search(/\/influxdb\//))) {
+    if (
+      forceauth ||
+      (thisurl.startsWith('https') && thisurl.search(/\/influxdb\//))
+    ) {
       const httpOptions = {
         headers: new HttpHeaders({
-          Authorization: 'Basic ' + btoa(user + ':' + pass)
-        })
+          Authorization: 'Basic ' + btoa(user + ':' + pass),
+        }),
       };
       console.log('HEADERS', httpOptions);
 
@@ -44,17 +43,26 @@ export class UtFetchdataService {
     return this.http.get(thisurl);
   }
 
-  postData(url: string, data: any) {
-    this.http.post(url, data).subscribe(
-      (res: any) => {
-        console.log(res);
-      },
-      (error: any) => {
-        console.log(error);
-      }
-    );
+  postData(
+    url: string,
+    data: any,
+    user = this.globalSettingsService.server.influxuser,
+    pass = this.globalSettingsService.server.influxpass,
+    forceauth = false
+  ) {
+    console.log('postData:', url, data, user, pass);
 
-    console.log(['postData', url, data]);
+    if (forceauth || (url.startsWith('https') && url.search(/\/influxdb\//))) {
+      const httpOptions = {
+        headers: new HttpHeaders({
+          Authorization: 'Basic ' + btoa(user + ':' + pass),
+        }),
+      };
+      console.log('HEADERS', httpOptions);
+      return this.http.post(url, data, httpOptions);
+    }
+
+    return this.http.post(url, data);
   }
 
   influxTimeString(param1: any, param2: Date = undefined) {
@@ -86,6 +94,7 @@ export class UtFetchdataService {
     let q = 'SELECT mean(' + select + ') FROM ' + from;
 
     let whereClause = '';
+
     for (const key in tagfilter) {
       if (tagfilter.hasOwnProperty(key)) {
         const andobj = tagfilter[key];
@@ -107,12 +116,18 @@ export class UtFetchdataService {
     whereClause += timeQuery;
 
     let groupBy = ' GROUP BY ';
-    for (const key in tagfilter) {
-      if (tagfilter.hasOwnProperty(key)) {
-        groupBy += key + ',';
+    if (tagfilter && Object.keys(tagfilter).length > 1) {
+      // FIXME don't know if "if" works
+      for (const key in tagfilter) {
+        if (tagfilter.hasOwnProperty(key)) {
+          groupBy += key + ',';
+        }
       }
+      groupBy += 'host,id,time(' + String(mean_s) + 's)';
+    } else {
+      groupBy += '*,time(' + String(mean_s) + 's)';
     }
-    groupBy += 'host,id,time(' + String(mean_s) + 's)';
+
     q += ' WHERE ' + whereClause + groupBy + ';';
     return q;
   }
@@ -127,9 +142,7 @@ export class UtFetchdataService {
       database = this.globalSettingsService.server.influxdb;
     }
     if (serverstring === undefined) {
-      serverstring =
-        this.globalSettingsService.server.protocol +
-        this.globalSettingsService.server.serverName;
+      serverstring = this.globalSettingsService.server.baseurl;
     }
     return (
       serverstring +
@@ -141,7 +154,33 @@ export class UtFetchdataService {
       cleanClause
     );
   }
+  buildInfluxWriteUrl(database?: string, serverstring?: string) {
+    if (database === undefined) {
+      database = this.globalSettingsService.server.influxdb;
+    }
+    if (serverstring === undefined) {
+      serverstring = this.globalSettingsService.server.baseurl;
+    }
+    return serverstring + '/influxdb/write?db=' + database;
+  }
+  buildInfluxDelQuery(
+    clause: string,
+    database?: string,
+    serverstring?: string
+  ) {
+    const cleanClause = clause.replace(/;/g, '%3B');
+    if (database === undefined) {
+      database = this.globalSettingsService.server.influxdb;
+    }
+    if (serverstring === undefined) {
+      serverstring = this.globalSettingsService.server.baseurl;
+    }
+    return (
+      serverstring + '/influxdb/query?db=' + database + '&q=' + cleanClause // &epoch=s
+    );
+  }
 
+  private telegrafMetrics = ['mem', 'disk', 'io', 'processes', 'swap', 'cpu'];
   parseInfluxData(
     data: Object,
     labelBlackList: string[] = [],
@@ -155,6 +194,14 @@ export class UtFetchdataService {
       console.log('no results');
       return retval;
     }
+    if (results[0] && results[0]['error']) {
+      retval['error'] = results[0]['error'];
+      console.log(
+        'parseInfluxData encountered influx error statement',
+        retval['error']
+      );
+      return retval;
+    }
     let dataarray = [];
     for (let statementId = 0; statementId < results.length; statementId++) {
       const statement = results[statementId];
@@ -163,10 +210,14 @@ export class UtFetchdataService {
         console.log('statement', statementId, 'with len', seriesArray.length);
 
         for (let seriesI = 0; seriesI < seriesArray.length; seriesI++) {
-          const series = seriesArray[seriesI]
+          const series = seriesArray[seriesI];
           dataarray.push(series);
-          console.log('from', new Date(series.values[0][0]), 'to', new Date(series.values[series.values.length -1][0]));
-
+          console.log(
+            'from',
+            new Date(series.values[0][0]),
+            'to',
+            new Date(series.values[series.values.length - 1][0])
+          );
         }
       }
     }
@@ -181,6 +232,8 @@ export class UtFetchdataService {
     }
 
     const labels = ['Date'];
+    const orig_labels = [];
+    let raw_labels = [{ metric: 'Date', tags: {}, field: '' }];
 
     let validColCount = 0;
     const seriesValidColumns = [];
@@ -223,6 +276,13 @@ export class UtFetchdataService {
           validColCount += 1;
           seriesValidColumns[i][colindex] = validColCount; // where should it be in the end
           let colname = series['columns'][colindex];
+          orig_labels.push(serieslabel + ' ' + colname);
+          const metric = series['name'];
+          raw_labels.push({
+            metric: metric,
+            tags: tags,
+            field: colname,
+          });
           if (tagBlackList.indexOf(colname) > -1) {
             colname = '';
           }
@@ -230,24 +290,13 @@ export class UtFetchdataService {
             colname = colname.replace(/^mean_/, '');
           }
 
-          colname = colname.replace(/H2O_/, 'H₂O_');
-          colname = colname.replace(/CO2_/, 'CO₂_');
-          colname = colname.replace(/NO2_/, 'NO₂_');
-          colname = colname.replace(/O3_/, 'O₃_');
-          colname = colname.replace(/NH3_/, 'NH₃_');
-          colname = colname.replace(/H2_/, 'H₂_');
-          colname = colname.replace(/percent$/, '%');
-          colname = colname.replace(/_%/, '-%');
-          colname = colname.replace(/degC$/, '°C');
-          colname = colname.replace(/p([0-9.]*)_ugpm3$/, 'pm$1 (µg / m³)'); //spaces in () are thin-spaces
-          colname = colname.replace(/_ugpm3$/, ' (µg / m³)');
-          colname = colname.replace(/gpm3$/, 'g/m³');
-          colname = colname.replace(/degps$/, '°/s');
-          colname = colname.replace(/mps2$/, 'm/s²');
-          colname = colname.replace(/uT$/, 'µT');
-          colname = colname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm');
-          colname = colname.replace(/dewPoint/, 'dew point');
-          colname = colname.replace(/_(\S+)$/, ' ($1)');
+          // exclude telegraf metrics from formatting
+          if (!this.telegrafMetrics.includes(metric)) {
+            colname = this.h.formatFieldName(colname);
+          } else {
+            colname = colname.replace(/_percent$/, ' %').replace(/_/g, ' ');
+          }
+
           const collabel = colname
             ? serieslabel + ' ' + colname
             : serieslabel.replace(/,$/, '');
@@ -327,7 +376,7 @@ export class UtFetchdataService {
     }
 
     let newArray = []; // non-sparse Array
-    newData.forEach(row => {
+    newData.forEach((row) => {
       if (row !== undefined) {
         newArray.push(row);
       }
@@ -337,6 +386,67 @@ export class UtFetchdataService {
 
     retval['labels'] = labels;
     retval['data'] = newArray;
+    retval['orig_labels'] = orig_labels;
+    retval['raw_labels'] = raw_labels;
+
+    retval['short_labels'] = [];
+    retval['common_label'] = '';
+
+    let common_metric = true;
+    let common_tags = {};
+    if (retval['raw_labels'].length > 2) {
+      const first_metric = retval['raw_labels'][1].metric;
+      for (let i = 2; i < retval['raw_labels'].length; i++) {
+        if (first_metric != retval['raw_labels'][i].metric) {
+          common_metric = false;
+          break;
+        }
+      }
+      const first_tagset = retval['raw_labels'][1].tags;
+      for (const tkey in first_tagset) {
+        if (Object.prototype.hasOwnProperty.call(first_tagset, tkey)) {
+          const tvalue = first_tagset[tkey];
+          common_tags[tkey] = tvalue;
+          for (let i = 2; i < retval['raw_labels'].length; i++) {
+            const elementtags = retval['raw_labels'][i].tags;
+            if (
+              !Object.prototype.hasOwnProperty.call(elementtags, tkey) ||
+              common_tags[tkey] != elementtags[tkey]
+            ) {
+              delete common_tags[tkey];
+              break;
+            }
+          }
+        }
+      }
+    }
+    if (common_metric && retval['raw_labels'].length > 1) {
+      retval['common_label'] = retval['raw_labels'][1].metric;
+    }
+    for (const tkey in common_tags) {
+      if (Object.prototype.hasOwnProperty.call(common_tags, tkey)) {
+        retval['common_label'] += ', ' + tkey + ': ' + common_tags[tkey];
+      }
+    }
+    for (let i = 1; i < retval['labels'].length; i++) {
+      const label = retval['labels'][i];
+      retval['short_labels'][i - 1] = label;
+      if (common_metric) {
+        retval['short_labels'][i - 1] = label.replace(
+          retval['raw_labels'][1].metric + ' ',
+          ''
+        );
+      }
+      for (const tkey in common_tags) {
+        if (Object.prototype.hasOwnProperty.call(common_tags, tkey)) {
+          const tval = common_tags[tkey];
+          retval['short_labels'][i - 1] = retval['short_labels'][i - 1].replace(
+            tkey + ': ' + tval + ', ',
+            ''
+          );
+        }
+      }
+    }
 
     return retval;
   }

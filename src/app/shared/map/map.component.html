@@ -1,9 +1,15 @@
+<button class="zout" (click)="zoomToBounds()" title="Zoom to all Data">
+  <mat-icon>zoom_out_map</mat-icon>
+</button>
 <div
   class="map-container"
   leaflet
   [leafletOptions]="options"
   [leafletLayers]="layers"
+
   (leafletMapReady)="onMapReady($event)"
   (leafletMapZoomEnd)="onMapZoomEnd($event)"
-  id="main-map"
+  id="{{ htmlID }}"
 ></div>
+
+<!-- [leafletLayersControl]="layersControl" dont use via ng, implement manually to avoid leaflet bug of not removing layersControl on destroy-->

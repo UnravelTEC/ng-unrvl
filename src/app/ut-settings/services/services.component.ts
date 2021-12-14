@@ -18,20 +18,23 @@ export class ServicesComponent implements OnInit {
   constructor(
     private utHTTP: UtFetchdataService,
     private localStorage: LocalStorageService,
-    private globalSettings: GlobalSettingsService
+    private gss: GlobalSettingsService
   ) {
-    this.globalSettings.emitChange({ appName: 'System Services' });
+    this.gss.emitChange({ appName: 'System Services' });
   }
   ngOnInit() {
-    if (this.globalSettings.getAPIEndpoint()) {
+    if (this.gss.getAPIEndpoint()) {
       this.getServices();
     }
   }
 
   getServices() {
     this.utHTTP
-      .getHTTPData(this.globalSettings.getAPIEndpoint() + 'system/services.php')
-      .subscribe((data: Object) => this.acceptServices(data));
+      .getHTTPData(this.gss.getAPIEndpoint() + 'system/services.php')
+      .subscribe(
+        (data: Object) => this.acceptServices(data),
+        (error) => this.gss.displayHTTPerror(error)
+      );
     this.loadingText = 'Loading...';
   }
   acceptServices(data: Object) {
@@ -82,7 +85,7 @@ export class ServicesComponent implements OnInit {
   sendCmd(service: String, cmd: String) {
     this.utHTTP
       .getHTTPData(
-        this.globalSettings.getAPIEndpoint() +
+        this.gss.getAPIEndpoint() +
           'system/service.php?cmd=' +
           cmd +
           '&service=' +
@@ -91,7 +94,10 @@ export class ServicesComponent implements OnInit {
         this.localStorage.get('api_pass'),
         true
       )
-      .subscribe((data: Object) => this.checkSuccessOfCommand(data));
+      .subscribe(
+        (data: Object) => this.checkSuccessOfCommand(data),
+        (error) => this.gss.displayHTTPerror(error)
+      );
   }
 
   checkSuccessOfCommand(data: Object) {

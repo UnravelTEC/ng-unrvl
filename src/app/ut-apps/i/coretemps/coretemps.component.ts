@@ -7,7 +7,7 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
 @Component({
   selector: 'app-coretemps',
   templateUrl: './coretemps.component.html',
-  styleUrls: ['./coretemps.component.scss']
+  styleUrls: ['./coretemps.component.scss'],
 })
 export class CoretempsComponent implements OnInit {
   extraDyGraphConfig = { pointSize: 3 };
@@ -17,7 +17,7 @@ export class CoretempsComponent implements OnInit {
     top: '4em',
     bottom: '0rem',
     left: '0rem',
-    right: '15rem'
+    right: '15rem',
   };
 
   public startTime = '6h';
@@ -77,12 +77,21 @@ export class CoretempsComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.influxReady()) {
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
     const q = this.utHTTP.buildInfluxQuery(clause, this.db);
 
     this.utHTTP
       // .getHTTPData(q)
       .getHTTPData(q, 'utweb', 'kJImNSmq1m84py7jhaGq')
-      .subscribe((data: Object) => this.handleData(data));
+      .subscribe(
+        (data: Object) => this.handleData(data),
+        (error) => this.globalSettings.displayHTTPerror(error)
+      );
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -91,6 +100,10 @@ export class CoretempsComponent implements OnInit {
   handleData(data: Object) {
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('received', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
     this.labels = ret['labels'];
     this.data = ret['data'];
     // console.log(cloneDeep(this.dygLabels));

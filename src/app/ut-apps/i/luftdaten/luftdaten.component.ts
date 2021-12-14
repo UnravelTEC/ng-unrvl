@@ -130,11 +130,18 @@ export class LuftdatenComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.influxReady()) {
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
     const q = this.utHTTP.buildInfluxQuery(clause, this.db, this.server);
     this.utHTTP
       // .getHTTPData(q)
       .getHTTPData(q, 'luftweb', 'YQ9xYNKWk4Pqkmr0')
-      .subscribe((data: Object) => this.handleData(data));
+      .subscribe((data: Object) => this.handleData(data),
+      (error) => this.globalSettings.displayHTTPerror(error));
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -142,6 +149,10 @@ export class LuftdatenComponent implements OnInit {
   handleData(data: Object) {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
     console.log('parsed', ret);
     const labels = ret['labels'];
     const idata = ret['data'];

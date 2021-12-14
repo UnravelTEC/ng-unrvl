@@ -8,10 +8,9 @@ import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
 @Component({
   selector: 'app-tsl2561',
   templateUrl: './tsl2561.component.html',
-  styleUrls: ['./tsl2561.component.scss']
+  styleUrls: ['./tsl2561.component.scss'],
 })
 export class Tsl2561Component implements OnInit {
-
   colors = [];
   graphWidth = 1500;
   setGraphWidth(width) {
@@ -167,9 +166,16 @@ export class Tsl2561Component implements OnInit {
   }
 
   launchQuery(clause: string) {
-    this.utHTTP
-      .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
-      .subscribe((data: Object) => this.handleData(data));
+    if (!this.globalSettings.influxReady()) {
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
+    this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(clause)).subscribe(
+      (data: Object) => this.handleData(data),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -179,6 +185,10 @@ export class Tsl2561Component implements OnInit {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('parsed', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
     const labels = ret['labels'];
     const idata = ret['data'];
 
@@ -214,5 +224,4 @@ export class Tsl2561Component implements OnInit {
     this.changeTrigger = !this.changeTrigger;
     this.changeTrigger = !this.changeTrigger;
   }
-
 }

@@ -231,11 +231,21 @@ export class EnvirooneComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.influxReady()) {
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
+
     const q = this.utHTTP.buildInfluxQuery(clause, this.db, this.server);
     this.utHTTP
       // .getHTTPData(q)
       .getHTTPData(q, 'grazweb', '.RaVNaygexThM')
-      .subscribe((data: Object) => this.handleData(data));
+      .subscribe(
+        (data: Object) => this.handleData(data),
+        (error) => this.globalSettings.displayHTTPerror(error)
+      );
   }
   setAvg(t) {
     this.userMeanS = t;
@@ -249,6 +259,10 @@ export class EnvirooneComponent implements OnInit {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('parsed', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
     const labels = ret['labels'];
     const idata = ret['data'];
 

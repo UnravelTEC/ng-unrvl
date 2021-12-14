@@ -74,6 +74,7 @@ export class IndoorclimateComponent implements OnInit {
     'id',
     'host',
     'mean',
+    'topic',
     'mean_*',
   ];
 
@@ -86,7 +87,7 @@ export class IndoorclimateComponent implements OnInit {
     this.launchQuery(
       'SELECT mean(air_degC) FROM temperature WHERE time > now() - ' +
         this.startTime +
-        ' GROUP BY sensor,time(' +
+        ' GROUP BY *,time(' +
         String(this.meanS) +
         's)',
       'T'
@@ -128,16 +129,28 @@ export class IndoorclimateComponent implements OnInit {
   }
 
   launchQuery(clause: string, id: string) {
+    if (!this.globalSettings.influxReady()) {
+      setTimeout(() => {
+        this.launchQuery(clause, id);
+      }, 1000);
+      return;
+    }
     this.queryRunning++;
     const q = this.utHTTP.buildInfluxQuery(clause, undefined, undefined, 's');
-    this.utHTTP
-      .getHTTPData(q)
-      .subscribe((data: Object) => this.handleData(data, id));
+    this.utHTTP.getHTTPData(q).subscribe(
+      (data: Object) => this.handleData(data, id),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
 
   handleData(data: Object, id: string) {
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT, 's');
     console.log(id, 'received', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      this.queryRunning--
+      return;
+    }
     this.labels[id] = ret['labels'];
     this.data[id] = ret['data'];
     // console.log(cloneDeep(this.dygLabels));

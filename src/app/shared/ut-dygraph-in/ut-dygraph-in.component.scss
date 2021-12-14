@@ -77,12 +77,17 @@ $red2: #ff7f88;
 
   .info {
     position: absolute;
-    top: 1em;
-    left: 1em;
-    margin: 1em;
+    top: 0;
+    left: 55px;
+    bottom: 55px;
+    right: 0.5em;
+    margin: 0;
     border: 1px solid blue;
-    padding: 1em;
+    padding: auto 1em;
     background: $graphbg;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .nodata {
@@ -111,7 +116,7 @@ $red2: #ff7f88;
     padding: 0.35em;
     height: 1em;
     line-height: 1em;
-    cursor: default;
+    cursor: pointer;
   }
 
   .fromDate,
@@ -142,9 +147,14 @@ $red2: #ff7f88;
   .fromDate:hover,
   .toDate:hover,
   .xmin:hover,
-  .xmax:hover {
+  .xmax:hover,
+  .y2min:hover,
+  .y2max:hover,
+  .ymin:hover,
+  .ymax:hover {
     background-color: $buttonactivebg;
     color: $buttontext;
+    border-right-color: $buttonactivebg;
     b,
     b.hide {
       opacity: 1;
@@ -175,7 +185,6 @@ $red2: #ff7f88;
   .toDate,
   .xmin,
   .xmax {
-    cursor: pointer;
     width: 5.1em;
   }
   .lastTime {
@@ -233,7 +242,6 @@ $red2: #ff7f88;
     height: 0;
     top: 29px;
     padding: 0;
-    cursor: pointer;
     div {
       padding: 0.35em 0.35em 0 0.35em; // to rm "g" bottom height increase
       line-height: 1em;
@@ -257,6 +265,42 @@ $red2: #ff7f88;
       padding-top: 0.1em;
     }
   }
+  .y1minSel,
+  .y1maxSel,
+  .y2minSel,
+  .y2maxSel {
+    position: absolute;
+    mat-radio-group {
+      border: 1px solid black;
+      height: 3.5em;
+      display: block;
+      border-radius: 5px;
+      background: $mainbg;
+      font-size: $dygfontsize;
+      color: $editableFormsTextColor;
+      padding: 7px;
+      input[type='number'] {
+        width: 6em;
+      }
+    }
+  }
+  .y1minSel,
+  .y2minSel {
+    bottom: 56px;
+  }
+  .y1maxSel,
+  .y2maxSel {
+    top: 5px;
+  }
+  .y1minSel,
+  .y1maxSel {
+    left: 60px;
+  }
+  .y2minSel,
+  .y2maxSel {
+    right: 75px;
+  }
+
   .overlapTickTexthider {
     background-color: $mainbg;
     font-size: $dygfontsize;
@@ -343,11 +387,16 @@ $red2: #ff7f88;
         td,
         th {
           border-bottom: 1px solid black;
+          white-space: nowrap;
         }
         th {
           font-weight: normal;
-          padding: 0.1em 0.2em;
+          padding: 0.1em 0.3em 0.1em 0;
           color: $editableFormsTextColor;
+        }
+        th.h {
+          width: 1.4em;
+          padding-left: 0.5rem;
         }
         th span.one {
           display: none;
@@ -355,9 +404,22 @@ $red2: #ff7f88;
 
         td {
           color: $editableFormsTextColor;
-          width: 4.5em; // width of string 'undefined'
           border-left-width: 0;
           padding: 0.1em 0;
+        }
+        td.d {
+          padding: 0 0 0 5px;
+        }
+        td.u {
+          padding: 0 5px 0 3px;
+        }
+        td.c {
+          text-align: right;
+          padding: 0 5px 0 3px;
+        }
+        td.s {
+          text-align: center;
+          padding: 0 5px 0 3px;
         }
       }
       tr.highlight,
@@ -367,7 +429,6 @@ $red2: #ff7f88;
         td {
           color: $mainbg;
         }
-
       }
       tr:hover {
         th span.dash {
@@ -407,6 +468,11 @@ $red2: #ff7f88;
     font-weight: 600;
     cursor: default;
   }
+  .dygraph-ylabel {
+    //offset width of x-axis labels
+    margin-left: 60px;
+    margin-right: 25px;
+  }
   .y1 .dygraph-ylabel,
   .y2 .dygraph-y2label {
     // axis highlight
@@ -422,7 +488,11 @@ $red2: #ff7f88;
     color: $axissublabelcolor;
     cursor: default;
   }
-
+  .dygraph-xlabel,
+  .dygraph-ylabel,
+  .dygraph-y2label {
+    font-weight: normal;
+  }
   button.toggleOptions {
     position: absolute;
     bottom: 0;

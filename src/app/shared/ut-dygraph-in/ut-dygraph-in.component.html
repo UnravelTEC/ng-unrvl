@@ -35,15 +35,15 @@ style.padding-bottom="20vh"-->
     ></div>
 
     <div *ngIf="noData == true && !minimal" class="info nodata">
-      No data to display.
+      <p>No data to display.</p>
     </div>
 
     <div *ngIf="waiting == true && !minimal" class="info waiting">
-      Waiting for data...
+      <p>Waiting for data...</p>
     </div>
 
     <div *ngIf="error != undefined" class="info error">
-      {{ error }}
+      <p>{{ error }}</p>
     </div>
 
     <button
@@ -67,6 +67,7 @@ style.padding-bottom="20vh"-->
       class="ymin {{ XLabel == '' ? 'noxlabel' : '' }}"
       *ngIf="dyGraphOptions['drawAxis'] !== false"
       [style.transform]="'translateX(' + yO + 'px)'"
+      (click)="toggleYRSel('y1min')"
     >
       {{ yRange[0] | dygNr }}
     </div>
@@ -74,6 +75,7 @@ style.padding-bottom="20vh"-->
       class="y2min {{ XLabel == '' ? 'noxlabel' : '' }}"
       *ngIf="dyGraphOptions['drawAxis'] !== false && y2Range[0] !== undefined"
       [style.border-right-width]="y2O + 'px'"
+      (click)="toggleYRSel('y2min')"
     >
       {{ y2Range[0] | dygNr }}
     </div>
@@ -81,6 +83,7 @@ style.padding-bottom="20vh"-->
       class="ymax"
       *ngIf="dyGraphOptions['drawAxis'] !== false"
       [style.transform]="'translateX(' + yO + 'px)'"
+      (click)="toggleYRSel('y1max')"
     >
       {{ yRange[1] | dygNr }}
     </div>
@@ -88,9 +91,31 @@ style.padding-bottom="20vh"-->
       class="y2max"
       *ngIf="dyGraphOptions['drawAxis'] !== false && y2Range[1] !== undefined"
       [style.border-right-width]="y2O + 'px'"
+      (click)="toggleYRSel('y2max')"
     >
       {{ y2Range[1] | dygNr }}
     </div>
+    <form *ngFor="let entry of yModes | keyvalue" class="{{ entry.key }}Sel">
+      <mat-radio-group
+        [(ngModel)]="yModes[entry.key]"
+        id="ymode_{{ entry.key }}"
+        name="ymode_{{ entry.key }}"
+        (change)="changeYMode($event, entry.key)"
+        *ngIf="yRSelShown[entry.key]"
+      >
+        <mat-radio-button value="dyn"> Dynamic </mat-radio-button><br />
+        <mat-radio-button value="fix">
+          Fixed:
+          <input
+            type="number"
+            id="yrange_{{ entry.key }}"
+            name="yrange_{{ entry.key }}"
+            [(ngModel)]="yFixedRanges[entry.key]"
+          />
+        </mat-radio-button>
+        <!--number input box also activates change event on radio group -->
+      </mat-radio-group>
+    </form>
     <div
       class="xmin"
       *ngIf="dyGraphOptions['drawAxis'] !== false"
@@ -154,57 +179,33 @@ style.padding-bottom="20vh"-->
     </div>
     <div
       class="logbuttons"
-      *ngIf="options == true && showLogscaleSwitcher == true"
+      *ngIf="options == true && showLogscaleSwitcher == true && !noData"
     >
-      <div class="logy y1" (click)="switchLogScale()">
-        <div
-          class="{{
-            dyGraphOptions['axes'] &&
-            dyGraphOptions['axes']['y'] &&
-            dyGraphOptions['axes']['y']['logscale']
-              ? 'active'
-              : ''
-          }}"
-        >
+      <div
+        class="logy y1"
+        (click)="switchLogScale()"
+        *ngIf="yRange[0] > 0 && yRange[1] > 0"
+      >
+        <div class="{{ dyGraphOptions.axes.y.logscale ? 'active' : '' }}">
           log
         </div>
-        <div
-          class="{{
-            dyGraphOptions['axes'] &&
-            dyGraphOptions['axes']['y'] &&
-            dyGraphOptions['axes']['y']['logscale']
-              ? ''
-              : 'active'
-          }}"
-        >
+        <div class="{{ dyGraphOptions.axes.y.logscale ? '' : 'active' }}">
           lin
         </div>
       </div>
       <div
         class="logy y2"
-        *ngIf="dyGraphOptions['drawAxis'] !== false && y2Range[1] !== undefined"
+        *ngIf="
+          dyGraphOptions['drawAxis'] !== false &&
+          y2Range[0] > 0 &&
+          y2Range[1] > 0
+        "
         (click)="switchLogScale('y2')"
       >
-        <div
-          class="{{
-            dyGraphOptions['axes'] &&
-            dyGraphOptions['axes']['y2'] &&
-            dyGraphOptions['axes']['y2']['logscale']
-              ? 'active'
-              : ''
-          }}"
-        >
+        <div class="{{ dyGraphOptions.axes.y2.logscale ? 'active' : '' }}">
           log
         </div>
-        <div
-          class="{{
-            dyGraphOptions['axes'] &&
-            dyGraphOptions['axes']['y2'] &&
-            dyGraphOptions['axes']['y2']['logscale']
-              ? ''
-              : 'active'
-          }}"
-        >
+        <div class="{{ dyGraphOptions.axes.y2.logscale ? '' : 'active' }}">
           lin
         </div>
       </div>
@@ -214,9 +215,8 @@ style.padding-bottom="20vh"-->
   <div *ngIf="options == true && optionsOpen == true" class="optionsarea">
     <div class="options">
       <form class="subbox">
-        <h5>Data</h5>
-        <small style="float: left;">
-          #Points:
+        <h5>#Data Points</h5>
+        <small style="float: left; margin-top: 0.5em">
           {{
             !displayedData.length
               ? 0
@@ -235,7 +235,7 @@ style.padding-bottom="20vh"-->
           [(ngModel)]="panAmount"
           id="panAmount"
           name="panAmount"
-          style="width:5em"
+          style="width: 5em"
         >
           <option value="0.1">1/10</option>
           <option value="0.2">1/5</option>
@@ -254,11 +254,66 @@ style.padding-bottom="20vh"-->
 
       <form class="subbox">
         <h5>Export</h5>
-        <button (click)="exportCSV()">CSV</button>
         <label for="UTC"
           >UTC
           <input type="checkbox" name="UTC" id="UTC" [(ngModel)]="exportUTC" />
         </label>
+        <button (click)="exportCSV()">CSV</button>
+      </form>
+
+      <form class="subbox">
+        <h5>Data Gaps</h5>
+        <label for="sepp"
+          >hide
+          <input
+            type="checkbox"
+            name="sepp"
+            id="sepp"
+            [(ngModel)]="dyGraphOptions.connectSeparatedPoints"
+            (change)="toggleSeparatedPoints()"
+        /></label>
+      </form>
+
+      <!-- <form class="subbox">
+        <h5>Y axis linearity</h5>
+        <label for="log"
+          >Logarithmic
+          <input
+            type="checkbox"
+            name="logarithmic"
+            id="log"
+            [(ngModel)]="dyGraphOptions.logscale"
+            (change)="switchLogScale()"
+        /></label>
+      </form> -->
+
+      <form class="subbox">
+        <h5>Uncertainty</h5>
+        <label for="showdev"
+          >Show
+          <input
+            type="checkbox"
+            name="showdev"
+            id="showdev"
+            [(ngModel)]="showDeviation"
+            [disabled]="!rawLabels || rawLabels.length < 2"
+            (change)="toggleDeviation()"
+          />
+        </label>
+      </form>
+
+      <form class="subbox" *ngIf="gss.server.calibrations">
+        <h5>Calibration</h5>
+        <label for="calibrate"
+          >Enable
+          <input
+            type="checkbox"
+            name="calibrate"
+            id="calibrate"
+            [(ngModel)]="calibrate"
+            [disabled]="!rawLabels || rawLabels.length < 2"
+            (change)="toggleCalibration()"
+        /></label>
       </form>
 
       <form class="subbox">
@@ -269,7 +324,8 @@ style.padding-bottom="20vh"-->
           id="runningAvgPoints"
           name="runningAvgPoints"
           [(ngModel)]="runningAvgPoints"
-          style="width:2em"
+          style="width: 2em"
+          (change)="updateRoll()"
         />
         <span class="unit">Points</span>
       </form>
@@ -291,7 +347,7 @@ style.padding-bottom="20vh"-->
       </form>
 
       <form class="subbox" [style.width]="stats ? '100%' : ''" id="stats">
-        <div style="float: left;">
+        <div style="float: left">
           <h5>Statistics</h5>
           <button (click)="toggleStats()">{{ stats ? '-' : '+' }}</button>
         </div>
@@ -311,14 +367,10 @@ style.padding-bottom="20vh"-->
               <th *ngFor="let label of dyGraphOptions['labels']">
                 {{ label === 'Date' ? 'Averages' : label }}
               </th>
-              <th>
-                All Series
-              </th>
+              <th>All Series</th>
             </tr>
             <tr>
-              <td>
-                Whole Dataset:
-              </td>
+              <td>Whole Dataset:</td>
               <td *ngFor="let mean of averages">
                 {{ mean | number: '1.3-3' }}
               </td>
@@ -342,14 +394,10 @@ style.padding-bottom="20vh"-->
               <th *ngFor="let label of dyGraphOptions['labels']">
                 {{ label === 'Date' ? 'Std. Deviations' : label }}
               </th>
-              <th>
-                All Series
-              </th>
+              <th>All Series</th>
             </tr>
             <tr>
-              <td>
-                Whole Dataset:
-              </td>
+              <td>Whole Dataset:</td>
               <td *ngFor="let dev of stdDevs">
                 {{ dev | number: '1.3-3' }}
               </td>

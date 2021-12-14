@@ -54,7 +54,7 @@
   <tr>
     <td>
       <app-ut-dygraph-in
-        [displayedData]="data['CO2']"
+        [data]="data['CO2']"
         [columnLabels]="labels['CO2']"
         [style]="graphstyle"
         [changeTrigger]="changeTrigger"
@@ -90,7 +90,7 @@
     </td>
     <td class="VOCs">
       <app-ut-dygraph-in
-        [displayedData]="data['V']"
+        [data]="data['V']"
         [columnLabels]="labels['V']"
         [style]="graphstyle"
         [changeTrigger]="changeTrigger"
@@ -135,7 +135,7 @@
   <tr>
     <td class="T">
       <app-ut-dygraph-in
-        [displayedData]="data['T']"
+        [data]="data['T']"
         [columnLabels]="labels['T']"
         [style]="graphstyle"
         [changeTrigger]="changeTrigger"
@@ -169,7 +169,7 @@
     </td>
     <td class="rH">
       <app-ut-dygraph-in
-        [displayedData]="data['H']"
+        [data]="data['H']"
         [columnLabels]="labels['H']"
         [style]="graphstyle"
         [changeTrigger]="changeTrigger"

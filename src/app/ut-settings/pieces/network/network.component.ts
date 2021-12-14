@@ -12,6 +12,7 @@ export class NetworkComponent implements OnInit {
   wifis = [];
   public wificlient_ssid = '';
   public wificlient_psk = '';
+  public hidepw = true;
 
   constructor(
     public gss: GlobalSettingsService,

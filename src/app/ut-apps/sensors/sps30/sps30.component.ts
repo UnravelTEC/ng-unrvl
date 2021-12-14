@@ -8,10 +8,9 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-sps30',
   templateUrl: './sps30.component.html',
-  styleUrls: ['./sps30.component.scss']
+  styleUrls: ['./sps30.component.scss'],
 })
 export class Sps30Component implements OnInit {
-
   colors = [];
   graphWidth = 1500;
   setGraphWidth(width) {
@@ -52,17 +51,17 @@ export class Sps30Component implements OnInit {
   labels = {
     pm: {},
     pn: {},
-    ps: {}
+    ps: {},
   };
   data = {
     pm: {},
     pn: {},
-    ps: {}
+    ps: {},
   };
   startTimes = {
     pm: this.startTime,
     pn: this.startTime,
-    ps: this.startTime
+    ps: this.startTime,
   };
   public meanS = 30;
   public currentres = 0;
@@ -173,22 +172,21 @@ export class Sps30Component implements OnInit {
       params,
       this.meanS,
       '/_ugpm3/'
-    ) ;
+    );
     const querypn = this.utHTTP.influxMeanQuery(
       'particulate_matter',
       timeQuery,
       params,
       this.meanS,
       '/_ppcm3/'
-    ) ;
+    );
     const queryps = this.utHTTP.influxMeanQuery(
       'particulate_matter',
       timeQuery,
       params,
       this.meanS,
       '/typpartsize_um/'
-    ) ;
-
+    );
 
     this.launchQuery(querypm, 'pm');
     this.launchQuery(querypn, 'pn');
@@ -210,10 +208,17 @@ export class Sps30Component implements OnInit {
   }
 
   launchQuery(clause: string, id: string) {
+    if (!this.globalSettings.influxReady()) {
+      setTimeout(() => {
+        this.launchQuery(clause, id);
+      }, 1000);
+      return;
+    }
     const q = this.utHTTP.buildInfluxQuery(clause, undefined, undefined, 's');
-    this.utHTTP
-      .getHTTPData(q)
-      .subscribe((data: Object) => this.handleData(data, id));
+    this.utHTTP.getHTTPData(q).subscribe(
+      (data: Object) => this.handleData(data, id),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -222,11 +227,14 @@ export class Sps30Component implements OnInit {
   handleData(data: Object, id: string) {
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT, 's');
     console.log(id, 'received', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
     this.labels[id] = ret['labels'];
     this.data[id] = ret['data'];
     // console.log(cloneDeep(this.dygLabels));
     this.startTimes[id] = this.userStartTime;
     this.changeTrigger = !this.changeTrigger;
   }
-
 }

@@ -7,7 +7,7 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
 @Component({
   selector: 'app-pressure',
   templateUrl: './pressure.component.html',
-  styleUrls: ['./pressure.component.scss']
+  styleUrls: ['./pressure.component.scss'],
 })
 export class PressureComponent implements OnInit {
   extraDyGraphConfig = { pointSize: 3 };
@@ -17,7 +17,7 @@ export class PressureComponent implements OnInit {
     top: '4em',
     bottom: '0rem',
     left: '0rem',
-    right: '15rem'
+    right: '15rem',
   };
 
   public startTime = '24h';
@@ -28,7 +28,7 @@ export class PressureComponent implements OnInit {
   labels = [];
   data = [];
 
-  appName = 'Air Pressure'
+  appName = 'Air Pressure';
 
   changeTrigger = true;
 
@@ -76,10 +76,17 @@ export class PressureComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.influxReady()) {
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
     const q = this.utHTTP.buildInfluxQuery(clause);
-    this.utHTTP
-      .getHTTPData(q)
-      .subscribe((data: Object) => this.handleData(data));
+    this.utHTTP.getHTTPData(q).subscribe(
+      (data: Object) => this.handleData(data),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -88,11 +95,14 @@ export class PressureComponent implements OnInit {
   handleData(data: Object) {
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('received', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
     this.labels = ret['labels'];
     this.data = ret['data'];
     // console.log(cloneDeep(this.dygLabels));
     this.startTime = this.userStartTime;
     // this.changeTrigger = !this.changeTrigger;
   }
-
 }

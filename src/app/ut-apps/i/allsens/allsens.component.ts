@@ -6,7 +6,7 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
 @Component({
   selector: 'app-allsens',
   templateUrl: './allsens.component.html',
-  styleUrls: ['./allsens.component.scss']
+  styleUrls: ['./allsens.component.scss'],
 })
 export class AllsensComponent implements OnInit {
   measurements = [];
@@ -25,10 +25,17 @@ export class AllsensComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.influxReady()) {
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
     const q = this.utHTTP.buildInfluxQuery(clause);
-    this.utHTTP
-      .getHTTPData(q)
-      .subscribe((data: Object) => this.handleData(data));
+    this.utHTTP.getHTTPData(q).subscribe(
+      (data: Object) => this.handleData(data),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
 
   handleData(data: Object) {
@@ -38,10 +45,13 @@ export class AllsensComponent implements OnInit {
     for (let i = 0; i < series.length; i++) {
       const seri = series[i][0];
       const measurement = seri.split(',')[0];
+      if (measurement == 'calibrations') {
+        continue;
+      }
       if (!this.measurements.includes(measurement)) {
         this.measurements.push(measurement);
       }
-      const sensor = seri.match(/sensor=([-A-Za-z0-9]*)/);
+      const sensor = seri.match(/sensor=([-A-Za-z0-9|]*)/);
       if (sensor && sensor[1]) {
         const sname = sensor[1];
         if (!this.sensors[sname]) this.sensors[sname] = [];

@@ -49,6 +49,9 @@ export class HelperFunctionsService {
     const angularRoute = this.loc.path();
     this.domainAndApp = url.replace(angularRoute, '');
     this.domain = this.domainAndApp.replace(/:[0-9]*$/, '').replace(/[?]/, '');
+    console.log('window.location.href:', url);
+    console.log('domainAndApp', this.domainAndApp);
+    console.log('domain', this.domain);
 
     for (let cWeightI = 0; cWeightI < this.colors.blue.length; cWeightI++) {
       for (let cOrderI = 0; cOrderI < this.colorOrder.length; cOrderI++) {
@@ -84,7 +87,12 @@ export class HelperFunctionsService {
       for (const searchstring in searchToColor) {
         if (searchToColor.hasOwnProperty(searchstring)) {
           if (currentLabel.match(searchstring)) {
-            console.log('getColorsforLabels:', currentLabel, 'matched', searchstring );
+            console.log(
+              'getColorsforLabels:',
+              currentLabel,
+              'matched',
+              searchstring
+            );
             const colorset = searchToColor[searchstring];
             const rightColorArray = this.colors[colorset];
             if (!colorCounters.hasOwnProperty(colorset)) {
@@ -109,14 +117,15 @@ export class HelperFunctionsService {
   //   'orange:#FFA600',
   //   'red:#FF0000',
   //   '(dark)violet:#800080',
-  returnColorForPercent(
-    percent,
-    colorRamp = ['#00FF00', '#FFFF00', '#FFA600', '#FF0000', '#800080']
-  ) {
+  returnColorForPercent(percent, colorRamp?: Array<string>, debug = false) {
+    if (!colorRamp || colorRamp.length == 0) {
+      colorRamp = ['#00FF00', '#FFFF00', '#FFA600', '#FF0000', '#800080'];
+    }
     function colorFromPercent(
       percent: number,
       cfrom: string,
-      cto: string
+      cto: string,
+      cdebug = debug
     ): string {
       if (cfrom == cto) {
         return cto;
@@ -127,8 +136,19 @@ export class HelperFunctionsService {
       const hexstr = Math.floor(from_int + (percent / 100) * range).toString(
         16
       );
+      if (cdebug)
+        console.log(
+          'colorFromPercent:',
+          percent,
+          from_int,
+          to_int,
+          parseInt(hexstr, 16)
+        );
+
       return hexstr.length < 2 ? '0' + hexstr : hexstr;
     }
+    if (debug) console.log(percent, colorRamp);
+
     const nr_sections = colorRamp.length - 1;
     const section_len_percent = 100 / nr_sections;
     const needed_section =
@@ -155,11 +175,21 @@ export class HelperFunctionsService {
     const r_upper = upper_bound.substring(1, 3);
     const g_upper = upper_bound.substring(3, 5);
     const b_upper = upper_bound.substring(5, 7);
-    const new_r = colorFromPercent(percent, r_lower, r_upper);
-    const new_g = colorFromPercent(percent, g_lower, g_upper);
-    const new_b = colorFromPercent(percent, b_lower, b_upper);
+    if (debug)
+      console.log(
+        r_lower + g_lower + b_lower,
+        'to',
+        r_upper + g_upper + b_upper
+      );
+
+    const bucked_size = 100 / nr_sections;
+    const sec_percent =
+      percent != 100 ? (percent % bucked_size) * nr_sections : 100;
+    const new_r = colorFromPercent(sec_percent, r_lower, r_upper);
+    const new_g = colorFromPercent(sec_percent, g_lower, g_upper);
+    const new_b = colorFromPercent(sec_percent, b_lower, b_upper);
     // console.log('percent', percent, 'nr_sections', nr_sections, 'needed_section', needed_section, new_r, new_g, new_b );
-    // console.log(percent, 'rgb', new_r, new_g, new_b);
+    if (debug) console.log(percent, 'rgb #' + new_r + new_g + new_b);
 
     return '#' + new_r + new_g + new_b;
   }
@@ -201,13 +231,17 @@ export class HelperFunctionsService {
           }
         }
       }
-      if (!latlabelpos || !lonlabelpos) {
-        console.error(
-          'error in influx2geojsonPoints, lat or lon not found in',
-          labels
-        );
-        return undefined;
-      }
+    }
+    if (!latlabelpos || !lonlabelpos) {
+      console.error(
+        'error in influx2geojsonPoints, lat or lon not found in',
+        labels
+      );
+      return undefined;
+    }
+    if (!data.length) {
+      console.log('influx2geojsonPoints: no data');
+      return undefined;
     }
 
     for (let i = 0; i < data.length; i++) {
@@ -232,14 +266,14 @@ export class HelperFunctionsService {
       if (labels.length > 3) {
         for (let i = 1; i < labels.length; i++) {
           const label = labels[i];
-          if (i != latlabelpos && i != lonlabelpos) {
-            point.properties[label] = element[i];
-          }
+          // if (i != latlabelpos && i != lonlabelpos) {
+          point.properties[label] = element[i];
+          // }
         }
       }
       points.features.push(point);
     }
-    console.log('geojson:', points);
+    // console.log('geojson:', points);
 
     return points;
   }
@@ -465,12 +499,43 @@ export class HelperFunctionsService {
     if (data.length > 1) {
       step = data[1][0].valueOf() - data[0][0].valueOf();
     }
+    // detect if data is with bounds
+    let isWithBounds = undefined;
+    for (let row = 0; row < data.length; row++) {
+      for (let column = 1; column < data[row].length; column++) {
+        let element = data[row][column];
+        if (Array.isArray(element)) {
+          isWithBounds = element.length;
+          break;
+        }
+        if (element != null && !isNaN(element)) {
+          isWithBounds = false;
+          break;
+        }
+      }
+      if (isWithBounds !== undefined) {
+        break;
+      }
+    }
+    console.log('isWithBounds:' + isWithBounds);
+
     for (let i = 0; i < labels.length; i++) {
       const element = labels[i];
       if (i > 0) {
         header += separator;
       }
-      header += element.replace(/,/g, ';');
+      if (i > 0 && isWithBounds == 3) {
+        header +=
+          element.replace(/,/g, ';') + ' (lower error range)' + separator;
+      }
+      header += element.replace(/,/g, ';'); // data label
+      if (i > 0 && isWithBounds == 3) {
+        header +=
+          separator + element.replace(/,/g, ';') + ' (upper error range)';
+      }
+      if (i > 0 && isWithBounds == 2) {
+        header += separator + element.replace(/,/g, ';') + ' (std deviation)';
+      }
       if (i === 0) {
         header +=
           separator +
@@ -494,7 +559,29 @@ export class HelperFunctionsService {
           line += String(element.valueOf() / 1000) + separator;
           line += utc ? element.toUTCString() : element.toString();
         } else {
-          line += separator + String(element);
+          line += separator;
+
+          if (isWithBounds) {
+            if (Array.isArray(element)) {
+              for (let i = 0; i < element.length; i++) {
+                const bound = element[i];
+                if (i > 0) {
+                  line += separator;
+                }
+                line += String(bound);
+              }
+            } else {
+              // null or NaN
+              for (let i = 0; i < isWithBounds; i++) {
+                if (i > 0) {
+                  line += separator;
+                }
+                line += String(element);
+              }
+            }
+          } else {
+            line += String(element);
+          }
         }
       }
       return line + linebreak;
@@ -542,15 +629,22 @@ export class HelperFunctionsService {
     }
     let name = 'date_unknown.geojson';
     if (geojsondata.features && geojsondata.features.length) {
+      const datefield = geojsondata.features[0].properties.hasOwnProperty(
+        'Date'
+      )
+        ? 'Date'
+        : 'date';
       name =
         formatDate(
-          geojsondata.features[0].properties.date,
+          geojsondata.features[0].properties[datefield],
           'yyyy-MM-dd_HH.mm.ss',
           'en-uk'
         ) +
         '-' +
         formatDate(
-          geojsondata.features[geojsondata.features.length - 1].properties.date,
+          geojsondata.features[geojsondata.features.length - 1].properties[
+            datefield
+          ],
           'yyyy-MM-dd_HH.mm.ss',
           'en-uk'
         ) +
@@ -743,11 +837,11 @@ export class HelperFunctionsService {
     const textMS = currentMS ? String(currentMS) + 'ms' : '';
     const currentSeconds = Math.floor(seconds);
     const displayedSeconds = currentSeconds % 60;
-    const textSeconds = displayedSeconds ? String(displayedSeconds) + 's ' : '';
+    const textSeconds = displayedSeconds ? String(displayedSeconds) + '" ' : '';
 
     const currentMinutes = Math.floor(currentSeconds / 60);
     const displayedMinutes = currentMinutes % 60;
-    const textMinutes = displayedMinutes ? String(displayedMinutes) + 'm ' : '';
+    const textMinutes = displayedMinutes ? String(displayedMinutes) + "' " : '';
 
     const currentHours = Math.floor(currentMinutes / 60);
     const displayedHours = currentHours % 24;
@@ -789,12 +883,14 @@ export class HelperFunctionsService {
     if (feature.properties) {
       let text = '<table>';
       for (let [key, value] of Object.entries(feature.properties)) {
-        const v =
-          key == 'Date'
-            ? value['toLocaleDateString']('de-DE', timeFormatOptions)
-            : Number.isFinite(Number(value))
-            ? Math.round(Number(value) * 100) / 100
-            : value;
+        let v = value;
+        if (key == 'Date') {
+          v = value['toLocaleDateString']('de-DE', timeFormatOptions);
+        } else if (key.endsWith('lat') || key.endsWith('lon')) {
+          v = Math.round(Number(value) * 1000000) / 1000000;
+        } else if (Number.isFinite(Number(value))) {
+          v = Math.round(Number(value) * 100) / 100;
+        }
         text += '<tr><th>' + key + ':</th><td>' + v + '</td></tr>';
       }
       text += '</table>';
@@ -813,5 +909,99 @@ export class HelperFunctionsService {
       '.' +
       parseInt(hex_str.substr(6, 2), 16).toString(10)
     );
+  }
+
+  // https://medium.com/swlh/how-to-round-to-a-certain-number-of-decimal-places-in-javascript-ed74c471c1b8
+  roundAccurately(nr, decPlaces) {
+    if (isNaN(nr)) {
+      return nr;
+    }
+    if (nr < 1e-5 || nr > 1e5) {
+      //accurate version breaks if "e" already in String display
+      const round_amount = Math.pow(10, decPlaces);
+      return Math.round(nr * round_amount) / round_amount;
+    }
+    return Number(
+      Math.round(Number(String(nr) + 'e' + String(decPlaces))) +
+        'e-' +
+        String(decPlaces)
+    );
+  }
+
+  // from https://medium.com/@thunderroid/angular-short-number-suffix-pipe-1k-2m-3b-dded4af82fb4
+  shortenNumber(nr: number, rounder = 10): string {
+    if (isNaN(nr)) return 'NaN';
+    if (nr === null) return 'null';
+    if (nr === 0) return '0';
+    let abs = Math.abs(nr);
+    const isNegative = nr < 0; // will also work for Negative numbers
+    let key = '';
+
+    const powers = [
+      { key: 'E', value: 10e15 },
+      { key: 'T', value: 10e12 },
+      { key: 'G', value: 10e9 },
+      { key: 'M', value: 10e6 },
+      { key: 'K', value: 1000 },
+    ];
+
+    for (let i = 0; i < powers.length; i++) {
+      let reduced = abs / powers[i].value;
+      reduced = Math.round(reduced * rounder) / rounder;
+      if (reduced >= 1) {
+        abs = reduced;
+        key = powers[i].key;
+        break;
+      }
+    }
+    return (isNegative ? '-' : '') + abs + ' ' + key; // " " is a thin space
+  }
+
+  formatFieldName(fieldname) {
+    fieldname = fieldname.replace(/H2O_/, 'H₂O_');
+    fieldname = fieldname.replace(/CO2_/, 'CO₂_');
+    fieldname = fieldname.replace(/NO2_/, 'NO₂_');
+    fieldname = fieldname.replace(/O3_/, 'O₃_');
+    fieldname = fieldname.replace(/NH3_/, 'NH₃_');
+    fieldname = fieldname.replace(/H2_/, 'H₂_');
+    fieldname = fieldname.replace(/percent$/, '%');
+    fieldname = fieldname.replace(/_%/, '-%');
+    fieldname = fieldname.replace(/degC$/, '°C');
+    fieldname = fieldname.replace(/deg$/, '°'); // heading
+    fieldname = fieldname.replace(/hdop/, 'HDOP');
+    fieldname = fieldname.replace(/p([0-9.]*)_ugpm3$/, 'pm$1 ( µg / m³ )'); //spaces in () are thin-spaces
+    fieldname = fieldname.replace(/_ugpm3$/, ' ( µg / m³ )');
+    fieldname = fieldname.replace(/_gpm3$/, ' ( g / m³ )');
+    fieldname = fieldname.replace(/_degps$/, ' ( ° / s )');
+    fieldname = fieldname.replace(/_mps2$/, ' ( m / s² )');
+    fieldname = fieldname.replace(/_mps$/, ' ( m / s )');
+    fieldname = fieldname.replace(/uT$/, 'µT');
+    fieldname = fieldname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm ( # / cm³ )');
+    fieldname = fieldname.replace(/dewPoint/, 'dew point');
+    fieldname = fieldname.replace(/gps_view/, '#');
+    fieldname = fieldname.replace(/air_rel/, 'apparent wind');
+    fieldname = fieldname.replace(/sensor_voltage/, 'sensor voltage'); //RS04
+    fieldname = fieldname.replace(/sensor_current/, 'sensor current'); //RS04
+    fieldname = fieldname.replace(/sensor_highvoltage/, 'sensor high-voltage'); //RS04
+    fieldname = fieldname.replace(/_cps$/, ' ( # / s )');
+    fieldname = fieldname.replace(/_Svph$/, ' ( Sv / h )');
+    // fieldname = fieldname.replace(/interval_s/, 'interval ( s )'); // not a field, but a tag
+
+    fieldname = fieldname.replace(/_(\S+)$/, ' ( $1 )');
+    return fieldname;
+  }
+  bigQconfirm(nr_points) {
+    if (
+      window.confirm(
+        'Database would be queried for up to ' +
+          Math.ceil(nr_points).toLocaleString() +
+          ' points of data, are you sure?'
+      )
+    ) {
+      return true;
+    } else {
+      console.log('user canceled query with', nr_points, 'points.');
+      return false;
+    }
   }
 }

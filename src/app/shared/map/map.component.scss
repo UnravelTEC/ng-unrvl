@@ -5,3 +5,25 @@
   height: 100%;
   position: inherit;
 }
+button.zout {
+  position: absolute;
+  top: 80px;
+  left: 10px;
+  border-radius: 4px;
+  width: 34px;
+  height: 34px;
+  border: 2px solid rgba(0,0,0,0.2) !important;
+  background: white !important;
+  background-clip: padding-box !important;
+  color: black !important;
+  z-index: 1100;
+  padding: 0 !important;
+  mat-icon {
+    font-size: 26px;
+    height: 26px;
+    width: 26px;
+  }
+}
+button.zout:hover {
+  background-color: #f4f4f4 !important;
+}

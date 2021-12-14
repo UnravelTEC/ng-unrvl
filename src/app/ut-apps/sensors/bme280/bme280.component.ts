@@ -11,7 +11,6 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./bme280.component.scss'],
 })
 export class Bme280Component implements OnInit {
-
   colors = [];
   graphWidth = 1500;
   setGraphWidth(width) {
@@ -24,7 +23,7 @@ export class Bme280Component implements OnInit {
     pointSize: 3,
     logscale: false,
     series: {
-      'pressure': {
+      pressure: {
         axis: 'y2',
       },
     },
@@ -36,7 +35,7 @@ export class Bme280Component implements OnInit {
       },
     },
   };
-  labelBlackListT = ['host', 'serial', 'mean_*', 'id', 'sensor', 'mean'];
+  labelBlackListT = ['host', 'serial', 'mean_*', 'sensor'];
   graphstyle = {
     position: 'absolute',
     top: '0.5em',
@@ -70,6 +69,7 @@ export class Bme280Component implements OnInit {
   }
 
   labels = [];
+  raw_labels = [];
   data = [];
 
   appName = 'BME280';
@@ -137,6 +137,18 @@ export class Bme280Component implements OnInit {
     this.currentres = this.meanS;
     this.startTime = this.userStartTime;
 
+    const timerange = fromTo
+      ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000
+      : this.h.parseToSeconds(this.startTime);
+    const nr_points = timerange / this.meanS;
+    if (nr_points > 10000 && !this.h.bigQconfirm(nr_points)) {
+      if (!this.labels.length) {
+        // at start to show "no data"
+        this.labels = [''];
+      }
+      return;
+    }
+
     const timeQuery = fromTo
       ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
       : this.utHTTP.influxTimeString(this.startTime);
@@ -153,19 +165,21 @@ export class Bme280Component implements OnInit {
     //   params['host'] = this.host;
     // }
 
-    const queries = this.utHTTP.influxMeanQuery(
-      'humidity',
-      timeQuery,
-      params,
-      this.meanS,
-      '/H2O_rel_percent|sensor_degC/'
-    ) + this.utHTTP.influxMeanQuery(
-      'pressure',
-      timeQuery,
-      params,
-      this.meanS,
-      'air_hPa'
-    );
+    const queries =
+      this.utHTTP.influxMeanQuery(
+        'humidity',
+        timeQuery,
+        params,
+        this.meanS,
+        '/H2O_rel_percent|sensor_degC/'
+      ) +
+      this.utHTTP.influxMeanQuery(
+        'pressure',
+        timeQuery,
+        params,
+        this.meanS,
+        '/air_hPa/'
+      );
 
     this.launchQuery(queries);
   }
@@ -185,9 +199,16 @@ export class Bme280Component implements OnInit {
   }
 
   launchQuery(clause: string) {
-    this.utHTTP
-      .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
-      .subscribe((data: Object) => this.handleData(data));
+    if (!this.globalSettings.influxReady()) {
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
+    this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(clause)).subscribe(
+      (data: Object) => this.handleData(data),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -197,12 +218,22 @@ export class Bme280Component implements OnInit {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('parsed', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
     const labels = ret['labels'];
+    this.raw_labels = ret['raw_labels'];
+
     const idata = ret['data'];
 
     let logscale = true;
     const newColors = this.h.getColorsforLabels(labels);
     for (let c = 1; c < labels.length; c++) {
+      labels[c] = labels[c]
+        .replace(/^[a-z]* /, '') // rm measurement name, which is misleading
+        .replace(/[a-z]* \( °C \)/, 'temperature ( °C )')
+        .replace(/air \( hPa \)/, 'pressure ( hPa )');
       const item = labels[c];
 
       if (logscale == true) {
@@ -215,8 +246,12 @@ export class Bme280Component implements OnInit {
           }
         }
       }
-      if (item.match(/pressure/)) {
+
+      if (item.match(/hPa/)) {
         this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
+        this.extraDyGraphConfig.series[labels[c]] = {
+          axis: 'y2',
+        };
       }
     }
     // console.log(cloneDeep(this.dygLabels));

@@ -1,86 +1,200 @@
-<a
-  id="backicon"
-  [routerLink]="'/Apps/I/' + referrer"
-  routerLinkActive="active"
-  title="Return to overview"
-  ><mat-icon>fullscreen_exit</mat-icon></a
->
-
-<app-ut-dygraph-in
-  [displayedData]="data"
-  [columnLabels]="labels"
-  [style]="graphstyle"
-  [changeTrigger]="changeTrigger"
-  [extraDyGraphConfig]="extraDyGraphConfig"
-  [startTime]="undefined"
-  enableHighlightCallback="true"
-  [colors]="colors"
-  [YLabel]="measurement"
-  (returnGraphWidthOnChange)="setGraphWidth($event)"
-  (returnCurrentZoom)="updateFromToTimes($event)"
-  #R
-></app-ut-dygraph-in>
-
-<form class="settings" (submit)="reload(true)">
-  <fieldset>
-    <h3>Current Dataset:</h3>
-    <label>Resolution:</label>
-    <span class="cRange">{{ currentres }}s</span><br />
-
-    <label>Current Range:</label>
-    <span class="cRange">{{ currentRange }}&nbsp;</span>
-    <p>
-      <a
-        routerLink="/Apps/I/Anysens"
-        [queryParams]="{
-          measurement: measurement,
-          sensor: sensor,
-          from: from,
-          to: to,
-          interval: interval
-        }"
-        routerLinkActive="active"
-        >Permalink</a
-      >
-    </p>
-  </fieldset>
-  <fieldset [disabled]="queryRunning == true">
-    <h3>{{ queryRunning ? 'Query running...' : 'New Query:' }}</h3>
-
-    <mat-form-field>
-      <mat-label>Show range from now</mat-label>
-      <mat-select
-        [(ngModel)]="userStartTime"
-        name="startTime"
-        (closed)="changeMean(userStartTime)"
-        [disabled]="queryRunning == true"
-      >
-        <mat-option value="15m">15 min.</mat-option>
-        <mat-option value="1h" selected="selected"> 1h</mat-option>
-        <mat-option value="6h">6 h</mat-option>
-        <mat-option value="24h">24 h</mat-option>
-        <mat-option value="7d">1 week</mat-option>
-        <mat-option value="30d">1 month</mat-option>
-        <mat-option value="356d">1 year</mat-option>
-      </mat-select>
-    </mat-form-field>
-    <br />
-    <label for="runningAvgPoints"># Mean Seconds</label>
-    <input
-      type="text"
-      id="runningAvgPoints"
-      name="runningAvgPoints"
-      [(ngModel)]="userMeanS"
-      (ngModelChange)="saveMean($event)"
-      style="width: 4em"
-    /><br />
-    <br />
-
-    <div style="width: 100%; text-align: right">
-      <button type="submit">
-        <mat-icon>refresh</mat-icon>
-        Reload
-      </button>
+<div id="anyapp">
+  <div id="anyheader">
+    <h2>
+      {{ sensor }} {{ measurement }}
+      <small *ngIf="common_label != measurement">( {{ common_label }} )</small>
+    </h2>
+    <!-- small spaces in ( )-->
+    <div style="position: absolute; top: 0.8em; right: 7em; color: gray;" *ngIf="autoreload" title="Time until reload">
+      {{ reload_timer | number }}s
     </div>
-  </fieldset>
-</form>
+    <a
+      id="backicon"
+      [routerLink]="'/Apps/I/' + referrer"
+      routerLinkActive="active"
+      title="Return to overview"
+      ><mat-icon>fullscreen_exit</mat-icon></a
+    >
+    <button
+      id="toggleSidebar"
+      (click)="toggleSidebar(); R.resize()"
+      title="Toggle sidebar"
+    >
+      {{ sideBarShown ? '»' : '«' }}
+    </button>
+  </div>
+  <div id="anybody">
+    <div id="dygcontainerabs" [style.right]="currentSidebarWidth">
+      <div id="dygcontainerrel">
+        <app-ut-dygraph-in
+          [data]="data"
+          [columnLabels]="labels"
+          [showDeviation]="show_deviation"
+          [rawLabels]="raw_labels"
+          [style]="graphstyle"
+          [changeTrigger]="changeTrigger"
+          [extraDyGraphConfig]="extraDyGraphConfig"
+          [startTime]="dygStartTime"
+          enableHighlightCallback="true"
+          [colors]="colors"
+          [backGroundLevels]="gss['graphBackgrounds'][background]"
+          [YLabel]="ylabel"
+          [Y2Label]="y2label"
+          (returnGraphWidthOnChange)="setGraphWidth($event)"
+          (returnCurrentZoom)="updateFromToTimes($event)"
+          (returnRunningAvg)="handleRunningAvg($event)"
+          #R
+        ></app-ut-dygraph-in>
+      </div>
+    </div>
+
+    <form class="settings" (submit)="reload(true)" *ngIf="sideBarShown">
+      <fieldset>
+        <h3>Current Dataset:</h3>
+        <label>Resolution:</label>
+        <span class="cRange" title="{{currentres}}&thinsp;s">{{ currentresText }}</span><br />
+
+        <!-- <label style="display: inline-block">Range:</label> -->
+        <!-- <span class="cRange">{{ currentRange }}</span> -->
+        <p>
+          <a
+            routerLink="/Apps/I/Anysens"
+            [queryParams]="{
+              measurement: measurement,
+              sensor: sensor,
+              from: from,
+              to: to,
+              interval: interval
+            }"
+            routerLinkActive="active"
+            >Permalink</a
+          >
+        </p>
+      </fieldset>
+      <fieldset [disabled]="queryRunning == true || autoreload">
+        <h3>{{ queryRunning ? 'Query running...' : 'Query current view:' }}</h3>
+        <label for="runningAvgPoints">Resolution (s):</label>
+        <input
+          type="text"
+          id="runningAvgPoints"
+          name="runningAvgPoints"
+          [(ngModel)]="userMeanS"
+          (ngModelChange)="saveMean($event)"
+          style="width: 4em"
+        />
+
+        <div style="width: 100%; text-align: right; margin-top: -1.8em">
+          <button type="submit">
+            <mat-icon>refresh</mat-icon>
+            Reload
+          </button>
+        </div>
+      </fieldset>
+      <fieldset [disabled]="queryRunning == true && !autoreload">
+        <h3>{{ queryRunning ? 'Query running...' : 'Query latest data:' }}</h3>
+        <mat-form-field>
+          <mat-label>Show range from now</mat-label>
+          <mat-select
+            [(ngModel)]="userStartTime"
+            name="startTime"
+            (closed)="changeMean(userStartTime)"
+            [disabled]="queryRunning == true || autoreload"
+          >
+            <mat-option value="15m">15 min.</mat-option>
+            <mat-option value="1h" selected="selected"> 1h</mat-option>
+            <mat-option value="6h">6 h</mat-option>
+            <mat-option value="24h">24 h</mat-option>
+            <mat-option value="7d">1 week</mat-option>
+            <mat-option value="30d">1 month</mat-option>
+            <mat-option value="356d">1 year</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <br />
+        <div style="width: 100%">
+          <mat-checkbox
+            [(ngModel)]="autoreload"
+            name="autoreload"
+            labelPosition="after"
+            (ngModelChange)="toggleAutoReload($event)"
+          >
+            auto
+          </mat-checkbox>
+          <label for="auto_s">every (s):</label>
+          <input
+            type="text"
+            id="auto_s"
+            name="auto_s"
+            [(ngModel)]="auto_interval"
+            (ngModelChange)="changeAutoS($event)"
+            style="width: 3em"
+          />
+          <button
+            (click)="reload()"
+            type="button"
+            [disabled]="autoreload"
+            style="margin-left: 3em"
+          >
+            <mat-icon>refresh</mat-icon>
+            Reload
+          </button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div id="anyfooter">
+    <div *ngIf="!tableShown">
+      <button (click)="toggleTableShown(); R.resize()">Show Data Table</button>
+    </div>
+    <table *ngIf="tableShown">
+      <thead>
+        <tr>
+          <th>Series</th>
+          <th>latest value</th>
+          <th>latest data</th>
+          <th>average (all)</th>
+          <th style="position: relative; padding-right: 2.2em">
+            average (visible)
+            <button
+              (click)="toggleTableShown(); R.resize()"
+              title="Hide Data Table"
+            >
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let label of short_labels; let i = index"
+          [attr.data-index]="i"
+        >
+          <td>{{ label }}</td>
+          <td>
+            {{
+              latest_values[i]
+                | number: '1.' + round_digits[i + 1] + '-' + round_digits[i + 1]
+            }}
+          </td>
+
+          <!-- <td>{{ round(latest_values[i], raw_labels[i + 1]) }}</td> forces infinite updates? -->
+          <td>
+            {{ latest_dates[i] | date: 'shortDate' }},
+            {{ latest_dates[i] | date: 'shortTime' }}
+          </td>
+          <td>
+            {{
+              allAverages[i]
+                | number: '1.' + (round_digits[i + 1] + 1) + '-' + (round_digits[i + 1] + 1)
+            }}
+          </td>
+          <td>
+            {{
+              visibleAverages[i]
+                | number: '1.' + (round_digits[i + 1] + 1 ) + '-' + (round_digits[i + 1] + 1)
+            }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

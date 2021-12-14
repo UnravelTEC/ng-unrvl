@@ -1,10 +1,8 @@
 <table>
   <tr>
-    <td>
-      Hardware clock:
-    </td>
+    <td>Hardware clock:</td>
     <td>{{ hwDate }}</td>
-    <td *ngIf="gss.client.type !== 'local'">
+    <td *ngIf="gss.client.localscreen == false">
       Difference:
       {{ hwDate && (browserDate.valueOf() - hwDate.valueOf()) / 1000 }} s
     </td>
@@ -12,12 +10,12 @@
   <tr>
     <td>Software clock:</td>
     <td>{{ swDate }}</td>
-    <td *ngIf="gss.client.type !== 'local'">
+    <td *ngIf="gss.client.localscreen == false">
       Difference:
       {{ swDate && (browserDate.valueOf() - swDate.valueOf()) / 1000 }} s
     </td>
   </tr>
-  <tr *ngIf="gss.client.type !== 'local'">
+  <tr *ngIf="gss.client.localscreen == false">
     <td>Browser time:</td>
     <td>
       {{ browserDate }}

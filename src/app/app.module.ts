@@ -32,6 +32,13 @@ const appRoutes: Routes = [
       ),
   },
   {
+    path: 'Settings/Sensors/SCD30',
+    loadChildren: () =>
+      import('./ut-settings/sensors/scd30-cfg/scd30-cfg.module').then(
+        (m) => m.Scd30CfgModule
+      ),
+  },
+  {
     path: 'Dashboard',
     loadChildren: () =>
       import('./ut-dashboard/ut-dashboard.module').then(
@@ -43,12 +50,6 @@ const appRoutes: Routes = [
     loadChildren: () =>
       import('./ut-apps/flicker/flicker.module').then((m) => m.FlickerModule),
   },
-  {
-    path: 'Apps/Hosts',
-    loadChildren: () =>
-      import('./ut-apps/hosts/hosts.module').then((m) => m.HostsModule),
-  },
-
   {
     path: 'Apps/noir',
     loadChildren: () =>
@@ -127,6 +128,13 @@ const appRoutes: Routes = [
       ),
   },
   {
+    path: 'Apps/I/Sensemaps',
+    loadChildren: () =>
+      import('./ut-apps/i/sensemaps/sensemaps.module').then(
+        (m) => m.SensemapsModule
+      ),
+  },
+  {
     path: 'Apps/I/Enviromap',
     loadChildren: () =>
       import('./ut-apps/i/enviromap/enviromap.module').then(
@@ -160,6 +168,7 @@ const appRoutes: Routes = [
     loadChildren: () =>
       import('./ut-apps/i/anysens/anysens.module').then((m) => m.AnysensModule),
   },
+
   {
     path: 'Apps/Sensors',
     loadChildren: () =>
@@ -168,7 +177,9 @@ const appRoutes: Routes = [
   {
     path: 'Apps/Sensors/BME280',
     loadChildren: () =>
-      import('./ut-apps/sensors/bme280/bme280.module').then((m) => m.Bme280Module),
+      import('./ut-apps/sensors/bme280/bme280.module').then(
+        (m) => m.Bme280Module
+      ),
   },
   {
     path: 'Apps/Sensors/SCD30',
@@ -183,12 +194,23 @@ const appRoutes: Routes = [
   {
     path: 'Apps/Sensors/DS18B20',
     loadChildren: () =>
-      import('./ut-apps/sensors/ds18b20/ds18b20.module').then((m) => m.Ds18b20Module),
+      import('./ut-apps/sensors/ds18b20/ds18b20.module').then(
+        (m) => m.Ds18b20Module
+      ),
   },
   {
     path: 'Apps/Sensors/TSL2561',
     loadChildren: () =>
-      import('./ut-apps/sensors/tsl2561/tsl2561.module').then((m) => m.Tsl2561Module),
+      import('./ut-apps/sensors/tsl2561/tsl2561.module').then(
+        (m) => m.Tsl2561Module
+      ),
+  },
+  {
+    path: 'Apps/Calibrations',
+    loadChildren: () =>
+      import('./ut-apps/calibration/calibration.module').then(
+        (m) => m.CalibrationModule
+      ),
   },
   {
     path: '',

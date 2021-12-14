@@ -7,7 +7,7 @@ import { UtDygraphInModule } from '../../../shared/ut-dygraph-in/ut-dygraph-in.m
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   imports: [
@@ -16,8 +16,9 @@ import { MatIconModule } from '@angular/material/icon';
     UtDygraphInModule,
     MatSelectModule,
     MatIconModule,
-    FormsModule
+    FormsModule,
+    MatCheckboxModule,
   ],
-  declarations: [AnysensComponent]
+  declarations: [AnysensComponent],
 })
-export class AnysensModule { }
+export class AnysensModule {}

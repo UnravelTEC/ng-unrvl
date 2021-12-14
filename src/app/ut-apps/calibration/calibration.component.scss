@@ -1,0 +1,89 @@
+#calappbody {
+  margin: 0 0.5rem 0.5rem 0.5rem;
+}
+
+.sensor,
+.measurement,
+.id,
+.sensormeasurement {
+  border: 1px solid gray;
+  padding: 0 6px 3px 6px;
+  margin: 3px 0;
+}
+.measurements {
+  margin-left: 3em;
+}
+.sensor {
+  margin-top: 10px;
+}
+.add {
+  text-align: right;
+}
+
+h4 {
+  margin: 0.2em;
+}
+h5,
+h6 {
+  margin: 0;
+}
+#calappbody {
+  // # needed to overrule global stylesheet for button
+  .field {
+    div {
+      margin-top: 0.5rem;
+    }
+    table {
+      border-collapse: collapse;
+      margin-left: 1em;
+      margin-bottom: 1em;
+      form {
+        display: table-row;
+      }
+      td,
+      th {
+        border: 1px dotted gray;
+      }
+      th.note {
+        width: 10rem;
+      }
+      th:first-child {
+        width: 11rem;
+      }
+      input#note {
+        width: 9.2rem;
+      }
+      mat-form-field {
+        width: 5em;
+        height: 1em;
+        margin-top: -2.35em;
+        font-family: inherit;
+
+        .mat-form-field-wrapper {
+          padding-bottom: 0; // stretched out of bottom and created scrollbar
+        }
+        input {
+          cursor: pointer;
+        }
+      }
+      mat-form-field.mat-form-field-appearance-legacy .mat-form-field-infix {
+        padding: 0;
+        border-top: 0;
+      }
+      input[type='number'] {
+        width: 2.5em; // incl up/down buttons
+      }
+    }
+  }
+
+  th,
+  td {
+    padding: 2px 8px;
+    button {
+      padding: 2px;
+    }
+  }
+}
+.new input[type='text'] {
+  width: 5rem;
+}

@@ -1,5 +1,8 @@
-div.settingspage {
-  padding: 0 0.5em;
+$buttonbg: #565656;
+div.red {
+  border: 2px solid red;
+  box-sizing: border-box;
+  margin: 0.5em;
 }
 
 h1 {
@@ -7,7 +10,7 @@ h1 {
   margin: 1rem;
 }
 h2 {
-  margin: 0 0 1rem 0;
+  margin: 0 0 1rem 0.5rem;
 }
 a {
   color: rgb(97, 97, 255);
@@ -17,7 +20,26 @@ section {
   border: 1px solid black;
   border-radius: 2px;
   padding: 10px;
-  margin: 0.5em auto 0.5em auto;
+  margin: 0.5em;
+
+  #chosenBackend {
+    div {
+      margin: 0.5rem;
+    }
+    fieldset {
+      border: 0;
+    }
+    fieldset:disabled {
+      opacity: 0.5;
+      input,
+      button {
+        cursor: not-allowed;
+      }
+      button:hover {
+        background-color: $buttonbg;
+      }
+    }
+  }
 
   section {
     border: 1px solid gray;
@@ -77,6 +99,24 @@ button {
   text-decoration: none;
   cursor: pointer;
 }
+a.small {
+  display: inline-block;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 7px;
+  color: white;
+  margin: 5px;
+  text-decoration: none;
+  cursor: pointer;
+}
 
 button {
   margin: 0.3em;
@@ -89,4 +129,17 @@ button:disabled {
 
 table.th_right th {
   text-align: right;
+}
+
+table.sensors {
+  border-collapse: collapse;
+  td {
+    height: 2.5em;
+  }
+}
+
+table.sensors, table.sensors th, table.sensors td {
+  border: 1px solid gray;
+  padding: 0.5em;
+  margin: 0.2em 0;
 }

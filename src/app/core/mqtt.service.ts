@@ -23,6 +23,7 @@ export class MqttService {
   private clientID = 'ng-unrvl_' + String(Math.random() * 100);
   public status = 'init'; // | connecting | connected | failed | lost
   public disconnects = 0;
+  public serverName = '';
 
   private timeoutcounter = 0;
 
@@ -36,10 +37,11 @@ export class MqttService {
   private waitingRequests = [];
   private activeRequesters = [];
   private topicSubscribers = { sampleTopic: 0 };
+  public lastMessages = [];
+  private lastMessageLength = 3;
 
   constructor(private globalSettings: GlobalSettingsService) {
-    let server = this.globalSettings.server.serverName;
-    if (server) {
+    if (this.globalSettings.server.serverName) {
       this.init();
     } else {
       console.log('mqtt: server not ready yet');
@@ -52,8 +54,8 @@ export class MqttService {
     }
   }
   private init() {
-    let server = this.globalSettings.server.serverName;
-    if (!server) {
+    this.serverName = this.globalSettings.server.serverName;
+    if (!this.serverName) {
       console.log('mqtt: server not ready yet');
       setTimeout(
         function () {
@@ -64,9 +66,9 @@ export class MqttService {
       return;
     }
 
-    console.log('mqtt server:' + server);
+    console.log('mqtt server:' + this.serverName);
 
-    this.client = new Paho.Client(server, 1885, this.clientID);
+    this.client = new Paho.Client(this.serverName, 1885, this.clientID);
     this.client.onConnectionLost = (obj: Object) => this.onConnectionLost(obj);
     this.client.onMessageArrived = (obj: Object) => this.onMessageArrived(obj);
     console.log('MQTT client under construction', this.client);
@@ -137,6 +139,7 @@ export class MqttService {
     this.client.connect({
       onSuccess: () => this.onConnect(),
       onFailure: (obj: Object) => this.onFailure(obj),
+      keepAliveInterval: 30,
     });
     this.status = 'connecting';
   }
@@ -199,6 +202,10 @@ export class MqttService {
     if (!found) {
       console.error('no topic subscribers found for', topic);
     }
+    while (this.lastMessages.length > this.lastMessageLength) {
+      this.lastMessages.pop();
+    }
+    this.lastMessages.push(topic + ": " + message['payloadString']);
   }
   public compareTopics(subscribedTopic: string, receivedTopic: string) {
     if (subscribedTopic === '#') {

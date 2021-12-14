@@ -6,23 +6,14 @@
       <tr>
         <th><label for="ssid">SSID</label></th>
         <td>
-          <input
-            type="text"
-            class="form-control"
-            id="ssid"
-            [(ngModel)]="wificlient_ssid"
-          />
+          <input type="text" id="ssid" [(ngModel)]="wificlient_ssid" />
         </td>
       </tr>
       <tr>
         <th><label for="psk">PSK</label></th>
-        <td>
-          <input
-            type="text"
-            class="form-control"
-            id="psk"
-            [(ngModel)]="wificlient_psk"
-          />
+        <td class="auth">
+          <input type="{{ hidepw ? 'password' : 'text'}}" id="psk" [(ngModel)]="wificlient_psk"
+           /><mat-icon (click)="hidepw = !hidepw">{{ hidepw ? 'visibility' : 'visibility_off' }}</mat-icon>
         </td>
       </tr>
       <tr>

@@ -19,9 +19,10 @@ export class Ds18b20Component implements OnInit {
   }
 
   extraDyGraphConfig = {
-    connectSeparatedPoints: true,
+    connectSeparatedPoints: false,
     pointSize: 3,
     logscale: false,
+    customBars: true,
   };
   labelBlackListT = ['host', 'serial', 'mean_*', 'id', 'sensor', 'mean'];
   graphstyle = {
@@ -57,6 +58,7 @@ export class Ds18b20Component implements OnInit {
   }
 
   labels = [];
+  raw_labels = [];
   data = [];
 
   appName = 'DS18B20';
@@ -126,6 +128,18 @@ export class Ds18b20Component implements OnInit {
     this.currentres = this.meanS;
     this.startTime = this.userStartTime;
 
+    const timerange = fromTo
+      ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000
+      : this.h.parseToSeconds(this.startTime);
+    const nr_points = timerange / this.meanS;
+    if (nr_points > 10000 && !this.h.bigQconfirm(nr_points)) {
+      if (!this.labels.length) {
+        // at start to show "no data"
+        this.labels = [''];
+      }
+      return;
+    }
+
     const timeQuery = fromTo
       ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
       : this.utHTTP.influxTimeString(this.startTime);
@@ -147,7 +161,7 @@ export class Ds18b20Component implements OnInit {
       timeQuery,
       params,
       this.meanS,
-      '/air_degC/'
+      '/_degC/'
     );
 
     this.launchQuery(queries);
@@ -168,10 +182,17 @@ export class Ds18b20Component implements OnInit {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.influxReady()) {
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
     this.queryRunning++;
-    this.utHTTP
-      .getHTTPData(this.utHTTP.buildInfluxQuery(clause))
-      .subscribe((data: Object) => this.handleData(data));
+    this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(clause)).subscribe(
+      (data: Object) => this.handleData(data),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -181,25 +202,17 @@ export class Ds18b20Component implements OnInit {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('parsed', ret);
-    const labels = ret['labels'];
-    const idata = ret['data'];
-
-    let logscale = true;
-    const newColors = this.h.getColorsforLabels(labels);
-    for (let c = 1; c < labels.length; c++) {
-      const item = labels[c];
-
-      if (logscale == true) {
-        for (let r = 0; r < idata.length; r++) {
-          const point = idata[r][c];
-          if (point <= 0 && point !== NaN && point !== null) {
-            logscale = false;
-            console.log('found', idata[r][c], '@r', r, 'c', c, 'of', item);
-            break;
-          }
-        }
-      }
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
     }
+    const labels = ret['labels'];
+    const idata = ret['data']; // [[date, x1, x2], [date, x1, x2]]
+    this.raw_labels = ret['raw_labels'];
+
+    let logscale = false;
+    const newColors = this.h.getColorsforLabels(labels);
+
     // console.log(cloneDeep(this.dygLabels));
     if (logscale) {
       console.log('scale: log');
@@ -212,7 +225,7 @@ export class Ds18b20Component implements OnInit {
     this.data = idata;
     this.colors = newColors;
     console.log(labels);
-    console.log(idata);
+    console.log(this.data);
     this.changeTrigger = !this.changeTrigger;
     this.changeTrigger = !this.changeTrigger;
     this.queryRunning--;

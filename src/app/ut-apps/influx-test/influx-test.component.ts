@@ -8,7 +8,7 @@ import { LocalStorageService } from '../../core/local-storage.service';
 @Component({
   selector: 'app-influx-test',
   templateUrl: './influx-test.component.html',
-  styleUrls: ['./influx-test.component.scss']
+  styleUrls: ['./influx-test.component.scss'],
 })
 export class InfluxTestComponent implements OnInit, OnDestroy {
   private appName = 'influx-test';
@@ -23,14 +23,14 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
    * colums: *, /regex/
    * measuerement, eg gas
    * starttime / range / mean
-  */
+   */
   queries = [
     'SELECT mean(*) FROM particulate_matter WHERE time > now() - {{T}} GROUP BY sensor,time(30s);' +
       'SELECT mean(*) FROM gas WHERE time > now() - {{T}} GROUP BY sensor,time(30s);' +
       'SELECT mean(*) FROM temperature WHERE time > now() - {{T}} GROUP BY sensor,time(30s);',
     'SELECT mean(/p(1|2.5|10)_ugpm3/) FROM particulate_matter WHERE time > now() - {{T}} GROUP BY sensor,time(30s);',
     'SELECT LAST(*) FROM "temperature" GROUP BY *;',
-    'SELECT * FROM gas WHERE time > now() - {{T}} GROUP BY *;'
+    'SELECT * FROM gas WHERE time > now() - {{T}} GROUP BY *;',
   ];
 
   // q = 'SELECT * FROM "temperature" LIMIT 3';
@@ -55,7 +55,7 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
     // 'dataBaseQueryStepMS',
     'startTime',
     'showResultText',
-    'q'
+    'q',
     // 'endTime'
   ];
 
@@ -79,7 +79,7 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
     this.reload();
   }
   chooseQuery(query) {
-    this.q = query
+    this.q = query;
   }
 
   reload() {
@@ -91,16 +91,28 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
   }
 
   launchQuery(clause: string) {
+    if (!this.globalSettings.influxReady()) {
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
+
     const qWithTime = clause.replace(/{{T}}/g, this.startTime);
     const q = this.utHTTP.buildInfluxQuery(qWithTime);
-    this.utHTTP
-      .getHTTPData(q)
-      .subscribe((data: Object) => this.printResult(data));
+    this.utHTTP.getHTTPData(q).subscribe(
+      (data: Object) => this.printResult(data),
+      (error) => this.globalSettings.displayHTTPerror(error)
+    );
   }
 
   printResult(data: Object) {
     console.log(cloneDeep(data));
     let ret = this.utHTTP.parseInfluxData(data);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
 
     this.dygLabels = ret['labels'];
     console.log(cloneDeep(this.dygLabels));
@@ -120,7 +132,7 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
   }
   loadSettings() {
     let valueInLocalStorage;
-    this.variablesToSave.forEach(elementName => {
+    this.variablesToSave.forEach((elementName) => {
       valueInLocalStorage = this.localStorage.get(this.appName + elementName);
       if (valueInLocalStorage) {
         this[elementName] = valueInLocalStorage;
@@ -128,7 +140,7 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
     });
   }
   saveSettings() {
-    this.variablesToSave.forEach(elementName => {
+    this.variablesToSave.forEach((elementName) => {
       this.localStorage.set(this.appName + elementName, this[elementName]);
     });
     // alert('save ok');

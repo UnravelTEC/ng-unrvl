@@ -7,7 +7,7 @@ import { HelperFunctionsService } from '../../../core/helper-functions.service';
 @Component({
   selector: 'app-radiation',
   templateUrl: './radiation.component.html',
-  styleUrls: ['./radiation.component.scss']
+  styleUrls: ['./radiation.component.scss'],
 })
 export class RadiationComponent implements OnInit {
   extraDyGraphConfig = { pointSize: 3 };
@@ -17,7 +17,7 @@ export class RadiationComponent implements OnInit {
     top: '4em',
     bottom: '0rem',
     left: '0rem',
-    right: '15rem'
+    right: '15rem',
   };
 
   multiplicateFactor = 1000000000;
@@ -81,16 +81,30 @@ export class RadiationComponent implements OnInit {
   }
 
   launchQuery(clause: string) {
-    const q = this.utHTTP.buildInfluxQuery(clause, 'koffer')
+    if (!this.globalSettings.influxReady()) {
+      setTimeout(() => {
+        this.launchQuery(clause);
+      }, 1000);
+      return;
+    }
+
+    const q = this.utHTTP.buildInfluxQuery(clause, 'koffer');
     this.utHTTP
       // .getHTTPData(q)
       .getHTTPData(q, 'utweb', 'kJImNSmq1m84py7jhaGq')
-      .subscribe((data: Object) => this.handleData(data));
+      .subscribe(
+        (data: Object) => this.handleData(data),
+        (error) => this.globalSettings.displayHTTPerror(error)
+      );
   }
 
   handleData(data: Object) {
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
     console.log('received', ret);
+    if (ret['error']) {
+      alert('Influx Error: ' + ret['error']);
+      return;
+    }
     this.labels = ret['labels'];
     this.data = ret['data'];
     // console.log(cloneDeep(this.dygLabels));

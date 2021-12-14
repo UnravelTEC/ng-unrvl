@@ -4,7 +4,7 @@
   >
   <!-- <em class=search>Search</em> -->
   <!-- <em class=wifi>Wifi</em> -->
-  <em class="hostname">{{ hostName }}</em
+  <em class="hostname">{{ hostName }}<span *ngIf="gss.server.influxdb != 'telegraf'"> ( {{ gss.server.influxdb}} )</span></em
   >:
   <em class="appname">{{ appName }}</em>
   <span class="spacer">&nbsp;</span>
@@ -12,8 +12,19 @@
   <em class="date">{{ currentTime | date: 'dd.MM.yyyy HH:mm' }}</em>
 
   <em id="mqtt">
-    <span class="{{ mqtt.status }}" title="MQTT status: {{ mqtt.status }}">
+    <span
+      class="{{ mqtt.status }}"
+      title="MQTT status: {{ mqtt.status }} on {{ mqtt.serverName }}"
+      (click)="showMqttList = !showMqttList"
+    >
       <mat-icon>rss_feed</mat-icon>
+      <div id="mqttList" *ngIf="showMqttList">
+        <ul>
+          <li *ngFor="let entry of mqtt.lastMessages">
+            {{ entry }}
+          </li>
+        </ul>
+      </div>
     </span>
   </em>
 
@@ -35,7 +46,18 @@
     class="icon"
     ><mat-icon>power</mat-icon></a
   > -->
+  <a (click)="gss.fullscreen()" *ngIf="gss.client.mobile" class="icon fs"
+  ><mat-icon *ngIf="!gss.client.isFullscreen">fullscreen</mat-icon
+    ><mat-icon *ngIf="gss.client.isFullscreen">fullscreen_exit</mat-icon
+      ></a>
   <a routerLink="/Settings" routerLinkActive="active" class="icon"
     ><mat-icon>settings</mat-icon></a
   >
 </nav>
+
+
+<div id="statusbox" *ngIf="statusText != ''">
+  <div class="relcontainer">
+    {{ statusText }}
+  </div>
+</div>

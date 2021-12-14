@@ -1,0 +1,110 @@
+nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 100%;
+  background: rgb(49, 86, 105);
+}
+nav > * {
+  display: inline-block;
+  background: rgb(49, 86, 105);
+  padding: 0.6em 0.3em;
+  margin: 0;
+  color: rgb(255, 255, 255);
+  text-decoration: none;
+  height: 1.3em;
+}
+nav > a {
+  color: white;
+}
+nav > .spacer {
+  flex-grow: 1;
+}
+
+nav em {
+  font-style: normal;
+  color: rgb(180, 180, 180);
+}
+
+#db .unkown {
+  color: gray;
+}
+#db .up,
+#mqtt .connected {
+  color: white;
+}
+#db .down,
+#mqtt .lost,
+#mqtt .failed {
+  color: red;
+}
+#db .waiting,
+#mqtt .connecting,
+#mqtt .init {
+  color: yellow;
+}
+
+#mqttList {
+  position: fixed;
+  top: 2.6em;
+  right: 4.5em;
+  left: 2em;
+  background: white;
+  z-index: 100;
+  border-radius: 0.5em;
+  ul {
+    list-style: circle;
+  }
+  li {
+    color: black;
+    white-space: nowrap;
+    text-align: left;
+    overflow-x: hidden;
+  }
+}
+
+nav a:hover {
+  background: rgb(201, 201, 207);
+}
+
+nav em.appname {
+  color: rgb(255, 255, 255);
+}
+
+nav > a.icon {
+  padding-right: 0.5em;
+  padding-left: 0.5em;
+  cursor:pointer;
+}
+nav {
+  .material-icons {
+    vertical-align: middle;
+    margin: 0;
+    height: 1.4em;
+    transform: translateY(-0.2em);
+  }
+  .fs .material-icons{
+    font-size: 1.7em;
+    // height: 1.7em;
+    // line-height: 1.4em;
+    // transform: translateY(-0.2em);
+  }
+}
+#statusbox {
+  position: absolute;
+  top: 6px;
+  left: 10em;
+  right: 10em;
+  text-align: center;
+  div {
+    display: inline-block;
+  //  left: -50%;
+    min-width: 10em;
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 3px 10px;
+    background-color: rgba(128, 128, 128, 0.5);
+  }
+}

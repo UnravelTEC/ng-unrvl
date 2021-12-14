@@ -5,72 +5,53 @@ $labelcolor: #999;
   position: absolute;
   top: 0.5rem;
   left: 0.5rem;
-  right: 15rem;
+  // right: [ng];
   bottom: 32%;
 }
-
-.settings {
+.colorlegend {
   position: absolute;
-  bottom: 2em;
-  right: 0;
-  top: 2rem;
-  overflow-y: auto;
-  margin: 0;
-  padding: 0;
-  div.section {
-    border: 1px solid #666;
-    width: 11rem;
-    margin: 1rem;
-    padding: 1rem;
-    h3 {
-      margin-top: 0;
+  // top: [ng];
+  // right: [ng];
+  width: 3rem;
+  bottom: 32%;
+
+  table {
+    height: 100%;
+    width: 100%;
+    width: 3rem;
+    overflow: hidden;
+    color: black;
+    border-collapse: collapse;
+    margin: 0 1px 0 2px;
+    .end {
+      height: 1.7em;
+      text-align: center;
     }
-    a {
-      color: rgb(97, 97, 255);
-      text-decoration: underline;
-      cursor: pointer;
+    th.end {
+      text-align: center;
+      background-color: $labelcolor;
+      background-clip: padding-box;
     }
-    mat-label {
-      color: #999;
-    }
-    .mat-select {
-      background-color: #565656;
-    }
-    label {
-      display: inline-block;
-      color: #999;
-      text-align: left;
-      margin-right: 0.7rem;
-      font-weight: 400;
-      font-size: 14px;
-      ￼line-height: 1.125;
-      ￼font-family: Roboto, 'Helvetica Neue', sans-serif;
-    }
-    .cRange {
-      font-size: 14px;
-    }
-    table {
-      border-collapse: separate;
-      border-spacing: 0;
-      padding: 0.5em;
-      // background-color: khaki;
-      th {
-        // padding: 0.5em;
-      }
-      td:first-child {
-        width: 1em;
-        input {
-          cursor: pointer;
-        }
-      }
-      td label {
-        // background-color: greenyellow;
-        width: 100%;
-        cursor: pointer;
+    td {
+      border-top: 1px solid transparent;
+      background-clip: padding-box;
+      vertical-align: middle;
+      span {
+        display: inline-block;
+        width: 3rem;
+        overflow: visible;
       }
     }
   }
 }
+
+form.settings {
+  top: 2rem !important;
+  bottom: 32% !important;
+  overflow-y: auto !important;
+  max-height: 68%;
+}
+
 h2 {
   margin-left: 1em;
 }
@@ -83,5 +64,13 @@ h2 {
 #back {
   position: absolute;
   top: 0.5em;
-  right: 1em;
+  // right: [ng];
+}
+
+#toggleSidebar {
+  position: absolute;
+  text-align: right;
+  margin: 0;
+  top: 0.5em;
+  // right: [ng];
 }

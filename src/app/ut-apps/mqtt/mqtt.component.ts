@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 import * as Paho from 'paho-mqtt';
 
-import cloneDeep from 'lodash-es/cloneDeep';
+// import cloneDeep from 'lodash-es/cloneDeep';
 
 @Component({
   selector: 'app-mqtt',

@@ -48,7 +48,7 @@
   <tr>
     <td class="T">
       <app-ut-dygraph-in
-        [displayedData]="data['T']"
+        [data]="data['T']"
         [columnLabels]="labels['T']"
         [style]="graphstyle"
         [changeTrigger]="changeTrigger"
@@ -63,7 +63,7 @@
     </td>
     <td class="rH">
       <app-ut-dygraph-in
-        [displayedData]="data['H']"
+        [data]="data['H']"
         [columnLabels]="labels['H']"
         [style]="graphstyle"
         [changeTrigger]="changeTrigger"
@@ -78,7 +78,7 @@
     </td>
     <td class="P">
       <app-ut-dygraph-in
-        [displayedData]="data['P']"
+        [data]="data['P']"
         [columnLabels]="labels['P']"
         [style]="graphstyle"
         [changeTrigger]="changeTrigger"
@@ -180,7 +180,7 @@
       </p> -->
 
       <app-ut-dygraph-in
-        [displayedData]="data['PM']"
+        [data]="data['PM']"
         [columnLabels]="labels['PM']"
         [style]="graphstylePM"
         [changeTrigger]="changeTrigger"
@@ -197,7 +197,7 @@
     </td>
     <td class="NO2">
       <app-ut-dygraph-in
-        [displayedData]="data['N']"
+        [data]="data['N']"
         [columnLabels]="labels['N']"
         [style]="graphstyle"
         [changeTrigger]="changeTrigger"

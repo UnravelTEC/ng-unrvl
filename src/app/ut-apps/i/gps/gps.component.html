@@ -1,10 +1,5 @@
 <div class="fs-container">
-  <app-map
-  [x]="15.46"
-  [y]="47.07"
-  [z]="13"
-  [layers]="layers"
-  ></app-map>
+  <app-map [x]="15.46" [y]="47.07" [z]="13" [layers]="layers"></app-map>
   <!-- [options]="options"
 
  (map$)="receiveMap($event)"
@@ -12,17 +7,22 @@
 --></div>
 
 <form class="settings" (submit)="reload()">
-  <div class="section">
+  <fieldset>
     <h3>Current Dataset:</h3>
-    <label>Resolution:</label><br />
-    <span class="cRange">{{ currentres }}s</span><br />
-
-    <label>Current Range:</label><br />
-    <span class="cRange">{{ currentRange }} </span><br
-    >
-    Download <a (click)="exportGeojson()">geojson</a>
-  </div>
-  <div class="section">
+    <div *ngIf="data.length == 0" style="height: 146px;">No data.</div>
+    <div *ngIf="data.length">
+      <p>
+        <label>#Points:</label><span class="cRange">{{ data.length }}</span>
+      </p>
+      <p>
+        <label>Resolution:</label><span class="cRange">{{ currentres }}s</span>
+      </p>
+      <label>Current Range:</label><br />
+      <span class="cRange">{{ currentRange }} </span><br /><br />
+      Download <a (click)="exportGeojson()">geojson</a>
+    </div>
+  </fieldset>
+  <fieldset [disabled]="queryRunning == true">
     <h3>New Query:</h3>
 
     <br />
@@ -32,6 +32,7 @@
         [(ngModel)]="userStartTime"
         name="startTime"
         (closed)="changeMean(userStartTime)"
+        [disabled]="queryRunning == true"
       >
         <mat-option value="15m">15 min.</mat-option>
         <mat-option value="1h" selected="selected"> 1h</mat-option>
@@ -52,16 +53,15 @@
       name="runningAvgPoints"
       [(ngModel)]="userMeanS"
       (ngModelChange)="saveMean($event)"
-      style="width: 4em;"
+      style="width: 4em"
     /><br />
     <br />
 
-    <div style="width: 100%; text-align: right;">
+    <div style="width: 100%; text-align: right">
       <button type="submit">
         <mat-icon>refresh</mat-icon>
         Reload
       </button>
     </div>
-  </div>
-
+  </fieldset>
 </form>

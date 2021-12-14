@@ -2,34 +2,70 @@
 
   <h2>Graphs</h2>
   <div class="panel">
-    <!-- <app-ut-dashboard-tile title="Indoor Climate" path="/Apps/I/IndoorClimate"></app-ut-dashboard-tile> -->
-
-    <app-ut-dashboard-tile title="CO₂ Graph" path="/Apps/CO2" icon="284px-Carbon_dioxide_3D_spacefill.png"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="Indoor Climate" path="/Apps/I/IndoorClimate"></app-ut-dashboard-tile>
+<!--
+    <app-ut-dashboard-tile title="CO₂ Graph"
+      *ngIf="gss.server.sensors && (gss.server.sensors['SCD30'] || gss.server.sensors['SCD40'])"
+      path="/Apps/CO2" icon="284px-Carbon_dioxide_3D_spacefill.png"></app-ut-dashboard-tile> -->
     <!-- <app-ut-dashboard-tile title="Air Temperature" path="/Apps/Sensors/DS18B20" icon="noun_Temperature.png"></app-ut-dashboard-tile> -->
-    <!-- <app-ut-dashboard-tile title="Humidity" path="/Apps/I/Humidity" icon="320px-Water_molecule.svg.png"></app-ut-dashboard-tile> -->
+
+    <app-ut-dashboard-tile title="NDIR CO₂"
+      *ngIf="gss.server.sensors && gss.server.sensors['SCD30']"
+      path="/Apps/I/Anysens"
+      icon="284px-Carbon_dioxide_3D_spacefill.png"
+      [queryParams]="{ measurement: 'gas', value: '/CO2/', background: 'CO2_ppm', sensor: 'SCD30', ylabel: 'CO₂', referrer: 'Dashboard' }"
+      ></app-ut-dashboard-tile>
+
+    <app-ut-dashboard-tile title="Humidity"
+      *ngIf="gss.server.measurements.includes('humidity')"
+      path="/Apps/I/Anysens"
+      icon="320px-Water_molecule.svg.png"
+      [queryParams]="{ measurement: 'humidity', referrer: 'Dashboard' }"
+      ></app-ut-dashboard-tile>
     <!-- template for quick link:<app-ut-dashboard-tile
       title="CO₂ Graph"
       path="/Apps/I/Anysens"
       [queryParams]="{ sensor: 'SCD30', measurement: 'gas', value: 'CO2_ppm', referrer: 'Dashboard' }">
     </app-ut-dashboard-tile> -->
     <!-- referrer 'Dashboard' does only work because /Apps/I/Dashboard is invalid and gets redirected to Dashboard -->
+    <app-ut-dashboard-tile title="All Temperatures"
+      *ngIf="gss.server.measurements.includes('temperature')"
+      path="/Apps/I/Anysens"
+      icon="noun_Temperature.png"
+      [queryParams]="{ measurement: 'temperature', referrer: 'Dashboard' }"></app-ut-dashboard-tile>
+      <app-ut-dashboard-tile title="Air Pressure"
+      *ngIf="gss.server.measurements.includes('pressure')"
+      path="/Apps/I/Anysens"
+      icon="320px-Pressure_gauge.svg.png"
+      [queryParams]="{ measurement: 'pressure', value: '/air_hPa/', referrer: 'Dashboard' }"></app-ut-dashboard-tile>
     <!-- <app-ut-dashboard-tile title="Air Pressure" path="/Apps/I/Pressure" icon="320px-Pressure_gauge.svg.png"></app-ut-dashboard-tile> -->
+    <!-- <app-ut-dashboard-tile bg="#FFF" title="Temperature Map" path="/Apps/I/Enviromap" icon="noun_Temperature.png" [queryParams]="{ measurement: 'temperature', column:'°C', sensor:'DS18B20', referrer: 'Dashboard' }"></app-ut-dashboard-tile> -->
+
   </div>
 
   <hr>
 
   <h2>Sensors</h2>
   <div class="panel">
-    <!-- <app-ut-dashboard-tile bg="#FFF" title="BME280 Environmental" path="/Apps/Sensors/BME280" icon="manufacturers/Bosch.svg"></app-ut-dashboard-tile> -->
-    <app-ut-dashboard-tile bg="#FFF" title="SCD30 NDIR CO₂" path="/Apps/Sensors/SCD30" icon="manufacturers/sensirion.png"></app-ut-dashboard-tile>
-    <!-- <app-ut-dashboard-tile bg="#FFF" title="SPS30 Particulate Matter" path="/Apps/Sensors/SPS30" icon="manufacturers/sensirion.png"></app-ut-dashboard-tile> -->
-    <!-- <app-ut-dashboard-tile bg="#FFF" title="DS18B20 Temperature" path="/Apps/Sensors/DS18B20" icon="manufacturers/Maxim_Integrated.svg"></app-ut-dashboard-tile> -->
-    <!-- <app-ut-dashboard-tile bg="#FFF" title="TSL2561 Brightness" path="/Apps/Sensors/TSL2561" icon="manufacturers/Ams.svg"></app-ut-dashboard-tile> -->
+    <div *ngFor="let s of gss.server.sensors | keyvalue" class="appcontainer">
+      <app-ut-dashboard-tile
+       *ngIf="SAR[s.key]"
+       title="{{ s.key }} {{ SAR[s.key].description}}"
+       path="{{ SAR[s.key]['path'] ? SAR[s.key]['path'] : '/Apps/Sensors/' + s.key }}"
+       icon="{{ SAR[s.key]['icon'] ? SAR[s.key]['icon'] : 'example.png' }}"
+       [queryParams]="SAR[s.key]['queryParams'] ? SAR[s.key]['queryParams'] : {}"
+      bg="#FFF"
+      ></app-ut-dashboard-tile>
+    </div>
+    <div *ngIf="!gss.server.sensors">
+      No sensors in Database.
+    </div>
   </div>
 
   <!-- <h2>Influx Apps</h2>
   <div class="panel">
     <app-ut-dashboard-tile title="CPU Temperature" path="/Apps/I/CPU"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="Bimbox" path="/Apps/I/Bimbox001" icon="GPS.svg"></app-ut-dashboard-tile>
 
     <app-ut-dashboard-tile title="Particulate Matter" path="/Apps/I/Pmhist"></app-ut-dashboard-tile>
 
@@ -42,8 +78,14 @@
   <div class="panel">
     <app-ut-dashboard-tile title="Database Series" path="/Apps/I/Allsens" bg="#FFF" icon="influxdata-logo--symbol--pool-alpha.png"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="Influx Playground" path="/Apps/Influx-Test" bg="#FFF" icon="influxdata-logo--symbol--pool-alpha.png"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Sensor Overview" path="/Apps/Sensors"  icon="manufacturers/Raspberry_Pi.svg"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="Sensor Overview" *ngIf="gss.server.type == 'Tricorder'" path="/Apps/Sensors"  icon="manufacturers/Raspberry_Pi.svg"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="MQTT Test" path="/Apps/MQTT-Test" icon="mqtt.png"></app-ut-dashboard-tile>
-  </div>
 
+  </div>
+  <h2>Beta Apps</h2>
+  <div class="panel">
+    <app-ut-dashboard-tile title="Calibrations" path="/Apps/Calibrations" bg="#FFF" icon="calibration.svg"></app-ut-dashboard-tile>
+
+    <app-ut-dashboard-tile title="Geoplots" path="/Apps/I/Sensemaps" bg="#FFF" icon="map.svg"></app-ut-dashboard-tile>
+  </div>
 </div>

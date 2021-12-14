@@ -1,0 +1,57 @@
+div {
+  label {
+    display: inline-block;
+    width: 6em;
+  }
+  label.error {
+    color: red;
+  }
+  input {
+    margin-top: 0.2em;
+  }
+}
+div.flexcontainer {
+  display: flex;
+  div.flow {
+    h3 {
+      margin: 0.3em;
+    }
+    flex-wrap: wrap;
+    flex-direction: row;
+    border: 2px solid gray;
+    padding: 0.5em;
+    margin: 0.5em;
+    button {
+      margin: 0.5em 0 0.5em 17em;
+    }
+    form {
+      position: relative;
+      label {
+        position: absolute;
+        top: 0.5em;
+        left: 0, 5em;
+      }
+      select {
+        display: inline-block;
+        border: 2px solid black;
+        padding: 0.2em;
+        margin-left: 8em;
+        color: #c7c7c7;
+        background: #565656;
+        scrollbar-width: none; /*For Firefox*/
+        -ms-overflow-style: none; /*For Internet Explorer 10+*/
+        option {
+          margin: 0.1em;
+          padding: 0.2em;
+          display: block;
+        }
+        overflow-y: auto;
+      }
+      select:-webkit-scrollbar {
+        /*For WebKit Browsers*/
+        width: 0;
+        height: 0;
+      }
+    }
+  }
+}

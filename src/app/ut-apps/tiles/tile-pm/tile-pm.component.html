@@ -36,7 +36,7 @@
     <div class="graphabs">
       <div class="graphrel" *ngIf="pm10 !== undefined">
         <app-ut-dygraph-in
-          [displayedData]="dygData"
+          [data]="dygData"
           [columnLabels]="dygLabels"
           [changeTrigger]="changeTrigger"
           minimal="true"
