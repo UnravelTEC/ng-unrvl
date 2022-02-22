@@ -92,6 +92,7 @@ export class UtFetchdataService {
     select = '*'
   ) {
     let q = 'SELECT mean(' + select + ') FROM ' + from;
+    let timestring = mean_s >= 1.0 ? String(mean_s) + 's' : String(mean_s * 1000) + 'ms';
 
     let whereClause = '';
 
@@ -123,9 +124,9 @@ export class UtFetchdataService {
           groupBy += key + ',';
         }
       }
-      groupBy += 'host,id,time(' + String(mean_s) + 's)';
+      groupBy += 'host,id,time(' + timestring + ')';
     } else {
-      groupBy += '*,time(' + String(mean_s) + 's)';
+      groupBy += '*,time(' + timestring + ')';
     }
 
     q += ' WHERE ' + whereClause + groupBy + ';';
