@@ -44,6 +44,25 @@ export class SensorService {
     },
   };
   public sensorPresets = {
+    SFM3000: {
+      flow_slm: {
+        round_digits: 3,
+        getDeviation: function (value) {
+          if (value === null) {
+            return null;
+          }
+          if (isNaN(value) || value > 200 || value < -200) {
+            return NaN;
+          }
+          const accuracy_percent = 0.025 * value;
+          if (accuracy_percent > 0.1) {
+            return [value - accuracy_percent, value, value + accuracy_percent];
+          }
+          return [value - 0.1, value, value + 0.1];
+        },
+      },
+    },
+
     DS18B20: {
       '*_degC': {
         min: -55,
