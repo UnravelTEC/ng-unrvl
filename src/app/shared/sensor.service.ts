@@ -46,7 +46,7 @@ export class SensorService {
   public sensorPresets = {
     SFM3000: {
       flow_slm: {
-        round_digits: 3,
+        round_digits: 2,
         getDeviation: function (value) {
           if (value === null) {
             return null;

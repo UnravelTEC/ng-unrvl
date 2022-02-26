@@ -967,8 +967,11 @@ export class HelperFunctionsService {
     fieldname = fieldname.replace(/percent$/, '%');
     fieldname = fieldname.replace(/_%/, '-%');
     fieldname = fieldname.replace(/degC$/, '°C');
+    fieldname = fieldname.replace(/_mlps$/, ' ( ml / s )');
+    fieldname = fieldname.replace(/_lpm$/, ' ( l / min )');
     fieldname = fieldname.replace(/deg$/, '°'); // heading
     fieldname = fieldname.replace(/hdop/, 'HDOP');
+    fieldname = fieldname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm ( # / cm³ )');
     fieldname = fieldname.replace(/p([0-9.]*)_ugpm3$/, 'pm$1 ( µg / m³ )'); //spaces in () are thin-spaces
     fieldname = fieldname.replace(/_ugpm3$/, ' ( µg / m³ )');
     fieldname = fieldname.replace(/_gpm3$/, ' ( g / m³ )');
@@ -976,7 +979,6 @@ export class HelperFunctionsService {
     fieldname = fieldname.replace(/_mps2$/, ' ( m / s² )');
     fieldname = fieldname.replace(/_mps$/, ' ( m / s )');
     fieldname = fieldname.replace(/uT$/, 'µT');
-    fieldname = fieldname.replace(/p([0-9.]*)_ppcm3$/, '$1 µm ( # / cm³ )');
     fieldname = fieldname.replace(/dewPoint/, 'dew point');
     fieldname = fieldname.replace(/gps_view/, '#');
     fieldname = fieldname.replace(/air_rel/, 'apparent wind');
@@ -987,7 +989,7 @@ export class HelperFunctionsService {
     fieldname = fieldname.replace(/_Svph$/, ' ( Sv / h )');
     // fieldname = fieldname.replace(/interval_s/, 'interval ( s )'); // not a field, but a tag
 
-    fieldname = fieldname.replace(/_(\S+)$/, ' ( $1 )');
+    fieldname = fieldname.replace(/_([^_\s]+)$/, ' ( $1 )');
     return fieldname;
   }
   bigQconfirm(nr_points) {
