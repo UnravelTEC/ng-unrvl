@@ -982,14 +982,12 @@ export class HelperFunctionsService {
     fieldname = fieldname.replace(/dewPoint/, 'dew point');
     fieldname = fieldname.replace(/gps_view/, '#');
     fieldname = fieldname.replace(/air_rel/, 'apparent wind');
-    fieldname = fieldname.replace(/sensor_voltage/, 'sensor voltage'); //RS04
-    fieldname = fieldname.replace(/sensor_current/, 'sensor current'); //RS04
-    fieldname = fieldname.replace(/sensor_highvoltage/, 'sensor high-voltage'); //RS04
     fieldname = fieldname.replace(/_cps$/, ' ( # / s )');
     fieldname = fieldname.replace(/_Svph$/, ' ( Sv / h )');
     // fieldname = fieldname.replace(/interval_s/, 'interval ( s )'); // not a field, but a tag
 
     fieldname = fieldname.replace(/_([^_\s]+)$/, ' ( $1 )');
+    fieldname = fieldname.replace(/_/, ' ');
     return fieldname;
   }
   bigQconfirm(nr_points) {
