@@ -13,14 +13,14 @@ import { cloneDeep } from 'lodash-es';
 export class UtFetchdataService {
   constructor(
     private http: HttpClient,
-    private globalSettingsService: GlobalSettingsService,
+    private gss: GlobalSettingsService,
     private h: HelperFunctionsService
   ) {}
 
   getHTTPData(
     thisurl: string,
-    user = this.globalSettingsService.server.influxuser,
-    pass = this.globalSettingsService.server.influxpass,
+    user = this.gss.server.influxuser,
+    pass = this.gss.server.influxpass,
     forceauth = false
   ) {
     console.log('getHTTPData:', thisurl, user, pass);
@@ -46,8 +46,8 @@ export class UtFetchdataService {
   postData(
     url: string,
     data: any,
-    user = this.globalSettingsService.server.influxuser,
-    pass = this.globalSettingsService.server.influxpass,
+    user = this.gss.server.influxuser,
+    pass = this.gss.server.influxpass,
     forceauth = false
   ) {
     console.log('postData:', url, data, user, pass);
@@ -92,7 +92,8 @@ export class UtFetchdataService {
     select = '*'
   ) {
     let q = 'SELECT mean(' + select + ') FROM ' + from;
-    let timestring = mean_s >= 1.0 ? String(mean_s) + 's' : String(mean_s * 1000) + 'ms';
+    let timestring =
+      mean_s >= 1.0 ? String(mean_s) + 's' : String(mean_s * 1000) + 'ms';
 
     let whereClause = '';
 
@@ -140,10 +141,10 @@ export class UtFetchdataService {
   ) {
     const cleanClause = clause.replace(/;/g, '%3B');
     if (database === undefined) {
-      database = this.globalSettingsService.server.influxdb;
+      database = this.gss.server.influxdb;
     }
     if (serverstring === undefined) {
-      serverstring = this.globalSettingsService.server.baseurl;
+      serverstring = this.gss.server.baseurl;
     }
     return (
       serverstring +
@@ -157,10 +158,10 @@ export class UtFetchdataService {
   }
   buildInfluxWriteUrl(database?: string, serverstring?: string) {
     if (database === undefined) {
-      database = this.globalSettingsService.server.influxdb;
+      database = this.gss.server.influxdb;
     }
     if (serverstring === undefined) {
-      serverstring = this.globalSettingsService.server.baseurl;
+      serverstring = this.gss.server.baseurl;
     }
     return serverstring + '/influxdb/write?db=' + database;
   }
@@ -171,10 +172,10 @@ export class UtFetchdataService {
   ) {
     const cleanClause = clause.replace(/;/g, '%3B');
     if (database === undefined) {
-      database = this.globalSettingsService.server.influxdb;
+      database = this.gss.server.influxdb;
     }
     if (serverstring === undefined) {
-      serverstring = this.globalSettingsService.server.baseurl;
+      serverstring = this.gss.server.baseurl;
     }
     return (
       serverstring + '/influxdb/query?db=' + database + '&q=' + cleanClause // &epoch=s
