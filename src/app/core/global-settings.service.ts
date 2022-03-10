@@ -125,7 +125,7 @@ export class GlobalSettingsService implements OnInit {
   changeEmitted$ = this.emitChangeSource.asObservable();
   // Service message commands
   emitChange(change: any) {
-    console.log(new Date(), 'emit', change);
+    console.log('emit', change, new Date());
 
     this.emitChangeSource.next(change);
   }
@@ -316,6 +316,7 @@ export class GlobalSettingsService implements OnInit {
 
     if (!sensorhere) {
       this.server.sensors = undefined; // checking for undef in html is easier than for {}
+      this.server.calibrations = false; // no sensors, no calibrations (e.g. only telegraf metrics DB)
       this.emitChange({ status: '' });
     } else {
       this.emitChange({ InfluxSeriesThere: true }); // trigger scan for fields

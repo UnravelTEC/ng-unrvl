@@ -124,12 +124,13 @@ export class AppComponent implements OnInit {
   }
   public getCalibrations() {
     const calquery = 'select * from calibrations GROUP BY * ORDER BY time';
-    this.gss.emitChange({ status: 'Influx fetching calibratoins...' });
+    this.gss.emitChange({ status: 'Influx fetching calibrations...' });
     this.utHTTP
       .getHTTPData(this.utHTTP.buildInfluxQuery(calquery, undefined, undefined))
       .subscribe(
         (data: Object) => this.gss.acceptCalibrations(data),
-        (error) => this.gss.displayHTTPerror(error)
+        (error) => { console.log('getCalibrations: Error following:');
+         this.gss.displayHTTPerror(error)}
       );
   }
 
