@@ -80,9 +80,9 @@ export class Scd30CfgComponent implements OnInit {
       return;
     }
     if (key == 'asc') {
-      if (rv == 'yes') {
+      if (rv == 'yes' || rv == 'true' || rv == '1') {
         this.asc = true;
-      } else if (rv == 'no') {
+      } else if (rv == 'no' || rv == 'false' || rv == '0') {
         this.asc = false;
       } else {
         console.error('error in parsing asc value', rv);
