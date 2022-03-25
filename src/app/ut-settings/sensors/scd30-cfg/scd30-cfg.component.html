@@ -68,7 +68,7 @@
   </tr>
 </table>
 
-<!-- <fieldset [disabled]="interval === undefined">
+<fieldset [disabled]="interval === undefined">
   <h3>Measurement interval</h3>
 
   <p>Current interval: {{ interval ? interval : '?' }}&thinsp;s</p>
@@ -79,12 +79,12 @@
     <button (click)="setInterval()" type="button" [disabled]="interval === undefined">Set</button>
   </p>
   <p>&nbsp;{{ intervalText }}</p>
-</fieldset> -->
+</fieldset>
 
 <section>
   <h2>Calibration</h2>
 
-  <!-- <fieldset [disabled]="asc === undefined">
+  <fieldset [disabled]="asc === undefined">
     <h3>Automatic Self-Calibration (ASC)</h3>
 
     <p>Current Status: {{ asc === undefined ? '?' : asc ? 'Enabled' : 'Disabled' }}</p>
@@ -94,7 +94,7 @@
       ASC
     </mat-checkbox>
     <p>&nbsp;{{ ascText }}</p>
-  </fieldset> -->
+  </fieldset>
 
   <fieldset [disabled]="calibration_ppm === undefined">
     <h3>Forced Recalibration (FRC)</h3>
