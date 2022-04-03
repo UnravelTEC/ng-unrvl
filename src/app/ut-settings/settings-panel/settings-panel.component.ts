@@ -26,6 +26,8 @@ export class SettingsPanelComponent implements OnInit {
   public auth = 'NOK';
   public hidepw = true;
 
+  public newHostname = '';
+
   public backendTypes = ['Demo Server', 'Current Web Endpoint', 'Other'];
   public chosenBackendType = '';
   public customServerURL = 'https://example.com';
@@ -326,6 +328,11 @@ export class SettingsPanelComponent implements OnInit {
           break;
       }
     }
+    if (data['hostname']) {
+      this.gss.server.hostname = data['hostname'];
+      this.gss.emitChange({ hostname: data['hostname'] });
+      alert('New hostname: "' + data['hostname'] + '"');
+    }
   }
 
   halt() {
@@ -355,5 +362,36 @@ export class SettingsPanelComponent implements OnInit {
 
   setNewBN(bn) {
     this.currentBrightness = bn;
+  }
+
+  setNewHostname() {
+    const newHN = this.newHostname.trim();
+    if (newHN.length < 1 || newHN.length > 63) {
+      alert('Hostname length has to be between 1 and 63');
+      return;
+    }
+    if (/[^a-z0-9-]/i.test(newHN) || /^-/.test(newHN)) {
+      alert('Hostname can only contain a-zA-Z0-9- (not start with -), provided was "' + newHN + '"');
+      return;
+    }
+    if (confirm('Set "' + newHN + '" as new hostname?')) {
+      this.utHTTP
+        .getHTTPData(
+          this.gss.server.api + 'system/sethostname.php?hostname=' + newHN,
+          this.api_username,
+          this.api_pass,
+          true
+        )
+        .subscribe((data: Object) => this.ack(data),(error: any) => this.handleSetHostnameError(error));
+    }
+  }
+  handleSetHostnameError(error: any) {
+    if (error && error['statusText']) {
+      alert(error);
+      console.error('handleSetHostnameError', error);
+    } else {
+      console.error('unknown handleSetHostnameError', error);
+    }
+
   }
 }

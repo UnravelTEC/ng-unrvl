@@ -95,6 +95,11 @@
   </section>
 
   <section>
+    <h2>Hostname</h2>
+    <p>Current hostname: {{ gss.server.hostname }}</p>
+    <p>Set new hostname: <input type="text" id="newHostname" [(ngModel)]="newHostname" /><button (click)="setNewHostname()">Set</button></p>
+
+    <hr>
     <h2>System Services</h2>
     <a routerLink="/Settings/Services" routerLinkActive="active">System Services</a>
     <hr />
