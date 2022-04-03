@@ -42,7 +42,7 @@ fi
 TARGET="$1"
 
 if [ "$TARGET" = "ngbeta" ]; then
-  rsync -ravx dist/Web/* root@newton.unraveltec.com:/var/www/ngbeta/
+  rsync -ravx --delete dist/Web/* root@newton.unraveltec.com:/var/www/ngbeta/
   exit
 fi
 
@@ -56,10 +56,10 @@ fi
 
 ssh root@$TARGET mkdir -p $target_path
 
-echo "cleaning target dir"
-ssh root@$TARGET rm -rf $target_path/*
-echo rsync -ravx dist/Web/* root@$TARGET:$target_path
-scp -r dist/Web/* root@$TARGET:$target_path
+# echo "cleaning target dir"
+# ssh root@$TARGET rm -rf $target_path/*
+echo rsync -ravx --delete dist/Web/* root@$TARGET:$target_path
+rsync -ravx --delete dist/Web/* root@$TARGET:$target_path
 echo "remount-rw"
 ssh root@$TARGET remount-rw
 echo "cleaning persistent dir"
