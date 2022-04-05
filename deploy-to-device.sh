@@ -46,6 +46,12 @@ if [ "$TARGET" = "ngbeta" ]; then
   exit
 fi
 
+if [ "$TARGET" = "deb" ]; then
+  rsync -ravx --delete dist/Web/* ../Debian/ng-unrvl-builds/ng/
+  exit
+fi
+
+
 if [ "$2" ]; then
   target_path="$2"
 fi
