@@ -33,6 +33,9 @@ export class SettingsPanelComponent implements OnInit {
   public customServerURL = 'https://example.com';
   public checkedCustomServerURL = '';
 
+  public retentionTime = '';
+  public tempoRes = '';
+
   // public InternetServers = [
   //   {
   //     url: 'https://newton.unraveltec.com',
@@ -247,6 +250,8 @@ export class SettingsPanelComponent implements OnInit {
     console.log('domain', this.h.domain);
 
     this.login();
+    this.getRetentionTime();
+    this.getTempoRes();
   }
 
   load() {
@@ -394,4 +399,37 @@ export class SettingsPanelComponent implements OnInit {
     }
 
   }
+  getRetentionTime() {
+    if (!this.gss.influxReady()) {
+      setTimeout(() => {
+        this.getRetentionTime();
+      }, 1000);
+      return;
+    }
+    const retquery = 'SHOW RETENTION POLICIES ON "' + this.gss.server.influxdb + '"';
+    this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(retquery)).subscribe(
+      (data: Object) => this.acceptRetention(data),
+      (error) => this.gss.displayHTTPerror(error)
+    );
+  }
+  acceptRetention(data: Object) {
+    console.log('acceptRetention', data);
+    this.retentionTime = this.h.getDeep(data, ['results', 0, 'series', 0, 'values', 0, 1]);
+  }
+  getTempoRes() {
+    this.utHTTP
+        .getHTTPData(
+          this.gss.server.api + 'system/db-tempores.php',
+          this.api_username,
+          this.api_pass,
+          true
+        )
+        .subscribe((data: Object) => this.acceptTempoRes(data),(error: any) => this.gss.displayHTTPerror(error));
+  }
+  acceptTempoRes(data: Object) {
+    if (data['success']) {
+      this.tempoRes = data['precision'];
+    }
+  }
+  // TODO add modification of TempRes and Retention Time
 }

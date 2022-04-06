@@ -108,6 +108,15 @@
     <app-system-time></app-system-time>
   </section>
 
+  <section>
+    <h2>Database</h2>
+    <p>Database status: {{ gss.server.databaseStatus }} </p>
+    <p>Database version: {{  gss.server.influxVersion ? 'Influx v' + gss.server.influxVersion : '' }} </p>
+    <p>Database size: <button>Wipe</button> </p>
+    <p>Retention time: {{ retentionTime }} </p>
+    <p>Temporal resolution:  {{ tempoRes }}</p>
+  </section>
+
   <section *ngIf="gss.server.sensors && gss.server.sensors['SCD30']">
     <h2>Sensors Config</h2>
     <table class="sensors">
