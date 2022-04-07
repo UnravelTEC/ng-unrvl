@@ -101,7 +101,18 @@ need
         name="QueryString"
               />
 where QueryString is a member of the components class
+ 
+# html 
 
+## for over array
+
+\*ngFor="let m of measurements"
+
+## for over object
+
+\*ngFor="let s of sensors | keyvalue
+
+ s.key, s.value
 
 # SCSS
 
