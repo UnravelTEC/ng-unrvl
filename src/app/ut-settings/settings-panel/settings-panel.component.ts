@@ -1,16 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { LocalStorageService } from '../../core/local-storage.service';
-import { HelperFunctionsService } from '../../core/helper-functions.service';
-import { GlobalSettingsService } from '../../core/global-settings.service';
-import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
-import { MqttService } from '../../core/mqtt.service';
-import { gitVersion } from '../../../environments/git-version';
-import { HttpClient } from '@angular/common/http';
+import { Component, OnInit } from "@angular/core";
+import { LocalStorageService } from "../../core/local-storage.service";
+import { HelperFunctionsService } from "../../core/helper-functions.service";
+import { GlobalSettingsService } from "../../core/global-settings.service";
+import { UtFetchdataService } from "../../shared/ut-fetchdata.service";
+import { MqttService } from "../../core/mqtt.service";
+import { gitVersion } from "../../../environments/git-version";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
-  selector: 'app-settings-panel',
-  templateUrl: './settings-panel.component.html',
-  styleUrls: ['./settings-panel.component.scss'],
+  selector: "app-settings-panel",
+  templateUrl: "./settings-panel.component.html",
+  styleUrls: ["./settings-panel.component.scss"],
 })
 export class SettingsPanelComponent implements OnInit {
   debug = true;
@@ -18,23 +18,28 @@ export class SettingsPanelComponent implements OnInit {
 
   public currentBrightness = 0;
 
-  public uv4lPath = '';
+  public uv4lPath = "";
 
-  public api_username = 'system';
-  public api_pass = '';
-  public login_status_text = 'Not logged in.';
-  public auth = 'NOK';
+  public api_username = "system";
+  public api_pass = "";
+  public login_status_text = "Not logged in.";
+  public auth = "NOK";
   public hidepw = true;
 
-  public newHostname = '';
+  public newHostname = "";
 
-  public backendTypes = ['Demo Server', 'Current Web Endpoint', 'Other'];
-  public chosenBackendType = '';
-  public customServerURL = 'https://example.com';
-  public checkedCustomServerURL = '';
+  public backendTypes = ["Demo Server", "Current Web Endpoint", "Other"];
+  public chosenBackendType = "";
+  public customServerURL = "https://example.com";
+  public checkedCustomServerURL = "";
 
-  public retentionTime = '';
-  public tempoRes = '';
+  public retentionTime = "";
+  public retentionTimeD = "";
+  public retentionTimeW = "";
+  public userRetentionValue = 0;
+  public userRetentionUnit = "w";
+  public tempoRes = "";
+  public userTempores = "";
 
   // public InternetServers = [
   //   {
@@ -46,26 +51,26 @@ export class SettingsPanelComponent implements OnInit {
 
   currentSettings = {
     // -> later into globalsettings?
-    baseurl: '',
-    influxdb: '',
-    influxuser: '',
-    influxpass: '',
+    baseurl: "",
+    influxdb: "",
+    influxuser: "",
+    influxpass: "",
   };
   defaultsInfluxcreds: {
-    'https://*unraveltec.com': {
-      db: 'koffer';
-      user: 'public';
-      pass: 'unravelit42.14153';
+    "https://*unraveltec.com": {
+      db: "koffer";
+      user: "public";
+      pass: "unravelit42.14153";
     };
     localhost: {
-      db: 'telegraf';
-      user: '';
-      pass: '';
+      db: "telegraf";
+      user: "";
+      pass: "";
     };
     LAN: {
-      db: 'telegraf';
-      user: '';
-      pass: '';
+      db: "telegraf";
+      user: "";
+      pass: "";
     };
   };
 
@@ -156,39 +161,39 @@ export class SettingsPanelComponent implements OnInit {
     */
 
   setEndpoint(event: any) {
-    console.log('setEndpoint', this.chosenBackendType);
+    console.log("setEndpoint", this.chosenBackendType);
 
     switch (this.chosenBackendType) {
-      case 'Current Web Endpoint':
-      case 'Demo Server':
+      case "Current Web Endpoint":
+      case "Demo Server":
         this.gss.setCurrentWebEndpoint(this.chosenBackendType);
         this.mqtt.reload();
         break;
-      case 'Other':
+      case "Other":
         if (this.checkedCustomServerURL == this.customServerURL) {
           this.localStorage.set(
-            'GlobalSettings.chosenBackendType',
+            "GlobalSettings.chosenBackendType",
             this.chosenBackendType
           );
         }
         break;
 
       default:
-        console.error('??');
+        console.error("??");
         break;
     }
   }
   checkCustomEndpoint() {
-    ['baseurl', 'protocol', 'serverName', 'type', 'api'].forEach((element) => {
-      this.gss.server[element] = '';
+    ["baseurl", "protocol", "serverName", "type", "api"].forEach((element) => {
+      this.gss.server[element] = "";
     });
-    this.gss.server.hostname = 'Unset';
-    if (!this.customServerURL.startsWith('http')) {
-      this.customServerURL = 'http://' + this.customServerURL;
+    this.gss.server.hostname = "Unset";
+    if (!this.customServerURL.startsWith("http")) {
+      this.customServerURL = "http://" + this.customServerURL;
     }
     this.http
       .get(
-        this.customServerURL + this.gss.defaultAPIPath + 'system/hostname.php'
+        this.customServerURL + this.gss.defaultAPIPath + "system/hostname.php"
       )
       .subscribe(
         (data: Object) => this.setCustomEndpointCallback(data),
@@ -196,20 +201,20 @@ export class SettingsPanelComponent implements OnInit {
       );
   }
   setCustomEndpointCallback(data: Object) {
-    if (!data['hostname'] || data['hostname'].length == 0) {
-      this.apiError('no hostname in answer');
+    if (!data["hostname"] || data["hostname"].length == 0) {
+      this.apiError("no hostname in answer");
       return;
     }
-    this.gss.setCurrentWebEndpoint('Other', this.customServerURL);
+    this.gss.setCurrentWebEndpoint("Other", this.customServerURL);
     this.mqtt.reload();
     this.checkedCustomServerURL = this.customServerURL;
   }
 
   apiError(error) {
-    console.log('no UTapi running on', this.customServerURL);
+    console.log("no UTapi running on", this.customServerURL);
     console.log(error);
     alert('no UTapi running on "' + this.customServerURL + '"');
-    this.gss.emitChange({ hostname: 'Unset' });
+    this.gss.emitChange({ hostname: "Unset" });
   }
 
   constructor(
@@ -221,12 +226,12 @@ export class SettingsPanelComponent implements OnInit {
     private mqtt: MqttService
   ) {
     // has to be here instead of ngOnInit, otherwise ExpressionChangedAfterItHasBeenCheckedError
-    this.gss.emitChange({ appName: 'Settings' });
+    this.gss.emitChange({ appName: "Settings" });
   }
 
   ngOnInit() {
-    ['chosenBackendType', 'customServerURL'].forEach((element) => {
-      const thing = this.localStorage.get('GlobalSettings.' + element);
+    ["chosenBackendType", "customServerURL"].forEach((element) => {
+      const thing = this.localStorage.get("GlobalSettings." + element);
       if (thing !== null) {
         this[element] = thing;
       }
@@ -246,19 +251,18 @@ export class SettingsPanelComponent implements OnInit {
     // if (this.gss.server.api) {
     //   this.uv4lPath = this.gss.server.api.replace(/\/api\/$/, '') + ':8080';
     // }
-    console.log('globalSettingsService.server', this.gss.server);
-    console.log('domain', this.h.domain);
+    console.log("globalSettingsService.server", this.gss.server);
+    console.log("domain", this.h.domain);
 
     this.login();
     this.getRetentionTime();
-    this.getTempoRes();
   }
 
   load() {
     // console.log('globalSettingsService.client.type', this.gss.client.type);
-    const ls_api_user = this.localStorage.get('api_user');
+    const ls_api_user = this.localStorage.get("api_user");
     if (ls_api_user) this.api_username = ls_api_user;
-    const ls_api_pass = this.localStorage.get('api_pass');
+    const ls_api_pass = this.localStorage.get("api_pass");
     if (ls_api_pass) this.api_pass = ls_api_pass;
   }
 
@@ -285,16 +289,15 @@ export class SettingsPanelComponent implements OnInit {
   // }
 
   login() {
-    this.login_status_text = 'authentication Request sent.';
-    this.localStorage.set('api_user', this.api_username);
-    this.localStorage.set('api_pass', this.api_pass);
-
+    this.login_status_text = "authentication Request sent.";
+    this.localStorage.set("api_user", this.api_username);
+    this.localStorage.set("api_pass", this.api_pass);
     this.utHTTP
       .getHTTPData(
-        this.gss.server.api + 'system/auth.php',
+        this.gss.server.api + "system/auth.php",
         this.api_username,
         this.api_pass,
-        true
+        true,
       )
       .subscribe(
         (data: Object) => this.acceptAuth(data),
@@ -302,49 +305,51 @@ export class SettingsPanelComponent implements OnInit {
       );
   }
   acceptAuth(data: Object) {
-    if (data['success'] && data['success'] === true) {
-      this.login_status_text = 'Authentication successful';
-      this.auth = 'OK';
+    if (data["success"] && data["success"] === true) {
+      this.login_status_text = "Authentication successful";
+      this.auth = "OK";
+      this.getTempoRes();
+      this.getDBsize();
     } else {
-      this.login_status_text = 'error at authentication';
-      this.auth = 'NOK';
+      this.login_status_text = "error at authentication";
+      this.auth = "NOK";
     }
-    console.log('acceptAuth', data);
+    console.log("acceptAuth", data);
   }
   handleAuthError(error: any) {
-    this.login_status_text = 'authentication failed';
-    if (error && error['statusText']) {
-      this.login_status_text += ': ' + error['statusText'];
+    this.login_status_text = "authentication failed";
+    if (error && error["statusText"]) {
+      this.login_status_text += ": " + error["statusText"];
       // 500 if no htpasswd file there
     }
-    this.auth = 'NOK';
-    console.log('auth error', error);
+    this.auth = "NOK";
+    console.log("auth error", error);
   }
 
   ack(data: Object) {
-    console.log('api retval:', data);
-    if (data['shutdown']) {
-      switch (data['shutdown']) {
-        case 'halt':
-          alert('system halted');
+    console.log("api retval:", data);
+    if (data["shutdown"]) {
+      switch (data["shutdown"]) {
+        case "halt":
+          alert("system halted");
           break;
-        case 'reboot':
-          alert('system rebooted');
+        case "reboot":
+          alert("system rebooted");
           break;
       }
     }
-    if (data['hostname']) {
-      this.gss.server.hostname = data['hostname'];
-      this.gss.emitChange({ hostname: data['hostname'] });
-      alert('New hostname: "' + data['hostname'] + '"');
+    if (data["hostname"]) {
+      this.gss.server.hostname = data["hostname"];
+      this.gss.emitChange({ hostname: data["hostname"] });
+      alert('New hostname: "' + data["hostname"] + '"');
     }
   }
 
   halt() {
-    if (confirm('Halt now?')) {
+    if (confirm("Halt now?")) {
       this.utHTTP
         .getHTTPData(
-          this.gss.server.api + 'system/halt.php',
+          this.gss.server.api + "system/halt.php",
           this.api_username,
           this.api_pass,
           true
@@ -353,10 +358,10 @@ export class SettingsPanelComponent implements OnInit {
     }
   }
   reboot() {
-    if (confirm('Reboot now?')) {
+    if (confirm("Reboot now?")) {
       this.utHTTP
         .getHTTPData(
-          this.gss.server.api + 'system/reboot.php',
+          this.gss.server.api + "system/reboot.php",
           this.api_username,
           this.api_pass,
           true
@@ -372,32 +377,38 @@ export class SettingsPanelComponent implements OnInit {
   setNewHostname() {
     const newHN = this.newHostname.trim();
     if (newHN.length < 1 || newHN.length > 63) {
-      alert('Hostname length has to be between 1 and 63');
+      alert("Hostname length has to be between 1 and 63");
       return;
     }
     if (/[^a-z0-9-]/i.test(newHN) || /^-/.test(newHN)) {
-      alert('Hostname can only contain a-zA-Z0-9- (not start with -), provided was "' + newHN + '"');
+      alert(
+        'Hostname can only contain a-zA-Z0-9- (not start with -), provided was "' +
+        newHN +
+        '"'
+      );
       return;
     }
     if (confirm('Set "' + newHN + '" as new hostname?')) {
       this.utHTTP
         .getHTTPData(
-          this.gss.server.api + 'system/sethostname.php?hostname=' + newHN,
+          this.gss.server.api + "system/sethostname.php?hostname=" + newHN,
           this.api_username,
           this.api_pass,
           true
         )
-        .subscribe((data: Object) => this.ack(data),(error: any) => this.handleSetHostnameError(error));
+        .subscribe(
+          (data: Object) => this.ack(data),
+          (error: any) => this.handleSetHostnameError(error)
+        );
     }
   }
   handleSetHostnameError(error: any) {
-    if (error && error['statusText']) {
+    if (error && error["statusText"]) {
       alert(error);
-      console.error('handleSetHostnameError', error);
+      console.error("handleSetHostnameError", error);
     } else {
-      console.error('unknown handleSetHostnameError', error);
+      console.error("unknown handleSetHostnameError", error);
     }
-
   }
   getRetentionTime() {
     if (!this.gss.influxReady()) {
@@ -406,30 +417,126 @@ export class SettingsPanelComponent implements OnInit {
       }, 1000);
       return;
     }
-    const retquery = 'SHOW RETENTION POLICIES ON "' + this.gss.server.influxdb + '"';
+    const retquery =
+      'SHOW RETENTION POLICIES ON "' + this.gss.server.influxdb + '"';
     this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(retquery)).subscribe(
       (data: Object) => this.acceptRetention(data),
       (error) => this.gss.displayHTTPerror(error)
     );
   }
   acceptRetention(data: Object) {
-    console.log('acceptRetention', data);
-    this.retentionTime = this.h.getDeep(data, ['results', 0, 'series', 0, 'values', 0, 1]);
+    console.log("acceptRetention", data);
+    this.retentionTime = this.h.getDeep(data, [
+      "results",
+      0,
+      "series",
+      0,
+      "values",
+      0,
+      1,
+    ]);
+    if (this.retentionTime) {
+      this.retentionTimeD = String(Number(this.retentionTime.split("h")[0]) / 24);
+      this.retentionTimeW = String(Number(this.retentionTimeD) / 7);
+    }
+  }
+  requeryRetentionTime(data: any) {
+    this.getRetentionTime();
+  }
+  setRetentionTime() {
+    if (!this.gss.influxReady()) {
+      alert("Please wait for Influx ready");
+      return;
+    }
+    const retquery =
+      'ALTER RETENTION POLICY "autogen" ON "' +
+      this.gss.server.influxdb +
+      '" DURATION ' +
+      this.userRetentionValue +
+      this.userRetentionUnit +
+      " REPLICATION 1 DEFAULT";
+    this.utHTTP.postData(this.utHTTP.buildInfluxQuery(retquery), '',).subscribe(
+      (data: Object) => this.requeryRetentionTime(data),
+      (error) => this.gss.displayHTTPerror(error)
+    );
   }
   getTempoRes() {
     this.utHTTP
+      .getHTTPData(
+        this.gss.server.api + "system/db-tempores.php",
+        this.api_username,
+        this.api_pass,
+        true
+      )
+      .subscribe(
+        (data: Object) => this.acceptTempoRes(data),
+        (error: any) => this.gss.displayHTTPerror(error)
+      );
+  }
+  acceptTempoRes(data: Object) {
+    if (data["success"]) {
+      this.tempoRes = data["precision"];
+    }
+  }
+  setTempoRes() {
+    if (!this.userTempores) {
+      alert("choose in drop down");
+      return;
+    }
+    this.utHTTP
+      .getHTTPData(
+        this.gss.server.api + "system/db-tempores.php?set=" + this.userTempores,
+        this.api_username,
+        this.api_pass,
+        true
+      )
+      .subscribe(
+        (data: Object) => this.acceptTempoRes(data),
+        (error: any) => this.gss.displayHTTPerror(error)
+      );
+  }
+
+  public dbstats: Object = undefined;
+  getDBsize() {
+    this.utHTTP
+      .getHTTPData(
+        this.gss.server.api + "system/db.php?cmd=getsize",
+        this.api_username,
+        this.api_pass,
+        true
+      )
+      .subscribe(
+        (data: Object) => this.acceptDBsize(data),
+        (error: any) => this.gss.displayHTTPerror(error)
+      );
+  }
+  acceptDBsize(data: Object) {
+    console.log("acceptDBsize", data);
+
+    if (data["success"]) {
+      this.dbstats = data['stats'];
+      console.log('dbstats:', this.dbstats);
+
+    }
+  }
+  wipeDB() {
+    if ("YES" == prompt("are you sure to wipe the DB? Type yes in Uppercase letters")) {
+      // alert("here we wipe...")
+      this.utHTTP
         .getHTTPData(
-          this.gss.server.api + 'system/db-tempores.php',
+          this.gss.server.api + "system/db.php?cmd=wipe",
           this.api_username,
           this.api_pass,
           true
         )
-        .subscribe((data: Object) => this.acceptTempoRes(data),(error: any) => this.gss.displayHTTPerror(error));
-  }
-  acceptTempoRes(data: Object) {
-    if (data['success']) {
-      this.tempoRes = data['precision'];
+        .subscribe(
+          (data: Object) => {
+            this.userRetentionValue = Number(this.retentionTimeD);
+            this.userRetentionUnit = 'd';
+            this.setRetentionTime();
+          },
+          (error: any) => this.gss.displayHTTPerror(error)
+        );
     }
   }
-  // TODO add modification of TempRes and Retention Time
 }

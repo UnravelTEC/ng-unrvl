@@ -110,11 +110,49 @@
 
   <section>
     <h2>Database</h2>
-    <p>Database status: {{ gss.server.databaseStatus }} </p>
-    <p>Database version: {{  gss.server.influxVersion ? 'Influx v' + gss.server.influxVersion : '' }} </p>
-    <p>Database size: <button>Wipe</button> </p>
-    <p>Retention time: {{ retentionTime }} </p>
-    <p>Temporal resolution:  {{ tempoRes }}</p>
+    <p>Status: {{ gss.server.databaseStatus }} </p>
+    <p>Version: {{  gss.server.influxVersion ? 'Influx v' + gss.server.influxVersion : '' }} </p>
+    <div>Disk: 
+      <ul *ngIf="dbstats">
+        <li *ngFor="let entry of dbstats | keyvalue">{{ entry.key }}: {{ entry.value }}</li>
+      </ul>
+      <button (click)="wipeDB()">Wipe</button> 
+    </div>
+    <p>Retention time: {{ retentionTime == "0s" ? "Infinite" : retentionTime }} <span *ngIf="retentionTime && retentionTime != '0s'">({{ retentionTimeD }} days or {{ retentionTimeW }} weeks)</span>&nbsp;&nbsp;|&nbsp;Set new:&nbsp;&nbsp;
+        <input
+            type="number"
+            id="userRetentionValue"
+            name="userRetentionValue"
+            style="width: 4em;"
+            [(ngModel)]="userRetentionValue"/>&nbsp;&nbsp;
+        <mat-form-field style="width: 6em;">
+          <mat-label>Choose</mat-label>
+          <mat-select
+            [(ngModel)]="userRetentionUnit"
+            name="userRetentionUnit"
+          >
+            <mat-option value="d">days</mat-option>
+            <mat-option selected="selected" value="w"> weeks</mat-option>
+      
+          </mat-select>
+        </mat-form-field>
+        <button (click)="setRetentionTime()">Set</button>
+    </p>
+    <p>Temporal resolution:  {{ tempoRes }} &nbsp;&nbsp;|&nbsp;Set new &nbsp;
+      <mat-form-field>
+        <mat-label>Choose</mat-label>
+        <mat-select
+          [(ngModel)]="userTempores"
+          name="userTempores"
+        >
+          <mat-option value="1s">1 s</mat-option>
+          <mat-option value="1ms"> 1 ms</mat-option>
+          <mat-option value="1us">1 µs</mat-option>
+          <mat-option value="1ns">1 ns</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button (click)="setTempoRes()">Set</button>
+    </p>
   </section>
 
   <section *ngIf="gss.server.sensors && gss.server.sensors['SCD30']">
