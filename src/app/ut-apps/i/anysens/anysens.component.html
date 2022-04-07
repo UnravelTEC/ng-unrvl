@@ -73,11 +73,12 @@
       </fieldset>
       <fieldset [disabled]="queryRunning == true || autoreload">
         <h3>{{ queryRunning ? 'Query running...' : 'Query current view:' }}</h3>
-        <label for="runningAvgPoints">Resolution (s):</label>
+        <label for="userMeanS">Resolution (s):</label>
         <input
-          type="text"
-          id="runningAvgPoints"
-          name="runningAvgPoints"
+          type="number"
+          id="userMeanS"
+          min="0"
+          name="userMeanS"
           [(ngModel)]="userMeanS"
           (ngModelChange)="saveMean($event)"
           style="width: 4em"
@@ -121,7 +122,8 @@
           </mat-checkbox>
           <label for="auto_s">every (s):</label>
           <input
-            type="text"
+            type="number"
+            min="0"
             id="auto_s"
             name="auto_s"
             [(ngModel)]="auto_interval"
