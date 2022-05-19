@@ -2,9 +2,8 @@
     <div id="corrheader">
         <h2>Data sources</h2>
 
-        <form class="topsettings">
+        <form class="fieldsettings">
             <fieldset [disabled]="queryRunning == true && !autoreload">
-
                 <span>Series 1: </span>
                 <mat-form-field>
                     <mat-label>Measurement:</mat-label>
@@ -13,36 +12,32 @@
                         <mat-option *ngFor="let m of Ms" [value]="m"> {{ m }} </mat-option>
                     </mat-select>
                 </mat-form-field>
-                ( {{ M1 }}, # {{ Series_per_m[M1] && Series_per_m[M1].length }} Tagsets)
-
-                <!-- <span *ngIf="Series_per_m[M1] && Series_per_m[M1].length == 1">
-                    Only 1 Series: {{ Series_per_m[M1][0] }}
-                </span> -->
                 <br>
-                <span>Tagset: </span>
+                <span>Tagsets<span *ngIf="Series_per_m[M1] && Series_per_m[M1].length">
+                        ({{Series_per_m[M1].length}})</span>: </span>
                 <mat-form-field *ngIf="Series_per_m[M1] && Series_per_m[M1].length > 1">
                     <mat-label>Series:</mat-label>
-                    <mat-select [(ngModel)]="S1" name="S1" (closed)="changeS1()"
+                    <mat-select [(ngModel)]="S1" name="S1" (closed)="change1()"
                         [disabled]="queryRunning == true || autoreload">
                         <mat-option *ngFor="let s of Series_per_m[M1]" [value]="s" [title]="s"> {{ s }} </mat-option>
                     </mat-select>
                 </mat-form-field>
-                ( {{ S1 }} )
+                {{ S1 }}
                 <br>
                 <span>Field Keys: </span>
                 <mat-form-field *ngIf="fieldKeys[M1] && fieldKeys[M1].length > 1">
                     <mat-label>Field Keys:</mat-label>
-                    <mat-select [(ngModel)]="FK1" name="FK1"
+                    <mat-select [(ngModel)]="FK1" name="FK1" (closed)="change1()"
                         [disabled]="queryRunning == true || autoreload">
                         <mat-option *ngFor="let fk of fieldKeys[M1]" [value]="fk" [title]="fk"> {{ fk }} </mat-option>
                     </mat-select>
                 </mat-form-field>
                 ( {{ FK1 }} )
-
-                <button [disabled]="!M1 || !S1 || !FK1" (click)="reloadS1()">Query</button>
+                <br>
+                {{ Q1 }}
             </fieldset>
-            <fieldset [disabled]="queryRunning == true && !autoreload">
 
+            <fieldset [disabled]="queryRunning == true && !autoreload">
                 <span>Series 2: </span>
                 <mat-form-field>
                     <mat-label>Measurement:</mat-label>
@@ -51,62 +46,106 @@
                         <mat-option *ngFor="let m of Ms" [value]="m"> {{ m }} </mat-option>
                     </mat-select>
                 </mat-form-field>
-                ( {{ M2 }}, # {{ Series_per_m[M2] && Series_per_m[M2].length }} )
                 <br>
-                <span>Tagset: </span>
+                <span>Tagsets<span *ngIf="Series_per_m[M2] && Series_per_m[M2].length">
+                        ({{Series_per_m[M2].length}})</span>: </span>
                 <mat-form-field *ngIf="Series_per_m[M2] && Series_per_m[M2].length > 1">
                     <mat-label>Series:</mat-label>
-                    <mat-select [(ngModel)]="S2" name="S2" (closed)="changeS2()"
+                    <mat-select [(ngModel)]="S2" name="S2" (closed)="change2()"
                         [disabled]="queryRunning == true || autoreload">
                         <mat-option *ngFor="let s of Series_per_m[M2]" [value]="s" [title]="s"> {{ s }} </mat-option>
                     </mat-select>
                 </mat-form-field>
-                ( {{ S2 }} )
+                {{ S2 }}
                 <br>
                 <span>Field Keys: </span>
                 <mat-form-field *ngIf="fieldKeys[M2] && fieldKeys[M2].length > 1">
                     <mat-label>Field Keys:</mat-label>
-                    <mat-select [(ngModel)]="FK2" name="FK2"
+                    <mat-select [(ngModel)]="FK2" name="FK2" (closed)="change2()"
                         [disabled]="queryRunning == true || autoreload">
                         <mat-option *ngFor="let fk of fieldKeys[M2]" [value]="fk" [title]="fk"> {{ fk }} </mat-option>
                     </mat-select>
                 </mat-form-field>
                 ( {{ FK2 }} )
-
+                <br>
+                {{ Q2 }}
 
             </fieldset>
         </form>
+        <div class="timesettings">
+
+            <fieldset>
+
+                <label>Time Resolution:</label>
+                <span class="cRange" title="{{currentres}}&thinsp;s">{{ currentresText }}</span><br />
+
+                <!-- <label style="display: inline-block">Range:</label> -->
+                <!-- <span class="cRange">{{ currentRange }}</span> -->
+
+                <a routerLink="/Apps/I/Corellation" [queryParams]="" routerLinkActive="active">Permalink</a>
+
+            </fieldset>
+            <fieldset [disabled]="queryRunning == true || autoreload">
+                <h3>{{ queryRunning ? 'Query running...' : 'Query current view:' }}</h3>
+                <label for="userMeanS">Res (s):</label>
+                <input type="number" id="userMeanS" min="0" name="userMeanS" [(ngModel)]="userMeanS" (ngModelChange)="checkQ1(); checkQ2()"
+                    style="width: 4em" />
+                <!-- (ngModelChange)="saveMean($event)"  -->
+                <div style="width: 100%; text-align: right; margin-top: -1.8em">
+                    <button (click)="reload()">
+                        <mat-icon>refresh</mat-icon>
+                        Reload
+                    </button>
+                </div>
+            </fieldset>
+            <fieldset [disabled]="queryRunning == true && !autoreload">
+                <h3>{{ queryRunning ? 'Query running...' : 'Query latest data:' }}</h3>
+                <mat-form-field>
+                    <mat-label>Show range from now</mat-label>
+                    <mat-select [(ngModel)]="userStartTime" name="startTime" (closed)="changeMean(userStartTime)"
+                        [disabled]="queryRunning == true || autoreload">
+                        <mat-option value="15m">15 min.</mat-option>
+                        <mat-option value="1h" selected="selected"> 1h</mat-option>
+                        <mat-option value="6h">6 h</mat-option>
+                        <mat-option value="24h">24 h</mat-option>
+                        <mat-option value="7d">1 week</mat-option>
+                        <mat-option value="30d">1 month</mat-option>
+                        <mat-option value="356d">1 year</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <br />
+                <div style="width: 100%">
+                    <button (click)="reload()" type="button" [disabled]="autoreload" style="margin-left: 3em">
+                        <mat-icon>refresh</mat-icon>
+                        Reload
+                    </button>
+                </div>
+            </fieldset>
+        </div>
     </div>
     <div id="corrbody">
-        
+
         <div id="scatterabs">
             body!
         </div>
         <div id="dygcontainerabs">
             <div id="dygcontainerrel">
-              <app-ut-dygraph-in
-                [data]="data"
-                [columnLabels]="labels"
-                [rawLabels]="raw_labels"
-                [showDeviation]="show_deviation"               
-                [extraDyGraphConfig]="extraDyGraphConfig"
-                [startTime]="dygStartTime"
-                enableHighlightCallback="true"
-                [YLabel]="ylabel"
-                [Y2Label]="y2label"
+                <app-ut-dygraph-in [data]="data" [columnLabels]="labels" [rawLabels]="raw_labels"
+                    [showDeviation]="show_deviation" [extraDyGraphConfig]="extraDyGraphConfig"
+                    [startTime]="dygStartTime" enableHighlightCallback="true" [YLabel]="ylabel" [Y2Label]="y2label"
+                    (returnGraphWidthOnChange)="setGraphWidth($event)" [colors]="colors" ></app-ut-dygraph-in>
 
-              ></app-ut-dygraph-in>
-              <!-- 
-                  [colors]="colors"
-                  [changeTrigger]="changeTrigger"
+                <!-- 
+                  
+                  
                   [style]="graphstyle"
                   
-                  (returnGraphWidthOnChange)="setGraphWidth($event)"
+                  
               (returnCurrentZoom)="updateFromToTimes($event)"
               (returnRunningAvg)="handleRunningAvg($event)"
               #R -->
             </div>
-          </div>
+        </div>
     </div>
     <div id="corrfooter">
         Foots!
