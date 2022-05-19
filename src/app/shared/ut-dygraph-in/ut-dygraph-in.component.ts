@@ -355,6 +355,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.noData = false;
     const newDataBeginTime = this.data[0][0];
     const newDataEndTime = this.data[this.data.length - 1][0];
+    if (!this.dataBeginTime) {
+      console.error('WARNING: no this.dataBeginTime', this.dataBeginTime, this.data[0][0]);
+      this.dataBeginTime = this.data[0][0];
+    }
+    if (!this.dataEndTime) {
+      this.dataEndTime = this.data[this.data.length - 1][0];
+    }
     if (
       newDataBeginTime.valueOf() != this.dataBeginTime.valueOf() ||
       newDataEndTime.valueOf() != this.dataEndTime.valueOf()
