@@ -168,7 +168,12 @@ const appRoutes: Routes = [
     loadChildren: () =>
       import('./ut-apps/i/anysens/anysens.module').then((m) => m.AnysensModule),
   },
-
+  {
+    path: 'Apps/I/Corellation',
+    loadChildren: () =>
+      import('./ut-apps/i/scatterplot/scatterplot.module').then((m) => m.ScatterplotModule),
+  },
+  
   {
     path: 'Apps/Sensors',
     loadChildren: () =>

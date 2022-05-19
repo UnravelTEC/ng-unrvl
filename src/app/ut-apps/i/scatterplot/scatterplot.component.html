@@ -1,0 +1,114 @@
+<div id="corrapp">
+    <div id="corrheader">
+        <h2>Data sources</h2>
+
+        <form class="topsettings">
+            <fieldset [disabled]="queryRunning == true && !autoreload">
+
+                <span>Series 1: </span>
+                <mat-form-field>
+                    <mat-label>Measurement:</mat-label>
+                    <mat-select [(ngModel)]="M1" name="M1" (closed)="changeM1()"
+                        [disabled]="queryRunning == true || autoreload">
+                        <mat-option *ngFor="let m of Ms" [value]="m"> {{ m }} </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                ( {{ M1 }}, # {{ Series_per_m[M1] && Series_per_m[M1].length }} Tagsets)
+
+                <!-- <span *ngIf="Series_per_m[M1] && Series_per_m[M1].length == 1">
+                    Only 1 Series: {{ Series_per_m[M1][0] }}
+                </span> -->
+                <br>
+                <span>Tagset: </span>
+                <mat-form-field *ngIf="Series_per_m[M1] && Series_per_m[M1].length > 1">
+                    <mat-label>Series:</mat-label>
+                    <mat-select [(ngModel)]="S1" name="S1" (closed)="changeS1()"
+                        [disabled]="queryRunning == true || autoreload">
+                        <mat-option *ngFor="let s of Series_per_m[M1]" [value]="s" [title]="s"> {{ s }} </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                ( {{ S1 }} )
+                <br>
+                <span>Field Keys: </span>
+                <mat-form-field *ngIf="fieldKeys[M1] && fieldKeys[M1].length > 1">
+                    <mat-label>Field Keys:</mat-label>
+                    <mat-select [(ngModel)]="FK1" name="FK1"
+                        [disabled]="queryRunning == true || autoreload">
+                        <mat-option *ngFor="let fk of fieldKeys[M1]" [value]="fk" [title]="fk"> {{ fk }} </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                ( {{ FK1 }} )
+
+                <button [disabled]="!M1 || !S1 || !FK1" (click)="reloadS1()">Query</button>
+            </fieldset>
+            <fieldset [disabled]="queryRunning == true && !autoreload">
+
+                <span>Series 2: </span>
+                <mat-form-field>
+                    <mat-label>Measurement:</mat-label>
+                    <mat-select [(ngModel)]="M2" name="M2" (closed)="changeM2()"
+                        [disabled]="queryRunning == true || autoreload">
+                        <mat-option *ngFor="let m of Ms" [value]="m"> {{ m }} </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                ( {{ M2 }}, # {{ Series_per_m[M2] && Series_per_m[M2].length }} )
+                <br>
+                <span>Tagset: </span>
+                <mat-form-field *ngIf="Series_per_m[M2] && Series_per_m[M2].length > 1">
+                    <mat-label>Series:</mat-label>
+                    <mat-select [(ngModel)]="S2" name="S2" (closed)="changeS2()"
+                        [disabled]="queryRunning == true || autoreload">
+                        <mat-option *ngFor="let s of Series_per_m[M2]" [value]="s" [title]="s"> {{ s }} </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                ( {{ S2 }} )
+                <br>
+                <span>Field Keys: </span>
+                <mat-form-field *ngIf="fieldKeys[M2] && fieldKeys[M2].length > 1">
+                    <mat-label>Field Keys:</mat-label>
+                    <mat-select [(ngModel)]="FK2" name="FK2"
+                        [disabled]="queryRunning == true || autoreload">
+                        <mat-option *ngFor="let fk of fieldKeys[M2]" [value]="fk" [title]="fk"> {{ fk }} </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                ( {{ FK2 }} )
+
+
+            </fieldset>
+        </form>
+    </div>
+    <div id="corrbody">
+        
+        <div id="scatterabs">
+            body!
+        </div>
+        <div id="dygcontainerabs">
+            <div id="dygcontainerrel">
+              <app-ut-dygraph-in
+                [data]="data"
+                [columnLabels]="labels"
+                [rawLabels]="raw_labels"
+                [showDeviation]="show_deviation"               
+                [extraDyGraphConfig]="extraDyGraphConfig"
+                [startTime]="dygStartTime"
+                enableHighlightCallback="true"
+                [YLabel]="ylabel"
+                [Y2Label]="y2label"
+
+              ></app-ut-dygraph-in>
+              <!-- 
+                  [colors]="colors"
+                  [changeTrigger]="changeTrigger"
+                  [style]="graphstyle"
+                  
+                  (returnGraphWidthOnChange)="setGraphWidth($event)"
+              (returnCurrentZoom)="updateFromToTimes($event)"
+              (returnRunningAvg)="handleRunningAvg($event)"
+              #R -->
+            </div>
+          </div>
+    </div>
+    <div id="corrfooter">
+        Foots!
+    </div>
+</div>
