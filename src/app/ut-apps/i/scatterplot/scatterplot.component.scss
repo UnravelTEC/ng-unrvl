@@ -73,7 +73,7 @@
     #dygcontainerabs {
       position: absolute;
       left: 51%;
-      top: 0;
+      top: 5px;
       bottom: 1%;
       right: 1%;
       #dygcontainerrel {
@@ -81,6 +81,13 @@
         height: 100%;
       }
     }
+    #scatterabs {
+        position: absolute;
+        top: 5px;
+        left: 0;
+        right: 50%;
+        bottom: 0;
+      }
   }
   #corrfooter {
     padding: 0.5em;
@@ -131,11 +138,4 @@
     }
   }
 }
-#scatterabs {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 50%;
-  bottom: 0;
-  background-color: green;
-}
+

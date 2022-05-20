@@ -7,6 +7,7 @@ import { UtDygraphInModule } from 'app/shared/ut-dygraph-in/ut-dygraph-in.module
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { UtDygraphScatterModule } from 'app/shared/ut-dygraph-scatter/ut-dygraph-scatter.module';
 
 
 @NgModule({
@@ -15,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
     CommonModule,
     ScatterplotRoutingModule,
     UtDygraphInModule,
+    UtDygraphScatterModule,
     MatSelectModule,
     MatIconModule,
     FormsModule

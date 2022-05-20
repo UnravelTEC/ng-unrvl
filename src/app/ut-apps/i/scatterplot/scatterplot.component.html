@@ -88,8 +88,8 @@
             <fieldset [disabled]="queryRunning == true || autoreload">
                 <h3>{{ queryRunning ? 'Query running...' : 'Query current view:' }}</h3>
                 <label for="userMeanS">Res (s):</label>
-                <input type="number" id="userMeanS" min="0" name="userMeanS" [(ngModel)]="userMeanS" (ngModelChange)="checkQ1(); checkQ2()"
-                    style="width: 4em" />
+                <input type="number" id="userMeanS" min="0" name="userMeanS" [(ngModel)]="userMeanS"
+                    (ngModelChange)="checkQ1(); checkQ2()" style="width: 4em" />
                 <!-- (ngModelChange)="saveMean($event)"  -->
                 <div style="width: 100%; text-align: right; margin-top: -1.8em">
                     <button (click)="reload()">
@@ -126,14 +126,24 @@
     <div id="corrbody">
 
         <div id="scatterabs">
-            body!
+            <div id="scatterdygcontainerrel">
+                <app-ut-dygraph-scatter [data]="scatterdata" [columnLabels]="scatterlabels"
+                    [rawLabels]="raw_scatter_labels" [showDeviation]="show_deviation"
+                    [extraDyGraphConfig]="extraScatterDygCfg" enableHighlightCallback="true" [YLabel]="yscatterlabel"
+                    [XLabel]="xscatterlabel" (returnGraphWidthOnChange)="setGraphWidth($event)"
+                    [colors]="scattercolors">
+                </app-ut-dygraph-scatter>
+
+            </div>
+
+
         </div>
         <div id="dygcontainerabs">
             <div id="dygcontainerrel">
                 <app-ut-dygraph-in [data]="data" [columnLabels]="labels" [rawLabels]="raw_labels"
                     [showDeviation]="show_deviation" [extraDyGraphConfig]="extraDyGraphConfig"
                     [startTime]="dygStartTime" enableHighlightCallback="true" [YLabel]="ylabel" [Y2Label]="y2label"
-                    (returnGraphWidthOnChange)="setGraphWidth($event)" [colors]="colors" ></app-ut-dygraph-in>
+                    (returnGraphWidthOnChange)="setGraphWidth($event)" [colors]="colors"></app-ut-dygraph-in>
 
                 <!-- 
                   
@@ -147,7 +157,5 @@
             </div>
         </div>
     </div>
-    <div id="corrfooter">
-        Foots!
-    </div>
+    <div id="corrfooter"></div>
 </div>

@@ -45,6 +45,8 @@ export class ScatterplotComponent implements OnInit {
   colors = [];
   public show_deviation = false;
 
+  scatterdata = [];
+  scatterlabels = [];
 
   y2label = 'M2';
 
@@ -65,6 +67,11 @@ export class ScatterplotComponent implements OnInit {
       },
     },
   };
+  extraScatterDygCfg = {};
+  raw_scatter_labels = [];
+  xscatterlabel = "x";
+  yscatterlabel = "y";
+  scattercolors = [];
 
   public from: Number; // unix time from urlparam
   public to: Number; // unix time from urlparam
@@ -211,12 +218,12 @@ export class ScatterplotComponent implements OnInit {
   }
 
   changeM1() {
-    if (this.Series_per_m[this.M1].length == 1) {
+    if (this.Series_per_m[this.M1] && this.Series_per_m[this.M1].length == 1) {
       this.S1 = this.Series_per_m[this.M1][0]
     } else {
       this.S1 = "";
     }
-    if (this.fieldKeys[this.M1].length == 1) {
+    if (this.fieldKeys[this.M1] && this.fieldKeys[this.M1].length == 1) {
       this.FK1 = this.fieldKeys[this.M1][0]
     } else {
       this.FK1 = "";
@@ -407,6 +414,25 @@ export class ScatterplotComponent implements OnInit {
     if (!this.data || !this.data[0]) {
       return;
     }
+
+    const lscatterdata = [];
+    for (let i = 0; i < idata.length; i++) {
+      const row = idata[i];
+      const scatterrow = [row[1], row[2]];
+      lscatterdata.push(scatterrow);
+    }
+    lscatterdata.sort(function(a, b){return a[0] - b[0]});
+
+    const lraw_scatter_labels = [this.raw_labels[1], this.raw_labels[2]];
+    const lscatterlabels = [this.labels[1], this.labels[2]];
+    const lxscatterlabel = this.labels[1];
+    const lyscatterlabel = this.labels[2];
+    
+    this.scatterdata = lscatterdata;
+    this.raw_scatter_labels = lraw_scatter_labels;
+    this.scatterlabels = lscatterlabels;
+    this.xscatterlabel = lxscatterlabel;
+    this.yscatterlabel = lyscatterlabel;
   }
   
 }

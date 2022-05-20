@@ -1,0 +1,186 @@
+<!-- presenting: ut-dygraph:
+style.padding-bottom="20vh"-->
+<div class="abscontainer" style.position="absolute" [style.top]="style.top" [style.bottom]="style.bottom"
+  [style.left]="style.left" [style.right]="style.right" (wheel)="onWheel($event)">
+  <div class="mydygraph-scatter-component">
+    <div class="graph" id="{{ htmlID }}"></div>
+    <div class="legendabscontainer" [style.transform]="'translateX(' + yO + 'px)'">
+      <div class="legendrelcontainer">
+        <div class="mylegend" id="L_{{ htmlID }}" (wheel)="$event.stopPropagation()"></div>
+        <!-- <div class="legendToggle" (click)="toggleLegend()">x</div> -->
+      </div>
+    </div>
+
+    <div class="overlapTickTexthider y1" [style.transform]="'translateX(' + yO + 'px)'"></div>
+    <div class="overlapTickTexthider y2"></div>
+
+    <div *ngIf="noData == true && !minimal" class="info nodata">
+      <p>No data to display.</p>
+    </div>
+
+    <div *ngIf="waiting == true && !minimal" class="info waiting">
+      <p>Waiting for data...</p>
+    </div>
+
+    <div *ngIf="error != undefined" class="info error">
+      <p>{{ error }}</p>
+    </div>
+
+    <button *ngIf="options == true" (click)="toggleOptions()" class="toggleOptions">
+      <mat-icon>settings</mat-icon>
+    </button>
+
+    <div class="lastTime" *ngIf="optionsOpen == true">
+      Last data:
+      <span *ngIf="displayedData.length">
+        {{
+        displayedData[displayedData.length - 1][0] | date: 'HH:mm:ss'
+        }}</span>
+      <span *ngIf="!displayedData.length">-</span>
+    </div>
+    <div class="ymin {{ XLabel == '' ? 'noxlabel' : '' }}" *ngIf="dyGraphOptions['drawAxis'] !== false"
+      [style.transform]="'translateX(' + yO + 'px)'" (click)="toggleYRSel('y1min')">
+      {{ yRange[0] | dygNr }}
+    </div>
+    <div class="ymax" *ngIf="dyGraphOptions['drawAxis'] !== false" [style.transform]="'translateX(' + yO + 'px)'"
+      (click)="toggleYRSel('y1max')">
+      {{ yRange[1] | dygNr }}
+    </div>
+    <form *ngFor="let entry of yModes | keyvalue" class="{{ entry.key }}Sel">
+      <mat-radio-group [(ngModel)]="yModes[entry.key]" id="ymode_{{ entry.key }}" name="ymode_{{ entry.key }}"
+        (change)="changeYMode($event, entry.key)" *ngIf="yRSelShown[entry.key]">
+        <mat-radio-button value="dyn"> Dynamic </mat-radio-button><br />
+        <mat-radio-button value="fix">
+          Fixed:
+          <input type="number" id="yrange_{{ entry.key }}" name="yrange_{{ entry.key }}"
+            [(ngModel)]="yFixedRanges[entry.key]" />
+        </mat-radio-button>
+        <!--number input box also activates change event on radio group -->
+      </mat-radio-group>
+    </form>
+    <div class="xmin" *ngIf="dyGraphOptions['drawAxis'] !== false" [style.transform]="'translateX(' + yO + 'px)'">
+      {{ xRange[0] | dygNr }}
+    </div>
+    <div class="xmax" *ngIf="dyGraphOptions['drawAxis'] !== false">
+      {{ xRange[1] | dygNr }}
+    </div>
+    <!-- [style.transform]="'translateX(-' + y2O + 'px)'"
+    (click)="pan('forward')" -->
+
+    <div class="logbuttons" *ngIf="options == true && showLogscaleSwitcher == true && !noData">
+      <div class="logy y1" (click)="switchLogScale()" *ngIf="yRange[0] > 0 && yRange[1] > 0">
+        <div class="{{ dyGraphOptions.axes.y.logscale ? 'active' : '' }}">
+          log
+        </div>
+        <div class="{{ dyGraphOptions.axes.y.logscale ? '' : 'active' }}">
+          lin
+        </div>
+      </div>
+      <!-- <div class="logy y2" *ngIf="
+          dyGraphOptions['drawAxis'] !== false &&
+          y2Range[0] > 0 &&
+          y2Range[1] > 0
+        " (click)="switchLogScale('y2')">
+        <div class="{{ dyGraphOptions.axes.y2.logscale ? 'active' : '' }}">
+          log
+        </div>
+        <div class="{{ dyGraphOptions.axes.y2.logscale ? '' : 'active' }}">
+          lin
+        </div>
+      </div> -->
+    </div>
+  </div>
+
+  <div *ngIf="options == true && optionsOpen == true" class="optionsarea">
+    <div class="options">
+      <form class="subbox">
+        <h5>#Data Points</h5>
+        <small style="float: left; margin-top: 0.5em">
+          {{
+          !displayedData.length
+          ? 0
+          : displayedData.length * (displayedData[0].length - 1)
+          }}<br />
+        </small>
+        <button (click)="resetData()">
+          <mat-icon>delete_forever</mat-icon>
+        </button>
+      </form>
+
+      <form class="subbox">
+        <h5 title="on click, load/save should open">Zoom</h5>
+        <button (click)="zoom(0.5)">+</button>
+        <button (click)="zoom(2)">-</button>
+        <button (click)="fullZoom()">All</button>
+      </form>
+
+      <form class="subbox">
+        <h5>Export</h5>
+        <label for="UTC">UTC
+          <input type="checkbox" name="UTC" id="UTC" [(ngModel)]="exportUTC" />
+        </label>
+        <button (click)="exportCSV()">CSV</button>
+      </form>
+
+      <!-- <form class="subbox">
+        <h5>Data Gaps</h5>
+        <label for="sepp">hide
+          <input type="checkbox" name="sepp" id="sepp" [(ngModel)]="dyGraphOptions.connectSeparatedPoints"
+            (change)="toggleSeparatedPoints()" /></label>
+      </form> -->
+
+      <!-- <form class="subbox">
+        <h5>Y axis linearity</h5>
+        <label for="log"
+          >Logarithmic
+          <input
+            type="checkbox"
+            name="logarithmic"
+            id="log"
+            [(ngModel)]="dyGraphOptions.logscale"
+            (change)="switchLogScale()"
+        /></label>
+      </form> -->
+
+      <form class="subbox">
+        <h5>Uncertainty</h5>
+        <label for="showdev">Show
+          <input type="checkbox" name="showdev" id="showdev" [(ngModel)]="showDeviation"
+            [disabled]="!rawLabels || rawLabels.length < 2" (change)="toggleDeviation()" />
+        </label>
+      </form>
+
+      <form class="subbox" *ngIf="gss.server.calibrations">
+        <h5>Calibration</h5>
+        <label for="calibrate">Enable
+          <input type="checkbox" name="calibrate" id="calibrate" [(ngModel)]="calibrate"
+            [disabled]="!rawLabels || rawLabels.length < 2" (change)="toggleCalibration()" /></label>
+      </form>
+
+      <!-- <form class="subbox">
+        <h5>Running Average</h5>
+        <label for="runningAvgPoints"></label>
+        <input
+          type="text"
+          id="runningAvgPoints"
+          name="runningAvgPoints"
+          [(ngModel)]="runningAvgPoints"
+          style="width: 2em"
+          (change)="updateRoll()"
+        />
+        <span class="unit">Points</span>
+      </form> -->
+
+      <form class="subbox">
+        <h5>Legend</h5>
+        <button (click)="toggleLegend()" *ngIf="dyGraphOptions.legend == 'always'">
+          Off
+        </button>
+        <button (click)="toggleLegend()" *ngIf="dyGraphOptions.legend != 'always'">
+          On
+        </button>
+      </form>
+
+    </div>
+  </div>
+</div>

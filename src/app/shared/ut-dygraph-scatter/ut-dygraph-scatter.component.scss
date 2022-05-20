@@ -1,0 +1,620 @@
+$graphbg: #3f3f3f;
+$mainbg: #1e1e1e;
+
+$axismainlabelcolor: #8e8e8e;
+$axissublabelcolor: #565656;
+
+$buttontext: #fff;
+$buttontextinactive: #666666;
+$buttonactivebg: #8e8e8e;
+$buttoninactivebg: #373737;
+
+$dygfontsize: 14px;
+$labelcolor: #8e8e8e;
+$editableFormsTextColor: #c7c7c7;
+
+$green3: #002402;
+$green5: #023c0a;
+$green1: #008d0a;
+$green4: #1ef93a;
+$green2: #69f97b;
+$brown3: #561d0b;
+$brown5: #883a06;
+$brown1: #ff5b00;
+$brown4: #ff9c06;
+$brown2: #ffdd73;
+$blue3: #000055;
+$blue5: #000094;
+$blue1: #0000ff;
+$blue4: #394cff;
+$blue2: #6883ff;
+$violet3: #2b0069;
+$violet5: #470994;
+$violet1: #842bff;
+$violet4: #c78dff;
+$violet2: #ffebff;
+$olive3: #002913;
+$olive5: #003c24;
+$olive1: #00805c;
+$olive4: #37a389;
+$olive2: #8ce2cd;
+$navy3: #001341;
+$navy5: #002c54;
+$navy1: #0061a6;
+$navy4: #007cc2;
+$navy2: #00d9ff;
+$red3: #520000;
+$red5: #990000;
+$red1: #e10000;
+$red4: #f81e25;
+$red2: #ff7f88;
+
+.abscontainer {
+  position: absolute;
+  border: 0px solid green;
+  flex-direction: column;
+  display: flex;
+}
+.mydygraph-scatter-component {
+  flex: 1;
+  border: 0px solid red;
+  position: relative;
+  height: 100%;
+  min-height: 50%;
+  width: 100%;
+
+  .graph {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+  }
+
+  ul {
+    text-align: left;
+  }
+
+  .info {
+    position: absolute;
+    top: 0;
+    left: 55px;
+    bottom: 55px;
+    right: 0.5em;
+    margin: 0;
+    border: 1px solid blue;
+    padding: auto 1em;
+    background: $graphbg;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .nodata {
+    border-color: orange;
+  }
+  .waiting {
+    border-color: yellow;
+  }
+  .error {
+    border-color: red;
+  }
+
+  .fromDate,
+  .toDate,
+  .ymin,
+  .ymax,
+  .y2min,
+  .y2max,
+  .xmin,
+  .xmax,
+  .logy {
+    position: absolute;
+    background: $graphbg;
+    font-size: $dygfontsize;
+    color: $editableFormsTextColor;
+    padding: 0.35em;
+    height: 1em;
+    line-height: 1em;
+    cursor: pointer;
+  }
+
+  .fromDate,
+  .toDate {
+    bottom: 0;
+    mat-form-field {
+      width: 5.1em;
+      height: 1em;
+      margin-top: -0.35em;
+      font-family: inherit;
+      .mat-form-field-underline,
+      .mat-form-field-suffix button.mat-icon-button,
+      .mat-form-field-prefix button.mat-icon-button {
+        display: none;
+      }
+      .mat-form-field-wrapper {
+        padding-bottom: 0; // stretched out of bottom and created scrollbar
+      }
+      input {
+        cursor: pointer;
+      }
+    }
+    mat-form-field.mat-form-field-appearance-legacy .mat-form-field-infix {
+      padding: 0;
+      border-top: 0;
+    }
+  }
+  .fromDate:hover,
+  .toDate:hover,
+  .xmin:hover,
+  .xmax:hover,
+  .y2min:hover,
+  .y2max:hover,
+  .ymin:hover,
+  .ymax:hover {
+    background-color: $buttonactivebg;
+    color: $buttontext;
+    border-right-color: $buttonactivebg;
+    b,
+    b.hide {
+      opacity: 1;
+    }
+  }
+  .fromDate,
+  .xmin {
+    left: 55px;
+    b {
+      right: 5px;
+    }
+  }
+  .toDate,
+  .xmax {
+    right: 0px;
+    text-align: right;
+    mat-form-field input {
+      text-align: right;
+    }
+    b {
+      left: 5px;
+    }
+  }
+  .noy2 {
+    right: 5px; // Dygraph option rightGap
+  }
+  .fromDate,
+  .toDate,
+  .xmin,
+  .xmax {
+    width: 5.1em;
+  }
+  .lastTime {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin-right: 1rem;
+    font-size: 0.8em;
+    color: $labelcolor;
+  }
+  .ymax,
+  .ymin,
+  .logy.y1 {
+    border: 0px solid salmon;
+    width: 42px; // dyg y-width: 50px + paddings
+    left: 1px;
+    text-align: right;
+  }
+  .ymax,
+  .y2max {
+    top: 0;
+  }
+  .ymin,
+  .y2min {
+    bottom: 52px;
+  }
+  .ymin.noxlabel,
+  .y2min.noxlabel {
+    bottom: 1.6em;
+  }
+  .y2min,
+  .y2max,
+  .logy.y2 {
+    right: 0;
+    width: 49px;
+    text-align: left;
+    border-right: 0px solid $graphbg; // used to "expand" inte left
+  }
+  .xmin,
+  .xmax,
+  .overlapTickTexthider {
+    bottom: 26px;
+    b {
+      position: absolute;
+      bottom: 5px;
+      opacity: 0.5;
+    }
+    b.hide {
+      opacity: 0;
+    }
+  }
+  .logy.y1,
+  .logy.y2 {
+    width: 30px; // 20+paddings
+    height: 0;
+    top: 29px;
+    padding: 0;
+    div {
+      padding: 0.35em 0.35em 0 0.35em; // to rm "g" bottom height increase
+      line-height: 1em;
+      width: 20px;
+      display: inline-block;
+      text-align: center;
+      height: 20px;
+      background-color: $buttoninactivebg;
+      color: $buttontextinactive;
+    }
+    div.active,
+    div:hover {
+      background-color: $buttonactivebg;
+      color: $buttontext;
+    }
+
+    div:first-child {
+      margin-bottom: -0.2em;
+    }
+    div + div {
+      padding-top: 0.1em;
+    }
+  }
+  .y1minSel,
+  .y1maxSel,
+  .y2minSel,
+  .y2maxSel {
+    position: absolute;
+    mat-radio-group {
+      border: 1px solid black;
+      height: 3.5em;
+      display: block;
+      border-radius: 5px;
+      background: $mainbg;
+      font-size: $dygfontsize;
+      color: $editableFormsTextColor;
+      padding: 7px;
+      input[type='number'] {
+        width: 6em;
+      }
+    }
+  }
+  .y1minSel,
+  .y2minSel {
+    bottom: 56px;
+  }
+  .y1maxSel,
+  .y2maxSel {
+    top: 5px;
+  }
+  .y1minSel,
+  .y1maxSel {
+    left: 60px;
+  }
+  .y2minSel,
+  .y2maxSel {
+    right: 75px;
+  }
+
+  .overlapTickTexthider {
+    background-color: $mainbg;
+    font-size: $dygfontsize;
+    height: 1em;
+    line-height: 1em;
+    padding: 0.35em;
+    position: absolute;
+    bottom: 26px;
+    border-top: 2px solid $mainbg; // gap between x and label
+  }
+  .overlapTickTexthider.y1 {
+    width: 42px;
+    left: 1px;
+    border-right: 2px solid $mainbg; // gap between y and label
+  }
+  .overlapTickTexthider.y2 {
+    width: 60px;
+    right: 0;
+  }
+
+  .legendabscontainer {
+    position: absolute;
+    top: 5px;
+    left: 61px; // y-w(50) + 5px margin + 5px padding + 1px axis-width
+    bottom: 67px; // 52 (bttom of graph)+ 5px own padding + 2x5px legend-padding
+    right: 5px;
+    flex-direction: column;
+    display: flex;
+    pointer-events: none;
+    .legendrelcontainer {
+      height: 100%;
+      position: relative;
+      flex: 1;
+      // width: 100%;
+      // width: auto;
+      pointer-events: none;
+      .legendToggle {
+        position: absolute;
+        font-size: 1.2em;
+        min-width: 20em;
+        text-align: right;
+        top: 0;
+        right: 5px;
+        cursor: pointer;
+      }
+      .legendToggle::after {
+        content: '▲';
+      }
+      .legendToggle:hover {
+        font-weight: bold;
+        color: white;
+      }
+    }
+  }
+  .dygraph-legend,
+  .mylegend {
+    font-size: $dygfontsize;
+    background: rgba(100, 100, 100, 0.8);
+    padding: 5px;
+    text-align: left;
+    position: absolute !important;
+    top: 0px !important;
+    left: 0px !important; // y-w(50) + 5px margin + 5px padding + 1px axis-width
+    overflow-x: visible;
+    min-width: 20em; // width of time text (with seconds) on hovering
+    max-height: 100%;
+    overflow-y: auto;
+    pointer-events: auto;
+    div.header {
+      position: fixed;
+      top: 0;
+      padding: 5px;
+      z-index: 10;
+      background-color: #5d5d5d; // picked from graph-background + legend-bg
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-top: 1.5em;
+      border: 1px solid black;
+
+      tr {
+        cursor: pointer;
+        td,
+        th {
+          border-bottom: 1px solid black;
+          white-space: nowrap;
+        }
+        th {
+          font-weight: normal;
+          padding: 0.1em 0.3em 0.1em 0;
+          color: $editableFormsTextColor;
+        }
+        th.h {
+          width: 1.4em;
+          padding-left: 0.5rem;
+        }
+        th span.one {
+          display: none;
+        }
+
+        td {
+          color: $editableFormsTextColor;
+          border-left-width: 0;
+          padding: 0.1em 0;
+        }
+        td.d {
+          padding: 0 0 0 5px;
+        }
+        td.u {
+          padding: 0 5px 0 3px;
+        }
+        td.c {
+          text-align: right;
+          padding: 0 5px 0 3px;
+        }
+        td.s {
+          text-align: center;
+          padding: 0 5px 0 3px;
+        }
+      }
+      tr.highlight,
+      tr:hover {
+        background-color: #8e8e8e;
+        th,
+        td {
+          color: $mainbg;
+        }
+      }
+      tr:hover {
+        th span.dash {
+          display: none;
+        }
+        th span.one {
+          display: inline-block;
+        }
+      }
+    }
+  }
+  .mylegend.cthide {
+    width: 20em;
+    height: 1.2em;
+    table {
+      display: none;
+    }
+    .legendToggle::after {
+      content: '▼';
+    }
+  }
+
+  .series {
+    text-align: right;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 2.5em;
+    overflow-y: auto;
+    h4 {
+      margin: 0;
+      text-align: left;
+    }
+  }
+  .dygraph-label {
+    color: $axismainlabelcolor;
+    font-weight: 600;
+    cursor: default;
+  }
+  .dygraph-ylabel {
+    //offset width of x-axis labels
+    margin-left: 60px;
+    margin-right: 25px;
+  }
+  .y1 .dygraph-ylabel,
+  .y2 .dygraph-y2label {
+    // axis highlight
+    text-shadow: 0 0 1em orange, 0 0 0.2em orange;
+  }
+  .y2 .dygraph-ylabel,
+  .y1 .dygraph-y2label,
+  .y2 .dygraph-axis-label-y1,
+  .y1 .dygraph-axis-label-y2 {
+    opacity: 0.5;
+  }
+  .dygraph-axis-label {
+    color: $axissublabelcolor;
+    cursor: default;
+  }
+  .dygraph-xlabel,
+  .dygraph-ylabel,
+  .dygraph-y2label {
+    font-weight: normal;
+  }
+  button.toggleOptions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 28px;
+    width: 28px;
+    border-radius: 0.5rem;
+    background: transparent;
+    cursor: pointer;
+    display: block;
+    text-align: center;
+    margin-right: auto;
+    padding: 0 !important;
+    * {
+      transform: translate(0rem, 0rem);
+      font-size: 18px;
+      line-height: 24px; // minus border
+    }
+  }
+  button.toggleOptions:hover {
+    background-color: gray;
+  }
+}
+div.optionsarea {
+  overflow: auto;
+  div.options {
+    padding-left: 0.15rem;
+    padding-right: 0.15rem;
+    background: rgba(128, 128, 128, 0.719);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    .subbox {
+      border: 1px solid black;
+      display: inline-block;
+      padding: 0.2em;
+      margin-bottom: 0.15rem;
+      margin-top: 0.15rem;
+      height: 3rem;
+      > * {
+        margin: 0 0.25ch;
+      }
+      h5 {
+        margin: 0;
+        padding: 0;
+        font-weight: bold;
+        font-size: 0.7em;
+      }
+      input[type='text'] {
+        padding: 0.1em;
+        border-radius: 0.5em;
+      }
+      select {
+        height: 2.2em;
+      }
+      button {
+        border: 0;
+        border-radius: 0.5em;
+        background: #5cb85c;
+        padding: 0.5em;
+        cursor: pointer;
+        min-width: 2.25em;
+      }
+      .time {
+        h5 {
+          display: inline-block;
+          margin-right: 1em;
+        }
+        small {
+          font-size: 0.7em;
+        }
+        button {
+          background: none;
+          min-width: unset;
+          border-radius: unset;
+          padding: unset;
+          border: unset;
+        }
+        mat-form-field {
+          width: 7em;
+          // background: greenyellow;
+          height: 1.5em;
+        }
+        .mat-form-field-infix {
+          border-top: 0;
+          padding: 0;
+        }
+      }
+      .stats {
+        display: flex;
+        flex-wrap: wrap;
+        small {
+          display: inline-block;
+          margin-left: 1em;
+        }
+        span {
+          display: inline-block;
+          min-width: 7em;
+        }
+        table {
+          margin-left: 1em;
+          font-size: 0.8em;
+          border-collapse: collapse;
+          th,
+          td {
+            border-left: 1px solid black;
+            padding: 0 0.3em;
+          }
+          th:first-child,
+          td:first-child {
+            border-left: 0;
+          }
+
+          th {
+            text-align: left;
+            border-bottom: 1px solid black;
+          }
+        }
+      }
+    }
+    #stats {
+      height: auto;
+    }
+  }
+}
