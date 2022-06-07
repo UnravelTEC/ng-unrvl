@@ -141,7 +141,6 @@ export class ScatterplotComponent implements OnInit {
     const series = this.h.getDeep(data, ['results', 0, 'series', 0, 'values']);
     console.log('series', series);
     this.Ms = [];
-    const Series_per_m = {}; // { $m: [] }
     for (let i = 0; i < series.length; i++) {
       const seri = series[i][0];
       const m_and_tags = seri.split(',')
@@ -152,11 +151,6 @@ export class ScatterplotComponent implements OnInit {
       if (!this.Ms.includes(measurement)) {
         this.Ms.push(measurement);
       }
-
-      // const all_tags_per_series_per_m = {}
-      // const common_tags = {}
-      // const differenting_tags = {}
-
       const this_series_tags = [];
       for (let i = 1; i < m_and_tags.length; i++) {
         const k_is_v = m_and_tags[i];
@@ -173,19 +167,6 @@ export class ScatterplotComponent implements OnInit {
         this.Series_per_m[measurement] = []
       }
       this.Series_per_m[measurement].push(this_series_tags.join(", "));
-
-
-
-      //   if (!all_tags[k])
-      //     all_tags[k] = [];
-      //   all_tags[k].push(v);
-      // }
-
-      // if (!this.Series[measurement]) {
-      //   this.Series[measurement] = [m_and_tags[1]];
-      // } else {
-      //   this.Series[measurement].push(m_and_tags[1])
-      // }
     }
     console.log(this.Series_per_m);
 
@@ -214,7 +195,6 @@ export class ScatterplotComponent implements OnInit {
 
     }
     console.log(this.fieldKeys);
-
   }
 
   changeM1() {
