@@ -47,3 +47,39 @@ table.sensors {
     // margin-right: -3em;
   }
 }
+
+form.fieldsettings {
+  mat-form-field {
+    margin: 1em;
+  }
+  td, th {
+    border-right: 2px solid $appbody;
+  }
+  
+  div.mat-select-panel {
+    max-width: 20em !important;
+  }
+  .mat-select {
+    background-color: #565656;
+  }
+  .mat-option {
+    word-break: break-all;
+    white-space: normal;
+    height: unset;
+  }
+  mat-label {
+    color: #999;
+  }
+}
+.time  div {
+  display: inline-block;
+  label {
+    display: block;
+  }
+  input[type="number"] {
+    width: 4em;
+  }
+}
+fieldset {
+  border: 1px solid gray;
+}

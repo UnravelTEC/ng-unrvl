@@ -1,4 +1,173 @@
 <div class="abody">
+
+  <h2>Time Query</h2>
+
+  <form class="fieldsettings">
+    <fieldset>
+      <mat-form-field>
+        <mat-label>Host:</mat-label>
+        <mat-select [(ngModel)]="userHost" name="userHost">
+          <!-- (closed)="changeM1()" -->
+          <mat-option *ngFor="let h of hosts" [value]="h"> {{ h }} </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Measurement:</mat-label>
+        <mat-select [(ngModel)]="userMeasurement" name="userMeasurement">
+          <!-- (closed)="changeM1()" -->
+          <mat-option *ngFor="let m of measurements" [value]="m"> {{ m }} </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="sensors_per_m[userMeasurement] && sensors_per_m[userMeasurement].length > 1">
+        <mat-label>Sensor:</mat-label>
+        <mat-select [(ngModel)]="userSensor" name="userSensor">
+          <mat-option *ngFor="let s of sensors_per_m[userMeasurement]" [value]="s" [title]="s"> {{ s }} </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <span *ngIf="sensors_per_m[userMeasurement] && sensors_per_m[userMeasurement].length == 1"
+        style="display: inline-block;">
+        <small>Sensor:</small><br>
+        {{ sensors_per_m[userMeasurement][0] }}
+      </span>
+
+      <mat-form-field *ngIf="tagsets_per_m_s[userMeasurement] 
+      && tagsets_per_m_s[userMeasurement][userSensor] 
+      && tagsets_per_m_s[userMeasurement][userSensor].length > 1">
+        <mat-label>Id:</mat-label>
+        <mat-select [(ngModel)]="userId" name="userId">
+          <mat-option *ngFor="let id_t of tagsets_per_m_s[userMeasurement][userSensor]" [value]="id_t.id"
+            [title]="id_t.tags"> {{ id_t.id }}: {{ id_t.tags }} </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field *ngIf="fieldKeys[userMeasurement]">
+        <mat-label>Field:</mat-label>
+        <mat-select [(ngModel)]="userValue" name="userValue">
+          <mat-option *ngFor="let fk of fieldKeys[userMeasurement]" [value]="fk" [title]="fk"> {{ fk }} </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </fieldset>
+
+    <br>
+    <fieldset class="time">
+      <div>
+        <table>
+          <tr>
+            <th>Show data from</th>
+            <th>Custom time</th>
+          </tr>
+          <tr>
+            <td>
+              <mat-checkbox [(ngModel)]="userDateNow" name="userDateNow" labelPosition="before"
+                (ngModelChange)="changeUserDateNow($event)">
+                now
+              </mat-checkbox>
+            </td>
+            <td>
+              <mat-form-field>
+                <input matInput [matDatepicker]="pickerTo" [formControl]="toFormDate"
+                  (dateChange)="toDatePickerChanged($event)" [disabled]="userDateNow" />
+                <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+                <mat-datepicker #pickerTo></mat-datepicker>
+              </mat-form-field>
+              <div>
+                <label for="userHour">Hour</label>
+                <input type="number" id="userHour" min="0" max="23" name="userHour" [(ngModel)]="userHour"
+                  (ngModelChange)="calcTime($event)" />
+              </div>
+              :
+              <div>
+                <label for="userMinute">Minute</label>
+                <input type="number" id="userMinute" min="0" max="59" name="userMinute" [(ngModel)]="userMinute"
+                  (ngModelChange)="calcTime($event)" />
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      |
+      <div>
+
+        Time Range:
+        <table>
+          <tr>
+            <th>Pre-Select</th>
+            <th>Custom</th>
+          </tr>
+          <tr>
+            <td>
+              <mat-form-field>
+                <mat-label>Show range</mat-label>
+                <mat-select [(ngModel)]="userStartTime" name="startTime" (closed)="changeUserStartTime($event)">
+                  <mat-option value="15m">15 min.</mat-option>
+                  <mat-option value="1h"> 1h</mat-option>
+                  <mat-option value="6h">6 h</mat-option>
+                  <mat-option value="24h">24 h</mat-option>
+                  <mat-option value="7d">1 week</mat-option>
+                  <mat-option value="30d">1 month</mat-option>
+                  <mat-option value="356d">1 year</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </td>
+            <td>
+              <label for="userIntSeconds">Seconds</label>
+              <input type="number" id="userIntSeconds" min="1" name="userIntSeconds" [(ngModel)]="userIntSeconds"
+                (ngModelChange)="calcTime($event)" style="width: 7em;" />
+            </td>
+          </tr>
+        </table>
+      </div>
+      |
+      <div>
+        Average Interval:
+        <table>
+          <tr>
+            <th>Pre-Select</th>
+            <th>Custom</th>
+          </tr>
+          <tr>
+            <td>
+              <mat-form-field>
+                <mat-label>Pre-Defined</mat-label>
+                <mat-select [(ngModel)]="userAvgTime" name="userAvgTime" (closed)="changeInterval($event)">
+                  <mat-option value="1s">1 Sec.</mat-option>
+                  <mat-option value="10s"> 10s</mat-option>
+                  <mat-option value="1m"> 1m</mat-option>
+                  <mat-option value="5m"> 5m</mat-option>
+                  <mat-option value="30m"> 30m</mat-option>
+                  <mat-option value="1h"> 1h</mat-option>
+                  <mat-option value="24h">24 h</mat-option>
+                  <mat-option value="7d">1 week</mat-option>
+                  <mat-option value="30d">1 month</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </td>
+            <td>
+              <label for="userInterval">Seconds</label>
+              <input type="number" id="userInterval" min="1" name="userInterval" [(ngModel)]="userInterval"
+                (ngModelChange)="calcTime($event)" style="width: 6em;" />
+            </td>
+          </tr>
+        </table>
+      </div>
+
+    </fieldset>
+
+    <a routerLink="/Apps/I/Anysens" [queryParams]="{ measurement: userMeasurement, 
+    host: userHost, 
+    sensor: userSensor, 
+    from: userFromValue, 
+    to: userToValue, 
+    interval: userInterval, 
+    id: userId,
+    value: userValue }" routerLinkActive="active">Show Data</a>
+
+  </form>
+
+
+
   <h2>Hosts</h2>
   <ul>
     <li *ngFor="let h of hosts">
@@ -10,12 +179,8 @@
   <table>
     <tr *ngFor="let m of measurements">
       <td>
-      <a
-        routerLink="/Apps/I/Anysens"
-        [queryParams]="{ measurement: m }"
-        routerLinkActive="active"
-        >{{ m }}</a
-      ></td>
+        <a routerLink="/Apps/I/Anysens" [queryParams]="{ measurement: m }" routerLinkActive="active">{{ m }}</a>
+      </td>
     </tr>
   </table>
 
@@ -31,20 +196,13 @@
     </tr>
     <tr *ngFor="let s of sensors | keyvalue">
       <td>
-        <a
-          routerLink="/Apps/I/Anysens"
-          [queryParams]="{ sensor: s.key, measurement: s.value.join(',') }"
-          routerLinkActive="active"
-          >{{ s.key }}</a
-        ></td>
+        <a routerLink="/Apps/I/Anysens" [queryParams]="{ sensor: s.key, measurement: s.value.join(',') }"
+          routerLinkActive="active">{{ s.key }}</a>
+      </td>
       <td>
         <span *ngFor="let m of s.value">
-          <a
-            routerLink="/Apps/I/Anysens"
-            [queryParams]="{ sensor: s.key, measurement: m }"
-            routerLinkActive="active"
-          >{{ m }}</a
-          >&nbsp;</span>
+          <a routerLink="/Apps/I/Anysens" [queryParams]="{ sensor: s.key, measurement: m }" routerLinkActive="active">{{
+            m }}</a>&nbsp;</span>
       </td>
     </tr>
   </table>
