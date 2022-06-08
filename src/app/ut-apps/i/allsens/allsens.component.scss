@@ -15,27 +15,16 @@ table {
   background-color: $graphbg;
   border: 0;
   border-collapse: collapse;
+
   td {
     border: 0;
     padding: 0.25em 0.5em;
     border-top: 2px solid $appbody;
-    a {
-      display: inline-block;
-      border: 2px solid black;
-      background: #565656;
-      padding: 0.5em;
-      cursor: pointer;
-      min-width: 2.25em;
-      color: white;
-      text-decoration: none;
-      box-sizing: border-box;
-    }
-    a:hover {
-      background-color: #8e8e8e;
-    }
+
+   
   }
   td:first-child a {
-      width: 100%;
+    width: 100%;
   }
 }
 table.sensors {
@@ -48,14 +37,33 @@ table.sensors {
   }
 }
 
+table,
+form {
+  a {
+    display: inline-block;
+    border: 2px solid black;
+    background: #565656;
+    padding: 0.5em;
+    cursor: pointer;
+    min-width: 2.25em;
+    color: white;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+  a:hover {
+    background-color: #8e8e8e;
+  }
+}
+
 form.fieldsettings {
   mat-form-field {
     margin: 1em;
   }
-  td, th {
+  td,
+  th {
     border-right: 2px solid $appbody;
   }
-  
+
   div.mat-select-panel {
     max-width: 20em !important;
   }
@@ -71,7 +79,7 @@ form.fieldsettings {
     color: #999;
   }
 }
-.time  div {
+.time div {
   display: inline-block;
   label {
     display: block;
