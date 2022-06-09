@@ -88,6 +88,26 @@ form.fieldsettings {
     width: 4em;
   }
 }
+
+
+.time > div {
+  margin: 0.3em;
+  // border: 1px solid green;
+  padding: 3px;
+  height: 13em;
+  vertical-align: middle;
+}
+
+// Pseudo-element to fix vertical-align
+// https://codepen.io/edge0703/pen/DzaEex
+.time:before {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  height: 100%;
+}
+
 fieldset {
   border: 1px solid gray;
+
 }

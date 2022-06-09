@@ -270,6 +270,8 @@ export class GlobalSettingsService implements OnInit {
   }
   public triggerDBScan() {
     // gets sent to root app.component, who fetches sensorlist (avoid cyclic dependency with uthttp)
+    this.server.sensors = {};
+    this.server.calibrations = undefined;
     this.emitChange({ InfluxUP: true });
   }
   public handleInfluxSeries(data: Object) {
