@@ -740,6 +740,19 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
     if (this.checkOK4Dev()) {
       this.dyGraphOptions['customBars'] = true;
     }
+    // especially for x/y data:
+    const validData = [];
+    for (let i = 0; i < this.displayedData.length; i++) {
+      const row = this.displayedData[i];
+      const x = row[0], y = row[1];
+      if (typeof x == 'number' && !isNaN(x) && isFinite(x) 
+      && typeof y == 'number' && !isNaN(y) && isFinite(y) ) {
+        validData.push(row)
+      }
+    }
+    this.displayedData = validData;
+    console.log('validData', cloneDeep(validData));
+    
 
     this.dyGraphOptions['dateWindow'] = this.calcXranges();
 
