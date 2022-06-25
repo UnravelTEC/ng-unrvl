@@ -890,7 +890,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.dyGraphOptions.axes.y2['gridLineColor'] = this.gridlineActiveColor;
     }
     this.Dygraph.updateOptions({ axes: this.dyGraphOptions.axes });
-    console.log('new grid:', grid, this.dyGraphOptions.axes);
+    // console.log('new grid:', grid, this.dyGraphOptions.axes);
   }
 
   public clickHighLightedPoint = -1;
@@ -1265,7 +1265,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   afterDrawCallback(g: Dygraph, isOInitial: boolean) {
-    const debugflag = true;
+    const debugflag = false;
     if (isOInitial) {
       console.log('ignoring initial afterDrawCallback');
       return;
@@ -1466,7 +1466,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     for (let i = 0; i < this.visibleAverages.length; i++) {
       sum += this.visibleAverages[i];
     }
-    console.log('avgs:', this.averages, 'visible avg:', this.visibleAverages);
+    // console.log('avgs:', this.averages, 'visible avg:', this.visibleAverages);
 
     this.visibleAverage = sum / this.visibleAverages.length;
     this.returnRunningAvg.emit({
