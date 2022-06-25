@@ -73,8 +73,8 @@ export class ScatterplotComponent implements OnInit {
   yscatterlabel = "y";
   scattercolors = [];
 
-  public from: Number; // unix time from urlparam
-  public to: Number; // unix time from urlparam
+  public from: number; // unix time from urlparam
+  public to: number; // unix time from urlparam
   interval: string;
 
   orig_labels = [];
@@ -94,17 +94,22 @@ export class ScatterplotComponent implements OnInit {
   public currentRange: string;
   updateFromToTimes(timearray, interval = '') {
     // console.log(timearray);
-    this.fromTime = new Date(timearray[0]);
-    this.from = timearray[0];
-    this.toTime = new Date(timearray[1]);
-    this.to = timearray[1];
-    const rangeSeconds = Math.floor((timearray[1] - timearray[0]) / 1000);
-    this.currentRange = this.h.createHRTimeString(rangeSeconds);
-    if (!interval) {
-      this.userMeanS = this.calcMean(rangeSeconds);
-      this.interval = String(this.userMeanS);
-    } else {
-      this.userMeanS = Number(interval);
+    if (this.from != timearray[0] || this.to != timearray[1]) {
+      this.fromTime = new Date(timearray[0]);
+      this.from = timearray[0];
+      this.toTime = new Date(timearray[1]);
+      this.to = timearray[1];
+      const rangeSeconds = Math.floor((timearray[1] - timearray[0]) / 1000);
+      this.currentRange = this.h.createHRTimeString(rangeSeconds);
+      if (!interval) {
+        this.userMeanS = this.calcMean(rangeSeconds);
+        this.interval = String(this.userMeanS);
+      } else {
+        this.userMeanS = Number(interval);
+      }
+      this.checkQ1(true);
+      this.checkQ2(true);
+      this.scatterdata = this.createScatterData(this.data, this.from, this.to);
     }
   }
   calcMean(secondsRange) {
@@ -244,16 +249,16 @@ export class ScatterplotComponent implements OnInit {
     //   this.reload();
     // }
   }
-  checkQ1() {
+  checkQ1(fromTo = false) {
     if (this.M1 && this.S1 && this.FK1) {
-      this.Q1 = this.createQ(this.M1, this.S1, this.FK1);
+      this.Q1 = this.createQ(this.M1, this.S1, this.FK1, fromTo);
     } else {
       this.Q1 = ""
     }
   }
-  checkQ2() {
+  checkQ2(fromTo = false) {
     if (this.M2 && this.S2 && this.FK2) {
-      this.Q2 = this.createQ(this.M2, this.S2, this.FK2);
+      this.Q2 = this.createQ(this.M2, this.S2, this.FK2, fromTo);
     } else {
       this.Q2 = ""
     }
@@ -297,7 +302,7 @@ export class ScatterplotComponent implements OnInit {
       timeQuery,
       tags1,
       this.meanS,
-      '/^' + fk  + '$/'
+      '/^' + fk + '$/'
     );
     return q1;
   }
@@ -395,26 +400,33 @@ export class ScatterplotComponent implements OnInit {
       return;
     }
 
-    const lscatterdata = [];
-    for (let i = 0; i < idata.length; i++) {
-      const row = idata[i];
-      const scatterrow = [row[1], row[2]];
-      lscatterdata.push(scatterrow);
-    }
-    lscatterdata.sort(function(a, b){return a[0] - b[0]});
+    const lscatterdata = this.createScatterData(idata);
 
     const lraw_scatter_labels = [this.raw_labels[1], this.raw_labels[2]];
     const lscatterlabels = [this.labels[1], this.labels[2]];
     const lxscatterlabel = this.labels[1];
     const lyscatterlabel = this.labels[2];
-    
+
     this.scatterdata = lscatterdata;
     this.raw_scatter_labels = lraw_scatter_labels;
     this.scatterlabels = lscatterlabels;
     this.xscatterlabel = lxscatterlabel;
     this.yscatterlabel = lyscatterlabel;
   }
-  
+  createScatterData(data, from = -Infinity, to = Infinity) {
+    const lscatterdata = [];
+    for (let i = 0; i < data.length; i++) {
+      const row = data[i];
+      const dateval = row[0].valueOf()
+      if (dateval > from && dateval < to) {
+        const scatterrow = [row[1], row[2]];
+        lscatterdata.push(scatterrow);
+      }
+    }
+    lscatterdata.sort(function (a, b) { return a[0] - b[0] });
+    return lscatterdata;
+  }
+
 }
 
 

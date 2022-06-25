@@ -18,6 +18,7 @@ import cloneDeep from 'lodash-es/cloneDeep';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { SensorService } from '../sensor.service';
 import { GlobalSettingsService } from 'app/core/global-settings.service';
+import { U } from '../../../../node_modules-old/@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-ut-dygraph-scatter',
@@ -41,7 +42,7 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
   };
   private graphBackGroundColor = '#3F3F3F';
   public yO = '0';
-  
+
   private defaultYlabel = 'Value (unit)';
   @Input()
   YLabel = this.defaultYlabel;
@@ -102,16 +103,16 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
     y1min: string;
     y1max: string;
   } = {
-    y1min: 'dyn',
-    y1max: 'dyn',
-  };
+      y1min: 'dyn',
+      y1max: 'dyn',
+    };
   public yFixedRanges: {
     y1min: number;
     y1max: number;
   } = {
-    y1min: null,
-    y1max: null,
-  };
+      y1min: null,
+      y1max: null,
+    };
   public yRSelShown = {
     y1min: false,
     y1max: false,
@@ -122,6 +123,8 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
   private gridlineInactiveWidth = 0.0001;
   private gridlineActiveColor = '#4A4A4A';
   private gridlineInactiveColor = this.graphBackGroundColor;
+
+  private dataSum; // hacky way to detect if new data there.
 
   dyGraphOptions = {
     // http://dygraphs.com/options.html
@@ -232,7 +235,7 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
     private h: HelperFunctionsService,
     private sensorService: SensorService,
     public gss: GlobalSettingsService
-  ) {}
+  ) { }
 
   ngOnChanges(changes: SimpleChanges) {
     console.log('onChanges');
@@ -312,8 +315,14 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
     this.noData = false;
-    const newDataBeginTime = this.data[0][0];
-    const newDataEndTime = this.data[this.data.length - 1][0];
+    let newDataSum = 0;
+    for (let i = 0; i < this.data.length; i++) {
+      const row = this.data[i];
+      newDataSum += row[0] + row[1]
+    }
+    if(this.dataSum != newDataSum) {
+      this.dataReset = true;
+    }
     // if (!this.dataBeginTime) {
     //   console.error('WARNING: no this.dataBeginTime', this.dataBeginTime, this.data[0][0]);
     //   this.dataBeginTime = this.data[0][0];
@@ -481,7 +490,7 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
 
     this.dyGraphOptions.logscale =
       this.dyGraphOptions.axes.y.logscale // ||
-      // this.dyGraphOptions.axes.y2.logscale;
+    // this.dyGraphOptions.axes.y2.logscale;
 
     const yOffset = this.h.getDeep(this.dyGraphOptions, [
       'axes',
@@ -741,18 +750,7 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
       this.dyGraphOptions['customBars'] = true;
     }
     // especially for x/y data:
-    const validData = [];
-    for (let i = 0; i < this.displayedData.length; i++) {
-      const row = this.displayedData[i];
-      const x = row[0], y = row[1];
-      if (typeof x == 'number' && !isNaN(x) && isFinite(x) 
-      && typeof y == 'number' && !isNaN(y) && isFinite(y) ) {
-        validData.push(row)
-      }
-    }
-    this.displayedData = validData;
-    console.log('validData', cloneDeep(validData));
-    
+    this.displayedData = this.validateData(this.displayedData);
 
     this.dyGraphOptions['dateWindow'] = this.calcXranges();
 
@@ -799,7 +797,21 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
   updateRoll() {
     this.Dygraph.adjustRoll(this.runningAvgPoints);
   }
-
+  validateData(indata) {
+    this.dataSum = 0;
+    const validData = [];
+    for (let i = 0; i < indata.length; i++) {
+      const row = indata[i];
+      const x = row[0], y = row[1];
+      if (typeof x == 'number' && !isNaN(x) && isFinite(x)
+        && typeof y == 'number' && !isNaN(y) && isFinite(y)) {
+        validData.push(row);
+        this.dataSum += x + y;
+      }
+    }
+    console.log('validData', cloneDeep(validData));
+    return validData;
+  }
 
   public clickHighLightedPoint = -1;
   clickCallback(e, point) {
@@ -944,8 +956,8 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
         !series.hasOwnProperty('y') || isNaN(series.y)
           ? ''
           : parent.h
-              .roundAccurately(series.y, parent.roundDigits[i + 1])
-              .toLocaleString();
+            .roundAccurately(series.y, parent.roundDigits[i + 1])
+            .toLocaleString();
       const isHighlighted = series.isHighlighted;
       const cls = isHighlighted ? 'class="highlight"' : '';
       const hoverCallback = genHover(series.label, htmlID);
@@ -1029,7 +1041,7 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
     const highlightedRow =
       this.clickHighLightedPoint > -1 ? this.clickHighLightedPoint : false;
     this.Dygraph.setSelection(highlightedRow, name);
-}
+  }
   getDeviationsofTS(ts, debug = false) {
     // search for complete data row at timestamp (incl. deviations) for display in legend
     const datalen = this.data.length; // use data, array has a lower memory footprint
@@ -1193,7 +1205,7 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
     parent.checkAndUpdateGraphWidth();
   }
 
-  
+
   resetData() {
     // this.lastReset = new Date();
     while (this.data.length) {
@@ -1230,7 +1242,7 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
     canvas.fillStyle = graphbg;
     canvas.fillRect(area.x, area.y, area.w, area.h);
   }
-  
+
   toggleOptions() {
     this.optionsOpen = !this.optionsOpen;
     this.resize();
@@ -1241,31 +1253,31 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
     }, t);
   }
 
- 
+
 
   fullZoom() {
     this.Dygraph.resetZoom();
   }
   zoom(factor: number) {
     // if (this.fromZoom !== undefined && this.toZoom !== undefined) {
-      // const fromValue = this.fromZoom.valueOf();
-      // const toValue = this.toZoom.valueOf();
-      const [fromValue, toValue] = this.Dygraph.xAxisRange();
+    // const fromValue = this.fromZoom.valueOf();
+    // const toValue = this.toZoom.valueOf();
+    const [fromValue, toValue] = this.Dygraph.xAxisRange();
 
-      const difference = toValue - fromValue;
-      const distanceToCenter = difference / 2;
-      // const center = fromValue + distanceToCenter;
+    const difference = toValue - fromValue;
+    const distanceToCenter = difference / 2;
+    // const center = fromValue + distanceToCenter;
 
-      const newdifference = factor * difference;
-      const newDistanceToCenter = newdifference / 2;
-      const newFrom = fromValue + (distanceToCenter - newDistanceToCenter) * 0.99;
-      const newTo = toValue - (distanceToCenter - newDistanceToCenter) * 1.01; // offset for avoiding no reloading on auto zoom
+    const newdifference = factor * difference;
+    const newDistanceToCenter = newdifference / 2;
+    const newFrom = fromValue + (distanceToCenter - newDistanceToCenter) * 0.99;
+    const newTo = toValue - (distanceToCenter - newDistanceToCenter) * 1.01; // offset for avoiding no reloading on auto zoom
 
-      // this.toZoom = new Date(newTo);
-      // this.fromZoom = new Date(newFrom);
-      this.Dygraph.updateOptions({
-        dateWindow: [newFrom, newTo],
-      });
+    // this.toZoom = new Date(newTo);
+    // this.fromZoom = new Date(newFrom);
+    this.Dygraph.updateOptions({
+      dateWindow: [newFrom, newTo],
+    });
     // }
   }
 
@@ -1353,8 +1365,8 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.h.exportCSV(visibleData, visibleLabels, this.exportUTC);
   }
-  
-  
+
+
   tVis4Label(label: string) {
     // console.log('tVis4Label with', label);
     for (let i = 1; i < this.columnLabels.length; i++) {
@@ -1397,7 +1409,7 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
       visibility: this.dyGraphOptions.visibility,
     });
   }
-  
+
   toggleYRSel(sel: string) {
     this.yRSelShown[sel] = !this.yRSelShown[sel];
   }

@@ -87,6 +87,15 @@
             </fieldset>
             <fieldset [disabled]="queryRunning == true || autoreload">
                 <h3>{{ queryRunning ? 'Query running...' : 'Query current view:' }}</h3>
+                <table>
+                <tr>
+                    <td>From:</td><td> {{ fromTime | date: 'dd.MM.yyyy HH:mm:ss' }}</td>
+                </tr>
+                <tr>
+                    <td>To:</td><td> {{ toTime | date: 'dd.MM.yyyy HH:mm:ss' }}</td>
+                </tr>
+            </table>
+
                 <label for="userMeanS">Res (s):</label>
                 <input type="number" id="userMeanS" min="0" name="userMeanS" [(ngModel)]="userMeanS"
                     (ngModelChange)="checkQ1(); checkQ2()" style="width: 4em" />
@@ -143,7 +152,8 @@
                 <app-ut-dygraph-in [data]="data" [columnLabels]="labels" [rawLabels]="raw_labels"
                     [showDeviation]="show_deviation" [extraDyGraphConfig]="extraDyGraphConfig"
                     [startTime]="dygStartTime" enableHighlightCallback="true" [YLabel]="ylabel" [Y2Label]="y2label"
-                    (returnGraphWidthOnChange)="setGraphWidth($event)" [colors]="colors" (returnCurrentZoom)="updateFromToTimes($event)"></app-ut-dygraph-in>
+                    (returnGraphWidthOnChange)="setGraphWidth($event)" [colors]="colors"
+                    (returnCurrentZoom)="updateFromToTimes($event)"></app-ut-dygraph-in>
 
                 <!-- 
                   
