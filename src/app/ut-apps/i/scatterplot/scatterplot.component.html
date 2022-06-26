@@ -62,11 +62,22 @@
                 <mat-form-field *ngIf="fieldKeys[M2] && fieldKeys[M2].length > 1">
                     <mat-label>Field Keys:</mat-label>
                     <mat-select [(ngModel)]="FK2" name="FK2" (closed)="change2()"
-                        [disabled]="queryRunning == true || autoreload">
+                        [disabled]="queryRunning == true || autoreload || useVector2">
                         <mat-option *ngFor="let fk of fieldKeys[M2]" [value]="fk" [title]="fk"> {{ fk }} </mat-option>
                     </mat-select>
                 </mat-form-field>
                 ( {{ FK2 }} )
+                <div *ngIf="allowVector2" style="display: inline-block;">
+                    |
+                    <label for="useVector2">Corellate to Vector:
+                        <input type="checkbox" name="useVector2" id="useVector2" [(ngModel)]="useVector2" (ngModelChange)="checkQ2()"/>
+                    </label>
+                    <span *ngIf="useVector2">
+                        | New corellation direction:
+                        <input type="number" id="vectorDir2" min="0" max="360" name="vectorDir2"
+                            [(ngModel)]="vectorDir2" style="width: 4em" />
+                    </span>
+                </div>
                 <br>
                 {{ Q2 }}
 
@@ -88,13 +99,15 @@
             <fieldset [disabled]="queryRunning == true || autoreload">
                 <h3>{{ queryRunning ? 'Query running...' : 'Query current view:' }}</h3>
                 <table>
-                <tr>
-                    <td>From:</td><td> {{ fromTime | date: 'dd.MM.yyyy HH:mm:ss' }}</td>
-                </tr>
-                <tr>
-                    <td>To:</td><td> {{ toTime | date: 'dd.MM.yyyy HH:mm:ss' }}</td>
-                </tr>
-            </table>
+                    <tr>
+                        <td>From:</td>
+                        <td> {{ fromTime | date: 'dd.MM.yyyy HH:mm:ss' }}</td>
+                    </tr>
+                    <tr>
+                        <td>To:</td>
+                        <td> {{ toTime | date: 'dd.MM.yyyy HH:mm:ss' }}</td>
+                    </tr>
+                </table>
 
                 <label for="userMeanS">Res (s):</label>
                 <input type="number" id="userMeanS" min="0" name="userMeanS" [(ngModel)]="userMeanS"

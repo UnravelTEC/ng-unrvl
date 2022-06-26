@@ -73,6 +73,10 @@ export class ScatterplotComponent implements OnInit {
   yscatterlabel = "y";
   scattercolors = [];
 
+  public allowVector2 = false;
+  public useVector2 = false;
+  public vectorDir2 = 0;
+
   public from: number; // unix time from urlparam
   public to: number; // unix time from urlparam
   interval: string;
@@ -226,6 +230,12 @@ export class ScatterplotComponent implements OnInit {
     } else {
       this.FK2 = "";
     }
+    if (this.fieldKeys[this.M2] && this.fieldKeys[this.M2].length > 1
+      && this.fieldKeys[this.M2].includes("speed_mps") && this.fieldKeys[this.M2].includes("direction_deg")) {
+      this.allowVector2 = true;
+    } else {
+      this.allowVector2 = false;
+    }
     this.checkQ2();
   }
   change1() {
@@ -257,8 +267,9 @@ export class ScatterplotComponent implements OnInit {
     }
   }
   checkQ2(fromTo = false) {
-    if (this.M2 && this.S2 && this.FK2) {
-      this.Q2 = this.createQ(this.M2, this.S2, this.FK2, fromTo);
+    if (this.M2 && this.S2 && (this.FK2 || this.useVector2)) {
+      const fk = this.useVector2 ? "(direction_deg|speed_mps)" : this.FK2;
+      this.Q2 = this.createQ(this.M2, this.S2, fk, fromTo);
     } else {
       this.Q2 = ""
     }
@@ -341,19 +352,59 @@ export class ScatterplotComponent implements OnInit {
       this.autoreload = false;
       return;
     }
-    const labels = ret['labels'];
-    const idata = ret['data'];
-    this.orig_labels = cloneDeep(ret['labels']);
-    this.short_labels = ret['short_labels'];
+
+    let labels = ret['labels'];
+    let idata = ret['data'];
+    let newShortLabels = ret['short_labels'];
+    let newRawLabels = ret['raw_labels'];
+    if (this.useVector2) {
+      let first_col_index = 0;
+      let direction_col_index = 0;
+      let magnitude_col_index = 0;
+      for (let li = 0; li < ret['orig_labels'].length; li++) {
+        const label = ret['orig_labels'][li];
+        if (label.endsWith("direction_deg")) {
+          direction_col_index = li + 1;
+        } else if (label.endsWith("speed_mps")) {
+          magnitude_col_index = li + 1;
+        } else {
+          first_col_index = li + 1;
+        }
+      }
+      if (!first_col_index || !direction_col_index || !magnitude_col_index) {
+        alert("error in DB return, vector data incomplete");
+        return;
+      }
+      const vlabels = ['Date', labels[first_col_index], labels[magnitude_col_index]];
+      const vdata = [];
+      const delta_angle = this.vectorDir2;
+      newShortLabels = [newShortLabels[first_col_index - 1], newShortLabels[magnitude_col_index - 1]];
+      newRawLabels = [newRawLabels[0], newRawLabels[first_col_index], newRawLabels[magnitude_col_index]];
+
+      const degree_to_rad = Math.PI / 360;
+      for (let i = 0; i < idata.length; i++) {
+        const row = idata[i];
+        // subtract 
+        const new_dir = degree_to_rad * (row[direction_col_index] - delta_angle) ;
+        const new_mag = row[magnitude_col_index] * Math.cos(new_dir);
+        const new_row = [row[0], row[first_col_index], new_mag]
+        vdata.push(new_row);
+      }
+      idata = vdata;
+      labels = vlabels;
+    }
+
+    // this.orig_labels = cloneDeep(ret['labels']); // needed?
+    this.short_labels = newShortLabels;
     this.extraDyGraphConfig.series[this.short_labels[1]] = {
       axis: 'y2',
     };
     this.common_label = ret['common_label'];
-    this.raw_labels = ret['raw_labels'];
+    this.raw_labels = newRawLabels;
     console.log('orig labels:', this.orig_labels);
-    console.log('raw labels:', ret['raw_labels']);
+    console.log('raw labels:', ret['raw_labels'], this.raw_labels);
     console.log('common_label:', ret['common_label']);
-    console.log('short_labels:', ret['short_labels']);
+    console.log('short_labels:', ret['short_labels'], this.short_labels);
 
     let logscale = true;
     const newColors = this.h.getColorsforLabels(labels);
@@ -385,8 +436,6 @@ export class ScatterplotComponent implements OnInit {
       }
     }
     this.startTime = this.userStartTime;
-    const newLabels = ['Date'];
-    newLabels.concat(this.short_labels);
     this.labels = ['Date'].concat(this.short_labels);
     this.data = idata;
     this.colors = newColors;
