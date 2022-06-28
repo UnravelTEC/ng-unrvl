@@ -47,6 +47,8 @@ export class PmhistComponent implements OnInit {
     right: '15rem',
   };
 
+  public queryRunning = false;
+
   public startTime = '6h';
   public userStartTime = this.startTime;
   public meanS = 30;
@@ -164,6 +166,19 @@ export class PmhistComponent implements OnInit {
     this.meanS = this.userMeanS;
     this.startTime = this.userStartTime;
 
+    const timerange = fromTo
+      ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000
+      : this.h.parseToSeconds(this.startTime);
+    const nr_points = timerange / this.meanS;
+    if (nr_points > 10000 && !this.h.bigQconfirm(nr_points)) {
+      if (!this.labels.length) {
+        // at start to show "no data"
+        this.labels = [''];
+      }
+      return;
+    }
+    this.queryRunning = true;
+
     const timeQuery = fromTo
       ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
       : this.utHTTP.influxTimeString(this.startTime);
@@ -202,7 +217,10 @@ export class PmhistComponent implements OnInit {
     const q = this.utHTTP.buildInfluxQuery(clause);
     this.utHTTP.getHTTPData(q).subscribe(
       (data: Object) => this.handleData(data),
-      (error) => this.globalSettings.displayHTTPerror(error)
+      (error) => {
+        this.queryRunning = false;
+        this.globalSettings.displayHTTPerror(error)
+      }
     );
   }
   setAvg(t) {
@@ -219,8 +237,10 @@ export class PmhistComponent implements OnInit {
     // console.log('parsed', ret);
     if (ret['error']) {
       alert('Influx Error: ' + ret['error']);
+      this.queryRunning = false;
       return;
     }
+    this.queryRunning = false;
 
     // custom sort
     const oldLabels = ret['labels'];
@@ -357,7 +377,7 @@ export class PmhistComponent implements OnInit {
     const fromStamp = this.fromTime.valueOf();
     const toStamp = this.toTime.valueOf();
     console.log('from', fromStamp, 'to', toStamp);
-    
+
     let chartSeriesData = {
       data: [],
       label: 'Visible Dataset',
@@ -370,17 +390,17 @@ export class PmhistComponent implements OnInit {
         continue;
       }
       const size = parseFloat(matchArr[1]);
-      columnsToUse.push({size: size, c: i});
+      columnsToUse.push({ size: size, c: i });
       chartSeriesData.data.push(0);
     }
     columnsToUse.sort((a, b) => a.size - b.size);
     console.log(columnsToUse);
-    
+
 
     for (let ti = 0; ti < this.data.length; ti++) {
       const row = this.data[ti];
       const ts = row[0].valueOf();
-      if(ts < fromStamp || ts > toStamp) {
+      if (ts < fromStamp || ts > toStamp) {
         continue;
       }
       for (let c = 0; c < columnsToUse.length; c++) {
