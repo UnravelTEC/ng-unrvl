@@ -3,6 +3,7 @@ import { GlobalSettingsService } from '../../../core/global-settings.service';
 import { LocalStorageService } from '../../../core/local-storage.service';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
+import { cpuUsage } from 'process';
 
 @Component({
   selector: 'app-pmhist',
@@ -198,8 +199,8 @@ export class PmhistComponent implements OnInit {
       return;
     }
 
-    const q = this.utHTTP.buildInfluxQuery(clause, this.db, this.server);
-    this.utHTTP.getHTTPData(q, 'grazweb', '.RaVNaygexThM').subscribe(
+    const q = this.utHTTP.buildInfluxQuery(clause);
+    this.utHTTP.getHTTPData(q).subscribe(
       (data: Object) => this.handleData(data),
       (error) => this.globalSettings.displayHTTPerror(error)
     );
@@ -349,6 +350,45 @@ export class PmhistComponent implements OnInit {
     tmpBarChartLabels.push('');
     chartSeriesData.data.push(this.maxVal);
     this.barChartLabels = tmpBarChartLabels;
+    this.barChartData = [];
+    this.barChartData.push(chartSeriesData);
+  }
+  showVisible() {
+    const fromStamp = this.fromTime.valueOf();
+    const toStamp = this.toTime.valueOf();
+    console.log('from', fromStamp, 'to', toStamp);
+    
+    let chartSeriesData = {
+      data: [],
+      label: 'Visible Dataset',
+    };
+    const columnsToUse = []; // [ { size: x, c: n }, ... ] c: column
+    for (let i = 1; i < this.labels.length; i++) {
+      const label = this.labels[i];
+      const matchArr = label.match(/([0-9.]*) µm/) || [];
+      if (!matchArr.length) {
+        continue;
+      }
+      const size = parseFloat(matchArr[1]);
+      columnsToUse.push({size: size, c: i});
+      chartSeriesData.data.push(0);
+    }
+    columnsToUse.sort((a, b) => a.size - b.size);
+    console.log(columnsToUse);
+    
+
+    for (let ti = 0; ti < this.data.length; ti++) {
+      const row = this.data[ti];
+      const ts = row[0].valueOf();
+      if(ts < fromStamp || ts > toStamp) {
+        continue;
+      }
+      for (let c = 0; c < columnsToUse.length; c++) {
+        const col = columnsToUse[c];
+        chartSeriesData.data[c] += row[col['c']]
+      }
+    }
+    chartSeriesData.data.push(this.maxVal);
     this.barChartData = [];
     this.barChartData.push(chartSeriesData);
   }
