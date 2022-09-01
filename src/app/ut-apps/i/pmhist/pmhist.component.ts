@@ -408,7 +408,15 @@ export class PmhistComponent implements OnInit {
         chartSeriesData.data[c] += row[col['c']]
       }
     }
+    const tmpBarChartLabels = [];
+    for (let i = 0; i < columnsToUse.length; i++) {
+      const v = columnsToUse[i];
+      tmpBarChartLabels.push(String(v.size) + ' µm\n( ' + Math.round(chartSeriesData.data[i] * 10) / 10 + ' )');
+    }
+
     chartSeriesData.data.push(this.maxVal);
+
+    this.barChartLabels = tmpBarChartLabels;
     this.barChartData = [];
     this.barChartData.push(chartSeriesData);
   }
