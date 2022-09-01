@@ -476,6 +476,9 @@ export class SettingsPanelComponent implements OnInit {
   acceptTempoRes(data: Object) {
     if (data["success"]) {
       this.tempoRes = data["precision"];
+    } else {
+      console.error(data);
+      alert(data['error'] ? data['error'] : data);
     }
   }
   setTempoRes() {
