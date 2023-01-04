@@ -251,6 +251,7 @@ export class SensorService {
       },
     },
     ADS1115: {
+      // BEGIN no longer a value, but a tag (here for compatibility)
       resolution_mV: {
         round_digits: 3,
       },
@@ -263,23 +264,24 @@ export class SensorService {
       averaged_count: {
         round_digits: 0,
       },
+      // END legacy
       ch12_V: {
-        round_digits: 4,
+        round_digits: 7,
       },
       ch34_V: {
-        round_digits: 4,
+        round_digits: 7,
       },
       ch1_V: {
-        round_digits: 4,
+        round_digits: 7,
       },
       ch2_V: {
-        round_digits: 4,
+        round_digits: 7,
       },
       ch3_V: {
-        round_digits: 4,
+        round_digits: 7,
       },
       ch4_V: {
-        round_digits: 4,
+        round_digits: 7,
       },
     },
     DB: {

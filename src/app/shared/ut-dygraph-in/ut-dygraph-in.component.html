@@ -372,19 +372,19 @@ style.padding-bottom="20vh"-->
             <tr>
               <td>Whole Dataset:</td>
               <td *ngFor="let mean of averages">
-                {{ mean | number: '1.3-3' }}
+                {{ mean | number: pipeAvgFormat }}
               </td>
               <td>
-                {{ average | number: '1.3-3' }}
+                {{ average | number: pipeAvgFormat }}
               </td>
             </tr>
             <tr>
               <td>Visible Dataset:</td>
               <td *ngFor="let mean of visibleAverages">
-                {{ mean | number: '1.3-3' }}
+                {{ mean | number: pipeAvgFormat }}
               </td>
               <td>
-                {{ visibleAverage | number: '1.3-3' }}
+                {{ visibleAverage | number: pipeAvgFormat }}
               </td>
             </tr>
           </table>
@@ -399,19 +399,19 @@ style.padding-bottom="20vh"-->
             <tr>
               <td>Whole Dataset:</td>
               <td *ngFor="let dev of stdDevs">
-                {{ dev | number: '1.3-3' }}
+                {{ dev | number: pipeStdDevFormat }}
               </td>
               <td>
-                {{ stdDev | number: '1.3-3' }}
+                {{ stdDev | number: pipeStdDevFormat }}
               </td>
             </tr>
             <tr>
               <td>Visible Dataset:</td>
               <td *ngFor="let dev of visibleStdDevs">
-                {{ dev | number: '1.3-3' }}
+                {{ dev | number: pipeStdDevFormat }}
               </td>
               <td>
-                {{ visibleStdDev | number: '1.3-3' }}
+                {{ visibleStdDev | number: pipeStdDevFormat }}
               </td>
             </tr>
           </table>

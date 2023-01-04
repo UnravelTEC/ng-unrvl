@@ -89,6 +89,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   rawLabels: Array<any>;
   public roundDigits: Array<number> = [null];
+  public pipeAvgFormat = '1.4-4';
+  public pipeStdDevFormat = '1.7-7';
 
   @Input()
   calibrate = true;
@@ -318,9 +320,17 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   updateRoundDigits() {
     if (this.rawLabels) {
       this.roundDigits = [null];
+      let maxroundDigit = 0;
       for (let c = 1; c < this.rawLabels.length; c++) {
-        this.roundDigits.push(this.sensorService.getDigits(this.rawLabels[c]));
+        const cDigit = this.sensorService.getDigits(this.rawLabels[c]);
+        if(cDigit > maxroundDigit) {
+          maxroundDigit = cDigit;
+        }
+        this.roundDigits.push(cDigit);
       }
+      const newDFormat = '1.' + maxroundDigit + '-' + maxroundDigit;
+      this.pipeAvgFormat = newDFormat;
+      this.pipeStdDevFormat = newDFormat;
     }
     console.log('roundDigits:', this.roundDigits);
   }
