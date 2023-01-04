@@ -1069,7 +1069,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           ? ''
           : parent.h
               .roundAccurately(series.y, parent.roundDigits[i + 1])
-              .toLocaleString();
+              // .toLocaleString(); // replaced . with , in german, but has a bug: cut of after 3 digits after comma
       const isHighlighted = series.isHighlighted;
       const cls = isHighlighted ? 'class="highlight"' : '';
       const hoverCallback = genHover(series.label, htmlID);
