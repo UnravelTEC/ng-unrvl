@@ -267,9 +267,26 @@ export class SensorService {
       // END legacy
       ch12_V: {
         round_digits: 7,
+        getDeviation: function (value) {
+          if (value === null) return null;
+          if (isNaN(value)) {
+            return NaN;
+          }
+          const dev = 0.00000781; // at gain=16
+          return [value - dev, value, value + dev];
+        }
       },
       ch34_V: {
         round_digits: 7,
+        getDeviation: function (value) {
+          // dependent on gain and SPS TODO later
+          if (value === null) return null;
+          if (isNaN(value)) {
+            return NaN;
+          }
+          const dev = 0.00000781; // at gain=16
+          return [value - dev, value, value + dev];
+        }
       },
       ch1_V: {
         round_digits: 7,
