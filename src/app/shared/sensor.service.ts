@@ -170,6 +170,51 @@ export class SensorService {
         },
       },
     },
+    SHT85: {
+      air_degC: {
+        round_digits: 2,
+        getDeviation: function (value) {
+          if (value === null) return null;
+          if (isNaN(value) || value > 125 || value < -40) {
+            return NaN;
+          }
+          if (value >= 20 && value <= 50) {
+            const dev = 0.1;
+            return [value - dev, value, value + dev];
+          }
+          if (value >= 0 && value < 20) {
+            const dev = 0.1 + (20 - value) * 0.005;
+            return [value - dev, value, value + dev];
+          }
+          if (value < 0) {
+            const dev = 0.2 + (0 - value) * 0.0025;
+            return [value - dev, value, value + dev];
+          }
+          if (value < 80 ) {
+            const dev = 0.1 + (value - 50) * 0.0033333333;
+            return [value - dev, value, value + dev];
+          }
+          // >= 80
+          const dev = 0.2 + (value - 80) * 0.004444444;
+          return [value - dev, value, value + dev];
+        },
+      },
+      H2O_rel_percent: {
+        round_digits: 2,
+        getDeviation: function (value) {
+          if (value === null) return null;
+          if (isNaN(value) || value < 0 || value > 100) {
+            return NaN;
+          }
+          if (value > 70 ) {
+            const dev = 0.15 + (value - 70) * 0.001666667;
+            return [value - dev, value, value + dev];
+          }
+          const dev = 0.15;
+          return [value - dev, value, value + dev];
+        }
+      }
+    },
     MPU9250: {
       sensor_degC: {
         round_digits: 1,
