@@ -41,6 +41,11 @@
     <!-- <app-ut-dashboard-tile title="Air Pressure" path="/Apps/I/Pressure" icon="320px-Pressure_gauge.svg.png"></app-ut-dashboard-tile> -->
     <!-- <app-ut-dashboard-tile bg="#FFF" title="Temperature Map" path="/Apps/I/Enviromap" icon="noun_Temperature.png" [queryParams]="{ measurement: 'temperature', column:'°C', sensor:'DS18B20', referrer: 'Dashboard' }"></app-ut-dashboard-tile> -->
     <app-ut-dashboard-tile *ngIf="gss.server.measurements.includes('particulate_matter')" title="Particulate Matter Histogram" path="/Apps/I/Pmhist"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="Particulate Matter (µg/m³)"
+      *ngIf="gss.server.measurements.includes('particulate_matter')"
+      path="/Apps/I/Anysens"
+      [queryParams]="{ measurement: 'particulate_matter', value: '/_ugpm3/', referrer: 'Dashboard' }"
+      ></app-ut-dashboard-tile>
   </div>
 
   <hr>
