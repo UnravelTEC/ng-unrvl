@@ -1602,8 +1602,22 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     const graphbg = g.hasOwnProperty('parent')
       ? g.parent.graphBackGroundColor
       : '#3F3F3F';
+    const range = g.xAxisRange();
+    const p1 = g.toDomCoords(range[0], 0);
+    const p2 = g.toDomCoords(range[1], 0);
+
     canvas.fillStyle = graphbg;
     canvas.fillRect(area.x, area.y, area.w, area.h);
+
+    canvas.save();
+    canvas.strokeStyle = '#4A4A4A'; // gridlineActiveColor
+    canvas.lineWidth = 3.0;
+    canvas.beginPath();
+    canvas.moveTo(p1[0], p1[1]);
+    canvas.lineTo(p2[0], p2[1]);
+    canvas.closePath();
+    canvas.stroke();
+    canvas.restore();
   }
 
   toggleOptions() {
