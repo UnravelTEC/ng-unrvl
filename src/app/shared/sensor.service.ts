@@ -215,6 +215,46 @@ export class SensorService {
         }
       }
     },
+    MCP9600: {
+      probe_degC: {
+        round_digits: 2,
+        getDeviation: function (value) {
+          // we use same as probe (ASSUMING THE THERMOCOUPLE HAS BEEN CALIBRATED!!!!)
+          if (value === null) return null;
+          if (isNaN(value) || value < -40 || value > 125) {
+            return NaN;
+          }
+          // has a max. resolution of 1/16K = 0.0625K
+          // next very simplified, is a curvy curve in datasheet
+          if (value < 10 ) {
+            const dev = 0.1 + (10 - value) * 0.002;
+            const lower = dev/2;
+            return [value - (lower < 0.0625 ? 0.0625 : lower) , value, value + dev];
+          }
+          const dev = 0.1;
+          return [value - dev, value, value + dev];
+        }
+      },
+      chip_degC: {
+        round_digits: 2,
+        getDeviation: function (value) {
+          if (value === null) return null;
+          if (isNaN(value) || value < -40 || value > 125) {
+            return NaN;
+          }
+          // has a max. resolution of 1/16K = 0.0625K
+          // next very simplified, is a curvy curve in datasheet
+          if (value < 10 ) {
+            const dev = 0.1 + (10 - value) * 0.002;
+            const lower = dev/2;
+            return [value - (lower < 0.0625 ? 0.0625 : lower) , value, value + dev];
+          }
+          const dev = 0.1;
+          return [value - dev, value, value + dev];
+        }
+      }
+
+    },
     MPU9250: {
       sensor_degC: {
         round_digits: 1,
