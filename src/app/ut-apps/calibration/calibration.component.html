@@ -11,73 +11,59 @@
     <h4>
       {{ s.key }}
     </h4>
-    <div
-      *ngIf="s.value['measurements'] && s.value['measurements'].length > 0"
-      class="measurements"
-    >
-      <span *ngFor="let m of s.value['measurements']; let i = index"
-        ><span *ngIf="i > 0">, </span>{{ m }}</span
-      >
-      sensor
+    <div *ngIf="s.value['measurements'] && s.value['measurements'].length > 0" class="measurements">
+      <button (click)="toggleSensorContent(s.key)" title="toggle">{{
+        displaySensorContent[s.key] ? '↑' : '↓'
+        }}</button> <span *ngFor="let m of s.value['measurements']; let i = index"><span *ngIf="i > 0">, </span>{{ m }}</span>
     </div>
-    <div *ngFor="let id of s.value['id'] | keyvalue" class="id">
-      <h5>{{ id.key }}</h5>
-      <div
-        *ngFor="let measurement of id.value['measurements'] | keyvalue"
-        class="sensormeasurement"
-      >
-        <h6>{{ measurement.key }}</h6>
-        <div *ngFor="let field of measurement.value | keyvalue" class="field">
-          <div>
-            •&nbsp;&nbsp;{{ field.value['displayname'] }} ({{ field.key }}),
-            {{ field.value['unit'] ? field.value['unit'] : 'unitless' }}
-          </div>
-          <table *ngIf="field.value['unit']">
-            <tr>
-              <th>Calibration Date</th>
-              <th>Linear Offset (d)</th>
-              <th>Multiplicator (k)</th>
-              <th>Quadratic Factor (s)</th>
-              <th class="note">Note [text]</th>
-              <th>
-                <button
-                  (click)="
+    <div *ngIf="displaySensorContent[s.key]">
+      <div *ngFor="let id of s.value['id'] | keyvalue" class="id">
+        <h5>{{ id.key }}</h5>
+        <div *ngFor="let measurement of id.value['measurements'] | keyvalue" class="sensormeasurement">
+          <h6>{{ measurement.key }}</h6>
+          <div *ngFor="let field of measurement.value | keyvalue" class="field">
+            <div>
+              •&nbsp;&nbsp;{{ field.value['displayname'] }} ({{ field.key }}),
+              {{ field.value['unit'] ? field.value['unit'] : 'unitless' }}
+            </div>
+            <table *ngIf="field.value['unit']">
+              <tr>
+                <th>Calibration Date</th>
+                <th>Linear Offset (d)</th>
+                <th>Multiplicator (k)</th>
+                <th>Quadratic Factor (s)</th>
+                <th class="note">Note [text]</th>
+                <th>
+                  <button (click)="
                     toggleRow(s.key + id.key + measurement.key + field.key)
-                  "
-                >
-                  {{
+                  ">
+                    {{
                     displayAddRows[s.key + id.key + measurement.key + field.key]
-                      ? '-'
-                      : '+'
-                  }}
-                </button>
-              </th>
-            </tr>
-            <tr *ngFor="let cal of field.value['cals']">
-              <td>{{ cal[0] | date: 'dd.MM.yyyy HH:mm:ss' }}</td>
-              <td>{{ cal[2] }}</td>
-              <td>{{ cal[3] }}</td>
-              <td>{{ cal[4] }}</td>
-              <td class="note">{{ cal[1] }}</td>
-              <td>
-                <button
-                  title="delete calbration entry"
-                  (click)="
+                    ? '-'
+                    : '+'
+                    }}
+                  </button>
+                </th>
+              </tr>
+              <tr *ngFor="let cal of field.value['cals']">
+                <td>{{ cal[0] | date: 'dd.MM.yyyy HH:mm:ss' }}</td>
+                <td>{{ cal[2] }}</td>
+                <td>{{ cal[3] }}</td>
+                <td>{{ cal[4] }}</td>
+                <td class="note">{{ cal[1] }}</td>
+                <td>
+                  <button title="delete calbration entry" (click)="
                     delCal(cal[0], s.key, id.key, measurement.key, field.key)
-                  "
-                >
-                  ×
-                </button>
-              </td>
-            </tr>
-            <tr
-              *ngIf="
+                  ">
+                    ×
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="
                 displayAddRows[s.key + id.key + measurement.key + field.key]
-              "
-              class="new"
-            >
-              <td>
-                <!-- <input
+              " class="new">
+                <td>
+                  <!-- <input
                   type="text"
                   id="newcaldate"
                   name="newcaldate"
@@ -86,54 +72,35 @@
                   (click)="pickerF.open()"
                 /> -->
 
-                <mat-form-field (click)="pickerF.open()">
-                  <input
-                    matInput
-                    [matDatepicker]="pickerF"
-                    [formControl]="calDate"
-                    (dateChange)="changeCalDate($event)"
-                    [max]="now"
-                  />
-                  <mat-datepicker #pickerF></mat-datepicker>
-                </mat-form-field>
-                <input
-                  type="number"
-                  id="hours"
-                  name="hours"
-                  [(ngModel)]="hours"
-                  min="0"
-                  max="59"
-                />:<input
-                  type="number"
-                  id="minutes"
-                  name="minutes"
-                  [(ngModel)]="minutes"
-                  min="0"
-                  max="59"
-                />
-              </td>
-              <td>
-                <input type="text" id="d" name="d" [(ngModel)]="d" />
-              </td>
-              <td>
-                <input type="text" id="k" name="k" [(ngModel)]="k" />
-              </td>
-              <td>
-                <input type="text" id="s2" name="s2" [(ngModel)]="s2" />
-              </td>
-              <td>
-                <input type="text" id="note" name="note" [(ngModel)]="note" />
-              </td>
-              <td>
-                <button
-                  (click)="sendCal(s.key, id.key, measurement.key, field.key)"
-                >
-                  Go
-                </button>
-              </td>
-            </tr>
-          </table>
-          <div class="add"></div>
+                  <mat-form-field (click)="pickerF.open()">
+                    <input matInput [matDatepicker]="pickerF" [formControl]="calDate"
+                      (dateChange)="changeCalDate($event)" [max]="now" />
+                    <mat-datepicker #pickerF></mat-datepicker>
+                  </mat-form-field>
+                  <input type="number" id="hours" name="hours" [(ngModel)]="hours" min="0" max="59" />:<input
+                    type="number" id="minutes" name="minutes" [(ngModel)]="minutes" min="0" max="59" />
+                </td>
+                <td>
+                  <input type="text" id="d" name="d" [(ngModel)]="d" />
+                </td>
+                <td>
+                  <input type="text" id="k" name="k" [(ngModel)]="k" />
+                </td>
+                <td>
+                  <input type="text" id="s2" name="s2" [(ngModel)]="s2" />
+                </td>
+                <td>
+                  <input type="text" id="note" name="note" [(ngModel)]="note" />
+                </td>
+                <td>
+                  <button (click)="sendCal(s.key, id.key, measurement.key, field.key)">
+                    Go
+                  </button>
+                </td>
+              </tr>
+            </table>
+            <div class="add"></div>
+          </div>
         </div>
       </div>
     </div>

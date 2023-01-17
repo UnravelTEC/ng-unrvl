@@ -39,6 +39,15 @@ either calibration factors or hardware recalibration have to be done (both also 
     this.displayAddRows[id] = !this.displayAddRows[id];
   }
 
+  displaySensorContent = {}
+  toggleSensorContent(id) {
+    if (!this.displaySensorContent.hasOwnProperty(id)) {
+      this.displaySensorContent[id] = true;
+      return;
+    }
+    this.displaySensorContent[id] = !this.displaySensorContent[id];
+  }
+
   public now = new Date();
   public newcaldate = this.now;
   public d = 0;
