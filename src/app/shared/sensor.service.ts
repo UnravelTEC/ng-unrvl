@@ -335,6 +335,16 @@ export class SensorService {
         round_digits: 1,
       },
     },
+    'NO2-A43F': {
+      NO2_V: {
+        round_digits: 7,
+      },
+    },
+    'NO-A4': {
+      NO_V: {
+        round_digits: 7,
+      },
+    },
     ADS1115: {
       // BEGIN no longer a value, but a tag (here for compatibility)
       resolution_mV: {
