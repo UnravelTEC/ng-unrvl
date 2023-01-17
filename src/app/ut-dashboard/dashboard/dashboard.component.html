@@ -46,6 +46,10 @@
       path="/Apps/I/Anysens"
       [queryParams]="{ measurement: 'particulate_matter', value: '/_ugpm3/', referrer: 'Dashboard' }"
       ></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="Alphasense NO2"
+      *ngIf="gss.server.measurements.includes('voltage')"
+      path="/Apps/I/NO2"
+      icon="320px-Nitrogen-dioxide-3D-vdW.png"></app-ut-dashboard-tile>
   </div>
 
   <hr>
