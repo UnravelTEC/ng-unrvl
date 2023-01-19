@@ -77,7 +77,6 @@ export class No2Component implements OnInit {
 
   labels = [];
   data = [];
-  orig_labels = [];
   common_label = '';
   short_labels: string[] = [];
   latest_dates = [];
@@ -143,6 +142,7 @@ export class No2Component implements OnInit {
     *  1 convert to ppb (via offset + linear multiplication factor)
     *   NO2_ppb = (v_old + offset) * Alphas_ppb_per_mV
     *  2 convert to µg/m³ (via T + P) (TODO which smooting interval to use?)
+    *     .. currently, we use HMWs for all data anyway... is it more correct to calculate it for each 1s-datapoint than to avg over 1800?
     *   NO2_ugpm3 = NO2_ppb * konstante * pressure / (T_Kelvin), konstante = 100*46.0055 [molar mass NO2] / 8.314472 [gasconst] = 553.31836
     *  3 log-threshold (TODO WHEN?) - or just set values to 0, as officials to too?
     * -> if global ± offset AFTER calc is used, this is influenced by P/T! -> use before!
@@ -164,17 +164,20 @@ export class No2Component implements OnInit {
   /*
   @param raw_labels Array of Object structure matching data columns
   @param data - should include at least one with metric: gas; field: *_ugpm3 and a tag with a host
-    searches for other columns from this host with air_degC and air_hPA, and calculates ppb values out of it
+    data: [[Date, value1, ... , valueN]]
+    searches for other columns from this host with air_degC and air_hPa, and calculates ppb values out of it
     does add data columns, and corresponding label
+    NO2_ugpm3 = NO2_ppm * konstante * pressure / (T_Kelvin), konstante = 100*46.0055 [molar mass NO2] / 8.314472 [gasconst] = 553.31836
+    *   reverse: NO2_ppb = NO2_ugpm3 / C / p * T * 1000
   */
-  convUGPM3toPPB(raw_labels: Array<Object>, data: Array<any>, gas: string) {
+  convUGPM3toPPB(raw_labels: Array<Object>, data: Array<any>) {
     // 1. search for all _ugpm3 source inputs
     // 2. search for corresponding t and p
     // 3. calculate
     const mol_masses = { 'NO2': 46.0055 }
     const gas_constant = 8.314472
 
-    const ugpm3_columns = []; // {'c': $nr_column, 'gas': "$gas_string" }
+    const ugpm3_columns = []; // {'c': $nr_column, 'gas': "$gas_string", 't_col': $nr, 'p_col': $nr }
     for (let i = 1; i < raw_labels.length; i++) { // col 0: Date
       const clabel = raw_labels[i];
       if (clabel['metric'] != 'gas' || !clabel['field'].endsWith('_ugpm3'))
@@ -183,8 +186,69 @@ export class No2Component implements OnInit {
       if (!gas || gas.length == 0)
         continue;
       console.log('found gas', gas, 'in column', clabel);
-      ugpm3_columns.push({ 'c': i, 'gas': gas.toUpperCase() });
+      if (!Object.prototype.hasOwnProperty.call(mol_masses, gas)) {
+        console.error(gas, 'unknown, ignoring');
+        continue
+      }
+      const gastags = clabel['tags'];
+      let gashost = '';
+      if (Object.prototype.hasOwnProperty.call(gastags, 'host')) {
+        gashost = gastags['host']
+      } else {
+        console.log('convUGPM3toPPB Fault: gas has no nost');
+        continue
+      }
+      let t_col = 0, p_col = 0;
+      for (let j = 1; j < raw_labels.length; j++) {
+        if (i == j) continue;
+        const label2check = raw_labels[j];
+        const this_tags = label2check['tags'];
+        if (Object.prototype.hasOwnProperty.call(this_tags, 'host') && this_tags['host'] == gashost) {
+          if (label2check['metric'] == 'pressure' && label2check['field'].endsWith('air_hPa')) {
+            p_col = j;
+          }
+          if (label2check['metric'] == 'temperature' && label2check['field'].endsWith('air_degC')) {
+            t_col = j;
+          }
+        }
+      }
+      if (t_col == 0 || p_col == 0) {
+        console.log('convUGPM3toPPB Fault: gas has no t or p cols', t_col, p_col);
+        continue
+      }
+      ugpm3_columns.push({ 'c': i, 'gas': gas.toUpperCase(), 't_col': t_col, 'p_col': p_col });
+    }
+    if (ugpm3_columns.length == 0) {
+      console.log('convUGPM3toPPB: no gases able to convert to ppb found');
+      return
+    }
+    let first = false;
+    for (let i = 0; i < ugpm3_columns.length; i++) {
+      const gas_item = ugpm3_columns[i];
+      const mol_mass = mol_masses[gas_item['gas']]
+      const C = 0.1 * mol_mass / gas_constant;
 
+      const new_raw_column_label = cloneDeep(raw_labels[gas_item['c']])
+      new_raw_column_label['field'] = new_raw_column_label['field'].replace(/_ugpm3/, "_ppb")
+      new_raw_column_label['tags']['SRC'] = 'computed'
+      raw_labels.push(new_raw_column_label);
+      this.short_labels.push(this.short_labels[gas_item['c'] - 1].replace('( µg / m³ )', "( ppb )")); // not nice to modify member vars
+
+      for (let r = 0; r < data.length; r++) {
+        const row = data[r];
+        const g = row[gas_item['c']];
+        const p = row[gas_item['p_col']];
+        const t = row[gas_item['t_col']];
+        let gas_ppb = NaN;
+        if (Number.isFinite(g) && Number.isFinite(p) && Number.isFinite(t) && p != 0) {
+          gas_ppb = g / C / p * (t + 273.15);
+          if (first == false) {
+            console.log('g', g, 'C', C, 'p', p, 't', t + 273.15, 'ppb', gas_ppb);
+            first = true;
+          }
+        }
+        row.push(gas_ppb)
+      }
     }
   }
 
@@ -327,31 +391,34 @@ export class No2Component implements OnInit {
     }
     const labels = ret['labels'];
     const idata = ret['data'];
-    this.orig_labels = cloneDeep(ret['labels']);
     this.short_labels = ret['short_labels'];
     this.common_label = ret['common_label'];
     this.raw_labels = ret['raw_labels'];
-    console.log('orig labels:', this.orig_labels);
+    console.log('orig labels:', cloneDeep(ret['labels']));
     console.log('raw labels:', ret['raw_labels']);
     console.log('common_label:', ret['common_label']);
     console.log('short_labels:', ret['short_labels']);
 
+    this.convUGPM3toPPB(this.raw_labels, idata);
+    console.log('after raw labels:', cloneDeep(this.raw_labels));
+    console.log('after short labels:', cloneDeep(this.short_labels));
+
     let logscale = true;
     const newColors = this.h.getColorsforLabels(labels);
-    const numColumns = labels.length;
+    const numColumns = this.raw_labels.length;
     for (let c = 1; c < numColumns; c++) {
-      const item = labels[c];
+      const item = this.short_labels[c - 1];
 
-      if (logscale == true) {
-        for (let r = 0; r < idata.length; r++) {
-          const point = idata[r][c];
-          if (point <= 0 && !Number.isNaN(point) && point !== null) {
-            logscale = false;
-            console.log('found', idata[r][c], '@r', r, 'c', c, 'of', item);
-            break;
-          }
-        }
-      }
+      // if (logscale == true) {
+      //   for (let r = 0; r < idata.length; r++) {
+      //     const point = idata[r][c];
+      //     if (point <= 0 && !Number.isNaN(point) && point !== null) {
+      //       logscale = false;
+      //       console.log('found', idata[r][c], '@r', r, 'c', c, 'of', item);
+      //       break;
+      //     }
+      //   }
+      // }
       // NO2: ppm -> ppb
       // if (item.match(/NO₂ \(ppm\)/)) {
       //   labels[c] = item.replace(/ppm/, 'ppb');
