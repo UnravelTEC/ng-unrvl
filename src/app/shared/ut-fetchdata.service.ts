@@ -82,6 +82,7 @@ export class UtFetchdataService {
   @ param tagfilter = { 'sensor': ['SDS011', 'SPS30'] } // OR
   tagfilter = { 'sensor': 'BME280', // AND
                 'id': '0x77'] }
+  @param select: String - always use regex "/$fieldname/", because without "mean" is returned as field label, not field name!
   */
 
   influxMeanQuery(
