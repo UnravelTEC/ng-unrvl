@@ -173,7 +173,11 @@ const appRoutes: Routes = [
     loadChildren: () =>
       import('./ut-apps/i/scatterplot/scatterplot.module').then((m) => m.ScatterplotModule),
   },
-  
+  {
+    path: 'Apps/I/NO2',
+    loadChildren: () =>
+      import('./ut-apps/i/no2/no2.module').then((m) => m.No2Module),
+  },
   {
     path: 'Apps/Sensors',
     loadChildren: () =>
