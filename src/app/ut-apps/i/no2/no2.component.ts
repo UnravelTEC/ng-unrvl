@@ -166,9 +166,9 @@ export class No2Component implements OnInit {
   @param data - should include at least one with metric: gas; field: *_ugpm3 and a tag with a host
     data: [[Date, value1, ... , valueN]]
     searches for other columns from this host with air_degC and air_hPa, and calculates ppb values out of it
-    does add data columns, and corresponding label
+    does add data columns (in-place, call to reference), and corresponding label
     NO2_ugpm3 = NO2_ppm * konstante * pressure / (T_Kelvin), konstante = 100*46.0055 [molar mass NO2] / 8.314472 [gasconst] = 553.31836
-    *   reverse: NO2_ppb = NO2_ugpm3 / C / p * T * 1000
+    *   reverse: NO2_ppb = NO2_ugpm3 / C / p * T / 1000
   */
   convUGPM3toPPB(raw_labels: Array<Object>, data: Array<any>) {
     // 1. search for all _ugpm3 source inputs
@@ -232,7 +232,9 @@ export class No2Component implements OnInit {
       new_raw_column_label['field'] = new_raw_column_label['field'].replace(/_ugpm3/, "_ppb")
       new_raw_column_label['tags']['SRC'] = 'computed'
       raw_labels.push(new_raw_column_label);
-      this.short_labels.push(this.short_labels[gas_item['c'] - 1].replace('( µg / m³ )', "( ppb )")); // not nice to modify member vars
+      this.short_labels.push(this.short_labels[gas_item['c'] - 1]  // not nice to modify member vars
+        .replace('( µg / m³ )', "( ppb )")
+        .replace(' NO', ' SRC: computed, NO')); // and hacky way to modify text
 
       for (let r = 0; r < data.length; r++) {
         const row = data[r];
@@ -244,6 +246,66 @@ export class No2Component implements OnInit {
           gas_ppb = g / C / p * (t + 273.15);
           if (first == false) {
             console.log('g', g, 'C', C, 'p', p, 't', t + 273.15, 'ppb', gas_ppb);
+            first = true;
+          }
+        }
+        row.push(gas_ppb)
+      }
+    }
+  }
+
+  convVtoPPB(raw_labels: Array<Object>, data: Array<any>) {
+    // 1. search for all _V source inputs
+    const V_columns = []; // {'c': $nr_column, 'gas': "$gas_string", 'serial': $nr }
+    const calfactors = {
+      '212460428': { // Sensor serial nr.
+        'offset': 0.002,
+        'factor': 4550 // 4.55 *1000 for mV - V
+      }
+    }
+    for (let i = 1; i < raw_labels.length; i++) { // col 0: Date
+      const clabel = raw_labels[i];
+      if (clabel['metric'] != 'gas' || !clabel['field'].endsWith('_V'))
+        continue;
+      const gas = clabel['field'].replace(/_V$/, '').replace(/^mean_/, '')
+      if (!gas || gas.length == 0)
+        continue;
+      console.log('convVtoPPB found gas', gas, 'in column', clabel);
+      const gastags = clabel['tags'];
+      let serial = '';
+      if (Object.prototype.hasOwnProperty.call(gastags, 'serial')) {
+        serial = gastags['serial']
+      } else {
+        console.log('convVtoPPB Fault: gas has no serial');
+        continue
+      }
+      V_columns.push({ 'c': i, 'gas': gas.toUpperCase(), 'serial': serial });
+    }
+
+    let first = false;
+    for (let i = 0; i < V_columns.length; i++) {
+      const gas_item = V_columns[i];
+      const offset = calfactors[gas_item['serial']]['offset']
+      const factor = calfactors[gas_item['serial']]['factor']
+      console.log('convVtoPPB serial', gas_item['serial'], 'o', offset, 'f', factor);
+
+
+      const new_raw_column_label = cloneDeep(raw_labels[gas_item['c']])
+      new_raw_column_label['field'] = new_raw_column_label['field'].replace(/_V/, "_ppb")
+      new_raw_column_label['tags']['SRC'] = 'computed'
+      raw_labels.push(new_raw_column_label);
+      this.short_labels.push(this.short_labels[gas_item['c'] - 1] // not nice to modify member vars
+        .replace('( V )', "( ppb )")
+        .replace(' NO', ' SRC: computed, NO')); // and hacky way to modify text
+
+      for (let r = 0; r < data.length; r++) {
+        const row = data[r];
+        const g = row[gas_item['c']];
+        let gas_ppb = NaN;
+        if (Number.isFinite(g)) {
+          gas_ppb = (g + offset) * factor
+          if (first == false) {
+            console.log('g', g, 'ppb', gas_ppb);
             first = true;
           }
         }
@@ -400,6 +462,7 @@ export class No2Component implements OnInit {
     console.log('short_labels:', ret['short_labels']);
 
     this.convUGPM3toPPB(this.raw_labels, idata);
+    this.convVtoPPB(this.raw_labels, idata);
     console.log('after raw labels:', cloneDeep(this.raw_labels));
     console.log('after short labels:', cloneDeep(this.short_labels));
 
