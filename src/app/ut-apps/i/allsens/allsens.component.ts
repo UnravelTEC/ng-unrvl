@@ -167,7 +167,8 @@ export class AllsensComponent implements OnInit {
         this.tagsets_per_m_s[measurement][sname].push({ id: id, tags: this_series_tags.join(", ") });
 
       }
-      const host = seri.match(/host=([-A-Za-z0-9]*)/);
+      // const host = seri.match(/host=([-A-Za-z0-9]*)/);
+      const host = seri.match(/host=([^,]*)/);
       if (host && host[1] && !this.hosts.includes(host[1])) {
         this.hosts.push(host[1]);
         this.userHost = host[1]; // auto-select last (maybe overwritten from ls)
