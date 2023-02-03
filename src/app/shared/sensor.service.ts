@@ -190,7 +190,7 @@ export class SensorService {
             const dev = 0.2 + (0 - value) * 0.0025;
             return [value - dev, value, value + dev];
           }
-          if (value < 80 ) {
+          if (value < 80) {
             const dev = 0.1 + (value - 50) * 0.0033333333;
             return [value - dev, value, value + dev];
           }
@@ -206,7 +206,7 @@ export class SensorService {
           if (isNaN(value) || value < 0 || value > 100) {
             return NaN;
           }
-          if (value > 70 ) {
+          if (value > 70) {
             const dev = 0.15 + (value - 70) * 0.001666667;
             return [value - dev, value, value + dev];
           }
@@ -226,10 +226,10 @@ export class SensorService {
           }
           // has a max. resolution of 1/16K = 0.0625K
           // next very simplified, is a curvy curve in datasheet
-          if (value < 10 ) {
+          if (value < 10) {
             const dev = 0.1 + (10 - value) * 0.002;
-            const lower = dev/2;
-            return [value - (lower < 0.0625 ? 0.0625 : lower) , value, value + dev];
+            const lower = dev / 2;
+            return [value - (lower < 0.0625 ? 0.0625 : lower), value, value + dev];
           }
           const dev = 0.1;
           return [value - dev, value, value + dev];
@@ -244,10 +244,10 @@ export class SensorService {
           }
           // has a max. resolution of 1/16K = 0.0625K
           // next very simplified, is a curvy curve in datasheet
-          if (value < 10 ) {
+          if (value < 10) {
             const dev = 0.1 + (10 - value) * 0.002;
-            const lower = dev/2;
-            return [value - (lower < 0.0625 ? 0.0625 : lower) , value, value + dev];
+            const lower = dev / 2;
+            return [value - (lower < 0.0625 ? 0.0625 : lower), value, value + dev];
           }
           const dev = 0.1;
           return [value - dev, value, value + dev];
@@ -345,6 +345,25 @@ export class SensorService {
         round_digits: 7,
       },
     },
+    'OX-A431': {
+      "O3+NO2_V": {
+        round_digits: 7,
+      },
+    },
+    'PID-AH2': {
+      "VOC_V": {
+        round_digits: 7,
+        getDeviation: function (value) {
+          if (value === null) return null;
+          if (isNaN(value)) { // || value < 550 || value < -200) {
+            return NaN;
+          }
+
+          const dev = 0.001 // sensitivity
+          return [value - dev, value, value + dev];
+        },
+      },
+    },
     ADS1115: {
       // BEGIN no longer a value, but a tag (here for compatibility)
       resolution_mV: {
@@ -422,7 +441,7 @@ export class SensorService {
       },
     },
   };
-  constructor(private h: HelperFunctionsService) {}
+  constructor(private h: HelperFunctionsService) { }
 
   // FIXME a better place for this function would be nice, but depends on sensorPresets
   roundSensorValue(value, raw_label = {}) {

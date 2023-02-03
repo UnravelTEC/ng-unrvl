@@ -962,6 +962,7 @@ export class HelperFunctionsService {
     fieldname = fieldname.replace(/CO2_/, 'CO₂_');
     fieldname = fieldname.replace(/NO2_/, 'NO₂_');
     fieldname = fieldname.replace(/O3_/, 'O₃_');
+    fieldname = fieldname.replace(/O3[+]/, 'O₃ / ');
     fieldname = fieldname.replace(/NH3_/, 'NH₃_');
     fieldname = fieldname.replace(/H2_/, 'H₂_');
     fieldname = fieldname.replace(/percent$/, '%');
