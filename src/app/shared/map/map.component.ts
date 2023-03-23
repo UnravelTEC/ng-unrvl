@@ -53,7 +53,7 @@ export class MapComponent implements OnInit, OnDestroy {
   public OSMonlineLayer = tileLayer(
     'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
-      maxZoom: 19,
+      maxZoom: 20,
       opacity: 0.7,
       detectRetina: true,
       attribution:
