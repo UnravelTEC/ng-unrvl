@@ -878,6 +878,7 @@ export class HelperFunctionsService {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
+      fractionalSecondDigits: 3
     };
     // does this feature have a property named popupContent?
     if (feature.properties) {
