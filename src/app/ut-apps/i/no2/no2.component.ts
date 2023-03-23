@@ -38,7 +38,7 @@ export class No2Component implements OnInit {
     },
   };
   y2label = 'Atmospheric Pressure';
-  labelBlackListT = ['mean_*', 'gain', 'datarate_sps', 'averaged_count', 'ADC', 'maxrange_V', 'resolution_mV', 'resolution_bits', 'mode']; // mean is when only 1 graph is returned
+  labelBlackListT = ['mean_*', 'ADC', 'maxrange_V', 'resolution_mV', 'resolution_bits', 'mode', 'averaged_count']; // mean is when only 1 graph is returned
   private sidebarWidth = '15rem';
   public currentSidebarWidth = this.sidebarWidth;
   graphstyle = {
@@ -114,6 +114,113 @@ export class No2Component implements OnInit {
     private sensorService: SensorService
   ) {
     this.gss.emitChange({ appName: this.appName });
+  }
+
+  /**
+   * @param column regex to match which columns are unified
+   *
+   */
+
+  unifyColumns(column = /_V$/, data = []) {
+    console.log('unifyColumns with', column);
+
+    const short_labels = cloneDeep(this.short_labels);
+    const new_short_labels = [];
+    const raw_labels = cloneDeep(this.raw_labels)
+    const new_raw_labels = [];
+
+    let newdata = [];
+
+    const indizes_to_merge = [];
+    let first_index = -1;
+    for (let l = 1; l < raw_labels.length; l++) {
+      const label = raw_labels[l];
+      if (!Object.prototype.hasOwnProperty.call(label, 'field')) {
+        continue
+      }
+      const fieldname = label.field;
+      // console.log('label:', label);
+
+      if (fieldname.match(column)) {
+        console.log('unifyColumns found',);
+        indizes_to_merge.push(l);
+        if (first_index == -1) {
+          first_index = l
+        }
+      }
+    }
+    for (let i = 0; i < indizes_to_merge.length; i++) {
+      const clabel = short_labels[indizes_to_merge[i] - 1];
+      console.log('to merge:', clabel);
+    }
+    console.log('indizes_to_merge', indizes_to_merge);
+
+
+    for (let c = 0; c < raw_labels.length; c++) {
+
+      if (c == 0) { // time column
+        for (let r = 0; r < data.length; r++) {
+          newdata.push([data[r][0]])
+        }
+        new_raw_labels.push(raw_labels[0])
+        // short_labes dont have date column
+        continue
+      }
+      if (c == first_index) {
+        for (let r = 0; r < data.length; r++) {
+          const old_row = data[r];
+          let new_nr = NaN;
+          for (let i = 0; i < indizes_to_merge.length; i++) {
+            let index = indizes_to_merge[i]
+            let cvalue = old_row[index]
+            if (!isNaN(cvalue) && cvalue != null) {
+              new_nr = cvalue;
+              break; // take first valid datapoint
+            }
+          }
+          newdata[r].push(new_nr)
+        }
+        // merge labels
+        const new_common_tags = cloneDeep(raw_labels[indizes_to_merge[0]].tags)
+        const new_raw_label = { 'metric': raw_labels[indizes_to_merge[0]].metric, 'tags': new_common_tags, 'field': raw_labels[indizes_to_merge[0]].field }
+        for (let i = 1; i < indizes_to_merge.length; i++) {
+          const index = indizes_to_merge[i];
+          const tags = raw_labels[index].tags;
+          for (const common_key in new_common_tags) {
+            if (!Object.prototype.hasOwnProperty.call(tags, common_key) || new_common_tags[common_key] != tags[common_key]) {
+              delete new_common_tags[common_key];
+            }
+          }
+        }
+        new_raw_labels.push(new_raw_label);
+        let new_short_label = new_raw_label.metric + ' merged: true, '
+        for (const key in new_common_tags) {
+          if (Object.prototype.hasOwnProperty.call(new_common_tags, key) && !this.labelBlackListT.includes(key)) {
+            const value = new_common_tags[key];
+            new_short_label += key + ': ' + value + ', '
+          }
+        }
+        new_common_tags['merged'] = 'true';
+        new_short_label += short_labels[first_index].split(/[,]+/).pop().trim();
+        new_short_labels.push(new_short_label)
+        continue;
+      }
+      if (indizes_to_merge.includes(c)) {
+        continue; // they have already been handled above
+      }
+
+      // push remaining rows
+      for (let r = 0; r < data.length; r++) {
+        const old_row = data[r];
+        newdata[r].push(old_row[c])
+      }
+      new_raw_labels.push(raw_labels[c])
+      new_short_labels.push(short_labels[c-1])
+    }
+
+    this.raw_labels = new_raw_labels;
+    this.short_labels = new_short_labels;
+    return newdata;
   }
 
   /*
@@ -451,8 +558,7 @@ export class No2Component implements OnInit {
       // this.autoreload = false;
       return;
     }
-    const labels = ret['labels'];
-    const idata = ret['data'];
+    let idata = ret['data'];
     this.short_labels = ret['short_labels'];
     this.common_label = ret['common_label'];
     this.raw_labels = ret['raw_labels'];
@@ -461,13 +567,17 @@ export class No2Component implements OnInit {
     console.log('common_label:', ret['common_label']);
     console.log('short_labels:', ret['short_labels']);
 
+    idata = this.unifyColumns(/_V$/, idata);
+    console.log('after unify raw labels:', cloneDeep(this.raw_labels));
+    console.log('after unify short labels:', cloneDeep(this.short_labels));
     this.convUGPM3toPPB(this.raw_labels, idata);
     this.convVtoPPB(this.raw_labels, idata);
     console.log('after raw labels:', cloneDeep(this.raw_labels));
     console.log('after short labels:', cloneDeep(this.short_labels));
 
     let logscale = true;
-    const newColors = this.h.getColorsforLabels(labels);
+    this.labels = ['Date'].concat(this.short_labels);
+    const newColors = this.h.getColorsforLabels(this.labels);
     const numColumns = this.raw_labels.length;
     for (let c = 1; c < numColumns; c++) {
       const item = this.short_labels[c - 1];
@@ -511,10 +621,9 @@ export class No2Component implements OnInit {
     }
 
     this.startTime = this.userStartTime;
-    this.labels = ['Date'].concat(this.short_labels);
     this.data = idata;
     this.colors = newColors;
-    console.log(labels);
+    console.log(this.labels);
     console.log(idata);
     this.changeTrigger = !this.changeTrigger;
     this.changeTrigger = !this.changeTrigger;
