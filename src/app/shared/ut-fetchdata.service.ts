@@ -256,11 +256,26 @@ export class UtFetchdataService {
       // tags['__metric__'] = series['name']
       let serieslabel =
         tagBlackList.indexOf(series['name']) === -1 ? series['name'] : '';
+      let tagarray = []
       for (const tkey in tags) {
         if (tags.hasOwnProperty(tkey) && tagBlackList.indexOf(tkey) === -1) {
-          const tval = tags[tkey];
-          serieslabel += ' ' + tkey + ': ' + tval + ',';
+          tagarray.push(tkey + ': ' + tags[tkey])
         }
+      }
+      const priorities = ['sensor','id','channel']
+      for (const prio of priorities) {
+        for (let i = 0; i < tagarray.length; i++) {
+          const tag = tagarray[i];
+          if (tag.startsWith(prio)) {
+            serieslabel += ' ' + tag + ',';
+            tagarray.splice(i,1)
+            break;
+          }
+        }
+      }
+      // remainder
+      for (const tag of tagarray) {
+        serieslabel += ' ' + tag + ',';
       }
 
       seriesValidColumns[i] = [];
