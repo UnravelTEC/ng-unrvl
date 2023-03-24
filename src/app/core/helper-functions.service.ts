@@ -890,7 +890,7 @@ export class HelperFunctionsService {
         } else if (key.endsWith('lat') || key.endsWith('lon')) {
           v = Math.round(Number(value) * 1000000) / 1000000;
         } else if (Number.isFinite(Number(value))) {
-          v = Math.round(Number(value) * 100) / 100;
+          v = Math.round(Number(value) * 1000) / 1000;
         }
         text += '<tr><th>' + key + ':</th><td>' + v + '</td></tr>';
       }
