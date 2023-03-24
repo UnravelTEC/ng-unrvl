@@ -91,9 +91,9 @@ export class EnviromapComponent implements OnInit, OnDestroy {
   public layers = [];
   public Infinity = Infinity; // hack to allow use in .html
 
-  public startTime = '2h';
+  public startTime = '1h';
   public userStartTime = this.startTime;
-  public meanS = 30;
+  public meanS = 0.1;
   public currentres = 0;
   public userMeanS = this.meanS;
   public fromTime: Date;
@@ -302,7 +302,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
       if (labels.length == 4) {
         // Date, (lat, lon, value in any order)
         for (let i = 1; i < labels.length; i++) {
-          if (labels[i] != 'location lon' && labels[i] != 'location lat') {
+          if (!labels[i].startsWith('location') && !(labels[i].endsWith('lat') || labels[i].endsWith('lon'))) {
             this.column = labels[i];
             console.log('only 1 data column, use', this.column, 'for colors');
           }
@@ -318,7 +318,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
       if (logscale == true) {
         for (let r = 0; r < idata.length; r++) {
           const point = idata[r][c];
-          if (point <= 0 && point !== NaN && point !== null) {
+          if (point <= 0 && !Number.isNaN(point) && point !== null) {
             logscale = false;
             console.log('found', idata[r][c], '@r', r, 'c', c, 'of', item);
             break;
@@ -371,9 +371,9 @@ export class EnviromapComponent implements OnInit, OnDestroy {
     let latlabelpos: number, lonlabelpos: number;
     for (let i = 0; i < labels.length; i++) {
       const element = labels[i];
-      if (element == 'location lat') {
+      if (element.startsWith('location') && element.endsWith('lat')) {
         latlabelpos = i;
-      } else if (element == 'location lon') {
+      } else if (element.startsWith('location') && element.endsWith('lon')) {
         lonlabelpos = i;
       } else {
         graphlabels.push(element);
