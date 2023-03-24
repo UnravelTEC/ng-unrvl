@@ -23,7 +23,7 @@ export class GpsComponent implements OnInit {
 
   public startTime = '1h';
   public userStartTime = this.startTime;
-  public meanS = 1;
+  public meanS = 0.1;
   public currentres = 0;
   public userMeanS = this.meanS;
   public fromTime: Date;
@@ -38,7 +38,7 @@ export class GpsComponent implements OnInit {
     this.userMeanS = this.calcMean(rangeSeconds);
   }
   calcMean(secondsRange) {
-    return 1;
+    return 0.1;
   }
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
