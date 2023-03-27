@@ -69,8 +69,8 @@ rsync -ravx --delete dist/Web/* root@$TARGET:$target_path
 echo "remount-rw"
 ssh root@$TARGET remount-rw
 echo "cleaning persistent dir"
-ssh root@$TARGET rm -rf "/mnt/lower/$target_path/*"
+#ssh root@$TARGET rm -rf "/mnt/lower/$target_path/*"
 echo "copying to persistent"
-ssh root@$TARGET cp -ra "$target_path/*" /mnt/lower/$target_path/
+ssh root@$TARGET rsync -ravx "/mnt/upper/$target_path/*" /mnt/lower/$target_path/
 
 # ssh root@$TARGET systemctl restart kiosk
