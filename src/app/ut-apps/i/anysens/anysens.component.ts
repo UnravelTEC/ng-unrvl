@@ -38,7 +38,8 @@ export class AnysensComponent implements OnInit {
     },
   };
   y2label = 'Atmospheric Pressure';
-  labelBlackListT = ['mean_*']; // mean is when only 1 graph is returned
+  labelBlackList = ['mean_*']; // mean is when only 1 graph is returned
+  public taglist = {}; // tagkey: true/false
   private sidebarWidth = '15rem';
   public currentSidebarWidth = this.sidebarWidth;
   graphstyle = {
@@ -142,6 +143,20 @@ export class AnysensComponent implements OnInit {
     this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
     this.auto_interval = this.userMeanS;
     this.reload_timer = this.auto_interval;
+
+    const lstaglist = this.localStorage.get(this.appName + 'taglist');
+    for (const key in lstaglist) {
+      if (Object.prototype.hasOwnProperty.call(lstaglist, key)) {
+        this.taglist[key] = lstaglist[key];
+      }
+    }
+    for (const key in this.taglist) {
+      if (Object.prototype.hasOwnProperty.call(this.taglist, key)) {
+        if (this.taglist[key] === false) {
+          this.labelBlackList.push(key);
+        }
+      }
+    }
 
     [
       'host',
@@ -293,6 +308,23 @@ export class AnysensComponent implements OnInit {
     this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);
     this.reload();
   }
+  changeTaglist(param) {
+    this.localStorage.set(this.appName + 'taglist', this.taglist)
+    // console.log(this.taglist);
+    for (const key in this.taglist) {
+      if (Object.prototype.hasOwnProperty.call(this.taglist, key)) {
+        if (this.taglist[key] === false) {
+          if (!this.labelBlackList.includes(key)) {
+            this.labelBlackList.push(key);
+          }
+        } else {
+          if (this.labelBlackList.includes(key)) {
+            this.labelBlackList.splice(this.labelBlackList.indexOf(key), 1);
+          }
+        }
+      }
+    }
+  }
 
   toggleTableShown() {
     this.tableShown = !this.tableShown;
@@ -337,7 +369,7 @@ export class AnysensComponent implements OnInit {
 
   handleData(data: Object) {
     console.log('received', data);
-    let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
+    let ret = this.utHTTP.parseInfluxData(data, this.labelBlackList);
     console.log('parsed', ret);
     if (ret['error']) {
       alert('Influx Error: ' + ret['error']);
@@ -355,6 +387,18 @@ export class AnysensComponent implements OnInit {
     console.log('raw labels:', ret['raw_labels']);
     console.log('common_label:', ret['common_label']);
     console.log('short_labels:', ret['short_labels']);
+
+    for (let rli = 0; rli < this.raw_labels.length; rli++) {
+      const raw_tags = this.raw_labels[rli].tags;
+      for (const key in raw_tags) {
+        if (Object.prototype.hasOwnProperty.call(raw_tags, key)) {
+          if (!Object.prototype.hasOwnProperty.call(this.taglist, key)) {
+            this.taglist[key] = true;
+          }
+        }
+      }
+
+    }
 
     let logscale = true;
     const newColors = this.h.getColorsforLabels(labels);
