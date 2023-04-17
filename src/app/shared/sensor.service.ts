@@ -269,6 +269,13 @@ export class SensorService {
       },
       '*_ugpm3': {
         round_digits: 1,
+        getDeviation: function (value) {
+          if (value === null) return [null, null, null];
+          if (isNaN(value) || value > 65000 || value < 0) {
+            return [NaN, NaN, NaN];
+          }
+          return [value, value, value];
+        }
       },
     },
     PT1000: {
