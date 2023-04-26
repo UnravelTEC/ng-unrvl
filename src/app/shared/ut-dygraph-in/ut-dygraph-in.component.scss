@@ -279,7 +279,7 @@ $red2: #ff7f88;
       font-size: $dygfontsize;
       color: $editableFormsTextColor;
       padding: 7px;
-      input[type='number'] {
+      input[type="number"] {
         width: 6em;
       }
     }
@@ -347,7 +347,7 @@ $red2: #ff7f88;
         cursor: pointer;
       }
       .legendToggle::after {
-        content: '▲';
+        content: "▲";
       }
       .legendToggle:hover {
         font-weight: bold;
@@ -379,7 +379,7 @@ $red2: #ff7f88;
 
     table {
       border-collapse: collapse;
-      margin-top: 1.5em;
+      margin-top: 1.6em;
       border: 1px solid black;
 
       tr {
@@ -441,13 +441,21 @@ $red2: #ff7f88;
     }
   }
   .mylegend.cthide {
-    width: 20em;
-    height: 1.2em;
+    // width: 20em;
+    // height: 1.2em;
     table {
-      display: none;
+      tr {
+        display: none;
+      }
+      tr.highlight {
+        display: table-row;
+        td.s {
+          display: none;
+        }
+      }
     }
     .legendToggle::after {
-      content: '▼';
+      content: "▼";
     }
   }
 
@@ -541,7 +549,7 @@ div.optionsarea {
         font-weight: bold;
         font-size: 0.7em;
       }
-      input[type='text'] {
+      input[type="text"] {
         padding: 0.1em;
         border-radius: 0.5em;
       }
