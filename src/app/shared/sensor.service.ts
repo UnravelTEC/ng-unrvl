@@ -215,6 +215,48 @@ export class SensorService {
         }
       }
     },
+    SHTC3: {
+      air_degC: {
+        round_digits: 2,
+        getDeviation: function (value) {
+          if (value === null) return null;
+          if (isNaN(value) || value > 125 || value < -40) {
+            return NaN;
+          }
+          if (value >= 5 && value <= 60) {
+            const dev = 0.2;
+            return [value - dev, value, value + dev];
+          }
+          if (value < 5) {
+            const dev = 0.2 + (5 - value) * 0.013333333;
+            return [value - dev, value, value + dev];
+          }
+          // >= 60
+          const dev = 0.2 + (value - 60) * 0.0092307692;
+          return [value - dev, value, value + dev];
+        },
+      },
+      H2O_rel_percent: {
+        round_digits: 2,
+        getDeviation: function (value) {
+          if (value === null) return null;
+          if (isNaN(value) || value < 0 || value > 100) {
+            return NaN;
+          }
+          if (value >= 20 && value <= 80) {
+            const dev = 2;
+            return [value - dev, value, value + dev];
+          }
+          if (value < 20) {
+            const dev = 2 + (20 - value) * 0.075;
+            return [value - dev, value, value + dev];
+          }
+          // > 80
+          const dev = 2 + (value - 80) * 0.075;
+          return [value - dev, value, value + dev];
+        }
+      }
+    },
     MCP9600: {
       probe_degC: {
         round_digits: 2,
