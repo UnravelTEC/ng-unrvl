@@ -165,6 +165,8 @@ export class EnviromapComponent implements OnInit, OnDestroy {
         this[element] = thing;
       }
     });
+    this.globalSettings.emitChange({ appName: 'Map ' + this.measurement + (this.sensor ?  ' ' + this.sensor : '') });
+
     this.userMeanS = this.calcMean(this.h.parseToSeconds(this.startTime));
     if (this.from && this.to) {
       this.from = Number(this.from);

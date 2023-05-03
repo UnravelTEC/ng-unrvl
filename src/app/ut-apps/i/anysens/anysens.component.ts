@@ -178,6 +178,8 @@ export class AnysensComponent implements OnInit {
         this[element] = thing;
       }
     });
+    this.gss.emitChange({ appName: this.measurement + (this.sensor ? ' ' + this.sensor : '') });
+
     this.ylabel = this.measurement
       .replace('pressure', '')
       .replace(',,', ',')
