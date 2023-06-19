@@ -98,6 +98,7 @@ export class InfluxsettingsComponent implements OnInit, OnDestroy {
     for (let i = 0; i < values.length; i++) {
       this.databases.push(values[i][0]);
     }
+    this.databases.sort();
     this.gss.server.influxuser = this.username;
     this.gss.server.influxpass = this.password;
     this.localStorage.set('influxuser', this.username);
