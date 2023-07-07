@@ -459,6 +459,7 @@ export class SettingsPanelComponent implements OnInit {
       (data: Object) => this.requeryRetentionTime(data),
       (error) => this.gss.displayHTTPerror(error)
     );
+    // FIXME has also to be set in /etc/lcars/influx!!!
   }
   getTempoRes() {
     this.utHTTP
