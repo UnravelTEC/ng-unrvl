@@ -7,6 +7,7 @@ import { UtDygraphInModule } from '../../../shared/ut-dygraph-in/ut-dygraph-in.m
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 
 @NgModule({
@@ -18,6 +19,7 @@ import { FormsModule } from '@angular/forms';
     MatSelectModule,
     MatIconModule,
     FormsModule,
+    MatCheckboxModule,
   ]
 })
 export class HumidityModule { }

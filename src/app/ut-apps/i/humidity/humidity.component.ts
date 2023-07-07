@@ -1,9 +1,17 @@
+//
+// Ziele:
+// Absolute humidity anzeigein für jeden rH-Sensor
+// Taupunkt für jeden rH-Sensor
+// Referenz-T-Sensor angebbar (optional)
+
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GlobalSettingsService } from '../../../core/global-settings.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
 import { LocalStorageService } from '../../../core/local-storage.service';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
+import { cloneDeep } from 'lodash-es';
+import { SensorService } from 'app/shared/sensor.service';
 
 @Component({
   selector: 'app-humidity',
@@ -11,6 +19,9 @@ import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
   styleUrls: ['./humidity.component.scss'],
 })
 export class HumidityComponent implements OnInit {
+  appName = 'Humidity';
+  measurement = 'humidity';
+
   colors = [];
   graphWidth = 1500;
   setGraphWidth(width) {
@@ -19,23 +30,41 @@ export class HumidityComponent implements OnInit {
   }
 
   extraDyGraphConfig = {
-    connectSeparatedPoints: true,
+    // connectSeparatedPoints: true,
     pointSize: 3,
     logscale: false,
+    series: {
+      'pressure sensor: BME280, pressure (hPa)': {
+        axis: 'y2',
+      },
+    },
+
+    axes: {
+      y2: {
+        independentTicks: true, // default opt here to have a filled object to access later
+        // axisLabelWidth: 60, // set on demand
+      },
+    },
   };
-  labelBlackListT = ['host', 'serial', 'mean_*', 'mean'];
+  y2label = 'Atmospheric Pressure';
+  labelBlackList = ['mean_*']; // mean is when only 1 graph is returned
+  public taglist = {}; // tagkey: true/false
+  private sidebarWidth = '15rem';
+  public currentSidebarWidth = this.sidebarWidth;
   graphstyle = {
     position: 'absolute',
     top: '0.5em',
     bottom: '0.5rem',
     left: '0.5rem',
-    right: '15rem',
+    right: '0.5rem',
   };
 
   public startTime = '6h';
+  public dygStartTime: string; // used on autoUpdate
   public userStartTime = this.startTime;
   public meanS = 30;
   public currentres = 0;
+  public currentresText = '0s';
   public userMeanS = this.meanS;
   public fromTime: Date;
   public toTime: Date;
@@ -58,58 +87,111 @@ export class HumidityComponent implements OnInit {
 
   labels = [];
   data = [];
+  orig_labels = [];
+  common_label = '';
+  short_labels: string[] = [];
+  latest_dates = [];
+  latest_values = [];
+  raw_labels = [];
+  round_digits = [0];
+  show_deviation = true;
 
-  appName = 'Humidity';
+  public allAverages = [];
+  public visibleAverages = [];
+
 
   changeTrigger = true;
 
-  measurement = 'humidity';
-  sensor: String = 'DS18B20';
+  ylabel = '';
+  sensor: String;
+  id: String;
   interval: string;
-  // host = '';
-  // referrer = 'Allsens';
+  background: string;
+  host = '';
+  value = '*';
+  referrer = 'Allsens';
   public from: Number; // unix time from urlparam
   public to: Number; // unix time from urlparam
 
-  public queryRunning: number = 0;
+  public queryRunning = false;
+
+  public autoreload = false;
+  public auto_interval = 1; // gets set to userMeanS
+  public reload_timer = Infinity;
+  public last_reload: number;
+
+  public tableShown = true;
+  public sideBarShown = true;
 
   constructor(
-    private globalSettings: GlobalSettingsService,
+    public gss: GlobalSettingsService,
     private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService,
-    private router: ActivatedRoute
+    private router: ActivatedRoute,
+    private sensorService: SensorService
   ) {
-    this.globalSettings.emitChange({ appName: this.appName });
+    this.gss.emitChange({ appName: this.appName });
   }
 
   ngOnInit() {
-    const lsMean = this.localStorage.get(this.appName + 'userMeanS');
-    if (lsMean) {
-      this.userMeanS = lsMean;
+    [
+      'userMeanS',
+      'userStartTime',
+      'tableShown',
+      'sideBarShown',
+      'show_deviation',
+    ].forEach((element) => {
+      const thing = this.localStorage.get(this.appName + element);
+      if (thing !== null) {
+        this[element] = thing;
+      }
+    });
+    this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
+    this.auto_interval = this.userMeanS;
+    this.reload_timer = this.auto_interval;
+
+    const lstaglist = this.localStorage.get(this.appName + 'taglist');
+    for (const key in lstaglist) {
+      if (Object.prototype.hasOwnProperty.call(lstaglist, key)) {
+        this.taglist[key] = lstaglist[key];
+      }
     }
-    const lsStartTime = this.localStorage.get(this.appName + 'userStartTime');
-    if (lsStartTime) {
-      this.userStartTime = lsStartTime;
+    for (const key in this.taglist) {
+      if (Object.prototype.hasOwnProperty.call(this.taglist, key)) {
+        if (this.taglist[key] === false) {
+          this.labelBlackList.push(key);
+        }
+      }
     }
 
     [
-      // 'host',
+      'host',
       // 'measurement',
-      // 'sensor',
-      // 'referrer',
+      'sensor',
+      'background',
+      'referrer',
       'from',
       'to',
+      'id',
+      'value',
       'interval',
     ].forEach((element) => {
       const thing = this.router.snapshot.queryParamMap.get(element);
       if (thing) {
-        //   if (thing.search(',') > -1) {
-        //     this[element] = thing.split(',');
-        //   }
         this[element] = thing;
       }
     });
+    this.gss.emitChange({ appName: this.measurement + (this.sensor ? ' ' + this.sensor : '') });
+
+    this.ylabel = this.measurement
+      .replace('pressure', '')
+      .replace(',,', ',')
+      .replace(',', ', ');
+    const ylabel = this.router.snapshot.queryParamMap.get('ylabel');
+    if (ylabel) {
+      this.ylabel = ylabel;
+    }
 
     if (this.from && this.to) {
       this.from = Number(this.from);
@@ -124,32 +206,97 @@ export class HumidityComponent implements OnInit {
   reload(fromTo = false) {
     this.meanS = this.userMeanS;
     this.currentres = this.meanS;
+    this.currentresText = this.h.createHRTimeString(this.meanS);
     this.startTime = this.userStartTime;
+    this.dygStartTime = fromTo ? undefined : this.startTime;
+
+    const timerange = fromTo
+      ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000
+      : this.h.parseToSeconds(this.startTime);
+    const nr_points = timerange / this.meanS;
+    if (nr_points > 10000 && !this.h.bigQconfirm(nr_points)) {
+      if (!this.labels.length) {
+        // at start to show "no data"
+        this.labels = [''];
+      }
+      return;
+    }
+    this.queryRunning = true;
 
     const timeQuery = fromTo
       ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
       : this.utHTTP.influxTimeString(this.startTime);
 
     let params = { sensor: [] };
-    // if (this.sensor) {
-    //   if (Array.isArray(this.sensor)) {
-    //     params['sensor'] = this.sensor;
-    //   } else {
-    //     params['sensor'] = [this.sensor];
-    //   }
-    // }
-    // if (this.host) {
-    //   params['host'] = this.host;
-    // }
+    if (this.sensor) {
+      if (Array.isArray(this.sensor)) {
+        params['sensor'] = this.sensor;
+      } else {
+        params['sensor'] = [this.sensor];
+      }
+    }
+    if (this.host) {
+      params['host'] = this.host;
+    }
+    if (this.id) {
+      params['id'] = this.id;
+    }
 
     const queries = this.utHTTP.influxMeanQuery(
-      'humidity',
+      this.measurement,
       timeQuery,
       params,
-      this.meanS
+      this.meanS,
+      this.value
     );
 
     this.launchQuery(queries);
+  }
+  changeAutoS(param) {
+    console.log(param);
+
+    if (!this.autoreload) {
+      this.reload_timer = param;
+    }
+  }
+
+  toggleAutoReload(param) {
+    console.log('autoreload:', this.autoreload);
+
+    if (this.autoreload) {
+      if (this.gss.server.protocol == 'https' && this.auto_interval < 5 * 60) {
+        if (
+          !confirm(
+            "autoreload < 180s do not make sense on public server, as DB doesn't get updated this often - are you sure?"
+          )
+        ) {
+          setTimeout(() => {
+            this.autoreload = false;
+          }, 50);
+          return;
+        }
+      }
+      this.last_reload = new Date().valueOf() / 1000;
+      setTimeout(() => this.updateReloadTimer(), 1000);
+      setTimeout(() => {
+        if (this.autoreload) {
+          this.reload();
+        }
+      }, this.auto_interval * 1000);
+    }
+  }
+
+  updateReloadTimer() {
+    if (this.autoreload) {
+      const now_utime = new Date().valueOf() / 1000;
+      const remaining = Math.round(
+        this.last_reload + Number(this.auto_interval) - now_utime
+      );
+      this.reload_timer = remaining > 0 ? remaining : 0;
+      // console.log(this.last_reload, this.auto_interval, now_utime);
+
+      setTimeout(() => this.updateReloadTimer(), 1000);
+    }
   }
 
   calcMean(secondsRange) {
@@ -160,23 +307,66 @@ export class HumidityComponent implements OnInit {
     const rangeSeconds = this.h.parseToSeconds(param);
 
     this.userMeanS = this.calcMean(rangeSeconds);
+    this.auto_interval = this.userMeanS;
+    this.reload_timer = this.auto_interval;
 
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
     this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);
     this.reload();
   }
+  changeTaglist(param) {
+    this.localStorage.set(this.appName + 'taglist', this.taglist)
+    // console.log(this.taglist);
+    for (const key in this.taglist) {
+      if (Object.prototype.hasOwnProperty.call(this.taglist, key)) {
+        if (this.taglist[key] === false) {
+          if (!this.labelBlackList.includes(key)) {
+            this.labelBlackList.push(key);
+          }
+        } else {
+          if (this.labelBlackList.includes(key)) {
+            this.labelBlackList.splice(this.labelBlackList.indexOf(key), 1);
+          }
+        }
+      }
+    }
+  }
+
+  toggleTableShown() {
+    this.tableShown = !this.tableShown;
+    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger = !this.changeTrigger;
+    this.localStorage.set(this.appName + 'tableShown', this.tableShown);
+    console.log(
+      'toggleTableShown',
+      this.tableShown,
+      'LS after:',
+      this.localStorage.get(this.appName + 'tableShown')
+    );
+  }
+  toggleSidebar() {
+    this.sideBarShown = !this.sideBarShown;
+    this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
+    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger = !this.changeTrigger;
+
+    this.localStorage.set(this.appName + 'sideBarShown', this.sideBarShown);
+    console.log('toggleSidebar', this.currentSidebarWidth);
+  }
 
   launchQuery(clause: string) {
-    if (!this.globalSettings.influxReady()) {
+    if (!this.gss.influxReady()) {
       setTimeout(() => {
         this.launchQuery(clause);
       }, 1000);
       return;
     }
-    this.queryRunning++;
     this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(clause)).subscribe(
       (data: Object) => this.handleData(data),
-      (error) => this.globalSettings.displayHTTPerror(error)
+      (error) => {
+        this.queryRunning = false;
+        this.gss.displayHTTPerror(error);
+      }
     );
   }
   saveMean(param) {
@@ -185,31 +375,72 @@ export class HumidityComponent implements OnInit {
 
   handleData(data: Object) {
     console.log('received', data);
-    let ret = this.utHTTP.parseInfluxData(data, this.labelBlackListT);
+    let ret = this.utHTTP.parseInfluxData(data, this.labelBlackList);
     console.log('parsed', ret);
     if (ret['error']) {
       alert('Influx Error: ' + ret['error']);
-      this.queryRunning--;
+      this.queryRunning = false;
+      this.autoreload = false;
       return;
     }
     const labels = ret['labels'];
     const idata = ret['data'];
+    this.orig_labels = cloneDeep(ret['labels']);
+    this.short_labels = ret['short_labels'];
+    this.common_label = ret['common_label'];
+    this.raw_labels = ret['raw_labels'];
+    console.log('orig labels:', this.orig_labels);
+    console.log('raw labels:', ret['raw_labels']);
+    console.log('common_label:', ret['common_label']);
+    console.log('short_labels:', ret['short_labels']);
+
+    for (let rli = 0; rli < this.raw_labels.length; rli++) {
+      const raw_tags = this.raw_labels[rli].tags;
+      for (const key in raw_tags) {
+        if (Object.prototype.hasOwnProperty.call(raw_tags, key)) {
+          if (!Object.prototype.hasOwnProperty.call(this.taglist, key)) {
+            this.taglist[key] = true;
+          }
+        }
+      }
+
+    }
 
     let logscale = true;
     const newColors = this.h.getColorsforLabels(labels);
-    for (let c = 1; c < labels.length; c++) {
+    const numColumns = labels.length;
+    for (let c = 1; c < numColumns; c++) {
       const item = labels[c];
 
       if (logscale == true) {
         for (let r = 0; r < idata.length; r++) {
           const point = idata[r][c];
-          if (point <= 0 && point !== NaN && point !== null) {
+          if (point <= 0 && !Number.isNaN(point) && point !== null) {
             logscale = false;
             console.log('found', idata[r][c], '@r', r, 'c', c, 'of', item);
             break;
           }
         }
       }
+      // NO2: ppm -> ppb
+      if (item.match(/NO₂ \(ppm\)/)) {
+        labels[c] = item.replace(/ppm/, 'ppb');
+        for (let r = 0; r < idata.length; r++) {
+          idata[r][c] *= 1000;
+        }
+      }
+      if (item.match(/NO₂ \(µg\/m³\)/)) {
+        for (let r = 0; r < idata.length; r++) {
+          idata[r][c] = this.h.smoothNO2(idata[r][c]);
+        }
+      }
+      if (item.match(/hPa/)) {
+        this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
+        this.extraDyGraphConfig.series[this.short_labels[c - 1]] = {
+          axis: 'y2',
+        };
+      }
+      this.round_digits.push(this.sensorService.getDigits(this.raw_labels[c]));
     }
     // console.log(cloneDeep(this.dygLabels));
     if (logscale) {
@@ -218,14 +449,49 @@ export class HumidityComponent implements OnInit {
     } else {
       console.log('scale: lin');
     }
+
     this.startTime = this.userStartTime;
-    this.labels = labels;
+    const newLabels = ['Date'];
+    newLabels.concat(this.short_labels);
+    this.labels = ['Date'].concat(this.short_labels);
     this.data = idata;
     this.colors = newColors;
     console.log(labels);
     console.log(idata);
     this.changeTrigger = !this.changeTrigger;
     this.changeTrigger = !this.changeTrigger;
-    this.queryRunning--;
+    this.queryRunning = false;
+
+    if (!this.data || !this.data[0]) {
+      return;
+    }
+    for (let column = 1; column < numColumns; column++) {
+      for (let i = idata.length - 1; i != 0; i--) {
+        const element = idata[i][column];
+        if (typeof element === 'number') {
+          this.latest_values[column - 1] = this.h.roundAccurately(
+            element,
+            this.round_digits[column]
+          );
+          this.latest_dates[column - 1] = idata[i][0];
+          break;
+        }
+      }
+    }
+    console.log('latest_values', this.latest_values);
+    console.log('latest_dates', this.latest_dates);
+    this.last_reload = new Date().valueOf() / 1000;
+    if (this.autoreload) {
+      setTimeout(() => {
+        if (this.autoreload) {
+          this.reload();
+        }
+      }, this.auto_interval * 1000);
+    }
   }
+  handleRunningAvg(dataObj: Object) {
+    this.allAverages = dataObj['all'];
+    this.visibleAverages = dataObj['visible'];
+  }
+
 }

@@ -18,10 +18,11 @@
 
     <app-ut-dashboard-tile title="Humidity"
       *ngIf="gss.server.measurements.includes('humidity')"
-      path="/Apps/I/Anysens"
+      path="/Apps/I/Humidity"
       icon="320px-Water_molecule.svg.png"
-      [queryParams]="{ measurement: 'humidity', referrer: 'Dashboard' }"
       ></app-ut-dashboard-tile>
+      <!-- [queryParams]="{ measurement: 'humidity', referrer: 'Dashboard' }" -->
+
     <!-- template for quick link:<app-ut-dashboard-tile
       title="CO₂ Graph"
       path="/Apps/I/Anysens"
@@ -87,7 +88,7 @@
   <div class="panel">
     <app-ut-dashboard-tile title="Database Series" path="/Apps/I/Allsens" bg="#FFF" icon="influxdata-logo--symbol--pool-alpha.png"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="Corellation Plot" path="/Apps/I/Corellation" bg="#FFF" icon="scatterplot.png"></app-ut-dashboard-tile>
-    
+
     <app-ut-dashboard-tile title="Influx Playground" path="/Apps/Influx-Test" bg="#FFF" icon="influxdata-logo--symbol--pool-alpha.png"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="Sensor Overview" *ngIf="gss.server.type == 'Tricorder'" path="/Apps/Sensors"  icon="manufacturers/Raspberry_Pi.svg"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="MQTT Test" path="/Apps/MQTT-Test" icon="mqtt.png"></app-ut-dashboard-tile>
