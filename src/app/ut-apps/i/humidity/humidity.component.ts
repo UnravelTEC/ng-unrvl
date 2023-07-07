@@ -394,6 +394,47 @@ export class HumidityComponent implements OnInit {
     console.log('common_label:', ret['common_label']);
     console.log('short_labels:', ret['short_labels']);
 
+    const new_raw_labels = [];
+    const new_short_labels = []
+
+    // add absH and dew_point
+    for (let hcolumn = 1; hcolumn < this.raw_labels.length; hcolumn++) {
+      const hlabel = this.raw_labels[hcolumn];
+      if (hlabel.field.endsWith("_rel_percent")) {
+        for (let tcolumn = 1; tcolumn < this.raw_labels.length; tcolumn++) {
+          const tlabel = this.raw_labels[tcolumn];
+          if (tlabel.field.endsWith("_degC") && this.h.objectsEqual(hlabel.tags, tlabel.tags)) {
+            console.log('Found corresponding rH/T columns:', hlabel, tlabel)
+            const new_raw_column_label = cloneDeep(hlabel);
+            new_raw_column_label['tags']['SRC'] = 'computed';
+            const new_raw_column_label_aH = cloneDeep(new_raw_column_label);
+            new_raw_column_label_aH['field'] = hlabel['field'].replace(/_rel_percent/, "_gpm3");
+            new_raw_labels.push(new_raw_column_label_aH);
+            const new_raw_column_label_dP = cloneDeep(new_raw_column_label);
+            new_raw_column_label_dP['field'] = hlabel['field'] = "dewPoint_degC";
+            new_raw_labels.push(new_raw_column_label_dP);
+
+            const new_shortlabel = this.short_labels[hcolumn-1].replace(",", ", SRC: computed,"); // hacky way to modify text;
+            new_short_labels.push(new_shortlabel.replace("( rel-% )", '( g / m³ )'))
+            new_short_labels.push(new_shortlabel.replace(/ [^,]+$/, ' dew point ( °C )'))
+
+            for (let r = 0; r < idata.length; r++) {
+              const row = idata[r];
+              const h = row[hcolumn];
+              const t = row[tcolumn];
+              row.push(this.h.absHumidity(t,h));
+              row.push(this.h.dewPoint(t,h));
+            }
+
+            break;
+          }
+        }
+      }
+    }
+    console.log(new_raw_labels, new_short_labels);
+    this.raw_labels.push(...new_raw_labels);
+    this.short_labels.push(...new_short_labels);
+
     for (let rli = 0; rli < this.raw_labels.length; rli++) {
       const raw_tags = this.raw_labels[rli].tags;
       for (const key in raw_tags) {
@@ -403,37 +444,24 @@ export class HumidityComponent implements OnInit {
           }
         }
       }
-
     }
 
-    let logscale = true;
+    // let logscale = true;
     const newColors = this.h.getColorsforLabels(labels);
     const numColumns = labels.length;
     for (let c = 1; c < numColumns; c++) {
       const item = labels[c];
 
-      if (logscale == true) {
-        for (let r = 0; r < idata.length; r++) {
-          const point = idata[r][c];
-          if (point <= 0 && !Number.isNaN(point) && point !== null) {
-            logscale = false;
-            console.log('found', idata[r][c], '@r', r, 'c', c, 'of', item);
-            break;
-          }
-        }
-      }
-      // NO2: ppm -> ppb
-      if (item.match(/NO₂ \(ppm\)/)) {
-        labels[c] = item.replace(/ppm/, 'ppb');
-        for (let r = 0; r < idata.length; r++) {
-          idata[r][c] *= 1000;
-        }
-      }
-      if (item.match(/NO₂ \(µg\/m³\)/)) {
-        for (let r = 0; r < idata.length; r++) {
-          idata[r][c] = this.h.smoothNO2(idata[r][c]);
-        }
-      }
+      // if (logscale == true) {
+      //   for (let r = 0; r < idata.length; r++) {
+      //     const point = idata[r][c];
+      //     if (point <= 0 && !Number.isNaN(point) && point !== null) {
+      //       logscale = false;
+      //       console.log('found', idata[r][c], '@r', r, 'c', c, 'of', item);
+      //       break;
+      //     }
+      //   }
+      // }
       if (item.match(/hPa/)) {
         this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
         this.extraDyGraphConfig.series[this.short_labels[c - 1]] = {
@@ -443,12 +471,12 @@ export class HumidityComponent implements OnInit {
       this.round_digits.push(this.sensorService.getDigits(this.raw_labels[c]));
     }
     // console.log(cloneDeep(this.dygLabels));
-    if (logscale) {
-      console.log('scale: log');
-      this.extraDyGraphConfig.logscale = logscale;
-    } else {
-      console.log('scale: lin');
-    }
+    // if (logscale) {
+    //   console.log('scale: log');
+    //   this.extraDyGraphConfig.logscale = logscale;
+    // } else {
+    //   console.log('scale: lin');
+    // }
 
     this.startTime = this.userStartTime;
     const newLabels = ['Date'];
