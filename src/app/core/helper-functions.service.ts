@@ -43,6 +43,24 @@ export class HelperFunctionsService {
   vals(o) {
     return Object.values(o);
   }
+  objectsEqual(o1, o2) {
+    const entries1 = Object.entries(o1);
+    const entries2 = Object.entries(o2);
+    if (entries1.length !== entries2.length) {
+      return false;
+    }
+    for (let i = 0; i < entries1.length; ++i) {
+      // Keys
+      if (entries1[i][0] !== entries2[i][0]) {
+        return false;
+      }
+      // Values
+      if (entries1[i][1] !== entries2[i][1]) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   constructor(private loc: Location) {
     const url = window.location.href;
@@ -679,6 +697,9 @@ export class HelperFunctionsService {
     return rH;
   }
   absHumidity(argT, argRH) {
+    if(argT === null || argRH === null) return null;
+    if(isNaN(argT) || isNaN(argRH)) return NaN;
+
     const T = this.isString(argT) ? Number(argT) : argT;
     const rH = this.isString(argRH) ? Number(argRH) : argRH;
     // console.log('aH(', T, rH, ')');
@@ -703,6 +724,9 @@ export class HelperFunctionsService {
     // console.log('result:', aH);
   }
   dewPoint(argT, argRH, P = 972) {
+    if(argT === null || argRH === null) return null;
+    if(isNaN(argT) || isNaN(argRH)) return NaN;
+
     const T = this.isString(argT) ? Number(argT) : argT;
     const rH = this.isString(argRH) ? Number(argRH) : argRH;
 
