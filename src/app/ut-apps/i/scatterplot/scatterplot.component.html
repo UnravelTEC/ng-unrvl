@@ -15,7 +15,7 @@
                 <br>
                 <span>Tagsets<span *ngIf="Series_per_m[M1] && Series_per_m[M1].length">
                         ({{Series_per_m[M1].length}})</span>: </span>
-                <mat-form-field *ngIf="Series_per_m[M1] && Series_per_m[M1].length > 1">
+                <mat-form-field *ngIf="Series_per_m[M1] && Series_per_m[M1].length > 1" style="width: 90%;">
                     <mat-label>Series:</mat-label>
                     <mat-select [(ngModel)]="S1" name="S1" (closed)="change1()"
                         [disabled]="queryRunning == true || autoreload">
@@ -168,13 +168,13 @@
                     (returnGraphWidthOnChange)="setGraphWidth($event)" [colors]="colors"
                     (returnCurrentZoom)="updateFromToTimes($event)"></app-ut-dygraph-in>
 
-                <!-- 
-                  
-                  
+                <!--
+
+
                   [style]="graphstyle"
-                  
-                  
-              
+
+
+
               (returnRunningAvg)="handleRunningAvg($event)"
               #R -->
             </div>
