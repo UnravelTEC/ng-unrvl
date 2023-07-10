@@ -104,6 +104,9 @@ export class HumidityComponent implements OnInit {
 
   ylabel = '';
   sensor: String;
+  ref_tsensor: String;
+  ref_tid: String;
+  ref_tfield = "*";
   id: String;
   interval: string;
   background: string;
@@ -169,8 +172,10 @@ export class HumidityComponent implements OnInit {
 
     [
       'host',
-      // 'measurement',
       'sensor',
+      'ref_tsensor',
+      'ref_tid',
+      'ref_tfield',
       'background',
       'referrer',
       'from',
@@ -244,12 +249,33 @@ export class HumidityComponent implements OnInit {
       params['id'] = this.id;
     }
 
-    const queries = this.utHTTP.influxMeanQuery(
+    let queries = this.utHTTP.influxMeanQuery(
       this.measurement,
       timeQuery,
       params,
       this.meanS,
       this.value
+    );
+    params = { sensor: [] };
+    if (this.ref_tsensor) {
+      if (Array.isArray(this.ref_tsensor)) {
+        params['sensor'] = this.ref_tsensor;
+      } else {
+        params['sensor'] = [this.ref_tsensor];
+      }
+    }
+    if (this.host) {
+      params['host'] = this.host;
+    }
+    if (this.ref_tid) {
+      params['id'] = this.ref_tid;
+    }
+    queries += this.utHTTP.influxMeanQuery(
+      "temperature",
+      timeQuery,
+      params,
+      this.meanS,
+      this.ref_tfield
     );
 
     this.launchQuery(queries);
@@ -400,10 +426,11 @@ export class HumidityComponent implements OnInit {
     console.log('common_label:', ret['common_label']);
     console.log('short_labels:', ret['short_labels']);
 
-    const new_raw_labels = [];
-    const new_short_labels = []
+
 
     // add absH and dew_point
+    const new_raw_labels = [];
+    const new_short_labels = [];
     for (let hcolumn = 1; hcolumn < this.raw_labels.length; hcolumn++) {
       const hlabel = this.raw_labels[hcolumn];
       if (hlabel.field.endsWith("_rel_percent")) {
@@ -417,7 +444,7 @@ export class HumidityComponent implements OnInit {
             new_raw_column_label_aH['field'] = hlabel['field'].replace(/_rel_percent/, "_gpm3");
             new_raw_labels.push(new_raw_column_label_aH);
             const new_raw_column_label_dP = cloneDeep(new_raw_column_label);
-            new_raw_column_label_dP['field'] = hlabel['field'] = "dewPoint_degC";
+            new_raw_column_label_dP['field'] = "dewPoint_degC"; // FIXME !!!! hlabel['field'] =
             new_raw_labels.push(new_raw_column_label_dP);
 
             const new_shortlabel = this.short_labels[hcolumn-1].replace(",", ", SRC: computed,"); // hacky way to modify text;
@@ -428,8 +455,8 @@ export class HumidityComponent implements OnInit {
               const row = idata[r];
               const h = row[hcolumn];
               const t = row[tcolumn];
-              row.push(this.h.absHumidity(t,h));
-              row.push(this.h.dewPoint(t,h));
+              row.push(this.h.absHumidity(t, h));
+              row.push(this.h.dewPoint(t, h));
             }
 
             break;
@@ -440,6 +467,55 @@ export class HumidityComponent implements OnInit {
     console.log(new_raw_labels, new_short_labels);
     this.raw_labels.push(...new_raw_labels);
     this.short_labels.push(...new_short_labels);
+
+    // add rH at reference Temperature
+    let nr_temps = 0
+    for (let tcolumn = 1; tcolumn < this.raw_labels.length; tcolumn++) {
+      if (this.raw_labels[tcolumn].metric == "temperature") {
+        nr_temps++
+      }
+    }
+    if(nr_temps > 1) {
+      console.log('error in reference T: more than 1 column found');
+    }
+    if(nr_temps == 1) {
+      const new_raw_labels = [];
+      const new_short_labels = [];
+      for (let tcolumn = 1; tcolumn < this.raw_labels.length; tcolumn++) {
+        const tlabel = this.raw_labels[tcolumn];
+        if (tlabel.metric == "temperature") {
+          console.log("using column", tcolumn, "for T reference:", tlabel);
+          const tcompare_tags = cloneDeep(tlabel.tags)
+          tcompare_tags['SRC'] = 'computed';
+          for (let DPcolumn = 1; DPcolumn < this.raw_labels.length; DPcolumn++) {
+            const DPlabel = this.raw_labels[DPcolumn];
+
+            if (DPlabel.field == "dewPoint_degC" && !this.h.objectsEqual(DPlabel.tags, tcompare_tags)) {
+              console.log('computing rH at reference T for', DPlabel);
+              const new_raw_column_label = cloneDeep(DPlabel);
+              new_raw_column_label['tags']['REF'] = tlabel['tags']['SENSOR'];
+              new_raw_column_label['metric'] = 'humidity';
+              new_raw_labels.push(new_raw_column_label);
+
+              const new_shortlabel = this.short_labels[DPcolumn-1].replace("SRC: computed,", "SRC: computed, REF: " + tlabel['tags']['sensor']); // hacky way to modify text;
+              new_short_labels.push(new_shortlabel.replace(/dew point.*$/, 'H₂O ( rel-% )'))
+
+              for (let r = 0; r < idata.length; r++) {
+                const row = idata[r];
+                const DP = row[DPcolumn];
+                const t = row[tcolumn];
+                row.push(this.h.relHumidity(t, DP));
+              }
+            }
+          }
+
+        }
+      }
+      console.log(new_raw_labels, new_short_labels);
+      this.raw_labels.push(...new_raw_labels);
+      this.short_labels.push(...new_short_labels);
+    }
+
 
     for (let rli = 0; rli < this.raw_labels.length; rli++) {
       const raw_tags = this.raw_labels[rli].tags;
@@ -453,27 +529,10 @@ export class HumidityComponent implements OnInit {
     }
 
     // let logscale = true;
-    const newColors = this.h.getColorsforLabels(labels);
-    const numColumns = labels.length;
+    const newColors = this.h.getColorsforLabels([undefined].concat(this.short_labels));
+    const numColumns = this.raw_labels.length;
     for (let c = 1; c < numColumns; c++) {
       const item = labels[c];
-
-      // if (logscale == true) {
-      //   for (let r = 0; r < idata.length; r++) {
-      //     const point = idata[r][c];
-      //     if (point <= 0 && !Number.isNaN(point) && point !== null) {
-      //       logscale = false;
-      //       console.log('found', idata[r][c], '@r', r, 'c', c, 'of', item);
-      //       break;
-      //     }
-      //   }
-      // }
-      if (item.match(/hPa/)) {
-        this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
-        this.extraDyGraphConfig.series[this.short_labels[c - 1]] = {
-          axis: 'y2',
-        };
-      }
       this.round_digits.push(this.sensorService.getDigits(this.raw_labels[c]));
     }
     // console.log(cloneDeep(this.dygLabels));
