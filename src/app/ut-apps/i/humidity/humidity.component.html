@@ -56,18 +56,13 @@
         <!-- <label style="display: inline-block">Range:</label> -->
         <!-- <span class="cRange">{{ currentRange }}</span> -->
         <p>
-          <a
-            routerLink="/Apps/I/Humidity"
-            [queryParams]="{
+          <a routerLink="/Apps/I/Humidity" [queryParams]="{
               measurement: measurement,
               sensor: sensor,
               from: from,
               to: to,
               interval: interval
-            }"
-            routerLinkActive="active"
-            >Permalink</a
-          >
+            }" routerLinkActive="active">Permalink</a>
         </p>
       </fieldset>
       <fieldset [disabled]="queryRunning == true || autoreload">
@@ -140,22 +135,23 @@
           </button>
         </div>
       </fieldset>
-      <fieldset >
+      <fieldset id="tags">
         <h3>Series Tags</h3>
-        <label>Show tags (reload data to apply)</label>
-        <div class="taglist">
-          <div *ngFor="let l of taglist | keyvalue">
-            <mat-checkbox
-            [(ngModel)]="taglist[l.key]"
-            [name]="l.key"
-            labelPosition="after"
-            (ngModelChange)="changeTaglist($event)"
-            >
-            {{ l.key }}
-            </mat-checkbox>
-            <!-- {{ l.key }} -->
+        <div *ngIf="tagsShown" style="margin-top: 0.75rem;">
+          <label>Show tags (reload data to apply)</label>
+          <div class="taglist">
+            <div *ngFor="let l of taglist | keyvalue">
+              <mat-checkbox [(ngModel)]="taglist[l.key]" [name]="l.key" labelPosition="after"
+                (ngModelChange)="changeTaglist($event)">
+                {{ l.key }}
+              </mat-checkbox>
+              <!-- {{ l.key }} -->
+            </div>
           </div>
         </div>
+        <button class="togglebtn" (click)="toggleTags()" type="button">
+          {{ tagsShown ? "^" : "v" }}
+        </button>
       </fieldset>
     </form>
   </div>
@@ -172,25 +168,19 @@
           <th>average (all)</th>
           <th style="position: relative; padding-right: 2.2em">
             average (visible)
-            <button
-              (click)="toggleTableShown(); R.resize()"
-              title="Hide Data Table"
-            >
+            <button (click)="toggleTableShown(); R.resize()" title="Hide Data Table">
               <mat-icon>cancel</mat-icon>
             </button>
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr
-          *ngFor="let label of short_labels; let i = index"
-          [attr.data-index]="i"
-        >
+        <tr *ngFor="let label of short_labels; let i = index" [attr.data-index]="i">
           <td>{{ label }}</td>
           <td>
             {{
-              latest_values[i]
-                | number: '1.' + round_digits[i + 1] + '-' + round_digits[i + 1]
+            latest_values[i]
+            | number: '1.' + round_digits[i + 1] + '-' + round_digits[i + 1]
             }}
           </td>
 
@@ -201,14 +191,14 @@
           </td>
           <td>
             {{
-              allAverages[i]
-                | number: '1.' + (round_digits[i + 1] + 1) + '-' + (round_digits[i + 1] + 1)
+            allAverages[i]
+            | number: '1.' + (round_digits[i + 1] + 1) + '-' + (round_digits[i + 1] + 1)
             }}
           </td>
           <td>
             {{
-              visibleAverages[i]
-                | number: '1.' + (round_digits[i + 1] + 1 ) + '-' + (round_digits[i + 1] + 1)
+            visibleAverages[i]
+            | number: '1.' + (round_digits[i + 1] + 1 ) + '-' + (round_digits[i + 1] + 1)
             }}
           </td>
         </tr>
