@@ -679,7 +679,7 @@ export class HelperFunctionsService {
     return Object.prototype.toString.call(x) === '[object String]';
   }
 
-  relHumidity(argT, argTD) {
+  relHumidity(argT, argTP) {
     const T = this.isString(argT) ? Number(argT) : argT;
 
     let a: number, b: number;
@@ -692,7 +692,7 @@ export class HelperFunctionsService {
     }
 
     const SDD = 6.1078 * Math.pow(10, (a * T) / (b + T)); // Sättigungsdampfdruck in hPa
-    const SDDDP = 6.1078 * Math.pow(10, (a * argTD) / (b + argTD));
+    const SDDDP = 6.1078 * Math.pow(10, (a * argTP) / (b + argTP));
     const rH = (100 * SDDDP) / SDD;
     return rH;
   }
