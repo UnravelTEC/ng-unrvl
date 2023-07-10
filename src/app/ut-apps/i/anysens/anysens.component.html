@@ -141,22 +141,23 @@
           </button>
         </div>
       </fieldset>
-      <fieldset >
+      <fieldset id="tags">
         <h3>Series Tags</h3>
-        <label>Show tags (reload data to apply)</label>
-        <div class="taglist">
-          <div *ngFor="let l of taglist | keyvalue">
-            <mat-checkbox
-            [(ngModel)]="taglist[l.key]"
-            [name]="l.key"
-            labelPosition="after"
-            (ngModelChange)="changeTaglist($event)"
-            >
-            {{ l.key }}
-            </mat-checkbox>
-            <!-- {{ l.key }} -->
+        <div *ngIf="tagsShown" style="margin-top: 0.75rem;">
+          <label>Show tags (reload data to apply)</label>
+          <div class="taglist">
+            <div *ngFor="let l of taglist | keyvalue">
+              <mat-checkbox [(ngModel)]="taglist[l.key]" [name]="l.key" labelPosition="after"
+                (ngModelChange)="changeTaglist($event)">
+                {{ l.key }}
+              </mat-checkbox>
+              <!-- {{ l.key }} -->
+            </div>
           </div>
         </div>
+        <button class="togglebtn" (click)="toggleTags()" type="button">
+          {{ tagsShown ? "^" : "v" }}
+        </button>
       </fieldset>
     </form>
   </div>

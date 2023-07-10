@@ -115,6 +115,8 @@ export class AnysensComponent implements OnInit {
 
   public tableShown = true;
   public sideBarShown = true;
+  public tagsShown = true;
+
 
   constructor(
     public gss: GlobalSettingsService,
@@ -133,6 +135,7 @@ export class AnysensComponent implements OnInit {
       'userStartTime',
       'tableShown',
       'sideBarShown',
+      'tagsShown',
       'show_deviation',
     ].forEach((element) => {
       const thing = this.localStorage.get(this.appName + element);
@@ -348,6 +351,10 @@ export class AnysensComponent implements OnInit {
 
     this.localStorage.set(this.appName + 'sideBarShown', this.sideBarShown);
     console.log('toggleSidebar', this.currentSidebarWidth);
+  }
+  toggleTags() {
+    this.tagsShown = !this.tagsShown;
+    this.localStorage.set(this.appName + 'tagsShown', this.tagsShown);
   }
 
   launchQuery(clause: string) {

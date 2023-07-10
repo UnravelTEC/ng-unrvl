@@ -55,6 +55,15 @@
         margin-top: 0.5rem;
         padding: 0;
       }
+      fieldset#tags {
+        position: relative;
+        h3 {margin-bottom: 0;}
+        .togglebtn {
+          position: absolute;
+          top: 0.5em;
+          right: 0.5em;
+        }
+      }
     }
   }
   #anyfooter {
