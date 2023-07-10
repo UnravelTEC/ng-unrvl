@@ -306,8 +306,14 @@ export class SensorService {
       sensor_degC: {
         round_digits: 1,
       },
+      dewPoint_degC: {
+        round_digits: 1,
+      },
       humidity_rel_percent: {
         round_digits: 0,
+      },
+      humidity_gpm3: {
+        round_digits: 1,
       },
       '*_ugpm3': {
         round_digits: 1,
@@ -537,6 +543,10 @@ export class SensorService {
     return [value, value, value];
   }
   getDeviationFunction(raw_label) {
+    if(this.h.getDeep(raw_label, ['tags', 'SRC']) == 'computed') {
+      // TODO Fehlerfortpflanzung
+      return this.nullDevFun;
+    }
     const defFun = this.getSensorPresetField(raw_label, 'getDeviation');
     return defFun ? defFun : this.nullDevFun;
   }

@@ -24,7 +24,7 @@
   [changeTrigger]="changeTrigger"
   [extraDyGraphConfig]="extraDyGraphConfig"
   [startTime]="startTime"
-  showLogscaleSwitcher="false"
+  showLogscaleSwitcher="true"
   YLabel="Particle Count (&#8202;#&#8202;/&#8202;cm³&#8202;)"
   enableHighlightCallback="true"
   (returnHighlightedRow)="handleHighlightCallback($event)"
@@ -32,6 +32,8 @@
   (returnCurrentZoom)="updateFromToTimes($event)"
   #R
 ></app-ut-dygraph-in>
+<!-- showLogscaleSwitcher="false" -->
+
 
 <div class="chartabs">
   <div class="chart">

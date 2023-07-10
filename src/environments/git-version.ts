@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "f8ad0a2",
-  "SHA": "f8ad0a2ba7d996e3b0c7c92c64f24f12362354f5",
+  "shortSHA": "627f0e6",
+  "SHA": "627f0e6cde67a5dca6c8bb53a18c15eec7a0e1f4",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Tue Jun 7 13:53:18 2022 +0200",
-  "lastCommitMessage": "rm no longer needed commented out old code",
-  "lastCommitNumber": "1350"
+  "lastCommitTime": "Fri Jul 7 14:52:59 2023 +0200",
+  "lastCommitMessage": "humidity app works",
+  "lastCommitNumber": "1401"
 }
