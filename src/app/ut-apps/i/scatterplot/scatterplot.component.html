@@ -49,7 +49,7 @@
                 <br>
                 <span>Tagsets<span *ngIf="Series_per_m[M2] && Series_per_m[M2].length">
                         ({{Series_per_m[M2].length}})</span>: </span>
-                <mat-form-field *ngIf="Series_per_m[M2] && Series_per_m[M2].length > 1">
+                <mat-form-field *ngIf="Series_per_m[M2] && Series_per_m[M2].length > 1" style="width: 90%;">
                     <mat-label>Series:</mat-label>
                     <mat-select [(ngModel)]="S2" name="S2" (closed)="change2()"
                         [disabled]="queryRunning == true || autoreload">
