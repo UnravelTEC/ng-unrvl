@@ -384,7 +384,7 @@ export class ScatterplotComponent implements OnInit {
       const degree_to_rad = Math.PI / 360;
       for (let i = 0; i < idata.length; i++) {
         const row = idata[i];
-        // subtract 
+        // subtract
         const new_dir = degree_to_rad * (row[direction_col_index] - delta_angle) ;
         const new_mag = row[magnitude_col_index] * Math.cos(new_dir);
         const new_row = [row[0], row[first_col_index], new_mag]
@@ -415,7 +415,7 @@ export class ScatterplotComponent implements OnInit {
       if (logscale == true) {
         for (let r = 0; r < idata.length; r++) {
           const point = idata[r][c];
-          if (point <= 0 && point !== NaN && point !== null) {
+          if (point <= 0 && !Number.isNaN(point) && point !== null) {
             logscale = false;
             console.log('found', idata[r][c], '@r', r, 'c', c, 'of', item);
             break;
@@ -479,8 +479,8 @@ export class ScatterplotComponent implements OnInit {
 }
 
 
-/* 
-  todos : 
+/*
+  todos :
   * switch X/Y (S1 und S2)
   * select database points
 */
