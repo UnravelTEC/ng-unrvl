@@ -59,6 +59,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
     'id',
     'sensor',
     'topic',
+    'firmware_ver',
     'interval_s',
   ];
   graphstyle = {
