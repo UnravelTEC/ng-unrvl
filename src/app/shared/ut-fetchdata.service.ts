@@ -15,7 +15,7 @@ export class UtFetchdataService {
     private http: HttpClient,
     private gss: GlobalSettingsService,
     private h: HelperFunctionsService
-  ) {}
+  ) { }
 
   getHTTPData(
     thisurl: string,
@@ -262,13 +262,13 @@ export class UtFetchdataService {
           tagarray.push(tkey + ': ' + tags[tkey])
         }
       }
-      const priorities = ['sensor','id','channel']
+      const priorities = ['sensor', 'id', 'channel']
       for (const prio of priorities) {
         for (let i = 0; i < tagarray.length; i++) {
           const tag = tagarray[i];
           if (tag.startsWith(prio)) {
             serieslabel += ' ' + tag + ',';
-            tagarray.splice(i,1)
+            tagarray.splice(i, 1)
             break;
           }
         }
@@ -399,6 +399,33 @@ export class UtFetchdataService {
         newArray.push(row);
       }
     });
+
+    // insert NaN-Gap-Rows for displaying Gaps in Dygraph
+    if (newArray.length > 3) {
+      // calculate Median Gap:
+      const dtArr = [];
+      const analyze_length = Math.min(15, newArray.length);
+      for (let i = 1; i < analyze_length; i++) {
+        dtArr.push(newArray[i][0].valueOf() - newArray[i - 1][0].valueOf());
+      }
+      const sorteddts = dtArr.sort();
+      const center_i = Math.round(sorteddts.length / 2);
+      const gap = sorteddts[center_i];
+      console.log("Median Gap:", gap);
+
+      const maxGap = gap * 1.1;
+      const gap_row = new Array(newArray.length[0]).fill(NaN);
+
+      for (let i = 1; i < newArray.length; i++) {
+        const currentGap = newArray[i][0].valueOf() - newArray[i - 1][0].valueOf()
+        if (currentGap > maxGap) {
+          gap_row[0] = new Date(newArray[i][0].valueOf() - gap)
+          console.log('inserted Gap Row at', gap_row[0]);
+          newArray.splice(i, 0, gap_row)
+          i++
+        }
+      }
+    }
 
     // console.log('after sort', cloneDeep(newArray));
 
