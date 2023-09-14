@@ -16,7 +16,6 @@ import Dygraph from 'dygraphs';
 import cloneDeep from 'lodash-es/cloneDeep';
 
 import { HelperFunctionsService } from '../../core/helper-functions.service';
-import { LocalStorageService } from '../../core/local-storage.service';
 import { SensorService } from '../sensor.service';
 import { GlobalSettingsService } from 'app/core/global-settings.service';
 
