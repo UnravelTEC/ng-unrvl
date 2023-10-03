@@ -8,3 +8,5 @@ choose basic download
   use inscape to remove the inset text
   export svg first
     somehow add attribution text (meta tags?)
+
+µSD: https://www.pngall.com/sd-card-png/
