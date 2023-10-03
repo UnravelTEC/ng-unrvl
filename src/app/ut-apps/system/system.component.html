@@ -1,0 +1,30 @@
+<div id="system-dashboard" #systemdashboard>
+
+    <h2>Running</h2>
+    <div class="panel">
+        <app-ut-dashboard-tile title="Load & Uptime" path="/Apps/I/Anysens"
+            [queryParams]="{ measurement: 'system', referrer: '/System/' }"></app-ut-dashboard-tile>
+        <app-ut-dashboard-tile title="CPU" path="/Apps/I/Anysens" icon="manufacturers/Raspberry_Pi.svg"
+            [queryParams]="{ measurement: 'cpu', referrer: '/System/' }"></app-ut-dashboard-tile>
+        <app-ut-dashboard-tile title="Processes" path="/Apps/I/Anysens"
+            [queryParams]="{ measurement: 'processes', referrer: '/System/' }"></app-ut-dashboard-tile>
+    </div>
+
+    <h2>I/O</h2>
+    <div class="panel">
+        <app-ut-dashboard-tile title="Mem" path="/Apps/I/Anysens"
+            [queryParams]="{ measurement: 'mem', referrer: '/System/' }"></app-ut-dashboard-tile>
+        <app-ut-dashboard-tile title="Disk I/O" path="/Apps/I/Anysens" icon="SD-Card-PNG-Image-HD.png"
+            [queryParams]="{ measurement: 'io', referrer: '/System/' }"></app-ut-dashboard-tile>
+        <app-ut-dashboard-tile title="DB size" path="/Apps/I/Anysens" icon="influxdata-logo--symbol--pool-alpha.png"
+            bg="#FFF" [queryParams]="{ measurement: 'size', referrer: '/System/' }"></app-ut-dashboard-tile>
+        <app-ut-dashboard-tile title="Swap" path="/Apps/I/Anysens"
+            [queryParams]="{ measurement: 'swap', referrer: '/System/' }"></app-ut-dashboard-tile>
+    </div>
+
+    <h2>Net</h2>
+    <div class="panel">
+        <app-ut-dashboard-tile title="Net" path="/Apps/I/Anysens"
+            [queryParams]="{ measurement: 'net', referrer: '/System/' }"></app-ut-dashboard-tile>
+    </div>
+</div>

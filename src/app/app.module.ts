@@ -227,6 +227,11 @@ const appRoutes: Routes = [
     pathMatch: 'full',
   },
   {
+    path: 'Apps/System',
+    loadChildren: () =>
+      import('./ut-apps/system/system.module').then((m) => m.SystemModule),
+  },
+  {
     path: '**',
     loadChildren: () =>
       import('./ut-dashboard/ut-dashboard.module').then(
