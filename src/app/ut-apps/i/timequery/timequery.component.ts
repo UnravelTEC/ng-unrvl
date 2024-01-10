@@ -40,7 +40,7 @@ export class TimequeryComponent implements OnInit {
 
   public toFormDate: FormControl;
 
-  appName = 'All Sensors';
+  appName = 'History Time Query Interface';
 
   constructor(
     private globalSettings: GlobalSettingsService,
