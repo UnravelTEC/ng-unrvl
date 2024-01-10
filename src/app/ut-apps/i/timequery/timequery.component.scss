@@ -1,0 +1,113 @@
+$graphbg: #3f3f3f;
+$appbody: #1e1e1e;
+.abody {
+  margin: 0.5em;
+}
+li {
+  margin: 0.25em 0;
+  a {
+    background-color: white;
+    padding: 0 0.5em;
+  }
+}
+
+table {
+  background-color: $graphbg;
+  border: 0;
+  border-collapse: collapse;
+
+  td {
+    border: 0;
+    padding: 0.25em 0.5em;
+    border-top: 2px solid $appbody;
+
+   
+  }
+  td:first-child a {
+    width: 100%;
+  }
+}
+table.sensors {
+  th {
+    padding: 0.5em 2em 0.5em 0.5em;
+  }
+  td:first-child a {
+    width: 100%;
+    // margin-right: -3em;
+  }
+}
+
+table,
+form {
+  a {
+    display: inline-block;
+    border: 2px solid black;
+    background: #565656;
+    padding: 0.5em;
+    cursor: pointer;
+    min-width: 2.25em;
+    color: white;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+  a:hover {
+    background-color: #8e8e8e;
+  }
+}
+
+form.fieldsettings {
+  mat-form-field {
+    margin: 1em;
+  }
+  td,
+  th {
+    border-right: 2px solid $appbody;
+  }
+
+  div.mat-select-panel {
+    max-width: 20em !important;
+  }
+  .mat-select {
+    background-color: #565656;
+  }
+  .mat-option {
+    word-break: break-all;
+    white-space: normal;
+    height: unset;
+  }
+  mat-label {
+    color: #999;
+  }
+}
+.time div {
+  display: inline-block;
+  label {
+    display: block;
+  }
+  input[type="number"] {
+    width: 4em;
+  }
+}
+
+
+.time > div {
+  margin: 0.3em;
+  // border: 1px solid green;
+  padding: 3px;
+  height: 13em;
+  vertical-align: middle;
+}
+
+// Pseudo-element to fix vertical-align
+// https://codepen.io/edge0703/pen/DzaEex
+.time:before {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  height: 100%;
+}
+
+fieldset {
+  border: 1px solid gray;
+
+}

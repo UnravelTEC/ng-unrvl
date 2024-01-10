@@ -169,6 +169,11 @@ const appRoutes: Routes = [
       import('./ut-apps/i/anysens/anysens.module').then((m) => m.AnysensModule),
   },
   {
+    path: 'Apps/I/Timequery',
+    loadChildren: () =>
+      import('./ut-apps/i/timequery/timequery.module').then((m) => m.TimequeryModule),
+  },
+  {
     path: 'Apps/I/Corellation',
     loadChildren: () =>
       import('./ut-apps/i/scatterplot/scatterplot.module').then((m) => m.ScatterplotModule),
