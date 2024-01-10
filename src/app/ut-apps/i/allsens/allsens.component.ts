@@ -129,33 +129,43 @@ export class AllsensComponent implements OnInit {
     if (lshost)
       this.userHost = lshost;
 
-    const q = this.utHTTP.buildInfluxQuery("show field keys on " + this.globalSettings.server.influxdb);
+    let querystring = "";
+    for (const sname in this.sensors) {
+      if (Object.prototype.hasOwnProperty.call(this.sensors, sname)) {
+        const measurements = this.sensors[sname];
+        measurements.forEach(measurement => {
+          querystring += "SELECT * from " + measurement + " WHERE sensor='" + sname + "' ORDER BY time DESC LIMIT 1; "
+        });
+      }
+    }
+    const q = this.utHTTP.buildInfluxQuery(querystring);
     this.utHTTP.getHTTPData(q).subscribe(
-      (data: Object) => this.handleFieldKeys(data),
+      (data: Object) => this.handlelatestSensorTSs(data),
       (error) => this.globalSettings.displayHTTPerror(error)
     );
   }
 
-  public fieldKeys = {} // # { $M: [] }
-  handleFieldKeys(data) {
-    console.log("handleFieldKeys");
+  public latest_sensorTSs = {} // # { $Sensor: { $measurement: latest_TS } }
+  handlelatestSensorTSs(data) {
+    console.log("handlelatestSensorTSs");
 
     console.log(data);
-    const series = this.h.getDeep(data, ['results', 0, 'series']);
-    console.log('series', series);
+    const series = data['results'];
+    // console.log('series', series);
 
     for (let i = 0; i < series.length; i++) {
-      const element = series[i];
-      const m = element['name'];
-      this.fieldKeys[m] = ["*"];
-      element['values'].forEach(fk => {
-        if (fk[1] == 'float' || fk[1] == 'integer') {
-          this.fieldKeys[m].push(fk[0])
-        }
-      });
+      const seri = series[i]['series'][0];
+      const sensorcol = seri['columns'].indexOf('sensor')
+      // console.log(seri, sensorcol);
 
+      if(sensorcol > 0) {
+        const sensor = seri['values'][0][sensorcol]
+        if (!this.latest_sensorTSs[sensor]) this.latest_sensorTSs[sensor] = {};
+        this.latest_sensorTSs[sensor][seri['name']] = seri['values'][0][0]
+      }
     }
-    console.log(this.fieldKeys);
+    console.log(this.latest_sensorTSs);
   }
 
 }
+
