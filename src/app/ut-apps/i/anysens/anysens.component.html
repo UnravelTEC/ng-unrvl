@@ -101,8 +101,10 @@
             (closed)="changeMean(userStartTime)"
             [disabled]="queryRunning == true || autoreload"
           >
+            <mat-option value="5m">5 min.</mat-option>
             <mat-option value="15m">15 min.</mat-option>
-            <mat-option value="1h" selected="selected"> 1h</mat-option>
+            <mat-option value="1h" selected="selected">1h</mat-option>
+            <mat-option value="2h">2h</mat-option>
             <mat-option value="6h">6 h</mat-option>
             <mat-option value="24h">24 h</mat-option>
             <mat-option value="7d">1 week</mat-option>
