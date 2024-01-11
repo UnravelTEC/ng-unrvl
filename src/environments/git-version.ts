@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "708d087",
-  "SHA": "708d087fb5a70e638b0cf18bd49fe5be1dad5bd2",
+  "shortSHA": "ec605ad",
+  "SHA": "ec605ad98637a4ad61e1164cf4cd27627b23bfd7",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Tue Oct 3 15:39:50 2023 +0200",
-  "lastCommitMessage": "made dashboard-tile a shared module; add sub-page for system stats",
-  "lastCommitNumber": "1415"
+  "lastCommitTime": "Thu Jan 11 12:08:12 2024 +0100",
+  "lastCommitMessage": "display age of measurement series, done.",
+  "lastCommitNumber": "1421"
 }
