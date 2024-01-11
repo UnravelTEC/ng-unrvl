@@ -145,8 +145,9 @@ export class AllsensComponent implements OnInit {
     );
   }
 
-  public latest_sensorTSs = {} // # { $Sensor: { $measurement: latest_TS } }
+  public latest_sensorSeconds = {} // # { $Sensor: { $measurement: latest_TS } }
   handlelatestSensorTSs(data) {
+    const uts = Date.now().valueOf()
     console.log("handlelatestSensorTSs");
 
     console.log(data);
@@ -158,13 +159,13 @@ export class AllsensComponent implements OnInit {
       const sensorcol = seri['columns'].indexOf('sensor')
       // console.log(seri, sensorcol);
 
-      if(sensorcol > 0) {
+      if (sensorcol > 0) {
         const sensor = seri['values'][0][sensorcol]
-        if (!this.latest_sensorTSs[sensor]) this.latest_sensorTSs[sensor] = {};
-        this.latest_sensorTSs[sensor][seri['name']] = seri['values'][0][0]
+        if (!this.latest_sensorSeconds[sensor]) this.latest_sensorSeconds[sensor] = {};
+        this.latest_sensorSeconds[sensor][seri['name']] = this.h.createHRTimeString(Math.round((uts - seri['values'][0][0]) / 1000));
       }
     }
-    console.log(this.latest_sensorTSs);
+    console.log(this.latest_sensorSeconds);
   }
 
 }
