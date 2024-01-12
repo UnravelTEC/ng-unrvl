@@ -23,7 +23,7 @@ export class Sps30Component implements OnInit {
     pointSize: 3,
     logscale: false,
   };
-  labelBlackListT = ['host', 'serial', 'mean_*', 'id', 'sensor', 'mean'];
+  labelBlackListT = ['host', 'serial', 'mean_*', 'id', 'sensor', 'mean', 'cleaning_interval_d', 'interval_s'];
   graphstyleTop = {
     position: 'absolute',
     top: '0.5em',
