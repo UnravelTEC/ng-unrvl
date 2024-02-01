@@ -294,7 +294,7 @@ export class EnvirooneComponent implements OnInit {
       if (logscale == true) {
         for (let r = 0; r < idata.length; r++) {
           const point = idata[r][c];
-          if (point <= 0 && point !== NaN && point !== null) {
+          if (point <= 0 && !Number.isNaN(point) && point !== null) {
             logscale = false;
             console.log('found', idata[r][c], '@r', r, 'c', c, 'of', item);
             break;

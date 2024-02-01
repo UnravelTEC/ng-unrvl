@@ -1,6 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { min } from 'lodash-es';
-import { stringify } from 'querystring';
 
 @Component({
   selector: 'app-ut-bargauge-min',

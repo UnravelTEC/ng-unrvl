@@ -18,7 +18,6 @@ import cloneDeep from 'lodash-es/cloneDeep';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
 import { SensorService } from '../sensor.service';
 import { GlobalSettingsService } from 'app/core/global-settings.service';
-import { U } from '../../../../node_modules-old/@angular/cdk/keycodes';
 
 @Component({
   selector: 'app-ut-dygraph-scatter',

@@ -3,7 +3,6 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
 import { LocalStorageService } from '../../core/local-storage.service';
 import { UtFetchdataService } from '../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../core/helper-functions.service';
-import { stringify } from 'querystring';
 
 @Component({
   selector: 'app-envirograz',
