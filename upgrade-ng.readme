@@ -52,5 +52,8 @@ npm install @angular-devkit/schematics --legacy-peer-deps
 git add package-lock.json package.json
 gm "make repo clean before ngx"
 npx @angular/cli@10 update @angular/core@10 @angular/cli@10
-
+ ERROR on build: opensslErrorStack: [ 'error:03000086:digital envelope routines::initialization error' ]
+  ... continue anyway, as we have npm from testing, and rest from debian stable
+npx @angular/cli@10 update @angular/material@10
+-OK
 
