@@ -1,3 +1,5 @@
+# 6 to 7
+
 according to https://update.angular.io/
 
 https://update.angular.io/#6.0:7.0
@@ -17,6 +19,8 @@ maybe downgrade before:
 ng update @angular/common@7
 
 
+# 7 to 8
+
 https://update.angular.io/#7.2:8.0l2
 
 ng update @angular/cli@8 @angular/core@8
@@ -35,5 +39,18 @@ according to https://linuxize.com/post/how-to-install-node-js-on-debian-10/
   npm install -g npm
 
 npm install ng2-charts@latest
+
+# 9.1 to 10
+
+ati nodejs=18.19.0+dfsg-6
+ati npm
+
+repository muss clean sein
+npx @angular/cli@10 update @angular/core@10 @angular/cli@10
+  ERROR: The "@angular-devkit/schematics" package cannot be resolved from the workspace root directory. ...
+npm install @angular-devkit/schematics --legacy-peer-deps
+git add package-lock.json package.json
+gm "make repo clean before ngx"
+npx @angular/cli@10 update @angular/core@10 @angular/cli@10
 
 
