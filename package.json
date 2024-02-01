@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "@angular-devkit/build-angular": "^15.2.10"
+    "@angular-devkit/build-angular": "^16.2.12"
   },
   "name": "ng-unrvl",
   "version": "0.1.0",
@@ -15,18 +15,18 @@
     "e2e": "cypress run"
   },
   "dependencies": {
-    "@angular-devkit/schematics": "^15.2.10",
-    "@angular/animations": "^15.2.10",
+    "@angular-devkit/schematics": "^16.2.12",
+    "@angular/animations": "^16.2.12",
     "@angular/cdk": "^15.2.9",
-    "@angular/common": "^15.2.10",
-    "@angular/compiler": "^15.2.10",
-    "@angular/cli": "^15.2.10",
-    "@angular/core": "^15.2.10",
-    "@angular/forms": "^15.2.10",
+    "@angular/common": "^16.2.12",
+    "@angular/compiler": "^16.2.12",
+    "@angular/cli": "^16.2.12",
+    "@angular/core": "^16.2.12",
+    "@angular/forms": "^16.2.12",
     "@angular/material": "^15.2.9",
-    "@angular/platform-browser": "^15.2.10",
-    "@angular/platform-browser-dynamic": "^15.2.10",
-    "@angular/router": "^15.2.10",
+    "@angular/platform-browser": "^16.2.12",
+    "@angular/platform-browser-dynamic": "^16.2.12",
+    "@angular/router": "^16.2.12",
     "@asymmetrik/ngx-leaflet": "^8.1.0",
     "@types/dygraphs": "^1.1.12",
     "@types/file-saver": "^2.0.1",
@@ -46,6 +46,6 @@
     "paho-mqtt": "^1.1.0",
     "rxjs": "^6.6.2",
     "tslib": "^2.0.0",
-    "zone.js": "~0.11.8"
+    "zone.js": "~0.13.3"
   }
 }
