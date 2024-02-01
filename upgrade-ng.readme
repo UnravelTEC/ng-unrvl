@@ -68,4 +68,11 @@ npm i  @angular/core@10 @angular/cli@10
 npm install @angular-devkit/build-angular
 alte deps von alter package.json rein, nur mal das ng zeug, nicht unsere extrasachen wie dyg oder so
 
+ng update @angular/core@11 @angular/cli@11
+ng update @angular/material@11
 
+# 11 to 12
+
+Dependency prob -> del package-lock.json
+
+ng update @angular/core@12 @angular/cli@12 --force
