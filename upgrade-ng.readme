@@ -93,4 +93,5 @@ ng update @angular/material@14
 # 14 to 15
 
 ng update @angular/core@15 @angular/cli@15
-
+ng update @angular/material@15
+- migriert alle und andere { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';

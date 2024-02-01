@@ -256,7 +256,7 @@ const appRoutes: Routes = [
     CoreModule.forRoot(),
     RouterModule.forRoot(
       appRoutes,
-      { enableTracing: false, relativeLinkResolution: 'legacy' } // !environment.production
+      { enableTracing: false } // !environment.production
  // !environment.production
     ),
   ],

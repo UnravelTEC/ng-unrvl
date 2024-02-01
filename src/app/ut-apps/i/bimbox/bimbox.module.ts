@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { BimboxRoutingModule } from './bimbox-routing.module';
 import { BimboxComponent } from './bimbox.component';
 import { MapModule } from '../../../shared/map/map.module';
-import { MatSelectModule } from '@angular/material/select';
+import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
 import { FormsModule } from '@angular/forms';
 import { UtDygraphInModule } from '../../../shared/ut-dygraph-in/ut-dygraph-in.module';
 import { MatIconModule } from '@angular/material/icon';

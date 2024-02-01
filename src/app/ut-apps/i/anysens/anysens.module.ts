@@ -4,10 +4,10 @@ import { CommonModule } from '@angular/common';
 import { AnysensRoutingModule } from './anysens-routing.module';
 import { AnysensComponent } from './anysens.component';
 import { UtDygraphInModule } from '../../../shared/ut-dygraph-in/ut-dygraph-in.module';
-import { MatSelectModule } from '@angular/material/select';
+import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatLegacyCheckboxModule as MatCheckboxModule } from '@angular/material/legacy-checkbox';
 
 @NgModule({
   imports: [

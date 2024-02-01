@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { GpsRoutingModule } from './gps-routing.module';
 import { MapModule } from '../../../shared/map/map.module';
 import { GpsComponent } from './gps.component';
-import { MatSelectModule } from '@angular/material/select';
+import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 
