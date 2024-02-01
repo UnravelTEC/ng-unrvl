@@ -77,3 +77,11 @@ Dependency prob -> del package-lock.json
 
 ng update @angular/core@12 @angular/cli@12 --force
 ng update @angular/material@12
+
+# 12 to 13
+
+ng update @angular/core@13 @angular/cli@13
+npm i
+ng update @angular/material@13
+
+
