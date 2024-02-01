@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { SystemTimeComponent } from './system-time.component';
 
@@ -6,7 +6,7 @@ describe('SystemTimeComponent', () => {
   let component: SystemTimeComponent;
   let fixture: ComponentFixture<SystemTimeComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SystemTimeComponent ]
     })

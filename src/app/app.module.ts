@@ -256,7 +256,8 @@ const appRoutes: Routes = [
     CoreModule.forRoot(),
     RouterModule.forRoot(
       appRoutes,
-      { enableTracing: false } // !environment.production
+      { enableTracing: false, relativeLinkResolution: 'legacy' } // !environment.production
+ // !environment.production
     ),
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'de' }, Title],
