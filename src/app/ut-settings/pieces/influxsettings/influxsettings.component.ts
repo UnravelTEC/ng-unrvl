@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { HelperFunctionsService } from 'app/core/helper-functions.service';
 import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
 import { GlobalSettingsService } from '../../../core/global-settings.service';
@@ -25,7 +25,7 @@ export class InfluxsettingsComponent implements OnInit, OnDestroy {
   constructor(
     public gss: GlobalSettingsService,
     private localStorage: LocalStorageService,
-    public fb: FormBuilder,
+    public fb: UntypedFormBuilder,
     private utHTTP: UtFetchdataService,
     private h: HelperFunctionsService
   ) {}

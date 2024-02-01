@@ -1,4 +1,4 @@
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import {
   Component,
   EventEmitter,
@@ -205,9 +205,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   };
 
   public fromZoom: Date;
-  public fromFormDate = new FormControl(new Date());
+  public fromFormDate = new UntypedFormControl(new Date());
   public toZoom: Date;
-  public toFormDate = new FormControl(new Date());
+  public toFormDate = new UntypedFormControl(new Date());
   public pickerEndDate = new Date();
 
   @Input()
@@ -1324,8 +1324,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     if (this.minimal) {
       return;
     }
-    this.fromFormDate = new FormControl(this.fromZoom);
-    this.toFormDate = new FormControl(this.toZoom);
+    this.fromFormDate = new UntypedFormControl(this.fromZoom);
+    this.toFormDate = new UntypedFormControl(this.toZoom);
   }
 
   calculateAverage(from?: Date, targetArray = this.data) {

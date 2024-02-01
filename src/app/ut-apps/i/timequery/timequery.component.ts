@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { GlobalSettingsService } from '../../../core/global-settings.service';
 import { UtFetchdataService } from '../../../shared/ut-fetchdata.service';
 import { HelperFunctionsService } from '../../../core/helper-functions.service';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { LocalStorageService } from 'app/core/local-storage.service';
 
 @Component({
@@ -38,7 +38,7 @@ export class TimequeryComponent implements OnInit {
   userAvgInterval = "1s"
 
 
-  public toFormDate: FormControl;
+  public toFormDate: UntypedFormControl;
 
   appName = 'History Time Query Interface';
 
@@ -66,7 +66,7 @@ export class TimequeryComponent implements OnInit {
 
         if (element == 'toFormDate') {
           const newToDate = new Date(thing)
-          this.toFormDate = new FormControl(newToDate);
+          this.toFormDate = new UntypedFormControl(newToDate);
           this.userToValue = newToDate.valueOf();
         } else {
           this[element] = thing;
@@ -74,7 +74,7 @@ export class TimequeryComponent implements OnInit {
       }
     });
     if (!this.toFormDate) {
-      this.toFormDate = new FormControl(new Date());
+      this.toFormDate = new UntypedFormControl(new Date());
     } else {
       const newToDateWHM = new Date(this.userToValue)
       newToDateWHM.setHours(this.userHour);

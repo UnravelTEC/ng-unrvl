@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GlobalSettingsService } from 'app/core/global-settings.service';
 import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { now } from 'lodash-es';
 
 @Component({
@@ -55,7 +55,7 @@ either calibration factors or hardware recalibration have to be done (both also 
   public s2 = 0;
   public note = '';
 
-  public calDate = new FormControl(this.newcaldate);
+  public calDate = new UntypedFormControl(this.newcaldate);
   public minutes = 0;
   public hours = 0;
   splitDates() {
@@ -65,7 +65,7 @@ either calibration factors or hardware recalibration have to be done (both also 
     this.newcaldate.setMinutes(0);
     this.newcaldate.setSeconds(0);
     this.newcaldate.setMilliseconds(0);
-    this.calDate = new FormControl(this.newcaldate);
+    this.calDate = new UntypedFormControl(this.newcaldate);
   }
 
   constructor(
