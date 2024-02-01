@@ -54,6 +54,18 @@ gm "make repo clean before ngx"
 npx @angular/cli@10 update @angular/core@10 @angular/cli@10
  ERROR on build: opensslErrorStack: [ 'error:03000086:digital envelope routines::initialization error' ]
   ... continue anyway, as we have npm from testing, and rest from debian stable
+
 npx @angular/cli@10 update @angular/material@10
 -OK
+
+# 10 to 11
+
+fix version conflicts in package.json
+er setzte @angular-devkit/build-angular immer auf 0.11 zurück. dagegen half rm -rf node_modules
+
+next try: completely rm package-lock.json package.json
+npm i  @angular/core@10 @angular/cli@10
+npm install @angular-devkit/build-angular
+alte deps von alter package.json rein, nur mal das ng zeug, nicht unsere extrasachen wie dyg oder so
+
 
