@@ -88,4 +88,6 @@ ng update @angular/material@13
 # 13 to 14
 
 ng update @angular/core@14 @angular/cli@14
+ng update @angular/material@14
+
 
