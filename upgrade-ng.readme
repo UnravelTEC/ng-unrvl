@@ -101,3 +101,8 @@ ng update @angular/material@15
 
 wieder alle libs rein - nach ng build waren einige komische ungenutzte imports da, rauslöschen
 
+# 15 to 16
+
+ng update @angular/core@16 @angular/cli@16
+ng update @angular/material@16
+
