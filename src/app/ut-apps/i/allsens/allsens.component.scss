@@ -64,13 +64,13 @@ form.fieldsettings {
     border-right: 2px solid $appbody;
   }
 
-  div.mat-select-panel {
+  div.mat-mdc-select-panel {
     max-width: 20em !important;
   }
-  .mat-select {
+  .mat-mdc-select {
     background-color: #565656;
   }
-  .mat-option {
+  .mat-mdc-option {
     word-break: break-all;
     white-space: normal;
     height: unset;

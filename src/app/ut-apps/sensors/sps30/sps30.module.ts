@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Sps30RoutingModule } from './sps30-routing.module';
 import { Sps30Component } from './sps30.component';
 import { UtDygraphInModule } from 'app/shared/ut-dygraph-in/ut-dygraph-in.module';
-import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
+import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 

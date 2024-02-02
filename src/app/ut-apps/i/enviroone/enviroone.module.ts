@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { EnvirooneRoutingModule } from './enviroone-routing.module';
 import { EnvirooneComponent } from './enviroone.component';
 import { UtDygraphInModule } from '../../../shared/ut-dygraph-in/ut-dygraph-in.module';
-import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
+import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 

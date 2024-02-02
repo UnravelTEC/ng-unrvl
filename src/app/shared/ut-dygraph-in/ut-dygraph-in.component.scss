@@ -128,10 +128,11 @@ $red2: #ff7f88;
       margin-top: -0.35em;
       font-family: inherit;
       .mat-form-field-underline,
-      .mat-form-field-suffix button.mat-icon-button,
+      .mat-form-field-suffix button.mat-mdc-icon-button,
       .mat-form-field-prefix button.mat-icon-button {
         display: none;
       }
+      /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
       .mat-form-field-wrapper {
         padding-bottom: 0; // stretched out of bottom and created scrollbar
       }
@@ -139,6 +140,7 @@ $red2: #ff7f88;
         cursor: pointer;
       }
     }
+    /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
     mat-form-field.mat-form-field-appearance-legacy .mat-form-field-infix {
       padding: 0;
       border-top: 0;
@@ -270,6 +272,7 @@ $red2: #ff7f88;
   .y2minSel,
   .y2maxSel {
     position: absolute;
+    /* TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version.*/
     mat-radio-group {
       border: 1px solid black;
       height: 3.5em;
@@ -584,6 +587,7 @@ div.optionsarea {
           // background: greenyellow;
           height: 1.5em;
         }
+        /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
         .mat-form-field-infix {
           border-top: 0;
           padding: 0;
