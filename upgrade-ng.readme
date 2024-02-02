@@ -112,6 +112,9 @@ nacharbeiten:
   src/app/shared/ut-dygraph-in/ut-dygraph-in.component.scss
   src/app/shared/ut-dygraph-scatter/ut-dygraph-scatter.component.scss
   src/app/ut-apps/calibration/calibration.component.scss
-ng update @asymmetrik/ngx-leaflet
+ng update @asymmetrik/ngx-leaflet - upgraded ng auf 17
 
+npm remove ng-beautiful-gauges
+npm install @biacsics/ng-canvas-gauges
+  tausche nur modulnamen beim import
 
