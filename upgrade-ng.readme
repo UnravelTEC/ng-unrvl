@@ -105,4 +105,13 @@ wieder alle libs rein - nach ng build waren einige komische ungenutzte imports d
 
 ng update @angular/core@16 @angular/cli@16
 ng update @angular/material@16
+ng update ng2-charts
+
+ng generate @angular/material:mdc-migration - choose all folders
+nacharbeiten:
+  src/app/shared/ut-dygraph-in/ut-dygraph-in.component.scss
+  src/app/shared/ut-dygraph-scatter/ut-dygraph-scatter.component.scss
+  src/app/ut-apps/calibration/calibration.component.scss
+ng update @asymmetrik/ngx-leaflet
+
 
