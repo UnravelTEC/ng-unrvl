@@ -2,7 +2,5 @@
   min="7"
   max="255"
   step="1"
-  [value]="currentBrightness"
-  (change)="setBrightness($event)"
   [disabled]="disabled"
-></mat-slider>
+ #ngSlider><input matSliderThumb [value]="currentBrightness" (change)="setBrightness({source: ngSliderThumb, parent: ngSlider, value: ngSliderThumb.value})" #ngSliderThumb="matSliderThumb" /></mat-slider>

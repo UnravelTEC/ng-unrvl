@@ -6,10 +6,8 @@
     min="0"
     max="100"
     step="1"
-    [value]="currentSpeed"
-    (change)="setSpeed($event)"
     [disabled]="disabled"
-  ></mat-slider>
+   #ngSlider><input matSliderThumb [value]="currentSpeed" (change)="setSpeed({source: ngSliderThumb, parent: ngSlider, value: ngSliderThumb.value})" #ngSliderThumb="matSliderThumb" /></mat-slider>
 </div>
 <div *ngIf="disabled == true">
   No fan present.
