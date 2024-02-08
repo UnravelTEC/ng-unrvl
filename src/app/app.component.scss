@@ -33,9 +33,10 @@ $labelcolor: #999;
     color: $buttontext;
     .mat-icon {
       margin: 0;
-      margin-bottom: -10px;
-      margin-top: -10px;
-      transform: translateY(6px);
+      margin-bottom: -5px;
+      margin-top: -5px;
+      // transform: translateY(6px);
+      line-height: 1.2em;
     }
   }
   ::ng-deep button:hover {
@@ -74,6 +75,9 @@ $labelcolor: #999;
     overflow-y: auto;
     margin: 0;
     padding: 0;
+    .mdc-text-field--filled {
+      background-color: $mainbg;
+    }
     fieldset {
       border: 1px solid #666;
       width: 11.5rem;
@@ -90,6 +94,13 @@ $labelcolor: #999;
       }
       mat-label {
         color: $labelcolor;
+      }
+      .mat-mdc-form-field-type-mat-select > .mat-mdc-text-field-wrapper  {
+        padding-left: 0;
+        padding-right: 0;
+      }
+      .mat-form-field-appearance-fill .mat-mdc-select-arrow-wrapper {
+        transform: translateY(0)
       }
       .mat-mdc-select {
         background-color: #565656;

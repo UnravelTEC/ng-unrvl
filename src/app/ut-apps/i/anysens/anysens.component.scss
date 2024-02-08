@@ -54,6 +54,10 @@
       div.taglist {
         margin-top: 0.5rem;
         padding: 0;
+
+      }
+      div.taglist > div {
+        margin-bottom: -1rem;
       }
       fieldset#tags {
         position: relative;

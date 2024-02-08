@@ -508,8 +508,8 @@ $red2: #ff7f88;
     position: absolute;
     bottom: 0;
     left: 0;
-    height: 28px;
-    width: 28px;
+    height: 36px;
+    width: 36px;
     border-radius: 0.5rem;
     background: transparent;
     cursor: pointer;
@@ -518,7 +518,7 @@ $red2: #ff7f88;
     margin-right: auto;
     padding: 0 !important;
     * {
-      transform: translate(0rem, 0rem);
+      transform: translate(0rem, 2px);
       font-size: 18px;
       line-height: 24px; // minus border
     }
