@@ -43,19 +43,19 @@ $labelcolor: #999;
     background-color: $buttonactivebg;
   }
 
-  ::ng-deep input[type='text'] {
+  ::ng-deep input[type="text"] {
     padding: 0.3em;
     border: 2px solid black;
     background-color: #565656;
     color: #c7c7c7;
   }
-  ::ng-deep input[type='password'] {
+  ::ng-deep input[type="password"] {
     padding: 0.3em;
     border: 2px solid black;
     background-color: #565656;
     color: #c7c7c7;
   }
-  ::ng-deep input[type='number'] {
+  ::ng-deep input[type="number"] {
     padding: 0.3em;
     border: 2px solid black;
     background-color: #565656;
@@ -67,6 +67,15 @@ $labelcolor: #999;
     transform: translateY(0.3em);
   }
 
+  ::ng-deep {
+    .mdc-text-field--filled {
+      background-color: $mainbg;
+    }
+    .mat-form-field-appearance-fill .mat-mdc-select-arrow-wrapper {
+      transform: translateY(0);
+    }
+  }
+
   ::ng-deep form.settings {
     position: absolute;
     bottom: 2em;
@@ -75,9 +84,6 @@ $labelcolor: #999;
     overflow-y: auto;
     margin: 0;
     padding: 0;
-    .mdc-text-field--filled {
-      background-color: $mainbg;
-    }
     fieldset {
       border: 1px solid #666;
       width: 11.5rem;
@@ -95,13 +101,11 @@ $labelcolor: #999;
       mat-label {
         color: $labelcolor;
       }
-      .mat-mdc-form-field-type-mat-select > .mat-mdc-text-field-wrapper  {
+      .mat-mdc-form-field-type-mat-select > .mat-mdc-text-field-wrapper {
         padding-left: 0;
         padding-right: 0;
       }
-      .mat-form-field-appearance-fill .mat-mdc-select-arrow-wrapper {
-        transform: translateY(0)
-      }
+
       .mat-mdc-select {
         background-color: #565656;
       }
@@ -113,7 +117,7 @@ $labelcolor: #999;
         font-weight: 400;
         font-size: 14px;
         line-height: 1.125;
-        font-family: Roboto, 'Helvetica Neue', sans-serif;
+        font-family: Roboto, "Helvetica Neue", sans-serif;
       }
       p {
         margin: 0.4em 0;
@@ -135,10 +139,10 @@ $labelcolor: #999;
         cursor: not-allowed;
       }
       button,
-      input[type='text'] {
+      input[type="text"] {
         border-color: #373737;
       }
-      input[type='password'] {
+      input[type="password"] {
         border-color: #373737;
       }
       button:hover {
