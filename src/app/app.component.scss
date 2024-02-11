@@ -5,6 +5,7 @@ $buttonbg: #565656;
 $buttonactivebg: #8e8e8e;
 $buttoninactivebg: #373737;
 $labelcolor: #999;
+$textcolor: #c7c7c7;
 
 * {
   font-family: Helvetica, Arial, sans-serif;
@@ -22,7 +23,7 @@ $labelcolor: #999;
   flex-direction: column;
   display: flex;
   background-color: $mainbg;
-  color: #c7c7c7;
+  color: $textcolor;
 
   ::ng-deep button {
     border: 2px solid black;
@@ -43,23 +44,23 @@ $labelcolor: #999;
     background-color: $buttonactivebg;
   }
 
-  ::ng-deep input[type="text"] {
+  ::ng-deep input[type='text'] {
     padding: 0.3em;
     border: 2px solid black;
     background-color: #565656;
-    color: #c7c7c7;
+    color: $textcolor;
   }
-  ::ng-deep input[type="password"] {
+  ::ng-deep input[type='password'] {
     padding: 0.3em;
     border: 2px solid black;
     background-color: #565656;
-    color: #c7c7c7;
+    color: $textcolor;
   }
-  ::ng-deep input[type="number"] {
+  ::ng-deep input[type='number'] {
     padding: 0.3em;
     border: 2px solid black;
     background-color: #565656;
-    color: #c7c7c7;
+    color: $textcolor;
   }
   ::ng-deep .auth input + .mat-icon {
     margin: 0 0 0 0.2em;
@@ -73,6 +74,15 @@ $labelcolor: #999;
     }
     .mat-form-field-appearance-fill .mat-mdc-select-arrow-wrapper {
       transform: translateY(0);
+    }
+    .mat-mdc-select-value {
+      padding-left: 0.3em;
+    }
+    label.mdc-label {
+      color: $textcolor;
+      font-size: 1rem;
+      line-height: 2.5rem;
+      cursor: pointer;
     }
   }
 
@@ -117,7 +127,7 @@ $labelcolor: #999;
         font-weight: 400;
         font-size: 14px;
         line-height: 1.125;
-        font-family: Roboto, "Helvetica Neue", sans-serif;
+        font-family: Roboto, 'Helvetica Neue', sans-serif;
       }
       p {
         margin: 0.4em 0;
@@ -139,10 +149,10 @@ $labelcolor: #999;
         cursor: not-allowed;
       }
       button,
-      input[type="text"] {
+      input[type='text'] {
         border-color: #373737;
       }
-      input[type="password"] {
+      input[type='password'] {
         border-color: #373737;
       }
       button:hover {
