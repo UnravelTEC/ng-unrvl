@@ -148,10 +148,6 @@ style.padding-bottom="20vh"-->
           (dateChange)="fromDatePickerChanged($event)"
           [max]="pickerEndDate"
         />
-        <mat-datepicker-toggle
-          matSuffix
-          [for]="pickerF"
-        ></mat-datepicker-toggle>
         <mat-datepicker #pickerF></mat-datepicker>
       </mat-form-field>
     </div>
@@ -170,10 +166,6 @@ style.padding-bottom="20vh"-->
           [max]="pickerEndDate"
           [min]="fromZoom"
         />
-        <mat-datepicker-toggle
-          matSuffix
-          [for]="pickerT"
-        ></mat-datepicker-toggle>
         <mat-datepicker #pickerT></mat-datepicker>
       </mat-form-field>
     </div>

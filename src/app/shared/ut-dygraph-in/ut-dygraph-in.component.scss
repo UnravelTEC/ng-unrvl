@@ -121,15 +121,15 @@ $red2: #ff7f88;
 
   .fromDate,
   .toDate {
+    height: 1em;
     bottom: 0;
     mat-form-field {
-      width: 5.1em;
-      height: 1em;
-      margin-top: -0.35em;
+      width: 4.6em;
+      height: 2em;
+      margin-top: -0.7em;
       font-family: inherit;
-      .mat-form-field-underline,
-      .mat-form-field-suffix button.mat-mdc-icon-button,
-      .mat-form-field-prefix button.mat-icon-button {
+      .mat-mdc-form-field-subscript-wrapper,
+      .mat-form-field-underline {
         display: none;
       }
       /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
@@ -138,10 +138,17 @@ $red2: #ff7f88;
       }
       input {
         cursor: pointer;
+        font-size: $dygfontsize;
+      }
+      input.mdc-text-field__input {
+        color: $editableFormsTextColor;
+      }
+      div.mdc-text-field--filled {
+        background-color: transparent !important;
       }
     }
-    /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
-    mat-form-field.mat-form-field-appearance-legacy .mat-form-field-infix {
+    .mat-mdc-form-field-infix,
+    .mdc-text-field {
       padding: 0;
       border-top: 0;
     }
@@ -187,7 +194,7 @@ $red2: #ff7f88;
   .toDate,
   .xmin,
   .xmax {
-    width: 5.1em;
+    width: 5.3em;
   }
   .lastTime {
     position: absolute;
@@ -275,14 +282,14 @@ $red2: #ff7f88;
     /* TODO(mdc-migration): The following rule targets internal classes of radio that may no longer apply for the MDC version.*/
     mat-radio-group {
       border: 1px solid black;
-      height: 3.5em;
+      height: 6em;
       display: block;
       border-radius: 5px;
       background: $mainbg;
       font-size: $dygfontsize;
       color: $editableFormsTextColor;
       padding: 7px;
-      input[type="number"] {
+      input[type='number'] {
         width: 6em;
       }
     }
@@ -350,7 +357,7 @@ $red2: #ff7f88;
         cursor: pointer;
       }
       .legendToggle::after {
-        content: "▲";
+        content: '▲';
       }
       .legendToggle:hover {
         font-weight: bold;
@@ -458,7 +465,7 @@ $red2: #ff7f88;
       }
     }
     .legendToggle::after {
-      content: "▼";
+      content: '▼';
     }
   }
 
@@ -552,7 +559,7 @@ div.optionsarea {
         font-weight: bold;
         font-size: 0.7em;
       }
-      input[type="text"] {
+      input[type='text'] {
         padding: 0.1em;
         border-radius: 0.5em;
       }
