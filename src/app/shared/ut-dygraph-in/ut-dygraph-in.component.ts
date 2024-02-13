@@ -1326,6 +1326,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.fromFormDate = new UntypedFormControl(this.fromZoom);
     this.toFormDate = new UntypedFormControl(this.toZoom);
+    this.fromTString = this.fromZoom.getHours() + ":"  + this.fromZoom.getMinutes()
+    this.toTString = this.toZoom.getHours() + ":"  + this.toZoom.getMinutes()
   }
 
   calculateAverage(from?: Date, targetArray = this.data) {
@@ -1526,6 +1528,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     ];
     this.fromZoom = dataBeginTime;
     this.toZoom = dataEndTime;
+    this.fromTString = this.fromZoom.getHours() + ":"  + this.fromZoom.getMinutes()
+    this.toTString = this.toZoom.getHours() + ":"  + this.toZoom.getMinutes()
+
     this.XLabel = this.returnXrangeText(
       (this.toZoom.valueOf() - this.fromZoom.valueOf()) / 1000
     );
@@ -1869,6 +1874,20 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()],
     });
   }
+  onTimesetF($event) {
+    console.log($event);
+    console.log(typeof $event);
+    const toSetDate = new Date(this.fromZoom.valueOf());
+    toSetDate.setHours(Number($event.slice(0,2)))
+    toSetDate.setMinutes(Number($event.slice(3)))
+    this.fromZoom = toSetDate;
+    this.Dygraph.updateOptions({
+      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()],
+    });
+  }
+  public fromTString: string;
+  public toTString: string;
+
   toggleYRSel(sel: string) {
     this.yRSelShown[sel] = !this.yRSelShown[sel];
   }
