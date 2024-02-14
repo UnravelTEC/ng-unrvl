@@ -196,6 +196,10 @@ $red2: #ff7f88;
   .xmax {
     width: 5.3em;
   }
+  .xmin,
+  .xmax { // input
+    border: 0;
+  }
   .lastTime {
     position: absolute;
     bottom: 0;
@@ -289,7 +293,7 @@ $red2: #ff7f88;
       font-size: $dygfontsize;
       color: $editableFormsTextColor;
       padding: 7px;
-      input[type='number'] {
+      input[type="number"] {
         width: 6em;
       }
     }
@@ -357,7 +361,7 @@ $red2: #ff7f88;
         cursor: pointer;
       }
       .legendToggle::after {
-        content: '▲';
+        content: "▲";
       }
       .legendToggle:hover {
         font-weight: bold;
@@ -465,7 +469,7 @@ $red2: #ff7f88;
       }
     }
     .legendToggle::after {
-      content: '▼';
+      content: "▼";
     }
   }
 
@@ -559,7 +563,7 @@ div.optionsarea {
         font-weight: bold;
         font-size: 0.7em;
       }
-      input[type='text'] {
+      input[type="text"] {
         padding: 0.1em;
         border-radius: 0.5em;
       }

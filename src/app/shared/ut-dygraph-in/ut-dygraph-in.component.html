@@ -116,22 +116,20 @@ style.padding-bottom="20vh"-->
         <!--number input box also activates change event on radio group -->
       </mat-radio-group>
     </form>
-    <div
+
+    <input [ngxTimepicker]="pickerTF" [format]="24" [value]="fromTString" [max]="fromTMax"
       class="xmin"
       *ngIf="dyGraphOptions['drawAxis'] !== false"
       [style.transform]="'translateX(' + yO + 'px)'"
-    >
-      {{ fromZoom | date : 'shortTime' }}
-      <input [ngxTimepicker]="pickerTF" [format]="24" [value]="fromTString"/>
-      <ngx-material-timepicker #pickerTF [enableKeyboardInput]="true" (timeSet)="onTimesetF($event)"></ngx-material-timepicker>
-    </div>
-    <div
+    />
+    <ngx-material-timepicker #pickerTF [enableKeyboardInput]="true" (timeSet)="onTimeset($event, 'f')"></ngx-material-timepicker>
+
+    <input [ngxTimepicker]="pickerTT" [format]="24" [value]="toTString" [min]="toTMin"
       class="xmax {{ y2Range[1] === undefined ? 'noy2' : '' }}"
       *ngIf="dyGraphOptions['drawAxis'] !== false"
-      [style.transform]="'translateX(-' + y2O + 'px)'"
-    >
-      {{ toZoom | date : 'shortTime' }}
-    </div>
+      [style.transform]="'translateX(-' + y2O + 'px)'"/>
+    <ngx-material-timepicker #pickerTT [enableKeyboardInput]="true" (timeSet)="onTimeset($event, 't')"></ngx-material-timepicker>
+
     <div
       class="fromDate"
       *ngIf="showDate == true"

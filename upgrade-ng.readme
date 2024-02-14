@@ -117,4 +117,3 @@ ng update @asymmetrik/ngx-leaflet - upgraded ng auf 17
 npm remove ng-beautiful-gauges
 npm install @biacsics/ng-canvas-gauges
   tausche nur modulnamen beim import
-

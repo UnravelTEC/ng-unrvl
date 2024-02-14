@@ -112,22 +112,22 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     y1max: string;
     y2max: string;
   } = {
-    y1min: 'dyn',
-    y2min: 'dyn',
-    y1max: 'dyn',
-    y2max: 'dyn',
-  };
+      y1min: 'dyn',
+      y2min: 'dyn',
+      y1max: 'dyn',
+      y2max: 'dyn',
+    };
   public yFixedRanges: {
     y1min: number;
     y2min: number;
     y1max: number;
     y2max: number;
   } = {
-    y1min: null,
-    y2min: null,
-    y1max: null,
-    y2max: null,
-  };
+      y1min: null,
+      y2min: null,
+      y1max: null,
+      y2max: null,
+    };
   public yRSelShown = {
     y1min: false,
     y2min: false,
@@ -274,7 +274,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     private h: HelperFunctionsService,
     private sensorService: SensorService,
     public gss: GlobalSettingsService
-  ) {}
+  ) { }
 
   ngOnChanges(changes: SimpleChanges) {
     console.log('onChanges');
@@ -322,7 +322,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       let maxroundDigit = 0;
       for (let c = 1; c < this.rawLabels.length; c++) {
         const cDigit = this.sensorService.getDigits(this.rawLabels[c]);
-        if(cDigit > maxroundDigit) {
+        if (cDigit > maxroundDigit) {
           maxroundDigit = cDigit;
         }
         this.roundDigits.push(cDigit);
@@ -1067,8 +1067,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         !series.hasOwnProperty('y') || isNaN(series.y)
           ? ''
           : parent.h
-              .roundAccurately(series.y, parent.roundDigits[i + 1])
-              // .toLocaleString(); // replaced . with , in german, but has a bug: cut of after 3 digits after comma
+            .roundAccurately(series.y, parent.roundDigits[i + 1])
+      // .toLocaleString(); // replaced . with , in german, but has a bug: cut of after 3 digits after comma
       const isHighlighted = series.isHighlighted;
       const cls = isHighlighted ? 'class="highlight"' : '';
       const hoverCallback = genHover(series.label, htmlID);
@@ -1326,8 +1326,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.fromFormDate = new UntypedFormControl(this.fromZoom);
     this.toFormDate = new UntypedFormControl(this.toZoom);
-    this.fromTString = this.fromZoom.getHours() + ":"  + this.fromZoom.getMinutes()
-    this.toTString = this.toZoom.getHours() + ":"  + this.toZoom.getMinutes()
+    this.updateTimePickers();
   }
 
   calculateAverage(from?: Date, targetArray = this.data) {
@@ -1528,8 +1527,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     ];
     this.fromZoom = dataBeginTime;
     this.toZoom = dataEndTime;
-    this.fromTString = this.fromZoom.getHours() + ":"  + this.fromZoom.getMinutes()
-    this.toTString = this.toZoom.getHours() + ":"  + this.toZoom.getMinutes()
+    this.updateTimePickers();
 
     this.XLabel = this.returnXrangeText(
       (this.toZoom.valueOf() - this.fromZoom.valueOf()) / 1000
@@ -1874,19 +1872,38 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()],
     });
   }
-  onTimesetF($event) {
-    console.log($event);
-    console.log(typeof $event);
-    const toSetDate = new Date(this.fromZoom.valueOf());
-    toSetDate.setHours(Number($event.slice(0,2)))
+  onTimeset($event, which: string) {
+    const target = which == 't' ? this.toZoom : this.fromZoom;
+    const toSetDate = new Date(target.valueOf());
+    toSetDate.setHours(Number($event.slice(0, 2)))
     toSetDate.setMinutes(Number($event.slice(3)))
-    this.fromZoom = toSetDate;
+    toSetDate.setSeconds(0);
+    toSetDate.setMilliseconds(0);
+
+    if (which == 't') {
+      this.toZoom = toSetDate;
+    } else {
+      this.fromZoom = toSetDate;
+    }
     this.Dygraph.updateOptions({
       dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()],
     });
   }
   public fromTString: string;
   public toTString: string;
+  public fromTMax: string;
+  public toTMin: string;
+  updateTimePickers() {
+    this.fromTString = this.fromZoom.getHours() + ":" + this.fromZoom.getMinutes()
+    this.toTString = this.toZoom.getHours() + ":" + this.toZoom.getMinutes()
+    if(this.fromZoom.getDate() == this.toZoom.getDate() && this.fromZoom.getMonth() == this.toZoom.getMonth()) {
+      this.fromTMax = this.toTString;
+      this.toTMin = this.fromTString;
+    } else {
+      this.fromTMax = undefined;
+      this.toTMin = undefined;
+    }
+  }
 
   toggleYRSel(sel: string) {
     this.yRSelShown[sel] = !this.yRSelShown[sel];
