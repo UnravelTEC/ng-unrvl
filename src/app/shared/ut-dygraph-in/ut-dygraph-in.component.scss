@@ -123,6 +123,7 @@ $red2: #ff7f88;
   .toDate {
     height: 1em;
     bottom: 0;
+    overflow: hidden;
     mat-form-field {
       width: 4.6em;
       height: 2em;
@@ -196,10 +197,12 @@ $red2: #ff7f88;
   .xmax {
     width: 5.3em;
   }
-  .xmin,
-  .xmax { // input
-    border: 0;
+  .xmin, .xmin:focus-visible,
+  .xmax, .xmax:focus-visible { // input
+    border-width: 0;
+    outline: none;
   }
+
   .lastTime {
     position: absolute;
     bottom: 0;

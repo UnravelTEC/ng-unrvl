@@ -166,8 +166,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     gridLinePattern: [4, 4],
     gridLineWidth: this.gridlineActiveWidth,
     gridLineColor: this.gridlineActiveColor,
-    axisLineColor: 'yellow',
-    axisLineWidth: 0.001,
+    axisLineColor: '#3f3f3f',
+    axisLineWidth: 0.00,
     labelsKMB: true,
     xAxisHeight: 34, // xlabel is 18 high
     // yRangePad: 200, // spacing for data points inside graph

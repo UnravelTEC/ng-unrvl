@@ -117,14 +117,14 @@ style.padding-bottom="20vh"-->
       </mat-radio-group>
     </form>
 
-    <input [ngxTimepicker]="pickerTF" [format]="24" [value]="fromTString" [max]="fromTMax"
+    <input [ngxTimepicker]="pickerTF" [format]="24" [value]="fromTString" [max]="fromTMax" readonly
       class="xmin"
       *ngIf="dyGraphOptions['drawAxis'] !== false"
       [style.transform]="'translateX(' + yO + 'px)'"
     />
     <ngx-material-timepicker #pickerTF [enableKeyboardInput]="true" (timeSet)="onTimeset($event, 'f')"></ngx-material-timepicker>
 
-    <input [ngxTimepicker]="pickerTT" [format]="24" [value]="toTString" [min]="toTMin"
+    <input [ngxTimepicker]="pickerTT" [format]="24" [value]="toTString" [min]="toTMin" readonly
       class="xmax {{ y2Range[1] === undefined ? 'noy2' : '' }}"
       *ngIf="dyGraphOptions['drawAxis'] !== false"
       [style.transform]="'translateX(-' + y2O + 'px)'"/>
