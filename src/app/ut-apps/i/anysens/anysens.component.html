@@ -93,7 +93,7 @@
       </fieldset>
       <fieldset [disabled]="queryRunning == true && !autoreload">
         <h3>{{ queryRunning ? 'Query running...' : 'Query latest data:' }}</h3>
-        <mat-form-field>
+        <mat-form-field style="margin-top: -0.5rem; margin-bottom: -1rem;">
           <mat-label>Show range from now</mat-label>
           <mat-select
             [(ngModel)]="userStartTime"
@@ -145,7 +145,7 @@
       </fieldset>
       <fieldset id="tags">
         <h3>Series Tags</h3>
-        <div *ngIf="tagsShown" style="margin-top: 0.75rem;">
+        <div *ngIf="tagsShown">
           <label>Show tags (reload data to apply)</label>
           <div class="taglist">
             <div *ngFor="let l of taglist | keyvalue">

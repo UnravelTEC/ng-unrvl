@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "3651fc3",
-  "SHA": "3651fc353fadd8ef92964047fd3e5ee7cb4bb076",
-  "branch": "ngupgrade",
+  "shortSHA": "c9a1ae9",
+  "SHA": "c9a1ae9370d30d479b3d0609147c99662a12585f",
+  "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Wed Feb 14 09:49:26 2024 +0100",
-  "lastCommitMessage": "time pickers done",
-  "lastCommitNumber": "1464"
+  "lastCommitTime": "Thu Feb 15 09:45:31 2024 +0100",
+  "lastCommitMessage": "small style fixes",
+  "lastCommitNumber": "1465"
 }
