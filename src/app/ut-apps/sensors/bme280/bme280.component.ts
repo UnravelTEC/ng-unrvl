@@ -81,8 +81,8 @@ export class Bme280Component implements OnInit {
   interval: string;
   // host = '';
   // referrer = 'Allsens';
-  public from: Number; // unix time from urlparam
-  public to: Number; // unix time from urlparam
+  public from: number; // unix time from urlparam
+  public to: number; // unix time from urlparam
 
   constructor(
     private globalSettings: GlobalSettingsService,

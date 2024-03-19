@@ -98,9 +98,9 @@ export class EnviromapComponent implements OnInit, OnDestroy {
   public currentres = 0;
   public userMeanS = this.meanS;
   public fromTime: Date;
-  public from: Number; // unix time from urlparam
+  public from: number; // unix time from urlparam
   public toTime: Date;
-  public to: Number; // unix time from urlparam
+  public to: number; // unix time from urlparam
   public queryRunning = false;
   // public changeTrigger = true;
 
@@ -313,7 +313,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
       }
     }
 
-    let colorColumn: Number;
+    let colorColumn: number;
     for (let c = 1; c < labels.length; c++) {
       const item = labels[c];
       console.log('scan: column', c, '="' + item + '"');

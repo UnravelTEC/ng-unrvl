@@ -140,8 +140,8 @@ export class GpsComponent implements OnInit {
     let latcol = -1;
     let loncol = -1;
     const nrCols = labels.length; // for speed
-    let colorColumn: Number;
-    let speedColumn: Number;
+    let colorColumn: number;
+    let speedColumn: number;
     for (let i = 1; i < nrCols; i++) {
       const element = labels[i];
 

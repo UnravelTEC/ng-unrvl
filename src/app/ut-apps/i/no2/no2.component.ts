@@ -95,8 +95,8 @@ export class No2Component implements OnInit {
   interval: string;
   background: string;
   value = '*';
-  public from: Number; // unix time from urlparam
-  public to: Number; // unix time from urlparam
+  public from: number; // unix time from urlparam
+  public to: number; // unix time from urlparam
 
   public queryRunning = false;
 

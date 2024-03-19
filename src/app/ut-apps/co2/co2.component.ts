@@ -71,8 +71,8 @@ export class Co2Component implements OnInit {
   host = '';
   value = '/CO2_ppm/';
   referrer = 'CO2';
-  public from: Number; // unix time from urlparam
-  public to: Number; // unix time from urlparam
+  public from: number; // unix time from urlparam
+  public to: number; // unix time from urlparam
 
   public queryRunning = false;
 

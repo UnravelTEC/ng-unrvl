@@ -113,8 +113,8 @@ export class HumidityComponent implements OnInit {
   host = '';
   value = '*';
   referrer = 'Allsens';
-  public from: Number; // unix time from urlparam
-  public to: Number; // unix time from urlparam
+  public from: number; // unix time from urlparam
+  public to: number; // unix time from urlparam
 
   public queryRunning = false;
 
