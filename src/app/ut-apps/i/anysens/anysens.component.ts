@@ -96,15 +96,15 @@ export class AnysensComponent implements OnInit {
 
   measurement = 'temperature';
   ylabel = '';
-  sensor: String;
-  id: String;
+  sensor: string;
+  id: string;
   interval: string;
   background: string;
   host = '';
   value = '*';
   referrer = 'Allsens';
-  public from: Number; // unix time from urlparam
-  public to: Number; // unix time from urlparam
+  public from: number; // unix time from urlparam
+  public to: number; // unix time from urlparam
 
   public queryRunning = false;
 
@@ -220,19 +220,21 @@ export class AnysensComponent implements OnInit {
       }
       return;
     }
-    this.queryRunning = true;
 
-    const timeQuery = fromTo
-      ? this.utHTTP.influxTimeString(this.fromTime, this.toTime)
-      : this.utHTTP.influxTimeString(this.startTime);
+    if (fromTo) {
+      this.launchQuery(this.createQuery(this.fromTime, this.toTime));
+    } else {
+      this.launchQuery(this.createQuery(this.startTime));
+    }
+
+  }
+
+  createQuery(fromTime: any, toTime: Date = undefined) {
+    const timeQuery = this.utHTTP.influxTimeString(fromTime, toTime);
 
     let params = { sensor: [] };
     if (this.sensor) {
-      if (Array.isArray(this.sensor)) {
-        params['sensor'] = this.sensor;
-      } else {
-        params['sensor'] = [this.sensor];
-      }
+      params['sensor'] = Array.isArray(this.sensor) ? this.sensor : [this.sensor];
     }
     if (this.host) {
       params['host'] = this.host;
@@ -241,16 +243,30 @@ export class AnysensComponent implements OnInit {
       params['id'] = this.id;
     }
 
-    const queries = this.utHTTP.influxMeanQuery(
+    return this.utHTTP.influxMeanQuery(
       this.measurement,
       timeQuery,
       params,
       this.meanS,
       this.value
     );
-
-    this.launchQuery(queries);
   }
+
+  reloadMissing() {
+    this.fromTime
+    this.from
+    this.toTime
+    this.to
+    this.latest_dates // Array of unix_ts, latest point with valid data per column
+
+    const latest_t = Math.max(...this.latest_dates)
+    let delta_t = this.to - latest_t;
+    console.log(delta_t);
+    if (delta_t > 0) {
+      this.launchQuery(this.createQuery(new Date(latest_t), this.toTime));
+    }
+  }
+
   changeAutoS(param) {
     console.log(param);
 
@@ -364,6 +380,7 @@ export class AnysensComponent implements OnInit {
       }, 1000);
       return;
     }
+    this.queryRunning = true;
     this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(clause)).subscribe(
       (data: Object) => this.handleData(data),
       (error) => {
@@ -387,78 +404,111 @@ export class AnysensComponent implements OnInit {
       return;
     }
     const labels = ret['labels'];
-    const idata = ret['data'];
-    this.orig_labels = cloneDeep(ret['labels']);
-    this.short_labels = ret['short_labels'];
-    this.common_label = ret['common_label'];
-    this.raw_labels = ret['raw_labels'];
-    console.log('orig labels:', this.orig_labels);
-    console.log('raw labels:', ret['raw_labels']);
-    console.log('common_label:', ret['common_label']);
-    console.log('short_labels:', ret['short_labels']);
+    const numColumns = labels.length;
 
-    for (let rli = 0; rli < this.raw_labels.length; rli++) {
-      const raw_tags = this.raw_labels[rli].tags;
-      for (const key in raw_tags) {
-        if (Object.prototype.hasOwnProperty.call(raw_tags, key)) {
-          if (!Object.prototype.hasOwnProperty.call(this.taglist, key)) {
-            this.taglist[key] = true;
-          }
+    console.log('orig labels:', this.orig_labels);
+    console.log('raw labels:', this.raw_labels);
+    console.log('common_label:', this.common_label);
+    console.log('short_labels:', this.short_labels);
+
+    const idata = ret['data'];
+    let newDataLogscale = true;
+    for (let c = 1; c < numColumns; c++) {
+      const c_label = labels[c];
+      for (let r = 0; r < idata.length; r++) {
+        const point = idata[r][c];
+        if (point <= 0 && !Number.isNaN(point) && point !== null) {
+          newDataLogscale = false;
+          console.log('found non log-scale data:', idata[r][c], '@r', r, 'c', c, 'of', c_label);
+          break;
         }
       }
-
     }
 
-    let logscale = true;
-    const newColors = this.h.getColorsforLabels(labels);
-    const numColumns = labels.length;
     for (let c = 1; c < numColumns; c++) {
-      const item = labels[c];
+      const c_label = labels[c];
 
-      if (logscale == true) {
-        for (let r = 0; r < idata.length; r++) {
-          const point = idata[r][c];
-          if (point <= 0 && !Number.isNaN(point) && point !== null) {
-            logscale = false;
-            console.log('found', idata[r][c], '@r', r, 'c', c, 'of', item);
-            break;
-          }
-        }
-      }
       // NO2: ppm -> ppb
-      if (item.match(/NO₂ \(ppm\)/)) {
-        labels[c] = item.replace(/ppm/, 'ppb');
+      if (c_label.match(/NO₂ \(ppm\)/)) {
+        labels[c] = c_label.replace(/ppm/, 'ppb');
         for (let r = 0; r < idata.length; r++) {
           idata[r][c] *= 1000;
         }
       }
-      if (item.match(/NO₂ \(µg\/m³\)/)) {
+      if (c_label.match(/NO₂ \(µg\/m³\)/)) {
         for (let r = 0; r < idata.length; r++) {
           idata[r][c] = this.h.smoothNO2(idata[r][c]);
         }
       }
-      if (item.match(/hPa/)) {
-        this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
-        this.extraDyGraphConfig.series[this.short_labels[c - 1]] = {
-          axis: 'y2',
-        };
-      }
-      this.round_digits.push(this.sensorService.getDigits(this.raw_labels[c]));
     }
-    // console.log(cloneDeep(this.dygLabels));
-    if (logscale) {
-      console.log('scale: log');
-      this.extraDyGraphConfig.logscale = logscale;
+
+    // FIXME it may be the case that the new data has LESS columns than old (series with say 60s interval, and only 5s fetched, which omits the missing series)
+    let append_data = false;
+    if (this.h.objectsEqual(this.raw_labels, ret['raw_labels'])) {
+      console.log("handleData: received similar structured data, try to Append");
+      append_data = true;
+
+      if (this.extraDyGraphConfig.logscale) {
+        if (newDataLogscale) {
+          console.log('logscale OK');
+        } else {
+          console.log('logscale: lin');
+          this.extraDyGraphConfig.logscale = false;
+        }
+      }
+      // Fastest method of append according to https://stackoverflow.com/a/72325887
+      // FIXME assumes data is later than current!
+      idata.forEach(row => this.data[this.data.length] = row)
+
     } else {
-      console.log('scale: lin');
+      this.orig_labels = cloneDeep(ret['labels']);
+      this.short_labels = ret['short_labels'];
+      this.common_label = ret['common_label'];
+      this.raw_labels = ret['raw_labels'];
+      this.labels = ['Date'].concat(this.short_labels);
+      console.log('new orig labels:', ret['labels']);
+      console.log('new raw labels:', ret['raw_labels']);
+      console.log('new common_label:', ret['common_label']);
+      console.log('new short_labels:', ret['short_labels']);
+
+      for (let rli = 0; rli < this.raw_labels.length; rli++) {
+        const raw_tags = this.raw_labels[rli].tags;
+        for (const key in raw_tags) {
+          if (Object.prototype.hasOwnProperty.call(raw_tags, key)) {
+            if (!Object.prototype.hasOwnProperty.call(this.taglist, key)) {
+              this.taglist[key] = true;
+            }
+          }
+        }
+      }
+
+      this.colors = this.h.getColorsforLabels(labels);
+
+      for (let c = 1; c < numColumns; c++) {
+        const c_label = labels[c];
+
+        if (c_label.match(/hPa/)) {
+          this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
+          this.extraDyGraphConfig.series[this.short_labels[c - 1]] = {
+            axis: 'y2',
+          };
+        }
+
+        this.round_digits.push(this.sensorService.getDigits(this.raw_labels[c]));
+      }
+      if (newDataLogscale) {
+        console.log('logscale OK');
+        this.extraDyGraphConfig.logscale = true;
+      } else {
+        console.log('logscale: lin');
+        this.extraDyGraphConfig.logscale = false;
+      }
+
+      this.data = idata;
     }
 
     this.startTime = this.userStartTime;
-    const newLabels = ['Date'];
-    newLabels.concat(this.short_labels);
-    this.labels = ['Date'].concat(this.short_labels);
-    this.data = idata;
-    this.colors = newColors;
+
     console.log(labels);
     console.log(idata);
     this.changeTrigger = !this.changeTrigger;

@@ -87,8 +87,10 @@
         <div style="width: 100%; text-align: right; margin-top: -1.8em">
           <button type="submit">
             <mat-icon>refresh</mat-icon>
-            Reload
+            Reload All
           </button>
+          <button (click)="reloadMissing()" style="margin-top: 0.5rem;"
+          type="button">Reload Missing</button>
         </div>
       </fieldset>
       <fieldset [disabled]="queryRunning == true && !autoreload">
