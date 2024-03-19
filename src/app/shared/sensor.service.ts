@@ -517,7 +517,7 @@ export class SensorService {
       return 0;
     }
     const retval = this.getSensorPresetField(raw_label, 'round_digits');
-    console.log('getDigits for', raw_label, '=', retval);
+    // console.log('getDigits for', raw_label, '=', retval);
     return retval !== undefined ? retval : 2;
   }
   getSensorPresetField(raw_label, fieldname) {
