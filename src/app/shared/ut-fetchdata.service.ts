@@ -262,6 +262,7 @@ export class UtFetchdataService {
           tagarray.push(tkey + ': ' + tags[tkey])
         }
       }
+      tagarray.sort()
       const priorities = ['sensor', 'id', 'channel']
       for (const prio of priorities) {
         for (let i = 0; i < tagarray.length; i++) {
