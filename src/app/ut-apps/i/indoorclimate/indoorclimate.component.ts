@@ -28,7 +28,7 @@ export class IndoorclimateComponent implements OnInit {
   isNaN(a) {
     return isNaN(a);
   }
-  changeTrigger = true;
+  changeTrigger = 0;
   public startTime = '1h';
   public userStartTime = this.startTime;
   public meanS = 10;
@@ -155,7 +155,7 @@ export class IndoorclimateComponent implements OnInit {
     this.data[id] = ret['data'];
     // console.log(cloneDeep(this.dygLabels));
     this.startTimes[id] = this.userStartTime;
-    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger += 1;
     this.queryRunning--;
   }
 }

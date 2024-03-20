@@ -47,7 +47,7 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
   public dygLabels = [];
   public dygData = [];
 
-  changeTrigger = true;
+  changeTrigger = 0;
   showResultText = false;
 
   private variablesToSave = [
@@ -120,7 +120,7 @@ export class InfluxTestComponent implements OnInit, OnDestroy {
     this.dygData = ret['data'];
     console.log(cloneDeep(this.dygData));
 
-    // this.changeTrigger = !this.changeTrigger;
+    // this.changeTrigger += 1;
 
     if (this.dygData.length) {
       const dataset = data['results'][0]['series'][0];

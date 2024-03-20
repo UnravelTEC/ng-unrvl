@@ -20,7 +20,7 @@ export class FlickerComponent implements OnInit {
       highlightCircleSize: 3,
     },
   };
-  changeTrigger = true;
+  changeTrigger = 0;
 
   frequency = 0;
 

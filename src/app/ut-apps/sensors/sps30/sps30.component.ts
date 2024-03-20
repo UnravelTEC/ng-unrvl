@@ -87,7 +87,7 @@ export class Sps30Component implements OnInit {
 
   appName = 'SPS30';
 
-  changeTrigger = true;
+  changeTrigger = 0;
 
   measurement = 'particulate matter';
   sensor: String = 'SPS30';
@@ -235,6 +235,6 @@ export class Sps30Component implements OnInit {
     this.data[id] = ret['data'];
     // console.log(cloneDeep(this.dygLabels));
     this.startTimes[id] = this.userStartTime;
-    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger += 1;
   }
 }

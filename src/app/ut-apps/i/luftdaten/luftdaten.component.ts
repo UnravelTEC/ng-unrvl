@@ -74,7 +74,7 @@ export class LuftdatenComponent implements OnInit {
 
   appName = 'Luftdaten Sensor Node';
 
-  changeTrigger = true;
+  changeTrigger = 0;
   constructor(
     private globalSettings: GlobalSettingsService,
     private localStorage: LocalStorageService,

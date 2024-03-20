@@ -74,7 +74,7 @@ export class Bme280Component implements OnInit {
 
   appName = 'BME280';
 
-  changeTrigger = true;
+  changeTrigger = 0;
 
   measurement = 'humidity (%),temperature (°C)';
   sensor: String = 'BME280';
@@ -267,7 +267,6 @@ export class Bme280Component implements OnInit {
     this.colors = newColors;
     console.log(labels);
     console.log(idata);
-    this.changeTrigger = !this.changeTrigger;
-    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger += 1;
   }
 }

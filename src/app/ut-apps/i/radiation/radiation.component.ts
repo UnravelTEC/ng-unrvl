@@ -32,7 +32,7 @@ export class RadiationComponent implements OnInit {
 
   appName = 'Radiation';
 
-  changeTrigger = true;
+  changeTrigger = 0;
 
   constructor(
     private globalSettings: GlobalSettingsService,
@@ -109,6 +109,6 @@ export class RadiationComponent implements OnInit {
     this.data = ret['data'];
     // console.log(cloneDeep(this.dygLabels));
     this.startTime = this.userStartTime;
-    // this.changeTrigger = !this.changeTrigger;
+    // this.changeTrigger += 1;
   }
 }

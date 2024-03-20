@@ -49,7 +49,7 @@ export class EnvirograzComponent implements OnInit {
   isNaN(a) {
     return isNaN(a);
   }
-  changeTrigger = true;
+  changeTrigger = 0;
   public startTime = '1h';
   public userStartTime = this.startTime;
   public currentres = 0;
@@ -197,6 +197,6 @@ export class EnvirograzComponent implements OnInit {
     }
     // console.log(cloneDeep(this.dygLabels));
     this.startTimes[id] = this.userStartTime;
-    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger += 1;
   }
 }

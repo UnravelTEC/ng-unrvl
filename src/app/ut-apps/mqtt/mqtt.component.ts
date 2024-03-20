@@ -29,7 +29,7 @@ export class MqttComponent implements OnInit, OnDestroy {
     [new Date(), 2]
   ];
   public dygLabels = ['Date','particulate_matter_typpartsize_um'];
-  changeTrigger = true;
+  changeTrigger = 0;
 
   public sensorData = {};
   public sensorDataExample = {
@@ -136,7 +136,7 @@ export class MqttComponent implements OnInit, OnDestroy {
 
       father.dygData.push([sentDate, Number(value)]);
       // father.graph.updateGraph()
-      father.changeTrigger = ! father.changeTrigger;
+      father.changeTrigger += 1;
       // console.log(cloneDeep(father.dygData));
 
       if (father.updateMessages) {

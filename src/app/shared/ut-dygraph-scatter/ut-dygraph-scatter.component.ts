@@ -197,7 +197,7 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   public columnLabels = [];
   @Input()
-  public changeTrigger = true;
+  public changeTrigger: any;
 
   public currentXrange: number;
 
@@ -237,7 +237,7 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
   ) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('onChanges');
+    console.log('onChanges', this.changeTrigger);
 
     this.updateGraph();
   }

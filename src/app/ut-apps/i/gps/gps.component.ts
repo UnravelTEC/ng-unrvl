@@ -73,7 +73,7 @@ export class GpsComponent implements OnInit {
   labels = [];
   data = [];
 
-  changeTrigger = true;
+  changeTrigger = 0;
 
   measurement = 'location';
   sensor = '';

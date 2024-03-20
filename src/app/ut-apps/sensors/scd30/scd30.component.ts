@@ -91,7 +91,7 @@ export class Scd30Component implements OnInit {
 
   appName = 'SCD30';
 
-  changeTrigger = true;
+  changeTrigger = 0;
 
   measurement = 'humidity (g/m³),temperature (°C)';
   sensor: String = 'SCD30';
@@ -252,7 +252,7 @@ export class Scd30Component implements OnInit {
     }
     // console.log(cloneDeep(this.dygLabels));
     this.startTimes[id] = this.userStartTime;
-    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger += 1;
     this.queryRunning--;
   }
 }

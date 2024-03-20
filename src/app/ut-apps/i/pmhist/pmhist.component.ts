@@ -79,7 +79,7 @@ export class PmhistComponent implements OnInit {
 
   appName = 'Particulate Matter Histogram';
 
-  changeTrigger = true;
+  changeTrigger = 0;
 
   barColors = '#00BBF2';
   borderColor = '#00ff00';

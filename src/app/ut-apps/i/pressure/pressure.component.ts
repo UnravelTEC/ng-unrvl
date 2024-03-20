@@ -30,7 +30,7 @@ export class PressureComponent implements OnInit {
 
   appName = 'Air Pressure';
 
-  changeTrigger = true;
+  changeTrigger = 0;
 
   constructor(
     private globalSettings: GlobalSettingsService,
@@ -103,6 +103,6 @@ export class PressureComponent implements OnInit {
     this.data = ret['data'];
     // console.log(cloneDeep(this.dygLabels));
     this.startTime = this.userStartTime;
-    // this.changeTrigger = !this.changeTrigger;
+    // this.changeTrigger += 1;
   }
 }

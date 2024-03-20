@@ -63,7 +63,7 @@ export class Ds18b20Component implements OnInit {
 
   appName = 'DS18B20';
 
-  changeTrigger = true;
+  changeTrigger = 0;
 
   measurement = 'temperature (°C)';
   sensor: String = 'DS18B20';
@@ -226,8 +226,7 @@ export class Ds18b20Component implements OnInit {
     this.colors = newColors;
     console.log(labels);
     console.log(this.data);
-    this.changeTrigger = !this.changeTrigger;
-    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger += 1;
     this.queryRunning--;
   }
 }

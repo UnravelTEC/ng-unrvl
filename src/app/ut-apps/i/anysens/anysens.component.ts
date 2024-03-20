@@ -92,7 +92,7 @@ export class AnysensComponent implements OnInit {
 
   appName = 'Any Sens';
 
-  changeTrigger = true;
+  changeTrigger = 0;
 
   measurement = 'temperature';
   ylabel = '';
@@ -349,8 +349,7 @@ export class AnysensComponent implements OnInit {
 
   toggleTableShown() {
     this.tableShown = !this.tableShown;
-    this.changeTrigger = !this.changeTrigger;
-    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger += 1
     this.localStorage.set(this.appName + 'tableShown', this.tableShown);
     console.log(
       'toggleTableShown',
@@ -362,8 +361,7 @@ export class AnysensComponent implements OnInit {
   toggleSidebar() {
     this.sideBarShown = !this.sideBarShown;
     this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
-    this.changeTrigger = !this.changeTrigger;
-    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger += 1
 
     this.localStorage.set(this.appName + 'sideBarShown', this.sideBarShown);
     console.log('toggleSidebar', this.currentSidebarWidth);
@@ -519,6 +517,9 @@ export class AnysensComponent implements OnInit {
 
       }
       console.log('data after append:', this.data);
+      const tmpdata = this.data;
+      this.data = undefined;
+      this.data = tmpdata;
 
     } else {
       this.orig_labels = cloneDeep(ret['labels']);
@@ -569,8 +570,7 @@ export class AnysensComponent implements OnInit {
 
     this.startTime = this.userStartTime;
 
-    this.changeTrigger = !this.changeTrigger;
-    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger += 1;
     this.queryRunning = false;
 
     if (!this.data || !this.data[0]) {

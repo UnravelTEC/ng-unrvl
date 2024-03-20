@@ -61,7 +61,7 @@ export class Tsl2561Component implements OnInit {
 
   appName = 'TSL2561';
 
-  changeTrigger = true;
+  changeTrigger = 0;
 
   measurement = 'Brightness (lux)';
   sensor: String = 'TSL2561';
@@ -221,7 +221,6 @@ export class Tsl2561Component implements OnInit {
     this.colors = newColors;
     console.log(labels);
     console.log(idata);
-    this.changeTrigger = !this.changeTrigger;
-    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger += 1;
   }
 }

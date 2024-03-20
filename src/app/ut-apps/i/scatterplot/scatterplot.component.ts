@@ -441,8 +441,7 @@ export class ScatterplotComponent implements OnInit {
     this.colors = newColors;
     console.log(labels);
     console.log(idata);
-    // this.changeTrigger = !this.changeTrigger;
-    // this.changeTrigger = !this.changeTrigger;
+    // this.changeTrigger += 1;
     this.queryRunning = false;
 
     if (!this.data || !this.data[0]) {

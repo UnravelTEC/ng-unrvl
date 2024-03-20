@@ -102,7 +102,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
   public toTime: Date;
   public to: number; // unix time from urlparam
   public queryRunning = false;
-  // public changeTrigger = true;
+  // public changeTrigger = 0;
 
   public highlightDate: Date;
   public highlightValue: number;
@@ -495,7 +495,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
     this.raw_graphlabels = raw_graphlabels;
     this.round_graphdigits = round_graphdigits;
     this.colors = newColors;
-    // this.changeTrigger = !this.changeTrigger;
+    // this.changeTrigger += 1;
     console.log('graphlabels', labels);
     console.log('raw_graphlabels', this.raw_graphlabels);
 

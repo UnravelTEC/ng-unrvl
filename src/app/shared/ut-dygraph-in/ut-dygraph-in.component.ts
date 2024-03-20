@@ -225,7 +225,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   public columnLabels = [];
   @Input()
-  public changeTrigger = true;
+  public changeTrigger: any;
 
   public dataBeginTime: Date;
   public dataEndTime: Date;
@@ -277,7 +277,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   ) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('onChanges');
+    console.log('onChanges', this.changeTrigger);
 
     this.updateGraph();
   }
@@ -1896,7 +1896,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   updateTimePickers() {
     this.fromTString = this.fromZoom.getHours() + ":" + this.fromZoom.getMinutes()
     this.toTString = this.toZoom.getHours() + ":" + this.toZoom.getMinutes()
-    if(this.fromZoom.getDate() == this.toZoom.getDate() && this.fromZoom.getMonth() == this.toZoom.getMonth()) {
+    if (this.fromZoom.getDate() == this.toZoom.getDate() && this.fromZoom.getMonth() == this.toZoom.getMonth()) {
       this.fromTMax = this.toTString;
       this.toTMin = this.fromTString;
     } else {

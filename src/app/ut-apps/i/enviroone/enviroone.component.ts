@@ -98,7 +98,7 @@ export class EnvirooneComponent implements OnInit {
 
   appName = 'Enviro Graph';
 
-  changeTrigger = true;
+  changeTrigger = 0;
 
   constructor(
     private globalSettings: GlobalSettingsService,
@@ -330,7 +330,6 @@ export class EnvirooneComponent implements OnInit {
     this.colors = newColors;
     console.log(labels);
     console.log(idata);
-    this.changeTrigger = !this.changeTrigger;
-    this.changeTrigger = !this.changeTrigger;
+    this.changeTrigger += 1;
   }
 }
