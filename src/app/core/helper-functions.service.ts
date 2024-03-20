@@ -43,7 +43,12 @@ export class HelperFunctionsService {
   vals(o) {
     return Object.values(o);
   }
-  objectsEqual(o1, o2) {
+
+  /*
+   * 1-deep obj comparison, no nested objects!
+   * If Objects are sorted differently, returns false!
+  */
+  objectsEqual(o1, o2):boolean {
     const entries1 = Object.entries(o1);
     const entries2 = Object.entries(o2);
     if (entries1.length !== entries2.length) {
@@ -60,6 +65,24 @@ export class HelperFunctionsService {
       }
     }
     return true;
+  }
+  rawLabelsEqual(l1: Object, l2: Object):boolean {
+    if (l1['metric'] !== l2['metric'] || l1['field'] !== l2['field']) {
+      return false
+    }
+    const l1tags = l1['tags']
+    const l2tags = l2['tags']
+    const l1tagkeys = Object.keys(l1tags)
+    const l2tagkeys = Object.keys(l2tags)
+    if (l1tagkeys.length != l2tagkeys.length) {
+      return false
+    }
+    l1tagkeys.forEach(l1tagk => {
+      if (l1tags[l1tagk] != l2tags[l1tagk]) {
+        return false
+      }
+    });
+    return true
   }
 
   constructor(private loc: Location) {
