@@ -403,8 +403,8 @@ export class AnysensComponent implements OnInit {
       this.autoreload = false;
       return;
     }
-    const labels = ret['labels'];
-    const numColumns = labels.length;
+    const new_labels = ret['labels'];
+    const numColumns = new_labels.length;
 
     console.log('orig labels:', this.orig_labels);
     console.log('raw labels:', this.raw_labels);
@@ -414,7 +414,7 @@ export class AnysensComponent implements OnInit {
     const idata = ret['data'];
     let newDataLogscale = true;
     for (let c = 1; c < numColumns; c++) {
-      const c_label = labels[c];
+      const c_label = new_labels[c];
       for (let r = 0; r < idata.length; r++) {
         const point = idata[r][c];
         if (point <= 0 && !Number.isNaN(point) && point !== null) {
@@ -426,11 +426,11 @@ export class AnysensComponent implements OnInit {
     }
 
     for (let c = 1; c < numColumns; c++) {
-      const c_label = labels[c];
+      const c_label = new_labels[c];
 
       // NO2: ppm -> ppb
       if (c_label.match(/NO₂ \(ppm\)/)) {
-        labels[c] = c_label.replace(/ppm/, 'ppb');
+        new_labels[c] = c_label.replace(/ppm/, 'ppb');
         for (let r = 0; r < idata.length; r++) {
           idata[r][c] *= 1000;
         }
@@ -442,11 +442,37 @@ export class AnysensComponent implements OnInit {
       }
     }
 
-    // FIXME it may be the case that the new data has LESS columns than old (series with say 60s interval, and only 5s fetched, which omits the missing series)
-    let append_data = false;
-    if (this.h.objectsEqual(this.raw_labels, ret['raw_labels'])) {
+    console.log("ready to insert:");
+    console.log(new_labels);
+    console.log(idata);
+
+    // if all new labels are exactly the same as the old
+    let append_similardata = false;
+    const new_short_labels = ret['short_labels']
+    if (this.short_labels.length == new_short_labels.length) {
+      append_similardata = true;
+      for (let i = 0; i < this.short_labels.length; i++) {
+        if (this.short_labels[i] !== new_short_labels[i]) {
+          append_similardata = false;
+          break
+        }
+      }
+    }
+
+    // if all new labels are present in the old columns
+    let append_less_columns = true;
+    if (this.orig_labels) {
+      for (let i = 1; i < new_labels.length; i++) {
+        const new_label = new_labels[i];
+        if (!this.orig_labels.includes(new_label)) {
+          append_less_columns = false;
+          break
+        }
+      }
+    }
+
+    if (append_similardata || append_less_columns) {
       console.log("handleData: received similar structured data, try to Append");
-      append_data = true;
 
       if (this.extraDyGraphConfig.logscale) {
         if (newDataLogscale) {
@@ -456,9 +482,43 @@ export class AnysensComponent implements OnInit {
           this.extraDyGraphConfig.logscale = false;
         }
       }
-      // Fastest method of append according to https://stackoverflow.com/a/72325887
-      // FIXME assumes data is later than current!
-      idata.forEach(row => this.data[this.data.length] = row)
+
+      if (append_less_columns) {
+        // sort new columns into old, then append
+        console.log("handleData: received less columns", this.orig_labels, "vs", new_labels);
+        const new_column_indices = [0]; // Date stays the same
+        for (let c = 1; c < this.orig_labels.length; c++) {
+          new_column_indices.push(new_labels.indexOf(this.orig_labels[c])) // -i if not found used later as indicator
+        }
+        console.log('new col indices:', new_column_indices);
+
+        for (let r = 0; r < idata.length; r++) {
+          const row = idata[r];
+          const new_row = [row[0]]
+          for (let c = 1; c < new_column_indices.length; c++) {
+            const c_on_new_data = new_column_indices[c];
+            new_row[new_row.length] = c_on_new_data == -1 ? null : row[c_on_new_data]
+          }
+          if (r == 0 && this.data[this.data.length - 1][0].valueOf() == row[0].valueOf()) {
+            this.data[this.data.length - 1] = new_row
+          } else {
+            this.data[this.data.length] = new_row
+          }
+        }
+
+      } else {
+
+        for (let r = 0; r < idata.length; r++) {
+          const row = idata[r];
+          if (r == 0 && this.data[this.data.length - 1][0].valueOf() == row[0].valueOf()) {
+            this.data[this.data.length - 1] = row
+          } else {
+            this.data[this.data.length] = row
+          }
+        }
+
+      }
+      console.log('data after append:', this.data);
 
     } else {
       this.orig_labels = cloneDeep(ret['labels']);
@@ -482,10 +542,10 @@ export class AnysensComponent implements OnInit {
         }
       }
 
-      this.colors = this.h.getColorsforLabels(labels);
+      this.colors = this.h.getColorsforLabels(new_labels);
 
       for (let c = 1; c < numColumns; c++) {
-        const c_label = labels[c];
+        const c_label = new_labels[c];
 
         if (c_label.match(/hPa/)) {
           this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
@@ -509,8 +569,6 @@ export class AnysensComponent implements OnInit {
 
     this.startTime = this.userStartTime;
 
-    console.log(labels);
-    console.log(idata);
     this.changeTrigger = !this.changeTrigger;
     this.changeTrigger = !this.changeTrigger;
     this.queryRunning = false;
