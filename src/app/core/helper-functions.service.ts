@@ -128,12 +128,12 @@ export class HelperFunctionsService {
       for (const searchstring in searchToColor) {
         if (searchToColor.hasOwnProperty(searchstring)) {
           if (currentLabel.match(searchstring)) {
-            console.log(
-              'getColorsforLabels:',
-              currentLabel,
-              'matched',
-              searchstring
-            );
+            // console.log(
+            //   'getColorsforLabels:',
+            //   currentLabel,
+            //   'matched',
+            //   searchstring
+            // );
             const colorset = searchToColor[searchstring];
             const rightColorArray = this.colors[colorset];
             if (!colorCounters.hasOwnProperty(colorset)) {
@@ -148,7 +148,7 @@ export class HelperFunctionsService {
         }
       }
     }
-    console.log('getColorsforLabels:', newColors);
+    // console.log('getColorsforLabels:', newColors);
 
     return newColors;
   }
