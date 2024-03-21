@@ -468,6 +468,27 @@ export class AnysensComponent implements OnInit {
         }
       }
     }
+    // disable appending if gotten data is from user clicked on "x time since now" - and does want to reload
+    if (this.data && this.data.length > 1) {
+      const latest_ts = this.data[this.data.length - 1][0].valueOf()
+      const new_begin_ts = idata[0][0].valueOf();
+
+      if (new_begin_ts < latest_ts) { // overlap
+        console.log('overlap, reset displayed data');
+        append_similardata = false;
+        append_less_columns = false;
+      }
+      // interval does not match
+      const old_interval = (latest_ts - this.data[0][0].valueOf()) / (this.data.length - 1);
+      const new_interval = (idata[idata.length - 1][0].valueOf() - new_begin_ts) / (idata.length - 1);
+      console.log("old_interval", old_interval, "new_interval", new_interval);
+      if (Math.round(old_interval / 100) != Math.round(new_interval / 100)) {
+        console.log('intervals do not match', old_interval, new_interval, ", reset displayed data");
+        append_similardata = false;
+        append_less_columns = false;
+      }
+    }
+
 
     if (append_similardata || append_less_columns) {
       console.log("handleData: received similar structured data, try to Append");
@@ -483,7 +504,7 @@ export class AnysensComponent implements OnInit {
 
       if (append_less_columns) {
         // sort new columns into old, then append
-        console.log("handleData: received less columns", this.orig_labels, "vs", new_labels);
+        console.log("handleData: received less columns", cloneDeep(this.orig_labels), "vs", cloneDeep(new_labels));
         const new_column_indices = [0]; // Date stays the same
         for (let c = 1; c < this.orig_labels.length; c++) {
           new_column_indices.push(new_labels.indexOf(this.orig_labels[c])) // -i if not found used later as indicator
