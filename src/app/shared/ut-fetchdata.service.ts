@@ -215,12 +215,12 @@ export class UtFetchdataService {
         for (let seriesI = 0; seriesI < seriesArray.length; seriesI++) {
           const series = seriesArray[seriesI];
           dataarray.push(series);
-          console.log(
-            'from',
-            new Date(series.values[0][0]),
-            'to',
-            new Date(series.values[series.values.length - 1][0])
-          );
+          // console.log(
+          //   'from',
+          //   new Date(series.values[0][0]),
+          //   'to',
+          //   new Date(series.values[series.values.length - 1][0])
+          // );
         }
       }
     }
@@ -337,10 +337,10 @@ export class UtFetchdataService {
         // [0]: Date
         const finalColNr = series[colindex];
         if (finalColNr === false) {
-          console.log('col', colindex, 'empty');
+          // console.log('col', colindex, 'empty');
           continue;
         }
-        console.log('col', colindex, 'valid, into', finalColNr);
+        // console.log('col', colindex, 'valid, into', finalColNr);
         validColIndices.push({ from: colindex, to: finalColNr });
       }
       const seriesValues = dataarray[seriesI]['values'];
