@@ -481,7 +481,7 @@ export class AnysensComponent implements OnInit {
       // interval does not match
       const old_interval = (latest_ts - this.data[0][0].valueOf()) / (this.data.length - 1);
       const new_interval = (idata[idata.length - 1][0].valueOf() - new_begin_ts) / (idata.length - 1);
-      console.log("old_interval", old_interval, "new_interval", new_interval);
+      // console.log("old_interval", old_interval, "new_interval", new_interval);
       if (Math.round(old_interval / 100) != Math.round(new_interval / 100)) {
         console.log('intervals do not match', old_interval, new_interval, ", reset displayed data");
         append_similardata = false;
