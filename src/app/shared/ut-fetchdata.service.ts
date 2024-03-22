@@ -78,21 +78,24 @@ export class UtFetchdataService {
     return ' time > now() - ' + param1 + ' ';
   }
 
-  /*
-  @ param tagfilter = { 'sensor': ['SDS011', 'SPS30'] } // OR
-  tagfilter = { 'sensor': 'BME280', // AND
+  /**
+  @param measurement influx Measurement
+  @param timeQuery generate with .influxTimeString()
+  @param tagfilter = { 'sensor': ['SDS011', 'SPS30'] } // OR
+         tagfilter = { 'sensor': 'BME280', // AND
                 'id': '0x77'] }
+  @param mean_s interval for mean calculations (s)
   @param select: String - always use regex "/$fieldname/", because without "mean" is returned as field label, not field name!
   */
 
   influxMeanQuery(
-    from: string,
+    measurement: string,
     timeQuery: string,
     tagfilter: Object = {},
     mean_s = 30,
     select = '*'
   ) {
-    let q = 'SELECT mean(' + select + ') FROM ' + from;
+    let q = 'SELECT mean(' + select + ') FROM ' + measurement;
     let timestring =
       mean_s >= 1.0 ? String(mean_s) + 's' : String(mean_s * 1000) + 'ms';
 
@@ -403,15 +406,7 @@ export class UtFetchdataService {
 
     // insert NaN-Gap-Rows for displaying Gaps in Dygraph
     if (newArray.length > 3) {
-      // calculate Median Gap:
-      const dtArr = [];
-      const analyze_length = Math.min(15, newArray.length);
-      for (let i = 1; i < analyze_length; i++) {
-        dtArr.push(newArray[i][0].valueOf() - newArray[i - 1][0].valueOf());
-      }
-      const sorteddts = dtArr.sort();
-      const center_i = Math.round(sorteddts.length / 2);
-      const gap = sorteddts[center_i];
+      const gap = this.h.calcMedianGap(newArray)
       console.log("Median Gap:", gap);
 
       const maxGap = gap * 1.1;

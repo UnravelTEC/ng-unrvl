@@ -48,7 +48,7 @@ export class HelperFunctionsService {
    * 1-deep obj comparison, no nested objects!
    * If Objects are sorted differently, returns false!
   */
-  objectsEqual(o1, o2):boolean {
+  objectsEqual(o1, o2): boolean {
     const entries1 = Object.entries(o1);
     const entries2 = Object.entries(o2);
     if (entries1.length !== entries2.length) {
@@ -66,7 +66,7 @@ export class HelperFunctionsService {
     }
     return true;
   }
-  rawLabelsEqual(l1: Object, l2: Object):boolean {
+  rawLabelsEqual(l1: Object, l2: Object): boolean {
     if (l1['metric'] !== l2['metric'] || l1['field'] !== l2['field']) {
       return false
     }
@@ -253,6 +253,22 @@ export class HelperFunctionsService {
       }
     }
     return obj;
+  }
+  calcMedianGap(dygData) {
+    if (dygData.length < 2) {
+      return NaN
+    }
+    if (dygData.length == 2) {
+      return dygData[1][0].valueOf() - dygData[0][0].valueOf()
+    }
+    const dtArr = [];
+    const analyze_length = Math.min(15, dygData.length);
+    for (let i = 1; i < analyze_length; i++) {
+      dtArr.push(dygData[i][0].valueOf() - dygData[i - 1][0].valueOf());
+    }
+    const sorteddts = dtArr.sort();
+    const center_i = Math.round(sorteddts.length / 2);
+    return sorteddts[center_i];
   }
   influx2geojsonPoints(data, labels = []): GeoJSON.FeatureCollection<any> {
     let points: GeoJSON.FeatureCollection<any> = {
@@ -584,8 +600,8 @@ export class HelperFunctionsService {
           (utc
             ? 'UTC'
             : new Date()
-                .toLocaleTimeString('en-us', { timeZoneName: 'short' })
-                .split(' ')[2]) +
+              .toLocaleTimeString('en-us', { timeZoneName: 'short' })
+              .split(' ')[2]) +
           ')';
       }
     }
@@ -684,7 +700,7 @@ export class HelperFunctionsService {
         '-' +
         formatDate(
           geojsondata.features[geojsondata.features.length - 1].properties[
-            datefield
+          datefield
           ],
           'yyyy-MM-dd_HH.mm.ss',
           'en-uk'
@@ -703,8 +719,8 @@ export class HelperFunctionsService {
   }
 
   relHumidity(argT, argDP) {
-    if(argT === null || argDP === null) return null;
-    if(isNaN(argT) || isNaN(argDP)) return NaN;
+    if (argT === null || argDP === null) return null;
+    if (isNaN(argT) || isNaN(argDP)) return NaN;
     const T = this.isString(argT) ? Number(argT) : argT;
 
     let a: number, b: number;
@@ -722,8 +738,8 @@ export class HelperFunctionsService {
     return rH;
   }
   absHumidity(argT, argRH) {
-    if(argT === null || argRH === null) return null;
-    if(isNaN(argT) || isNaN(argRH)) return NaN;
+    if (argT === null || argRH === null) return null;
+    if (isNaN(argT) || isNaN(argRH)) return NaN;
 
     const T = this.isString(argT) ? Number(argT) : argT;
     const rH = this.isString(argRH) ? Number(argRH) : argRH;
@@ -749,8 +765,8 @@ export class HelperFunctionsService {
     // console.log('result:', aH);
   }
   dewPoint(argT, argRH, P = 972) {
-    if(argT === null || argRH === null) return null;
-    if(isNaN(argT) || isNaN(argRH)) return NaN;
+    if (argT === null || argRH === null) return null;
+    if (isNaN(argT) || isNaN(argRH)) return NaN;
 
     const T = this.isString(argT) ? Number(argT) : argT;
     const rH = this.isString(argRH) ? Number(argRH) : argRH;
@@ -973,8 +989,8 @@ export class HelperFunctionsService {
     }
     return Number(
       Math.round(Number(String(nr) + 'e' + String(decPlaces))) +
-        'e-' +
-        String(decPlaces)
+      'e-' +
+      String(decPlaces)
     );
   }
 
@@ -1045,8 +1061,8 @@ export class HelperFunctionsService {
     if (
       window.confirm(
         'Database would be queried for up to ' +
-          Math.ceil(nr_points).toLocaleString() +
-          ' points of data, are you sure?'
+        Math.ceil(nr_points).toLocaleString() +
+        ' points of data, are you sure?'
       )
     ) {
       return true;
