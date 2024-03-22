@@ -8,101 +8,64 @@
     <div style="position: absolute; top: 0.8em; right: 7em; color: gray;" *ngIf="autoreload" title="Time until reload">
       {{ reload_timer | number }}s
     </div>
-    <a
-      id="backicon"
-      [routerLink]="'/Apps/I/' + referrer"
-      routerLinkActive="active"
-      title="Return to overview"
-      ><mat-icon>fullscreen_exit</mat-icon></a
-    >
-    <button
-      id="toggleSidebar"
-      (click)="toggleSidebar(); R.resize()"
-      title="Toggle sidebar"
-    >
+    <a id="backicon" [routerLink]="'/Apps/I/' + referrer" routerLinkActive="active"
+      title="Return to overview"><mat-icon>fullscreen_exit</mat-icon></a>
+    <button id="toggleSidebar" (click)="toggleSidebar(); R.resize()" title="Toggle sidebar">
       {{ sideBarShown ? '»' : '«' }}
     </button>
   </div>
   <div id="anybody">
     <div id="dygcontainerabs" [style.right]="currentSidebarWidth">
       <div id="dygcontainerrel">
-        <app-ut-dygraph-in
-          [data]="data"
-          [columnLabels]="labels"
-          [showDeviation]="show_deviation"
-          [rawLabels]="raw_labels"
-          [style]="graphstyle"
-          [changeTrigger]="changeTrigger"
-          [extraDyGraphConfig]="extraDyGraphConfig"
-          [startTime]="dygStartTime"
-          enableHighlightCallback="true"
-          [colors]="colors"
-          [backGroundLevels]="gss['graphBackgrounds'][background]"
-          [YLabel]="ylabel"
-          [Y2Label]="y2label"
-          (returnGraphWidthOnChange)="setGraphWidth($event)"
-          (returnCurrentZoom)="updateFromToTimes($event)"
-          (returnRunningAvg)="handleRunningAvg($event)"
-          #R
-        ></app-ut-dygraph-in>
+        <app-ut-dygraph-in [data]="data" [columnLabels]="labels" [showDeviation]="show_deviation"
+          [rawLabels]="raw_labels" [style]="graphstyle" [changeTrigger]="changeTrigger"
+          [extraDyGraphConfig]="extraDyGraphConfig" [startTime]="dygStartTime" enableHighlightCallback="true"
+          [colors]="colors" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
+          [Y2Label]="y2label" (returnGraphWidthOnChange)="setGraphWidth($event)"
+          (returnCurrentZoom)="updateFromToTimes($event)" (returnRunningAvg)="handleRunningAvg($event)"
+          #R></app-ut-dygraph-in>
       </div>
     </div>
 
     <form class="settings" (submit)="reload(true)" *ngIf="sideBarShown">
       <fieldset>
-        <h3>Current Dataset:</h3>
+        <h3>Shown Data:</h3>
         <label>Resolution:</label>
-        <span class="cRange" title="{{currentres}}&thinsp;s">{{ currentresText }}</span><br />
+        <span class="cRange" title="{{currentres}}&thinsp;s">{{ currentresText }}</span>
 
         <!-- <label style="display: inline-block">Range:</label> -->
         <!-- <span class="cRange">{{ currentRange }}</span> -->
-        <p>
-          <a
-            routerLink="/Apps/I/Anysens"
-            [queryParams]="{
+
+        <a routerLink="/Apps/I/Anysens" [queryParams]="{
               measurement: measurement,
               sensor: sensor,
               from: from,
               to: to,
               interval: interval
-            }"
-            routerLinkActive="active"
-            >Permalink</a
-          >
-        </p>
+            }" routerLinkActive="active" style="position: absolute; top: 0.75rem; right: 0.75rem">Permalink</a>
       </fieldset>
+
       <fieldset [disabled]="queryRunning == true || autoreload">
-        <h3>{{ queryRunning ? 'Query running...' : 'Query current view:' }}</h3>
+        <h3>{{ queryRunning && !autoreload ? 'Query running...' : 'Query current view:' }}</h3>
         <label for="userMeanS">Resolution (s):</label>
-        <input
-          type="number"
-          id="userMeanS"
-          min="0"
-          name="userMeanS"
-          [(ngModel)]="userMeanS"
-          (ngModelChange)="saveMean($event)"
-          style="width: 4em"
-        />
+        <input type="number" id="userMeanS" min="0" name="userMeanS" [(ngModel)]="userMeanS"
+          (ngModelChange)="saveMean($event)" style="width: 4em" />
 
         <div style="width: 100%; text-align: right; margin-top: -1.8em">
           <button type="submit">
             <mat-icon>refresh</mat-icon>
             Reload All
           </button>
-          <button (click)="reloadMissing()" style="margin-top: 0.5rem;"
-          type="button">Reload Missing</button>
+          <button (click)="reloadMissing()" style="margin-top: 0.5rem;" type="button">Load Missing in View</button>
         </div>
       </fieldset>
-      <fieldset [disabled]="queryRunning == true && !autoreload">
-        <h3>{{ queryRunning ? 'Query running...' : 'Query latest data:' }}</h3>
+
+      <fieldset [disabled]="queryRunning == true || autoreload">
+        <h3>{{ queryRunning && !autoreload ? 'Query running...' : 'Query latest data:' }}</h3>
         <mat-form-field style="margin-top: -0.5rem; margin-bottom: -1rem;">
           <mat-label>Show range from now</mat-label>
-          <mat-select
-            [(ngModel)]="userStartTime"
-            name="startTime"
-            (closed)="changeMean(userStartTime)"
-            [disabled]="queryRunning == true || autoreload"
-          >
+          <mat-select [(ngModel)]="userStartTime" name="startTime" (closed)="changeMean(userStartTime)"
+            [disabled]="queryRunning == true || autoreload">
             <mat-option value="5m">5 min.</mat-option>
             <mat-option value="15m">15 min.</mat-option>
             <mat-option value="1h" selected="selected">1h</mat-option>
@@ -114,35 +77,27 @@
             <mat-option value="356d">1 year</mat-option>
           </mat-select>
         </mat-form-field>
-        <br />
-        <div style="width: 100%">
-          <mat-checkbox
-            [(ngModel)]="autoreload"
-            name="autoreload"
-            labelPosition="after"
-            (ngModelChange)="toggleAutoReload($event)"
-          >
-            auto
-          </mat-checkbox>
+      </fieldset>
+
+      <fieldset>
+        <h3>Live Update</h3>
+        <mat-checkbox [(ngModel)]="autoreload" name="autoreload" labelPosition="after" style="display: inline-block; margin-top: -0.5rem;"
+          (ngModelChange)="toggleAutoReload($event)">
+          Enable{{ autoreload ? 'd' : ''}}
+        </mat-checkbox>
+        <div style="position: absolute; top: 1.25rem; right: 0.75rem">
           <label for="auto_s">every (s):</label>
-          <input
-            type="number"
-            min="0"
-            id="auto_s"
-            name="auto_s"
-            [(ngModel)]="auto_interval"
-            (ngModelChange)="changeAutoS($event)"
-            style="width: 3em"
-          />
-          <button
-            (click)="reload()"
-            type="button"
-            [disabled]="autoreload"
-            style="margin-left: 3em"
-          >
-            <mat-icon>refresh</mat-icon>
-            Reload
-          </button>
+          <input type="number" min="0" id="auto_s" name="auto_s" [(ngModel)]="auto_interval"
+            (ngModelChange)="changeAutoS($event)" style="width: 3em" />
+        </div>
+
+        <div style="width: 100%; text-align: right; margin-top: 0.5rem;">
+          <!-- <button (click)="reload()" type="button" [disabled]="autoreload" style="margin-left: 3em">
+          <mat-icon>refresh</mat-icon>
+          Reload
+        </button> -->
+
+          <button (click)="reloadMissingToNow()" type="button" [disabled]="autoreload">Load Missing to Now</button>
         </div>
       </fieldset>
       <fieldset id="tags">
@@ -178,25 +133,19 @@
           <th>average (all)</th>
           <th style="position: relative; padding-right: 2.2em">
             average (visible)
-            <button
-              (click)="toggleTableShown(); R.resize()"
-              title="Hide Data Table"
-            >
+            <button (click)="toggleTableShown(); R.resize()" title="Hide Data Table">
               <mat-icon>cancel</mat-icon>
             </button>
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr
-          *ngFor="let label of short_labels; let i = index"
-          [attr.data-index]="i"
-        >
+        <tr *ngFor="let label of short_labels; let i = index" [attr.data-index]="i">
           <td>{{ label }}</td>
           <td>
             {{
-              latest_values[i]
-                | number: '1.' + round_digits[i + 1] + '-' + round_digits[i + 1]
+            latest_values[i]
+            | number: '1.' + round_digits[i + 1] + '-' + round_digits[i + 1]
             }}
           </td>
 
@@ -207,14 +156,14 @@
           </td>
           <td>
             {{
-              allAverages[i]
-                | number: '1.' + (round_digits[i + 1] + 1) + '-' + (round_digits[i + 1] + 1)
+            allAverages[i]
+            | number: '1.' + (round_digits[i + 1] + 1) + '-' + (round_digits[i + 1] + 1)
             }}
           </td>
           <td>
             {{
-              visibleAverages[i]
-                | number: '1.' + (round_digits[i + 1] + 1 ) + '-' + (round_digits[i + 1] + 1)
+            visibleAverages[i]
+            | number: '1.' + (round_digits[i + 1] + 1 ) + '-' + (round_digits[i + 1] + 1)
             }}
           </td>
         </tr>

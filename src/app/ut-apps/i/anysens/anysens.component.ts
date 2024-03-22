@@ -253,11 +253,11 @@ export class AnysensComponent implements OnInit {
   }
 
   reloadMissing() {
-    this.fromTime
-    this.from
-    this.toTime
-    this.to
-    this.latest_dates // Array of unix_ts, latest point with valid data per column
+    // this.fromTime
+    // this.from
+    // this.toTime
+    // this.to
+    // this.latest_dates // Array of unix_ts, latest point with valid data per column
 
     const latest_t = Math.max(...this.latest_dates)
     let delta_t = this.to - latest_t;
@@ -265,6 +265,10 @@ export class AnysensComponent implements OnInit {
     if (delta_t > 0) {
       this.launchQuery(this.createQuery(new Date(latest_t), this.toTime));
     }
+  }
+  reloadMissingToNow() {
+    const latest_t = Math.max(...this.latest_dates)
+    this.launchQuery(this.createQuery(new Date(latest_t), new Date()));
   }
 
   changeAutoS(param) {
@@ -479,10 +483,10 @@ export class AnysensComponent implements OnInit {
         append_less_columns = false;
       }
       // interval does not match
-      const old_interval = (latest_ts - this.data[0][0].valueOf()) / (this.data.length - 1);
-      const new_interval = (idata[idata.length - 1][0].valueOf() - new_begin_ts) / (idata.length - 1);
+      const old_interval = this.h.calcMedianGap(this.data);
+      const new_interval = this.h.calcMedianGap(idata);
       // console.log("old_interval", old_interval, "new_interval", new_interval);
-      if (Math.round(old_interval / 100) != Math.round(new_interval / 100)) {
+      if (idata.length > 1 && (old_interval != new_interval)) {
         console.log('intervals do not match', old_interval, new_interval, ", reset displayed data");
         append_similardata = false;
         append_less_columns = false;
@@ -616,7 +620,7 @@ export class AnysensComponent implements OnInit {
     if (this.autoreload) {
       setTimeout(() => {
         if (this.autoreload) {
-          this.reload();
+          this.reloadMissingToNow();
         }
       }, this.auto_interval * 1000);
     }
