@@ -34,7 +34,7 @@
       <td>
         <span *ngFor="let m of s.value">
           <a routerLink="/Apps/I/Anysens" [queryParams]="{ sensor: s.key, measurement: m }" routerLinkActive="active">{{
-            m }} <span style="color: rgb(179, 179, 179);">(&thinsp;{{ latest_sensorSeconds[s.key][m] }}&thinsp;)</span> </a>&nbsp;</span>
+            m }} <span style="color: rgb(179, 179, 179);">(&thinsp;{{ latest_sensorSeconds[s.key] ? latest_sensorSeconds[s.key][m] : '?' }}&thinsp;)</span> </a>&nbsp;</span>
       </td>
     </tr>
   </table>
