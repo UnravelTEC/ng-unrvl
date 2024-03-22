@@ -107,6 +107,7 @@ export class AnysensComponent implements OnInit {
   public to: number; // unix time from urlparam
 
   public queryRunning = false;
+  public query_age: number;
 
   public autoreload = false;
   public auto_interval = 1; // gets set to userMeanS
@@ -383,6 +384,7 @@ export class AnysensComponent implements OnInit {
       return;
     }
     this.queryRunning = true;
+    this.query_age = 0;
     this.utHTTP.getHTTPData(this.utHTTP.buildInfluxQuery(clause)).subscribe(
       (data: Object) => this.handleData(data),
       (error) => {
@@ -390,6 +392,17 @@ export class AnysensComponent implements OnInit {
         this.gss.displayHTTPerror(error);
       }
     );
+    setTimeout(() => {
+      this.increaseQueryAge();
+    }, 100);
+  }
+  increaseQueryAge() {
+    this.query_age += 0.1;
+    if (this.queryRunning) {
+      setTimeout(() => {
+        this.increaseQueryAge();
+      }, 100);
+    }
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -403,17 +416,25 @@ export class AnysensComponent implements OnInit {
       alert('Influx Error: ' + ret['error']);
       this.queryRunning = false;
       this.autoreload = false;
+      this.query_age = 0;
       return;
     }
     const new_labels = ret['labels'];
     const numColumns = new_labels.length;
 
+    const idata = ret['data'];
+
+    if (!idata || !idata.length) {
+      this.queryRunning = false;
+      console.log('handleData: no data');
+      this.repeatAutoReloadIfEnabled()
+      return
+    }
     console.log('orig labels:', this.orig_labels);
     console.log('raw labels:', this.raw_labels);
     console.log('common_label:', this.common_label);
     console.log('short_labels:', this.short_labels);
 
-    const idata = ret['data'];
     let newDataLogscale = true;
     for (let c = 1; c < numColumns; c++) {
       const c_label = new_labels[c];
@@ -595,12 +616,15 @@ export class AnysensComponent implements OnInit {
 
     this.startTime = this.userStartTime;
 
-    this.changeTrigger += 1;
     this.queryRunning = false;
 
     if (!this.data || !this.data[0]) {
       return;
     }
+
+
+    this.changeTrigger += 1;
+
     for (let column = 1; column < numColumns; column++) {
       for (let i = idata.length - 1; i != 0; i--) {
         const element = idata[i][column];
@@ -616,7 +640,12 @@ export class AnysensComponent implements OnInit {
     }
     console.log('latest_values', this.latest_values);
     console.log('latest_dates', this.latest_dates);
+
     this.last_reload = new Date().valueOf() / 1000;
+
+    this.repeatAutoReloadIfEnabled()
+  }
+  repeatAutoReloadIfEnabled() {
     if (this.autoreload) {
       setTimeout(() => {
         if (this.autoreload) {

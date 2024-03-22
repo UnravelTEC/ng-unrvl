@@ -6,8 +6,12 @@
     </h2>
     <!-- small spaces in ( )-->
     <div style="position: absolute; top: 0.8em; right: 7em; color: gray;" *ngIf="autoreload" title="Time until reload">
-      {{ reload_timer | number }}s
+      {{ reload_timer | number }} s
     </div>
+    <div style="position: absolute; top: 0.8em; right: 10em; color: gray;" *ngIf="queryRunning == true" title="Query Age">
+      {{ query_age | number: '1.1-1' }} s
+    </div>
+
     <a id="backicon" [routerLink]="'/Apps/I/' + referrer" routerLinkActive="active"
       title="Return to overview"><mat-icon>fullscreen_exit</mat-icon></a>
     <button id="toggleSidebar" (click)="toggleSidebar(); R.resize()" title="Toggle sidebar">
