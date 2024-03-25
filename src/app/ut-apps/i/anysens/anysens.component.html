@@ -8,7 +8,8 @@
     <div style="position: absolute; top: 0.8em; right: 7em; color: gray;" *ngIf="autoreload" title="Time until reload">
       {{ reload_timer | number }} s
     </div>
-    <div style="position: absolute; top: 0.8em; right: 10em; color: gray;" *ngIf="queryRunning == true" title="Query Age">
+    <div style="position: absolute; top: 0.8em; right: 10em; color: gray;" *ngIf="queryRunning == true"
+      title="Query Age">
       {{ query_age | number: '1.1-1' }} s
     </div>
 
@@ -85,8 +86,8 @@
 
       <fieldset>
         <h3>Live Update</h3>
-        <mat-checkbox [(ngModel)]="autoreload" name="autoreload" labelPosition="after" style="display: inline-block; margin-top: -0.5rem;"
-          (ngModelChange)="toggleAutoReload($event)">
+        <mat-checkbox [(ngModel)]="autoreload" name="autoreload" labelPosition="after"
+          style="display: inline-block; margin-top: -0.5rem;" (ngModelChange)="toggleAutoReload($event)">
           Enable{{ autoreload ? 'd' : ''}}
         </mat-checkbox>
         <div style="position: absolute; top: 1.25rem; right: 0.75rem">
@@ -125,9 +126,48 @@
     </form>
   </div>
   <div id="anyfooter">
-    <div *ngIf="!tableShown">
-      <button (click)="toggleTableShown(); R.resize()">Show Data Table</button>
+    <div class="btncontainer">
+      <!--  *ngIf="!annotationsShown"  *ngIf="!tableShown"-->
+      <button (click)="toggleAnnotationsShown(); R.resize()">Show Annotations</button>
+      <button (click)="toggleTableShown(); R.resize()">Show Data Stats</button>
+
+
     </div>
+
+    <table *ngIf="annotationsShown">
+      <thead>
+        <tr>
+          <th>
+            Time
+          </th>
+          <th>
+            Measurement
+          </th>
+          <th>
+            Tags
+          </th>
+          <th>
+            Field
+          </th>
+          <th>
+            OP
+          </th>
+          <th>
+            Text
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
     <table *ngIf="tableShown">
       <thead>
         <tr>

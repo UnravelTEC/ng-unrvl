@@ -115,8 +115,11 @@ export class AnysensComponent implements OnInit {
   public last_reload: number;
 
   public tableShown = true;
+  public annotationsShown = true;
   public sideBarShown = true;
   public tagsShown = true;
+
+  public annotationTable = [] // [{time_t:Date, time:Date, measurement: "", tags: "", field: "", OP: "CRUD", text: "" }]
 
 
   constructor(
@@ -253,6 +256,44 @@ export class AnysensComponent implements OnInit {
     );
   }
 
+  setAnnotation(text = "") {
+    let params = { sensor: this.sensor };
+    // for (const key in localTagFilter) {
+    //   if (localTagFilter.hasOwnProperty(key)) {
+
+    const center_time = this.from + ((this.to - this.from) / 2)
+
+    let influxstring = `annotations,measurement_t=${this.measurement} time_t=${center_time},note="test"`;
+    this.utHTTP
+      .postData(this.utHTTP.buildInfluxWriteUrl(), influxstring)
+      .subscribe(
+        (res: any) => console.log(res),
+        (error) => this.gss.displayHTTPerror(error)
+      );
+  }
+  getAnnotations(fromTime: any, toTime: Date = undefined) {
+    let toTS = toTime ? toTime.valueOf() : undefined;
+    let fromTS = fromTime instanceof Date ? fromTime.valueOf() : Date.now() - this.h.parseToSeconds(fromTime) * 1000;
+    const params = {}
+
+    const annoquery = this.utHTTP.annotationsQuery(this.measurement, fromTS, toTS, params, this.value)
+    console.log("annotationsQuery", annoquery);
+
+    this.utHTTP
+      .getHTTPData(this.utHTTP.buildInfluxQuery(annoquery, undefined, undefined))
+      .subscribe(
+        (data: Object) => this.acceptAnnotations(data),
+        (error) => {
+          console.log('getCalibrations: Error following:');
+          this.gss.displayHTTPerror(error)
+        }
+      );
+  }
+  acceptAnnotations(data) {
+    console.log("acceptAnnotations", data);
+
+  }
+
   reloadMissing() {
     // this.fromTime
     // this.from
@@ -362,6 +403,10 @@ export class AnysensComponent implements OnInit {
       'LS after:',
       this.localStorage.get(this.appName + 'tableShown')
     );
+  }
+  toggleAnnotationsShown() {
+    this.annotationsShown = !this.annotationsShown;
+    this.changeTrigger += 1
   }
   toggleSidebar() {
     this.sideBarShown = !this.sideBarShown;
@@ -644,6 +689,7 @@ export class AnysensComponent implements OnInit {
     this.last_reload = new Date().valueOf() / 1000;
 
     this.repeatAutoReloadIfEnabled()
+    this.getAnnotations(this.fromTime, this.toTime)
   }
   repeatAutoReloadIfEnabled() {
     if (this.autoreload) {

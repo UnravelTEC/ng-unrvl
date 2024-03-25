@@ -78,6 +78,9 @@
         bottom: 0.5em;
         z-index: +5;
       }
+      button + button {
+        right: 10.5em;
+      }
     }
     table {
       margin-top: 0.3rem;

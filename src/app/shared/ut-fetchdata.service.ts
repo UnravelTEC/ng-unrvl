@@ -65,11 +65,65 @@ export class UtFetchdataService {
     return this.http.post(url, data);
   }
 
+  /**
+  @param measurement influx Measurement
+  @param timeQuery generate with .influxTimeString()
+  @param tagfilter = { 'sensor': ['SDS011', 'SPS30'] } // OR
+         tagfilter = { 'sensor': 'BME280', // AND
+                'id': '0x77'] }
+  @param fieldname: String - no Regex!"
+  */
+  annotationsQuery(
+    measurement: string,
+    from_time: number,
+    to_time: number,
+    tagfilter: Object = {},
+    fieldname = '*') {
+
+    const localTagFilter = cloneDeep(tagfilter)
+    localTagFilter['measurement_t'] = measurement;
+    if (fieldname != '*') {
+      localTagFilter['field_t'] = fieldname
+    }
+
+    let whereClause = '';
+    for (const key in localTagFilter) {
+      if (localTagFilter.hasOwnProperty(key)) {
+        if (whereClause) {
+          whereClause += ' AND '
+        }
+        const andobj = localTagFilter[key];
+        if (Array.isArray(andobj) && andobj.length) {
+          whereClause += '(';
+          for (let i = 0; i < andobj.length; i++) {
+            const value = andobj[i];
+            whereClause += key + " = '" + value + "'";
+            if (i + 1 != andobj.length) {
+              whereClause += ' OR ';
+            }
+          }
+          whereClause += ')';
+        } else if (andobj && andobj.length) {
+          whereClause += key + " = '" + andobj + "'";
+        }
+      }
+    }
+
+    if (from_time) {
+      whereClause += ' AND  time_t > ' + from_time
+    }
+    if (to_time) {
+      whereClause += ' AND  time_t < ' + from_time
+    }
+    whereClause += ' GROUP BY *'
+    return 'SELECT text,time_t FROM annotations WHERE ' + whereClause
+  }
+
   influxTimeString(param1: any, param2: Date = undefined) {
     if (param2) {
       return (
         ' time > ' +
-        param1.valueOf() +
+        param1.valueOf() + // If param1 is String (e.g. '5m'), JS IGNORES function and just returns value of param1
         'ms AND time < ' +
         param2.valueOf() +
         'ms '
@@ -85,7 +139,7 @@ export class UtFetchdataService {
          tagfilter = { 'sensor': 'BME280', // AND
                 'id': '0x77'] }
   @param mean_s interval for mean calculations (s)
-  @param select: String - always use regex "/$fieldname/", because without "mean" is returned as field label, not field name!
+  @param fields: String - always use regex "/$fieldname/", because without "mean" is returned as field label, not field name!
   */
 
   influxMeanQuery(
@@ -93,14 +147,13 @@ export class UtFetchdataService {
     timeQuery: string,
     tagfilter: Object = {},
     mean_s = 30,
-    select = '*'
+    fields = '*'
   ) {
-    let q = 'SELECT mean(' + select + ') FROM ' + measurement;
+    let q = 'SELECT mean(' + fields + ') FROM ' + measurement;
     let timestring =
       mean_s >= 1.0 ? String(mean_s) + 's' : String(mean_s * 1000) + 'ms';
 
     let whereClause = '';
-
     for (const key in tagfilter) {
       if (tagfilter.hasOwnProperty(key)) {
         const andobj = tagfilter[key];
