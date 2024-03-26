@@ -229,13 +229,13 @@
           <th>Measurement</th>
           <th>Tags</th>
           <th>Field</th>
-          <th>OP</th>
           <th>Text</th>
+          <th>OP</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="l">
         <tr *ngIf="currentClickedRow == -1">
-          <td>
+          <td colspan="6">
             Click on Point to add new annotation.
           </td>
         </tr>
@@ -244,8 +244,11 @@
           <td>{{ raw_labels[currentClickedLabelIndex]["metric"]}}</td>
           <td>{{ currentClickedTags }}</td>
           <td>{{ raw_labels[currentClickedLabelIndex]["field"] }}</td>
-          <td><button>New</button></td>
           <td><input type="text" [(ngModel)]="newAnnoText"/></td>
+          <td><button>New</button></td>
+        </tr>
+        <tr>
+          <td colspan="6">Inserting...</td>
         </tr>
       </tbody>
     </table>
