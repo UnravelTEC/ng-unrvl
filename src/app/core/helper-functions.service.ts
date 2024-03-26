@@ -336,6 +336,10 @@ export class HelperFunctionsService {
   }
 
   parseToSeconds(inputString: string): number {
+    if (typeof inputString !== 'string') {
+      console.log('parseToSeconds:', inputString, "not a string, but", typeof inputString);
+      return inputString;
+    }
     if (
       inputString.endsWith('s') &&
       parseInt(inputString.slice(0, -1), 10) > 0
