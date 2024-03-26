@@ -119,8 +119,7 @@ export class AnysensComponent implements OnInit {
   public sideBarShown = true;
   public tagsShown = true;
 
-  public annotationTable = [] // [{time_t:Date, time:Date, measurement: "", tags: "", field: "", OP: "CRUD", text: "" }]
-
+  public annotationTable = []; // [{time_t:Date, time:Date, measurement: "", tags: "", field: "", OP: "CRUD", text: "" }]
 
   constructor(
     public gss: GlobalSettingsService,
@@ -185,7 +184,9 @@ export class AnysensComponent implements OnInit {
         this[element] = thing;
       }
     });
-    this.gss.emitChange({ appName: this.measurement + (this.sensor ? ' ' + this.sensor : '') });
+    this.gss.emitChange({
+      appName: this.measurement + (this.sensor ? ' ' + this.sensor : ''),
+    });
 
     this.ylabel = this.measurement
       .replace('pressure', '')
@@ -230,7 +231,6 @@ export class AnysensComponent implements OnInit {
     } else {
       this.launchQuery(this.createQuery(this.startTime));
     }
-
   }
 
   createQuery(fromTime: any, toTime: Date = undefined) {
@@ -238,7 +238,9 @@ export class AnysensComponent implements OnInit {
 
     let params = { sensor: [] };
     if (this.sensor) {
-      params['sensor'] = Array.isArray(this.sensor) ? this.sensor : [this.sensor];
+      params['sensor'] = Array.isArray(this.sensor)
+        ? this.sensor
+        : [this.sensor];
     }
     if (this.host) {
       params['host'] = this.host;
@@ -256,14 +258,15 @@ export class AnysensComponent implements OnInit {
     );
   }
 
-  setAnnotation(text = "") {
+  public newAnnoText = '';
+  setAnnotation() {
     let params = { sensor: this.sensor };
     // for (const key in localTagFilter) {
     //   if (localTagFilter.hasOwnProperty(key)) {
 
-    const center_time = this.from + ((this.to - this.from) / 2)
+    const center_time = this.from + (this.to - this.from) / 2;
 
-    let influxstring = `annotations,measurement_t=${this.measurement} time_t=${center_time},note="test"`;
+    let influxstring = `annotations,measurement_t=${this.measurement} time_t=${center_time},note="${this.newAnnoText}"`;
     this.utHTTP
       .postData(this.utHTTP.buildInfluxWriteUrl(), influxstring)
       .subscribe(
@@ -273,25 +276,47 @@ export class AnysensComponent implements OnInit {
   }
   getAnnotations(fromTime: any, toTime: Date = undefined) {
     let toTS = toTime ? toTime.valueOf() : undefined;
-    let fromTS = fromTime instanceof Date ? fromTime.valueOf() : Date.now() - this.h.parseToSeconds(fromTime) * 1000;
-    const params = {}
+    let fromTS =
+      fromTime instanceof Date
+        ? fromTime.valueOf()
+        : Date.now() - this.h.parseToSeconds(fromTime) * 1000;
+    const params = {};
 
-    const annoquery = this.utHTTP.annotationsQuery(this.measurement, fromTS, toTS, params, this.value)
-    console.log("annotationsQuery", annoquery);
+    const annoquery = this.utHTTP.annotationsQuery(
+      this.measurement,
+      fromTS,
+      toTS,
+      params,
+      this.value
+    );
+    console.log('annotationsQuery', annoquery);
 
     this.utHTTP
-      .getHTTPData(this.utHTTP.buildInfluxQuery(annoquery, undefined, undefined))
+      .getHTTPData(
+        this.utHTTP.buildInfluxQuery(annoquery, undefined, undefined)
+      )
       .subscribe(
         (data: Object) => this.acceptAnnotations(data),
         (error) => {
           console.log('getCalibrations: Error following:');
-          this.gss.displayHTTPerror(error)
+          this.gss.displayHTTPerror(error);
         }
       );
   }
   acceptAnnotations(data) {
-    console.log("acceptAnnotations", data);
+    console.log('acceptAnnotations', data);
+  }
+  public currentClickedRow = -1;
+  public currentClickedLabelIndex: number;
+  public currentClickedTags = '';
+  acceptClickedRow($event) {
+    console.log('acceptClickedRow', $event);
+    this.currentClickedRow = $event['r'];
+    this.currentClickedLabelIndex = this.short_labels.indexOf($event['s']);
 
+    this.currentClickedTags = JSON.stringify(
+      this.raw_labels[this.currentClickedLabelIndex]['tags']
+    ).slice(1, -1);
   }
 
   reloadMissing() {
@@ -301,7 +326,7 @@ export class AnysensComponent implements OnInit {
     // this.to
     // this.latest_dates // Array of unix_ts, latest point with valid data per column
 
-    const latest_t = Math.max(...this.latest_dates)
+    const latest_t = Math.max(...this.latest_dates);
     let delta_t = this.to - latest_t;
     console.log(delta_t);
     if (delta_t > 0) {
@@ -309,7 +334,7 @@ export class AnysensComponent implements OnInit {
     }
   }
   reloadMissingToNow() {
-    const latest_t = Math.max(...this.latest_dates)
+    const latest_t = Math.max(...this.latest_dates);
     this.launchQuery(this.createQuery(new Date(latest_t), new Date()));
   }
 
@@ -376,7 +401,7 @@ export class AnysensComponent implements OnInit {
     this.reload();
   }
   changeTaglist(param) {
-    this.localStorage.set(this.appName + 'taglist', this.taglist)
+    this.localStorage.set(this.appName + 'taglist', this.taglist);
     // console.log(this.taglist);
     for (const key in this.taglist) {
       if (Object.prototype.hasOwnProperty.call(this.taglist, key)) {
@@ -395,7 +420,7 @@ export class AnysensComponent implements OnInit {
 
   toggleTableShown() {
     this.tableShown = !this.tableShown;
-    this.changeTrigger += 1
+    this.changeTrigger += 1;
     this.localStorage.set(this.appName + 'tableShown', this.tableShown);
     console.log(
       'toggleTableShown',
@@ -406,12 +431,12 @@ export class AnysensComponent implements OnInit {
   }
   toggleAnnotationsShown() {
     this.annotationsShown = !this.annotationsShown;
-    this.changeTrigger += 1
+    this.changeTrigger += 1;
   }
   toggleSidebar() {
     this.sideBarShown = !this.sideBarShown;
     this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
-    this.changeTrigger += 1
+    this.changeTrigger += 1;
 
     this.localStorage.set(this.appName + 'sideBarShown', this.sideBarShown);
     console.log('toggleSidebar', this.currentSidebarWidth);
@@ -472,8 +497,8 @@ export class AnysensComponent implements OnInit {
     if (!idata || !idata.length) {
       this.queryRunning = false;
       console.log('handleData: no data');
-      this.repeatAutoReloadIfEnabled()
-      return
+      this.repeatAutoReloadIfEnabled();
+      return;
     }
     console.log('orig labels:', this.orig_labels);
     console.log('raw labels:', this.raw_labels);
@@ -487,7 +512,16 @@ export class AnysensComponent implements OnInit {
         const point = idata[r][c];
         if (point <= 0 && !Number.isNaN(point) && point !== null) {
           newDataLogscale = false;
-          console.log('found non log-scale data:', idata[r][c], '@r', r, 'c', c, 'of', c_label);
+          console.log(
+            'found non log-scale data:',
+            idata[r][c],
+            '@r',
+            r,
+            'c',
+            c,
+            'of',
+            c_label
+          );
           break;
         }
       }
@@ -510,19 +544,19 @@ export class AnysensComponent implements OnInit {
       }
     }
 
-    console.log("ready to insert:");
+    console.log('ready to insert:');
     console.log(new_labels);
     console.log(idata);
 
     // if all new labels are exactly the same as the old
     let append_similardata = false;
-    const new_short_labels = ret['short_labels']
+    const new_short_labels = ret['short_labels'];
     if (this.short_labels.length == new_short_labels.length) {
       append_similardata = true;
       for (let i = 0; i < this.short_labels.length; i++) {
         if (this.short_labels[i] !== new_short_labels[i]) {
           append_similardata = false;
-          break
+          break;
         }
       }
     }
@@ -534,16 +568,17 @@ export class AnysensComponent implements OnInit {
         const new_label = new_labels[i];
         if (!this.orig_labels.includes(new_label)) {
           append_less_columns = false;
-          break
+          break;
         }
       }
     }
     // disable appending if gotten data is from user clicked on "x time since now" - and does want to reload
     if (this.data && this.data.length > 1) {
-      const latest_ts = this.data[this.data.length - 1][0].valueOf()
+      const latest_ts = this.data[this.data.length - 1][0].valueOf();
       const new_begin_ts = idata[0][0].valueOf();
 
-      if (new_begin_ts < latest_ts) { // overlap
+      if (new_begin_ts < latest_ts) {
+        // overlap
         console.log('overlap, reset displayed data');
         append_similardata = false;
         append_less_columns = false;
@@ -552,16 +587,22 @@ export class AnysensComponent implements OnInit {
       const old_interval = this.h.calcMedianGap(this.data);
       const new_interval = this.h.calcMedianGap(idata);
       // console.log("old_interval", old_interval, "new_interval", new_interval);
-      if (idata.length > 1 && (old_interval != new_interval)) {
-        console.log('intervals do not match', old_interval, new_interval, ", reset displayed data");
+      if (idata.length > 1 && old_interval != new_interval) {
+        console.log(
+          'intervals do not match',
+          old_interval,
+          new_interval,
+          ', reset displayed data'
+        );
         append_similardata = false;
         append_less_columns = false;
       }
     }
 
-
     if (append_similardata || append_less_columns) {
-      console.log("handleData: received similar structured data, try to Append");
+      console.log(
+        'handleData: received similar structured data, try to Append'
+      );
 
       if (this.extraDyGraphConfig.logscale) {
         if (newDataLogscale) {
@@ -574,44 +615,52 @@ export class AnysensComponent implements OnInit {
 
       if (append_less_columns) {
         // sort new columns into old, then append
-        console.log("handleData: received less columns", cloneDeep(this.orig_labels), "vs", cloneDeep(new_labels));
+        console.log(
+          'handleData: received less columns',
+          cloneDeep(this.orig_labels),
+          'vs',
+          cloneDeep(new_labels)
+        );
         const new_column_indices = [0]; // Date stays the same
         for (let c = 1; c < this.orig_labels.length; c++) {
-          new_column_indices.push(new_labels.indexOf(this.orig_labels[c])) // -i if not found used later as indicator
+          new_column_indices.push(new_labels.indexOf(this.orig_labels[c])); // -i if not found used later as indicator
         }
         console.log('new col indices:', new_column_indices);
 
         for (let r = 0; r < idata.length; r++) {
           const row = idata[r];
-          const new_row = [row[0]]
+          const new_row = [row[0]];
           for (let c = 1; c < new_column_indices.length; c++) {
             const c_on_new_data = new_column_indices[c];
-            new_row[new_row.length] = c_on_new_data == -1 ? null : row[c_on_new_data]
+            new_row[new_row.length] =
+              c_on_new_data == -1 ? null : row[c_on_new_data];
           }
-          if (r == 0 && this.data[this.data.length - 1][0].valueOf() == row[0].valueOf()) {
-            this.data[this.data.length - 1] = new_row
+          if (
+            r == 0 &&
+            this.data[this.data.length - 1][0].valueOf() == row[0].valueOf()
+          ) {
+            this.data[this.data.length - 1] = new_row;
           } else {
-            this.data[this.data.length] = new_row
+            this.data[this.data.length] = new_row;
           }
         }
-
       } else {
-
         for (let r = 0; r < idata.length; r++) {
           const row = idata[r];
-          if (r == 0 && this.data[this.data.length - 1][0].valueOf() == row[0].valueOf()) {
-            this.data[this.data.length - 1] = row
+          if (
+            r == 0 &&
+            this.data[this.data.length - 1][0].valueOf() == row[0].valueOf()
+          ) {
+            this.data[this.data.length - 1] = row;
           } else {
-            this.data[this.data.length] = row
+            this.data[this.data.length] = row;
           }
         }
-
       }
       console.log('data after append:', this.data);
       const tmpdata = this.data;
       this.data = undefined;
       this.data = tmpdata;
-
     } else {
       this.orig_labels = cloneDeep(ret['labels']);
       this.short_labels = ret['short_labels'];
@@ -646,7 +695,9 @@ export class AnysensComponent implements OnInit {
           };
         }
 
-        this.round_digits.push(this.sensorService.getDigits(this.raw_labels[c]));
+        this.round_digits.push(
+          this.sensorService.getDigits(this.raw_labels[c])
+        );
       }
       if (newDataLogscale) {
         console.log('logscale OK');
@@ -660,13 +711,15 @@ export class AnysensComponent implements OnInit {
     }
 
     this.startTime = this.userStartTime;
+    this.currentClickedRow = -1;
+    this.currentClickedLabelIndex = undefined;
+    this.currentClickedTags = '';
 
     this.queryRunning = false;
 
     if (!this.data || !this.data[0]) {
       return;
     }
-
 
     this.changeTrigger += 1;
 
@@ -688,8 +741,8 @@ export class AnysensComponent implements OnInit {
 
     this.last_reload = new Date().valueOf() / 1000;
 
-    this.repeatAutoReloadIfEnabled()
-    this.getAnnotations(this.fromTime, this.toTime)
+    this.repeatAutoReloadIfEnabled();
+    this.getAnnotations(this.fromTime, this.toTime);
   }
   repeatAutoReloadIfEnabled() {
     if (this.autoreload) {

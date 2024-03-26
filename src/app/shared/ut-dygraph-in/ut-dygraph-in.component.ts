@@ -103,6 +103,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   enableHighlightCallback = false;
   @Output()
   returnHighlightedRow = new EventEmitter<number>();
+  @Output()
+  returnClickedRow = new EventEmitter<Object>();
 
   public yRange = [undefined, undefined];
   public y2Range = [undefined, undefined];
@@ -922,9 +924,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         g['parent']['clickHighLightedPoint'] = sel;
       }
       const highlSeries = g.getHighlightSeries();
-      console.log('sel:', sel, 'hl:', highlSeries);
+      g['parent'].emitCurrentPoint(sel, highlSeries)
       g.setSelection(sel, undefined, true);
     }
+  }
+  emitCurrentPoint(row, series) {
+    this.returnClickedRow.emit({'r': row, 's': series})
+    console.log('r:', row, 's:', series);
   }
 
   highlightCallback(event, x, points, row, seriesName) {
