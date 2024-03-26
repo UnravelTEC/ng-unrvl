@@ -240,6 +240,20 @@ export class UtFetchdataService {
   }
 
   private telegrafMetrics = ['mem', 'disk', 'io', 'processes', 'swap', 'cpu'];
+
+  /**
+   *
+   * @param data
+   * @param labelBlackList
+   * @param epoch
+   * @returns { data: [[]],
+   *          common_label: "if series have common tags",
+   *          labels: [Date, "metric "],
+   *          orig_labels: [Date, ".."],
+   *          short_labels: ["to be displayed in legend"] // no Date!,
+   *          raw_labels: [{ metric: 'Date', tags: {}, field: '' }, {}]
+   *          }
+   */
   parseInfluxData(
     data: Object,
     labelBlackList: string[] = [],
