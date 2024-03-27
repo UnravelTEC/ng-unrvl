@@ -1061,6 +1061,30 @@ export class HelperFunctionsService {
     fieldname = fieldname.replace(/_/, ' ');
     return fieldname;
   }
+  /**
+   *
+   * @param tagarray array of k/v combinations, human readable: ['k1: v1', ...]
+   * @param priorities str-arr
+   */
+  createSortedTagString(tagarray, priorities = ['sensor', 'id', 'channel']) {
+    const tagarrayCopy = [...tagarray].sort();
+    let seriesArray = []
+    for (const prio of priorities) {
+      for (let i = 0; i < tagarrayCopy.length; i++) {
+        const tag = tagarrayCopy[i];
+        if (tag.startsWith(prio)) {
+          seriesArray.push(tag)
+          tagarrayCopy.splice(i, 1)
+          break;
+        }
+      }
+    }
+    // remainder
+    for (const tag of tagarrayCopy) {
+      seriesArray.push(tag)
+    }
+    return seriesArray.join(', ')
+  }
   bigQconfirm(nr_points) {
     if (
       window.confirm(

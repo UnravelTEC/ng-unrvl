@@ -249,8 +249,8 @@ export class UtFetchdataService {
    * @param epoch
    * @returns { data: [[]],
    *          common_label: "if series have common tags",
-   *          labels: [Date, "metric "],
-   *          orig_labels: [Date, ".."],
+   *          labels: [Date, "metric tags fieldname (°C)"],
+   *          orig_labels: ["metric tags fieldname_degC"], // no Date!,
    *          short_labels: ["to be displayed in legend"] // no Date!,
    *          raw_labels: [{ metric: 'Date', tags: {}, field: '' }, {}]
    *          }
@@ -333,22 +333,7 @@ export class UtFetchdataService {
           tagarray.push(tkey + ': ' + tags[tkey])
         }
       }
-      tagarray.sort()
-      const priorities = ['sensor', 'id', 'channel']
-      for (const prio of priorities) {
-        for (let i = 0; i < tagarray.length; i++) {
-          const tag = tagarray[i];
-          if (tag.startsWith(prio)) {
-            serieslabel += ' ' + tag + ',';
-            tagarray.splice(i, 1)
-            break;
-          }
-        }
-      }
-      // remainder
-      for (const tag of tagarray) {
-        serieslabel += ' ' + tag + ',';
-      }
+      serieslabel += ' ' + this.h.createSortedTagString(tagarray)
 
       seriesValidColumns[i] = [];
       for (let colindex = 1; colindex < series['columns'].length; colindex++) {
@@ -367,10 +352,10 @@ export class UtFetchdataService {
           seriesValidColumns[i][colindex] = validColCount; // where should it be in the end
           const metric = series['name'];
           let colname = series['columns'][colindex];
-          orig_labels.push(serieslabel + ' ' + colname);
           if (tagBlackList.indexOf('mean_*') > -1) {
             colname = colname.replace(/^mean_/, '');
           }
+          orig_labels.push(serieslabel + ' ' + colname);
           raw_labels.push({
             metric: metric,
             tags: tags,
@@ -549,10 +534,11 @@ export class UtFetchdataService {
       for (const tkey in common_tags) {
         if (Object.prototype.hasOwnProperty.call(common_tags, tkey)) {
           const tval = common_tags[tkey];
+          const regex = new RegExp(`${tkey}: ${tval}[,]?[ ]?`);
           retval['short_labels'][i - 1] = retval['short_labels'][i - 1].replace(
-            tkey + ': ' + tval + ', ',
+            regex,
             ''
-          );
+          ).replace(/$/,'');
         }
       }
     }
