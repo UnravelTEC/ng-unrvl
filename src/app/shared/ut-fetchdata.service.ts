@@ -364,9 +364,12 @@ export class UtFetchdataService {
         if (!empty) {
           validColCount += 1;
           seriesValidColumns[i][colindex] = validColCount; // where should it be in the end
+          const metric = series['name'];
           let colname = series['columns'][colindex];
           orig_labels.push(serieslabel + ' ' + colname);
-          const metric = series['name'];
+          if (tagBlackList.indexOf('mean_*') > -1) {
+            colname = colname.replace(/^mean_/, '');
+          }
           raw_labels.push({
             metric: metric,
             tags: tags,
@@ -374,9 +377,6 @@ export class UtFetchdataService {
           });
           if (tagBlackList.indexOf(colname) > -1) {
             colname = '';
-          }
-          if (tagBlackList.indexOf('mean_*') > -1) {
-            colname = colname.replace(/^mean_/, '');
           }
 
           // exclude telegraf metrics from formatting
