@@ -43,6 +43,7 @@
           [columnLabels]="labels"
           [showDeviation]="show_deviation"
           [rawLabels]="raw_labels"
+          [annotations]="dygAnnotations"
           [style]="graphstyle"
           [changeTrigger]="changeTrigger"
           [extraDyGraphConfig]="extraDyGraphConfig"
@@ -252,7 +253,7 @@
           <td colspan="6">Inserting...</td>
         </tr>
         <tr *ngFor="let a of annotationTable">
-          <td>{{ a.time }}</td>
+          <td>{{ a.time  | date : 'dd.MM.yyyy HH:mm:ss' }}</td>
           <td>{{ a.measurement }}</td>
           <td>{{ a.tags }}</td>
           <td>{{ a.field }}</td>

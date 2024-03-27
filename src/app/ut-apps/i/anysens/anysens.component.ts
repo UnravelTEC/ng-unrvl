@@ -88,6 +88,7 @@ export class AnysensComponent implements OnInit {
   raw_labels = [];
   round_digits = [0];
   show_deviation = true;
+  dygAnnotations = [];
 
   public allAverages = [];
   public visibleAverages = [];
@@ -307,10 +308,12 @@ export class AnysensComponent implements OnInit {
   }
   acceptAnnotations(data) {
     console.log('acceptAnnotations', data);
-    this.annotationTable = [];
+    const new_annotationTable = []
+    const new_dygAnnos = []
 
     const series = this.h.getDeep(data, ['results', 0, 'series'])
     if (!series) {
+      this.annotationTable = [];
       console.log('no annos');
       return
     }
@@ -320,30 +323,50 @@ export class AnysensComponent implements OnInit {
       const stags = seri['tags']
       const commonAnno = { field: stags['A_field'], measurement: stags['A_measurement'], OP: stags['A_operation'] }
       commonAnno['origtags'] = cloneDeep(stags)
-      commonAnno['tags'] = ""
+
+      const commonAnnoTagArr = []
       for (const key in stags) {
         if (key.startsWith("A_"))
           continue
         const value = stags[key];
         if (value != "") {
-          if (commonAnno['tags'].length) {
-            commonAnno['tags'] += ', '
-          }
-          commonAnno['tags'] += key + ": " + value
+          commonAnnoTagArr.push(key + ": " + value)
+          // commonAnno['tags'] +=
         }
       }
+      commonAnno['tags'] = this.h.createSortedTagString(commonAnnoTagArr)
 
       seri['values'].forEach(row => {
         const annoObj = cloneDeep(commonAnno)
         annoObj['time'] = row[time_col]
         annoObj['note'] = row[note_col]
-        this.annotationTable.push(annoObj)
-        console.log(annoObj);
-
+        new_annotationTable.push(annoObj)
+        // console.log(annoObj);
       });
-
     });
+    // search for col nr, to use short_label index
+    for (let i = 0; i < new_annotationTable.length; i++) {
+      const annoObj = new_annotationTable[i];
+      const tmpOrigLabel4Cmp = annoObj['measurement'] + ' ' + annoObj['tags'] + ' ' + annoObj['field']
+      let dygLabel = ""
+      for (let o = 0; o < this.orig_labels.length; o++) {
+        if (tmpOrigLabel4Cmp == this.orig_labels[o]) {
+          dygLabel = this.short_labels[o]
+          break
+        }
+      }
+      if (!dygLabel) {
+        console.log("!dygLabel", tmpOrigLabel4Cmp, 'in', this.orig_labels);
+      }
+      const dygAnno = { series: dygLabel, text: annoObj["note"], shortText: "X", xval: annoObj['time'] }
+      new_dygAnnos.push(dygAnno)
+    }
+    this.annotationTable = new_annotationTable;
+    this.dygAnnotations = new_dygAnnos;
+    console.log(cloneDeep(this.annotationTable));
+    console.log(cloneDeep(this.dygAnnotations));
   }
+
   public currentClickedRow = -1;
   public currentClickedLabelIndex: number;
   public currentClickedTags = '';
@@ -699,12 +722,12 @@ export class AnysensComponent implements OnInit {
       this.data = undefined;
       this.data = tmpdata;
     } else {
-      this.orig_labels = cloneDeep(ret['labels']);
+      this.orig_labels = cloneDeep(ret['orig_labels']);
       this.short_labels = ret['short_labels'];
       this.common_label = ret['common_label'];
       this.raw_labels = ret['raw_labels'];
       this.labels = ['Date'].concat(this.short_labels);
-      console.log('new orig labels:', ret['labels']);
+      console.log('new orig labels:', ret['orig_labels']);
       console.log('new raw labels:', ret['raw_labels']);
       console.log('new common_label:', ret['common_label']);
       console.log('new short_labels:', ret['short_labels']);

@@ -225,6 +225,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   public lastValues = [];
 
   @Input()
+  public annotations = [];
+
+  @Input()
   public columnLabels = [];
   @Input()
   public changeTrigger: any;
@@ -412,10 +415,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       visibility: this.dyGraphOptions.visibility,
       dateWindow: this.dyGraphOptions['dateWindow'],
       customBars: this.showDeviation,
-    });
-    // setTimeout(() => { // FIXME while c'out?
+    }, true); // redraw in updateAnnotations()
+    this.updateAnnotations(true)
+
+    // setTimeout(() => { // FIXME why c'out?
     //   this.fullZoom();
     // }, 100);
+
 
     if (this.minimal && this.data.length > 10) {
       const dateOfSecondPt = this.data[1][0].valueOf();
@@ -440,6 +446,17 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.waitForData();
       }, 200);
     }
+  }
+  updateAnnotations(redrawAfter = true) {
+    if (!this.annotations) {
+      if (redrawAfter) {
+        this.Dygraph.updateOptions({})
+      }
+      return
+    }
+
+    this.Dygraph.setAnnotations(this.annotations, !redrawAfter);
+    console.log('after setAnnotations', this.Dygraph.annotations());
   }
   ngOnInit() {
     this.dyGraphOptions['underlayCallback'] = this.backGroundLevels
@@ -796,6 +813,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.dyGraphOptions
     );
     this.Dygraph['parent'] = this;
+    if (this.annotations) {
+      this.updateAnnotations(true)
+    }
     if (this.runningAvgPoints) {
       this.Dygraph.adjustRoll(this.runningAvgPoints);
     }
@@ -929,7 +949,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
   emitCurrentPoint(row, series) {
-    this.returnClickedRow.emit({'r': row, 's': series})
+    this.returnClickedRow.emit({ 'r': row, 's': series })
     console.log('r:', row, 's:', series);
   }
 
@@ -1092,20 +1112,24 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           let devtext = '';
           if (!isNaN(series.y)) {
             const yvalues = parent.getDeviationsofTS(data.x);
-            const values = yvalues[i + 1];
-            if (Array.isArray(values)) {
-              const dlower = parent.h.roundAccurately(
-                values[1] - values[0],
-                parent.roundDigits[i + 1]
-              );
-              const dupper = parent.h.roundAccurately(
-                values[2] - values[1],
-                parent.roundDigits[i + 1]
-              );
-              if (dlower == dupper) {
-                devtext = dlower ? '±' + String(dlower) : ''; // if no dev defined
-              } else {
-                devtext = '-' + String(dlower) + ' +' + String(dupper);
+            if (!yvalues) {
+              console.log('could not find row for', data.x);
+            } else {
+              const values = yvalues[i + 1];
+              if (Array.isArray(values)) {
+                const dlower = parent.h.roundAccurately(
+                  values[1] - values[0],
+                  parent.roundDigits[i + 1]
+                );
+                const dupper = parent.h.roundAccurately(
+                  values[2] - values[1],
+                  parent.roundDigits[i + 1]
+                );
+                if (dlower == dupper) {
+                  devtext = dlower ? '±' + String(dlower) : ''; // if no dev defined
+                } else {
+                  devtext = '-' + String(dlower) + ' +' + String(dupper);
+                }
               }
             }
           }
@@ -1163,8 +1187,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     this.setAxisHighlight(name);
   }
+  /**
+   * binary search for complete data row at timestamp (incl. deviations) for display in legend
+   * @param ts in ms
+   * @param debug
+   * @returns data row of this.displayedData
+   */
   getDeviationsofTS(ts, debug = false) {
-    // search for complete data row at timestamp (incl. deviations) for display in legend
     const datalen = this.data.length; // use data, array has a lower memory footprint
     let firstindex = 0;
     let firstts;
@@ -1209,7 +1238,14 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         firstindex = new_half_index;
       }
     }
-    console.error('getDeviationsofTS Timeout');
+    console.error('getDeviationsofTS Timeout, search classic way', ts, debug);
+    for (let r = 0; r < this.data.length; r++) {
+      const row = this.data[r];
+      if (row[0].valueOf() == ts) {
+        console.log('found', row);
+        return this.displayedData[r]
+      }
+    }
 
     console.log(
       'BS count:',
