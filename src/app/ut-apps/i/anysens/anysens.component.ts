@@ -39,7 +39,9 @@ export class AnysensComponent implements OnInit {
   };
   y2label = 'Atmospheric Pressure';
   labelBlackList = ['mean_*']; // mean is when only 1 graph is returned
-  public taglist = {}; // tagkey: true/false
+  public ls_taglist = {} // tagkey: true/false ; local copy of global taglist - so that even tags not present are remembered
+  public taglist = {}; // only the tags the current dataset uses - so that displayed list is only as long as needed
+
   private sidebarWidth = '15rem';
   public currentSidebarWidth = this.sidebarWidth;
   graphstyle = {
@@ -150,17 +152,11 @@ export class AnysensComponent implements OnInit {
     this.auto_interval = this.userMeanS;
     this.reload_timer = this.auto_interval;
 
-    const lstaglist = this.localStorage.get(this.appName + 'taglist');
-    for (const key in lstaglist) {
-      if (Object.prototype.hasOwnProperty.call(lstaglist, key)) {
-        this.taglist[key] = lstaglist[key];
-      }
-    }
-    for (const key in this.taglist) {
-      if (Object.prototype.hasOwnProperty.call(this.taglist, key)) {
-        if (this.taglist[key] === false) {
-          this.labelBlackList.push(key);
-        }
+    this.ls_taglist = this.localStorage.get(this.appName + 'taglist');
+
+    for (const key in this.ls_taglist) {
+      if (this.ls_taglist[key] === false) {
+        this.labelBlackList.push(key);
       }
     }
 
@@ -443,21 +439,20 @@ export class AnysensComponent implements OnInit {
     this.reload();
   }
   changeTaglist(param) {
-    this.localStorage.set(this.appName + 'taglist', this.taglist);
     // console.log(this.taglist);
     for (const key in this.taglist) {
-      if (Object.prototype.hasOwnProperty.call(this.taglist, key)) {
-        if (this.taglist[key] === false) {
-          if (!this.labelBlackList.includes(key)) {
-            this.labelBlackList.push(key);
-          }
-        } else {
-          if (this.labelBlackList.includes(key)) {
-            this.labelBlackList.splice(this.labelBlackList.indexOf(key), 1);
-          }
+      this.ls_taglist[key] = this.taglist[key]; // cp local taglist to ls_taglist
+      if (this.taglist[key] === false) {
+        if (!this.labelBlackList.includes(key)) {
+          this.labelBlackList.push(key);
+        }
+      } else {
+        if (this.labelBlackList.includes(key)) {
+          this.labelBlackList.splice(this.labelBlackList.indexOf(key), 1);
         }
       }
     }
+    this.localStorage.set(this.appName + 'taglist', this.ls_taglist);
   }
 
   toggleTableShown() {
@@ -720,6 +715,9 @@ export class AnysensComponent implements OnInit {
           if (Object.prototype.hasOwnProperty.call(raw_tags, key)) {
             if (!Object.prototype.hasOwnProperty.call(this.taglist, key)) {
               this.taglist[key] = true;
+            }
+            if (!Object.prototype.hasOwnProperty.call(this.ls_taglist, key)) {
+              this.ls_taglist[key] = true;
             }
           }
         }
