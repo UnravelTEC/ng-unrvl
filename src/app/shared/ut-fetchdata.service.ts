@@ -67,7 +67,8 @@ export class UtFetchdataService {
 
   /**
   @param measurement influx Measurement
-  @param timeQuery generate with .influxTimeString()
+  @param from_time unix ts in ms
+  @param to_time unix ts in ms
   @param tagfilter = { 'sensor': ['SDS011', 'SPS30'] } // OR
          tagfilter = { 'sensor': 'BME280', // AND
                 'id': '0x77'] }
@@ -81,9 +82,9 @@ export class UtFetchdataService {
     fieldname = '*') {
 
     const localTagFilter = cloneDeep(tagfilter)
-    localTagFilter['measurement_t'] = measurement;
+    localTagFilter['A_measurement'] = measurement;
     if (fieldname != '*') {
-      localTagFilter['field_t'] = fieldname
+      localTagFilter['A_field'] = fieldname
     }
 
     let whereClause = '';
@@ -110,13 +111,13 @@ export class UtFetchdataService {
     }
 
     if (from_time) {
-      whereClause += ' AND  time_t > ' + from_time
+      whereClause += ' AND A_time >= ' + from_time
     }
     if (to_time) {
-      whereClause += ' AND  time_t < ' + from_time
+      whereClause += ' AND A_time <= ' + to_time
     }
     whereClause += ' GROUP BY *'
-    return 'SELECT text,time_t FROM annotations WHERE ' + whereClause
+    return 'SELECT note,A_time FROM annotations WHERE ' + whereClause
   }
 
   influxTimeString(param1: any, param2: Date = undefined) {

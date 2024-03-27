@@ -259,27 +259,33 @@ export class AnysensComponent implements OnInit {
   }
 
   public newAnnoText = '';
+  public inserting = false;
   setAnnotation() {
-    let params = { sensor: this.sensor };
-    // for (const key in localTagFilter) {
-    //   if (localTagFilter.hasOwnProperty(key)) {
+    const i = this.currentClickedLabelIndex;
+    const t = this.data[this.currentClickedRow][0].valueOf();
+    let tags = "";
+    for (let [key, value] of Object.entries(this.raw_labels[i]['tags'])) {
+      value = value['replace'](/([& ])/, "\\$1")
+      tags += `,${key}=${value}`
+    }
 
-    const center_time = this.from + (this.to - this.from) / 2;
-
-    let influxstring = `annotations,measurement_t=${this.measurement} time_t=${center_time},note="${this.newAnnoText}"`;
+    let influxstring = `annotations,A_measurement=${this.raw_labels[i]["metric"]},A_field=${this.raw_labels[i]["field"]},A_operation=C${tags} A_time=${t},note="${this.newAnnoText}"`;
+    this.inserting = true
     this.utHTTP
       .postData(this.utHTTP.buildInfluxWriteUrl(), influxstring)
       .subscribe(
-        (res: any) => console.log(res),
-        (error) => this.gss.displayHTTPerror(error)
+        (res: any) => { console.log(res); this.inserting = false; this.getAnnotations(this.fromTime, this.toTime) },
+        (error) => { this.gss.displayHTTPerror(error); this.inserting = false }
       );
   }
   getAnnotations(fromTime: any, toTime: Date = undefined) {
-    let toTS = toTime ? toTime.valueOf() : undefined;
+
     let fromTS =
       fromTime instanceof Date
         ? fromTime.valueOf()
         : Date.now() - this.h.parseToSeconds(fromTime) * 1000;
+    let toTS = toTime ? toTime.valueOf() : undefined;
+
     const params = {};
 
     const annoquery = this.utHTTP.annotationsQuery(
@@ -305,6 +311,42 @@ export class AnysensComponent implements OnInit {
   }
   acceptAnnotations(data) {
     console.log('acceptAnnotations', data);
+    this.annotationTable = [];
+
+    const series = this.h.getDeep(data, ['results', 0, 'series'])
+    if (!series) {
+      console.log('no annos');
+      return
+    }
+    series.forEach(seri => {
+      const note_col = seri['columns'].indexOf('note')
+      const time_col = seri['columns'].indexOf('A_time')
+      const stags = seri['tags']
+      const commonAnno = { field: stags['A_field'], measurement: stags['A_measurement'], OP: stags['A_operation'] }
+      commonAnno['origtags'] = cloneDeep(stags)
+      commonAnno['tags'] = ""
+      for (const key in stags) {
+        if (key.startsWith("A_"))
+          continue
+        const value = stags[key];
+        if (value != "") {
+          if (commonAnno['tags'].length) {
+            commonAnno['tags'] += ', '
+          }
+          commonAnno['tags'] += key + ": " + value
+        }
+      }
+
+      seri['values'].forEach(row => {
+        const annoObj = cloneDeep(commonAnno)
+        annoObj['time'] = row[time_col]
+        annoObj['note'] = row[note_col]
+        this.annotationTable.push(annoObj)
+        console.log(annoObj);
+
+      });
+
+    });
   }
   public currentClickedRow = -1;
   public currentClickedLabelIndex: number;
@@ -312,11 +354,11 @@ export class AnysensComponent implements OnInit {
   acceptClickedRow($event) {
     console.log('acceptClickedRow', $event);
     this.currentClickedRow = $event['r'];
-    this.currentClickedLabelIndex = this.short_labels.indexOf($event['s']);
+    this.currentClickedLabelIndex = this.short_labels.indexOf($event['s']) + 1;
 
     this.currentClickedTags = JSON.stringify(
       this.raw_labels[this.currentClickedLabelIndex]['tags']
-    ).slice(1, -1);
+      , null, 1).slice(1, -1).replace(/"/g, '');
   }
 
   reloadMissing() {
@@ -740,6 +782,8 @@ export class AnysensComponent implements OnInit {
     console.log('latest_dates', this.latest_dates);
 
     this.last_reload = new Date().valueOf() / 1000;
+    this.fromTime = this.data[0][0]
+    this.toTime = this.data[this.data.length - 1][0]
 
     this.repeatAutoReloadIfEnabled();
     this.getAnnotations(this.fromTime, this.toTime);

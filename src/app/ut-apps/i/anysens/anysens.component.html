@@ -213,6 +213,7 @@
       </fieldset>
     </form>
   </div>
+
   <div id="anyfooter">
     <div class="btncontainer">
       <!--  *ngIf="!annotationsShown"  *ngIf="!tableShown"-->
@@ -233,7 +234,7 @@
           <th>OP</th>
         </tr>
       </thead>
-      <tbody class="l">
+      <tbody>
         <tr *ngIf="currentClickedRow == -1">
           <td colspan="6">
             Click on Point to add new annotation.
@@ -241,14 +242,22 @@
         </tr>
         <tr *ngIf="currentClickedRow > -1">
           <td>{{ data[currentClickedRow][0] | date : 'dd.MM.yyyy HH:mm:ss' }}</td>
-          <td>{{ raw_labels[currentClickedLabelIndex]["metric"]}}</td>
+          <td>{{ raw_labels[currentClickedLabelIndex]["metric"] }}</td>
           <td>{{ currentClickedTags }}</td>
           <td>{{ raw_labels[currentClickedLabelIndex]["field"] }}</td>
           <td><input type="text" [(ngModel)]="newAnnoText"/></td>
-          <td><button>New</button></td>
+          <td><button (click)="setAnnotation()">New</button></td>
         </tr>
-        <tr>
+        <tr *ngIf="inserting">
           <td colspan="6">Inserting...</td>
+        </tr>
+        <tr *ngFor="let a of annotationTable">
+          <td>{{ a.time }}</td>
+          <td>{{ a.measurement }}</td>
+          <td>{{ a.tags }}</td>
+          <td>{{ a.field }}</td>
+          <td>{{ a.note }}</td>
+          <td>{{ a.OP }}</td>
         </tr>
       </tbody>
     </table>

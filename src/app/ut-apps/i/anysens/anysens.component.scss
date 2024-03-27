@@ -107,13 +107,11 @@
           color: white;
         }
       }
+    }
+
+    table + table {
       td + td {
         text-align: right;
-      }
-    }
-    table:first-child {
-      tbody.l td {
-        text-align: left;
       }
     }
     tr:hover td {
