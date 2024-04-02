@@ -258,7 +258,7 @@
           <td>{{ a.tags }}</td>
           <td>{{ a.field }}</td>
           <td>{{ a.note }}</td>
-          <td>{{ a.OP }}</td>
+          <td>{{ a.OP }} <button (click)="delAnnotation(a.measurement, a.field, a.dygColumnNr, a.time)" title="Delete">X</button></td>
         </tr>
       </tbody>
     </table>

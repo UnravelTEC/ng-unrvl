@@ -1194,7 +1194,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
    * @returns data row of this.displayedData
    */
   getDeviationsofTS(ts, debug = false) {
-    const datalen = this.data.length; // use data, array has a lower memory footprint
+    const datalen = this.data.length; // use this.data, array has a lower memory footprint
     let firstindex = 0;
     let firstts;
     //
@@ -1212,9 +1212,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       if (lastts == ts) {
         return this.displayedData[lastindex];
       }
+      if (firstindex == lastindex - 1) { // timestamp to search lies between two points
+        console.error('TS to search lies between!');
+        debug = true
+      }
       if (debug) {
         console.log(
-          'BS count:',
+          'Binary search count:',
           timeoutcounter,
           'firsti:',
           firstindex,
@@ -1228,10 +1232,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           (lastts - logoffset) / 1000
         );
       }
+      if (firstindex == lastindex - 1) {
+        return undefined;
+      }
       const new_half_ts = firstts + (lastts - firstts) / 2; // overshoots ?
       const new_half_index =
         firstindex + Math.floor((lastindex - firstindex) / 2);
-      const new_half_index_ts = this.data[new_half_index][0]; // overshoots ?
+      const new_half_index_ts = this.data[new_half_index][0].valueOf(); // overshoots ?
       if (ts < new_half_index_ts) {
         lastindex = new_half_index;
       } else {
@@ -1248,7 +1255,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     console.log(
-      'BS count:',
+      'Binary search overall count:',
       timeoutcounter,
       'firsti:',
       firstindex,

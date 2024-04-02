@@ -1085,6 +1085,61 @@ export class HelperFunctionsService {
     }
     return seriesArray.join(', ')
   }
+  /**
+
+   *
+   * @param data [][] in dygraph Data format
+   * @param origAnnoTsMS Unix Timestamp to search for, in ms.
+   * @returns Unix TS in ms, a timestamp of the array or undefined if error
+   */
+  findNearestDataTS(data, origAnnoTsMS) {
+    let firstindex = 0;
+    const datalen = data.length;
+    let lastindex = datalen - 1;
+    let firstts, lastts;
+
+    let timeoutcounter = 0;
+    while (timeoutcounter++ < 99) {
+      firstts = data[firstindex][0].valueOf();
+      if (firstts == origAnnoTsMS) {
+        return origAnnoTsMS;
+      }
+      lastts = data[lastindex][0].valueOf();
+      if (lastts == origAnnoTsMS) {
+        return origAnnoTsMS;
+      }
+      if (firstindex == lastindex - 1) { // timestamp to search lies between two points
+        const half_ts = firstts + ((lastts - firstts) / 2);
+        if (origAnnoTsMS > half_ts) {
+          return lastts; // round up
+        }
+        return firstts // round down
+      }
+      const new_half_index = firstindex + Math.floor((lastindex - firstindex) / 2);
+      const new_half_index_ts = data[new_half_index][0].valueOf()
+      if (origAnnoTsMS < new_half_index_ts) {
+        lastindex = new_half_index;
+      } else {
+        firstindex = new_half_index;
+      }
+    }
+    const logoffset = data[0][0].valueOf();
+    console.log(
+      'findNearestDataTS: not found,',
+      timeoutcounter,
+      'firsti:',
+      firstindex,
+      'lasti:',
+      lastindex,
+      'firstts',
+      (firstts - logoffset) / 1000,
+      'target',
+      (origAnnoTsMS - logoffset) / 1000,
+      'lastts',
+      (lastts - logoffset) / 1000
+    );
+    return undefined;
+  }
   bigQconfirm(nr_points) {
     if (
       window.confirm(

@@ -275,6 +275,21 @@ export class AnysensComponent implements OnInit {
         (error) => { this.gss.displayHTTPerror(error); this.inserting = false }
       );
   }
+  delAnnotation(measurement, field, dygColumnNr, time) {
+    let tags = "";
+    for (let [key, value] of Object.entries(this.raw_labels[dygColumnNr]['tags'])) {
+      value = value['replace'](/([& ])/, "\\$1")
+      tags += `,${key}=${value}`
+    }
+    let influxstring = `annotations,A_measurement=${measurement},A_field=${field},A_operation=D${tags} A_time=${time}`;
+    this.inserting = true
+    this.utHTTP
+      .postData(this.utHTTP.buildInfluxWriteUrl(), influxstring)
+      .subscribe(
+        (res: any) => { console.log(res); this.inserting = false; this.getAnnotations(this.fromTime, this.toTime) },
+        (error) => { this.gss.displayHTTPerror(error); this.inserting = false }
+      );
+  }
   getAnnotations(fromTime: any, toTime: Date = undefined) {
 
     let fromTS =
@@ -331,7 +346,6 @@ export class AnysensComponent implements OnInit {
         const value = stags[key];
         if (value != "") {
           commonAnnoTagArr.push(key + ": " + value)
-          // commonAnno['tags'] +=
         }
       }
       commonAnno['tags'] = this.h.createSortedTagString(commonAnnoTagArr)
@@ -340,7 +354,19 @@ export class AnysensComponent implements OnInit {
         const annoObj = cloneDeep(commonAnno)
         annoObj['time'] = row[time_col]
         annoObj['note'] = row[note_col]
-        new_annotationTable.push(annoObj)
+        if (annoObj['OP'] == "D") {
+          for (let i = 0; i < new_annotationTable.length; i++) {
+            const row = new_annotationTable[i];
+            if (annoObj['time'] == row['time']
+              && annoObj['tags'] == row['tags']
+              && annoObj['field'] == row['field']
+              && annoObj['measurement'] == row['measurement']) {
+              new_annotationTable.splice(i, 1)
+              break
+            }
+          }
+        } else
+          new_annotationTable.push(annoObj)
         // console.log(annoObj);
       });
     });
@@ -352,19 +378,31 @@ export class AnysensComponent implements OnInit {
       for (let o = 0; o < this.orig_labels.length; o++) {
         if (tmpOrigLabel4Cmp == this.orig_labels[o]) {
           dygLabel = this.short_labels[o]
+          annoObj['dygColumnNr'] = o + 1 // to compensate for no Date column in short- and orig_labels
           break
         }
       }
       if (!dygLabel) {
         console.log("!dygLabel", tmpOrigLabel4Cmp, 'in', this.orig_labels);
       }
-      const dygAnno = { series: dygLabel, text: annoObj["note"], shortText: "X", xval: annoObj['time'] }
+      // time has to be matched to nearest data point for Dyg to attach it
+      const origAnnoTsMS = annoObj['time']
+      const newAnnoTsMS = this.h.findNearestDataTS(this.data, origAnnoTsMS)
+      let shortext = '×'
+      if (origAnnoTsMS < newAnnoTsMS) {
+        shortext = '<'
+      }
+      if (origAnnoTsMS > newAnnoTsMS) {
+        shortext = '>'
+      }
+
+      const dygAnno = { series: dygLabel, text: annoObj["note"], shortText: shortext, xval: newAnnoTsMS }
       new_dygAnnos.push(dygAnno)
     }
     this.annotationTable = new_annotationTable;
     this.dygAnnotations = new_dygAnnos;
-    console.log(cloneDeep(this.annotationTable));
-    console.log(cloneDeep(this.dygAnnotations));
+    console.log("annotationTable", cloneDeep(this.annotationTable));
+    console.log("dygAnnotations", cloneDeep(this.dygAnnotations));
   }
 
   public currentClickedRow = -1;
