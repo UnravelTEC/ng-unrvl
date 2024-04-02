@@ -74,7 +74,7 @@ export class AllsensComponent implements OnInit {
       const seri = series[i][0];
       const m_and_tags = seri.split(',')
       const measurement = m_and_tags[0];
-      if (measurement == 'calibrations') {
+      if (measurement == 'calibrations' || measurement == 'annotations') {
         continue;
       }
       if (!this.measurements.includes(measurement)) {
