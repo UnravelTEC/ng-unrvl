@@ -1,0 +1,34 @@
+table {
+  margin-top: 0.3rem;
+  border: 2px solid gray;
+  border-collapse: collapse;
+  box-sizing: border-box;
+  font-size: 0.9em;
+  td,
+  th {
+    border: 1px solid gray;
+    padding: 0.2rem 0.3rem;
+  }
+  th {
+    button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      font-size: 0.6em;
+      border: 0;
+      padding: 0.3rem;
+      background: transparent;
+      color: gray;
+    }
+    button:hover {
+      color: white;
+    }
+  }
+  th:hover {
+    background-color: #3f3f3f;
+  }
+}
+
+tr:hover td {
+  background-color: #3f3f3f;
+}

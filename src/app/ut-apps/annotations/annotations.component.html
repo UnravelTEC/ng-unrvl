@@ -1,0 +1,25 @@
+<h3>Annotations</h3>
+
+<table>
+    <thead>
+        <tr>
+            <th title="sort per time up/down" (click)="sort('time')">Time</th>
+            <th title="sort per measurement up/down" (click)="sort('measurement')">Measurement</th>
+            <th title="sort per tags up/down" (click)="sort('tags')">Tags</th>
+            <th title="sort per field up/down" (click)="sort('field')">Field</th>
+            <th title="sort per note text up/down" (click)="sort('note')">Text</th>
+            <th>OP</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let a of annotationTable">
+            <td>{{ a.time | date : 'dd.MM.yyyy HH:mm:ss' }}</td>
+            <td>{{ a.measurement }}</td>
+            <td>{{ a.tags }}</td>
+            <td>{{ a.field }}</td>
+            <td>{{ a.note }}</td>
+            <td>{{ a.OP != "C" ? a.OP : ""}} <button (click)="goTo(a.measurement, a.field, a.note, a.time)"
+                    title="Open Graph">Show</button></td>
+        </tr>
+    </tbody>
+</table>

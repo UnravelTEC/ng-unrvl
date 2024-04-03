@@ -55,7 +55,13 @@ const appRoutes: Routes = [
     loadChildren: () =>
       import('./ut-apps/noir/noir.module').then((m) => m.NoirModule),
   },
-
+  {
+    path: 'Apps/Annotations',
+    loadChildren: () =>
+      import('./ut-apps/annotations/annotations.module').then(
+        (m) => m.AnnotationsModule
+      ),
+  },
   {
     path: 'Apps/Influx-Test',
     loadChildren: () =>
