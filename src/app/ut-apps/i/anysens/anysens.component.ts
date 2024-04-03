@@ -413,9 +413,11 @@ export class AnysensComponent implements OnInit {
     this.currentClickedRow = $event['r'];
     this.currentClickedLabelIndex = this.short_labels.indexOf($event['s']) + 1;
 
-    this.currentClickedTags = JSON.stringify(
-      this.raw_labels[this.currentClickedLabelIndex]['tags']
-      , null, 1).slice(1, -1).replace(/"/g, '');
+    const tagArr = []
+    for (const K in this.raw_labels[this.currentClickedLabelIndex]['tags']) {
+      tagArr.push(K + ': ' + this.raw_labels[this.currentClickedLabelIndex]['tags'][K])
+    }
+    this.currentClickedTags = this.h.createSortedTagString(tagArr)
   }
 
   reloadMissing() {

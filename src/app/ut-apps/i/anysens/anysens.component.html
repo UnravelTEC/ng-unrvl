@@ -242,7 +242,7 @@
           </td>
         </tr>
         <tr *ngIf="currentClickedRow > -1">
-          <td>{{ data[currentClickedRow][0] | date : 'dd.MM.yyyy HH:mm:ss' }}</td>
+          <td>{{ data[currentClickedRow] && data[currentClickedRow][0] | date : 'dd.MM.yyyy HH:mm:ss' }}</td>
           <td>{{ raw_labels[currentClickedLabelIndex]["metric"] }}</td>
           <td>{{ currentClickedTags }}</td>
           <td>{{ raw_labels[currentClickedLabelIndex]["field"] }}</td>
@@ -258,7 +258,7 @@
           <td>{{ a.tags }}</td>
           <td>{{ a.field }}</td>
           <td>{{ a.note }}</td>
-          <td>{{ a.OP }} <button (click)="delAnnotation(a.measurement, a.field, a.dygColumnNr, a.time)" title="Delete">X</button></td>
+          <td>{{ a.OP != "C" ? a.OP : ""}} <button (click)="delAnnotation(a.measurement, a.field, a.dygColumnNr, a.time)" title="Delete">X</button></td>
         </tr>
       </tbody>
     </table>
