@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { GlobalSettingsService } from 'app/core/global-settings.service';
 import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
 import { UntypedFormControl } from '@angular/forms';
-import { now } from 'lodash-es';
 
 @Component({
   selector: 'app-calibration',
