@@ -1225,11 +1225,11 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           'lasti:',
           lastindex,
           'firstts',
-          (firstts - logoffset) / 1000,
+          (firstts - logoffset) / 1000, new Date(firstts),
           'target',
-          (ts - logoffset) / 1000,
+          (ts - logoffset) / 1000, new Date(ts),
           'lastts',
-          (lastts - logoffset) / 1000
+          (lastts - logoffset) / 1000, new Date(lastts),
         );
       }
       if (firstindex == lastindex - 1) {
