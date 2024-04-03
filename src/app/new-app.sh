@@ -42,7 +42,7 @@ appname="$1"
 mypath=ut-apps/$appname
 
 ng g m $mypath --routing
-ng g c $mypath
+ng g c $mypath --standalone=false
 
 componentName=$(grep "export class" $mypath/$appname.component.ts | cut -f 3 -d" ")
 
