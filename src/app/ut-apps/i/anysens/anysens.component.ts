@@ -316,7 +316,7 @@ export class AnysensComponent implements OnInit {
       .subscribe(
         (data: Object) => this.acceptAnnotations(data),
         (error) => {
-          console.log('getCalibrations: Error following:');
+          console.log('getAnnotations: Error following:');
           this.gss.displayHTTPerror(error);
         }
       );
