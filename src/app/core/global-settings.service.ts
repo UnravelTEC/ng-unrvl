@@ -289,6 +289,9 @@ export class GlobalSettingsService implements OnInit {
         this.server.calibrations = null;
         continue;
       }
+      if (measurement == 'annotations') {
+        continue
+      }
       if (!this.server.measurements.includes(measurement)) {
         this.server.measurements.push(measurement);
       }
