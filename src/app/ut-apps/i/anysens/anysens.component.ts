@@ -414,6 +414,8 @@ export class AnysensComponent implements OnInit {
     this.dygAnnotations = new_dygAnnos;
     console.log("annotationTable", cloneDeep(this.annotationTable));
     console.log("dygAnnotations", cloneDeep(this.dygAnnotations));
+
+    setTimeout(() => this.changeTrigger += 1, 100); // update DyGraph height after table shown
   }
 
   public currentClickedRow = -1;
