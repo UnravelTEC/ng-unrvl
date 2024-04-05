@@ -455,8 +455,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       return
     }
 
-    this.Dygraph.setAnnotations(this.annotations, !redrawAfter);
-    console.log('after setAnnotations', this.Dygraph.annotations());
+    const suppressDraw = !redrawAfter
+    this.Dygraph.setAnnotations(this.annotations, suppressDraw);
+    console.log('Dyg-in: after setAnnotations', this.Dygraph.annotations(), "redrawAfter:", redrawAfter);
   }
   ngOnInit() {
     this.dyGraphOptions['underlayCallback'] = this.backGroundLevels
