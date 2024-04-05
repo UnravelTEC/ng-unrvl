@@ -84,6 +84,7 @@ export class UtFetchdataService {
     const localTagFilter = cloneDeep(tagfilter)
     localTagFilter['A_measurement'] = measurement;
     if (fieldname != '*') {
+      fieldname = fieldname.replace(/\/\^?/,'').replace(/\$?\/$/,'')
       localTagFilter['A_field'] = fieldname
     }
 
@@ -120,11 +121,17 @@ export class UtFetchdataService {
     return 'SELECT note,A_time FROM annotations WHERE ' + whereClause
   }
 
+  /**
+   *
+   * @param param1 Either timestring ('5m') IF no param2 OR Date or Unix Timestamp in ms, IF param2 given
+   * @param param2 optional, if given be a Date or Unix TS in ms
+   * @returns
+   */
   influxTimeString(param1: any, param2: Date = undefined) {
     if (param2) {
       return (
         ' time > ' +
-        param1.valueOf() + // If param1 is String (e.g. '5m'), JS IGNORES function and just returns value of param1
+        param1.valueOf() + // If param1 is String or number, JS IGNORES function and just returns value of param1
         'ms AND time < ' +
         param2.valueOf() +
         'ms '
