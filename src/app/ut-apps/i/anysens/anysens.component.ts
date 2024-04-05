@@ -409,13 +409,14 @@ export class AnysensComponent implements OnInit {
 
       const dygAnno = { series: dygLabel, text: annoObj["note"], shortText: shortext, xval: newAnnoTsMS }
       new_dygAnnos.push(dygAnno)
+      annoObj['dygAnnoNr'] = i; // to allow accessing dygAnno if annotationTable gets sorted later
     }
     this.annotationTable = new_annotationTable;
     this.dygAnnotations = new_dygAnnos;
     console.log("annotationTable", cloneDeep(this.annotationTable));
     console.log("dygAnnotations", cloneDeep(this.dygAnnotations));
 
-    setTimeout(() => this.changeTrigger += 1, 100); // update DyGraph height after table shown
+    setTimeout(() => this.changeTrigger += 1, 300); // update DyGraph height after table size changed
   }
 
   public currentClickedRow = -1;
@@ -431,6 +432,21 @@ export class AnysensComponent implements OnInit {
       tagArr.push(K + ': ' + this.raw_labels[this.currentClickedLabelIndex]['tags'][K])
     }
     this.currentClickedTags = this.h.createSortedTagString(tagArr)
+  }
+  public currentlyHighlightedAnno = -1;
+  highlightDygAnno(nr) {
+
+    if (this.dygAnnotations[this.currentlyHighlightedAnno]) {
+      this.dygAnnotations[this.currentlyHighlightedAnno]["cssClass"] = ""
+    }
+
+    if (this.currentlyHighlightedAnno == nr) {
+      this.currentlyHighlightedAnno = -1;
+    } else {
+      this.currentlyHighlightedAnno = nr;
+      this.dygAnnotations[nr]["cssClass"] = "highlighted"
+    }
+    this.changeTrigger += 1
   }
 
   reloadMissing() {

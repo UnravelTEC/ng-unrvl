@@ -197,8 +197,11 @@ $red2: #ff7f88;
   .xmax {
     width: 5.3em;
   }
-  .xmin, .xmin:focus-visible,
-  .xmax, .xmax:focus-visible { // input
+  .xmin,
+  .xmin:focus-visible,
+  .xmax,
+  .xmax:focus-visible {
+    // input
     border-width: 0;
     outline: none;
   }
@@ -336,6 +339,17 @@ $red2: #ff7f88;
   .overlapTickTexthider.y2 {
     width: 60px;
     right: 0;
+  }
+
+  .dygraph-annotation {
+    background: rgba(100, 100, 100, 0.8);
+  }
+
+  .dygraph-annotation.highlighted {
+    border-width: 2px;
+    border-radius: 2px;
+    background-color: white;
+    font-weight: bold;
   }
 
   .legendabscontainer {

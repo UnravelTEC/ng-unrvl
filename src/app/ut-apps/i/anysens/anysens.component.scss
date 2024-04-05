@@ -117,5 +117,8 @@
     tr:hover td {
       background-color: #3f3f3f;
     }
+    td.hov:hover {
+      cursor: pointer;
+    }
   }
 }
