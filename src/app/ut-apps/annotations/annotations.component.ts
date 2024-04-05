@@ -87,7 +87,21 @@ export class AnnotationsComponent {
             }
           }
         } else {
-          if (annoObj['time']) {
+          if (annoObj['field']) {
+
+            annoObj['queryParams'] = {
+              measurement: annoObj['measurement'],
+              value: "/^" + annoObj['field'] + "$/",
+              from: annoObj['time'] -60000,
+              to: annoObj['time'] + 3600000 -60000,
+              referrer: "Annotations"
+            }
+            if (annoObj['origtags']['sensor']) {
+              annoObj['queryParams']['sensor'] = annoObj['origtags']['sensor']
+            }
+            if (annoObj['origtags']['id']) {
+              annoObj['queryParams']['id'] = annoObj['origtags']['id']
+            }
             this.annotationTable.push(annoObj)
           }
         }
@@ -128,11 +142,10 @@ export class AnnotationsComponent {
 
     console.log("annotationTable", this.annotationTable);
 
+    this.sort("time")
   }
-  goTo(measurement, field, note, time) {
 
-  }
-  private sortTimeOrderAsc = true;
+  private sortTimeOrderAsc = false;
   private sortOrder = {
     measurement: true,
     tags: true,

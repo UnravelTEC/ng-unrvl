@@ -8,7 +8,7 @@
             <th title="sort per tags up/down" (click)="sort('tags')">Tags</th>
             <th title="sort per field up/down" (click)="sort('field')">Field</th>
             <th title="sort per note text up/down" (click)="sort('note')">Text</th>
-            <th>OP</th>
+            <th>Show in graph</th>
         </tr>
     </thead>
     <tbody>
@@ -18,8 +18,11 @@
             <td>{{ a.tags }}</td>
             <td>{{ a.field }}</td>
             <td>{{ a.note }}</td>
-            <td>{{ a.OP != "C" ? a.OP : ""}} <button (click)="goTo(a.measurement, a.field, a.note, a.time)"
-                    title="Open Graph">Show</button></td>
+            <td>{{ a.OP != "C" ? a.OP : ""}}
+                <a routerLink="/Apps/I/Anysens" [queryParams]="a.queryParams"
+                    routerLinkActive="active">Open
+                </a>
+            </td>
         </tr>
     </tbody>
 </table>

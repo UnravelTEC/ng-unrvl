@@ -32,3 +32,18 @@ table {
 tr:hover td {
   background-color: #3f3f3f;
 }
+
+td a {
+  display: inline-block;
+  border: 2px solid black;
+  background: #565656;
+  padding: 0.5em;
+  cursor: pointer;
+  min-width: 2.25em;
+  color: white;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+td a:hover {
+  background-color: #8e8e8e;
+}
