@@ -299,6 +299,17 @@ export class AnysensComponent implements OnInit {
     let toTS = toTime ? toTime.valueOf() : undefined;
 
     const params = {};
+    if (this.sensor) {
+      params['sensor'] = Array.isArray(this.sensor)
+        ? this.sensor
+        : [this.sensor];
+    }
+    if (this.host) {
+      params['host'] = this.host;
+    }
+    if (this.id) {
+      params['id'] = this.id;
+    }
 
     const annoquery = this.utHTTP.annotationsQuery(
       this.measurement,

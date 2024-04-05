@@ -183,17 +183,18 @@ export class UtFetchdataService {
     whereClause += timeQuery;
 
     let groupBy = ' GROUP BY ';
-    if (tagfilter && Object.keys(tagfilter).length > 1) {
-      // FIXME don't know if "if" works
-      for (const key in tagfilter) {
-        if (tagfilter.hasOwnProperty(key)) {
-          groupBy += key + ',';
-        }
-      }
-      groupBy += 'host,id,time(' + timestring + ')';
-    } else {
+    // FIXME test - first clause causes some tags not to be reported by InfluxDB... they are missed at comparison with annotations, so disable for the moment
+    // if (tagfilter && Object.keys(tagfilter).length > 1) {
+    //   // FIXME don't know if "if" works
+    //   for (const key in tagfilter) {
+    //     if (tagfilter.hasOwnProperty(key)) {
+    //       groupBy += key + ',';
+    //     }
+    //   }
+    //   groupBy += 'host,id,time(' + timestring + ')';
+    // } else {
       groupBy += '*,time(' + timestring + ')';
-    }
+    // }
 
     q += ' WHERE ' + whereClause + groupBy + ';';
     return q;
