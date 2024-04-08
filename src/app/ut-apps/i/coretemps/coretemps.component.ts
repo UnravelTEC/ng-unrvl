@@ -24,7 +24,6 @@ export class CoretempsComponent implements OnInit {
   public userStartTime = this.startTime;
   public meanS = 13;
   public userMeanS = this.meanS;
-  db = 'koffer';
 
   labels = [];
   data = [];
@@ -83,7 +82,7 @@ export class CoretempsComponent implements OnInit {
       }, 1000);
       return;
     }
-    const q = this.utHTTP.buildInfluxQuery(clause, this.db);
+    const q = this.utHTTP.buildInfluxQuery(clause);
 
     this.utHTTP
       // .getHTTPData(q)

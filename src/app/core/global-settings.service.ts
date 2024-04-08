@@ -259,7 +259,7 @@ export class GlobalSettingsService implements OnInit {
       return;
     }
     if (this.server.type == 'PublicServer') {
-      this.server.influxdb = 'koffer';
+      this.server.influxdb = 'tsensebox';
       this.server.influxuser = 'public';
       this.server.influxpass = 'unravelit42.14153';
       console.log('initializeInfluxCreds to', this.server.influxdb);

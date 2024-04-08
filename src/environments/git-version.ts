@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "1f3519d",
-  "SHA": "1f3519dedf8bac507e387d0fa122a9b8d599f34d",
+  "shortSHA": "bcc08a3",
+  "SHA": "bcc08a3d96b708d38f2e22ac32e1aad1d76e564f",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Tue Apr 2 13:35:34 2024 +0200",
-  "lastCommitMessage": "displaying annotations for mean data and deleting annos works",
-  "lastCommitNumber": "1494"
+  "lastCommitTime": "Fri Apr 5 15:33:04 2024 +0200",
+  "lastCommitMessage": "dyg Anno highlighting on click",
+  "lastCommitNumber": "1507"
 }

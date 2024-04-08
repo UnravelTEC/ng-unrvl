@@ -58,7 +58,7 @@ export class SettingsPanelComponent implements OnInit {
   };
   defaultsInfluxcreds: {
     "https://*unraveltec.com": {
-      db: "koffer";
+      db: "tsensebox";
       user: "public";
       pass: "unravelit42.14153";
     };
@@ -76,7 +76,7 @@ export class SettingsPanelComponent implements OnInit {
 
   /*
   Cases:
-    - dev (localhost:4200) -> zwingend other host, default Newton:Koffer
+    - dev (localhost:4200) -> zwingend other host, default Newton:tsensebox
     - Local Screen (localhost) - show only if url: localhost?
     - internet server (https://...)
       - Newton or more?
@@ -129,7 +129,7 @@ export class SettingsPanelComponent implements OnInit {
       -> list DBs, choose DB from Dropdown, save it.
 
     -> here in settingspanel: if proto == http; dont display
-    in globalsettings: if nothing stored for host, use telegraf if http; else unraveltec/koffer
+    in globalsettings: if nothing stored for host, use telegraf if http; else unraveltec/tsensebox
 
 
   Check at start

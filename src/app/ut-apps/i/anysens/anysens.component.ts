@@ -154,6 +154,9 @@ export class AnysensComponent implements OnInit {
     this.reload_timer = this.auto_interval;
 
     this.ls_taglist = this.localStorage.get(this.appName + 'taglist');
+    if(!this.ls_taglist) { // sometimes, ls returns "null" or so
+      this.ls_taglist = {}
+    }
 
     for (const key in this.ls_taglist) {
       if (this.ls_taglist[key] === false) {
@@ -801,7 +804,7 @@ export class AnysensComponent implements OnInit {
       console.log('new common_label:', ret['common_label']);
       console.log('new short_labels:', ret['short_labels']);
 
-      for (let rli = 0; rli < this.raw_labels.length; rli++) {
+      for (let rli = 1; rli < this.raw_labels.length; rli++) { // 1 because 0 is only Date column
         const raw_tags = this.raw_labels[rli].tags;
         for (const key in raw_tags) {
           if (Object.prototype.hasOwnProperty.call(raw_tags, key)) {
