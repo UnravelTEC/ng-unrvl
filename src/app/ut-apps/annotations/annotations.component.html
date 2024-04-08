@@ -24,5 +24,8 @@
                 </a>
             </td>
         </tr>
+        <tr *ngIf="!annotationTable || !annotationTable.length">
+            <td colspan="6">No annotations yet, add them at each series plot individually</td>
+        </tr>
     </tbody>
 </table>
