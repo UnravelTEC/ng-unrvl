@@ -698,11 +698,11 @@ export class GlobalSettingsService implements OnInit {
     this.emitChange({ status: '' });
   }
 
-  // merge with Devition calculation later for speed
+  // merge with Deviation calculation later for speed
   returnCalibratedData(data: Array<Array<any>>, raw_labels): Array<Array<any>> {
     console.log('returnCalibratedData', data, raw_labels);
     if (!this.server.calibrations) {
-      console.error('no calibrations');
+      console.warn('no calibrations');
       return data;
     }
 

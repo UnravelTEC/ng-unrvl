@@ -392,8 +392,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.dataWithDev = [];
       this.dataWithCalDev = [];
       this.setDDandCalcIfNeeded();
-      if (this.checkOK4Dev()) {
-      }
+      // if (this.checkOK4Dev()) { // why as this here?
+      // }
       this.updateRoundDigits();
       this.dataReset = false;
     }
@@ -448,9 +448,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
   updateAnnotations(redrawAfter = true) {
-    if (!this.annotations) {
+    if (!this.annotations || !this.annotations.length) {
       if (redrawAfter) {
-        this.Dygraph.updateOptions({})
+        this.Dygraph.updateOptions({ file: this.displayedData }, false) // param1 cannot be {}, then it wouldnt be redrawn.
+        console.log("updateAnnotations: redrawed only, return");
+      } else {
+        console.log("updateAnnotations: no redraw");
       }
       return
     }
@@ -690,6 +693,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     if (this.checkOK4Dev()) {
       if (this.checkOK4Cal()) {
         if (this.dataWithCalDev.length != this.data.length) {
+          console.log("call returnDataWithDeviations with calibrated data");
           this.dataWithCalDev = this.sensorService.returnDataWithDeviations(
             this.calibratedData,
             this.rawLabels
@@ -699,6 +703,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       } else {
         // cal == no
         if (this.dataWithDev.length != this.data.length) {
+          console.log("call returnDataWithDeviations without calibrated data");
           this.dataWithDev = this.sensorService.returnDataWithDeviations(
             this.data,
             this.rawLabels
@@ -707,6 +712,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.displayedData = this.dataWithDev;
       }
     }
+    console.log("setDDandCalcIfNeeded:", this.displayedData);
   }
 
   handleInitialData() {
@@ -1204,6 +1210,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     let timeoutcounter = 0;
 
     const logoffset = this.data[0][0].valueOf();
+    if (ts < logoffset) {
+      console.error("getDeviationsofTS: ts", new Date(ts), ts, "< first datapoint", this.data[0][0]);
+      return undefined;
+    }
+    const lastDate = this.data[this.data.length - 1][0]
+    if (ts > lastDate.valueOf()) {
+      console.error("getDeviationsofTS: ts", new Date(ts), ts, "> last datapoint", lastDate);
+      return undefined;
+    }
     while (timeoutcounter++ < 99) {
       firstts = this.data[firstindex][0].valueOf();
       if (firstts == ts) {

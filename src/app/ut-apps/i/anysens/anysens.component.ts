@@ -853,6 +853,7 @@ export class AnysensComponent implements OnInit {
     this.queryRunning = false;
 
     if (!this.data || !this.data[0]) {
+      console.warn("handleData: no data");
       return;
     }
 
