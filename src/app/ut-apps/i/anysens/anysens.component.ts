@@ -344,6 +344,7 @@ export class AnysensComponent implements OnInit {
     if (!series) {
       this.annotationTable = [];
       console.log('no annos');
+      this.changeTrigger = 3.14 // code to tell dygraph to resize
       return
     }
     series.forEach(seri => {
@@ -419,9 +420,9 @@ export class AnysensComponent implements OnInit {
     console.log("annotationTable", cloneDeep(this.annotationTable));
     console.log("dygAnnotations", cloneDeep(this.dygAnnotations));
 
-    this.sortAnno("time")
+    this.changeTrigger = 3.14 // code to tell dygraph to resize
 
-    setTimeout(() => this.changeTrigger += 1, 300); // update DyGraph height after table size changed
+    this.sortAnno("time")
   }
 
   public currentClickedRow = -1;

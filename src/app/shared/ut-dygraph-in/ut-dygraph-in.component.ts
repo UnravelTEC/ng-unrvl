@@ -283,6 +283,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     console.log('onChanges', this.changeTrigger);
+    if(this.changeTrigger == 3.14) { // hack to force resize
+      this.resize(50)
+      return;
+    }
 
     this.updateGraph();
   }
