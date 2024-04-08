@@ -148,9 +148,9 @@
     <div class="btncontainer">
       <!--  *ngIf="!annotationsShown"  *ngIf="!tableShown"-->
       <button (click)="toggleAnnotationsShown(); R.resize()">
-        Show Annotations
+        {{ annotationsShown ? "Hide" : "Show" }} Annotations
       </button>
-      <button (click)="toggleTableShown(); R.resize()">Show Data Stats</button>
+      <button (click)="toggleTableShown(); R.resize()">{{ tableShown ? "Hide" : "Show" }} Data Stats</button>
     </div>
 
     <table *ngIf="annotationsShown" class="annos">
