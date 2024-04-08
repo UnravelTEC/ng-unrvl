@@ -108,6 +108,10 @@
         }
       }
     }
+    table.annos th[title]:hover {
+      background-color: #3f3f3f;
+      cursor: pointer;
+    }
 
     table + table {
       td + td {

@@ -24,8 +24,9 @@ table {
       color: white;
     }
   }
-  th:hover {
+  th[title]:hover {
     background-color: #3f3f3f;
+    cursor: pointer;
   }
 }
 

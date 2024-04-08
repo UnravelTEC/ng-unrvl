@@ -419,6 +419,8 @@ export class AnysensComponent implements OnInit {
     console.log("annotationTable", cloneDeep(this.annotationTable));
     console.log("dygAnnotations", cloneDeep(this.dygAnnotations));
 
+    this.sortAnno("time")
+
     setTimeout(() => this.changeTrigger += 1, 300); // update DyGraph height after table size changed
   }
 
@@ -894,5 +896,46 @@ export class AnysensComponent implements OnInit {
   handleRunningAvg(dataObj: Object) {
     this.allAverages = dataObj['all'];
     this.visibleAverages = dataObj['visible'];
+  }
+  private sortTimeOrderAsc = false;
+  private sortOrder = {
+    measurement: true,
+    tags: true,
+    field: true,
+    note: true
+  }
+  sortAnno(key: string) {
+    if (key == "time") {
+      if (this.sortTimeOrderAsc) {
+        this.annotationTable.sort((a, b) => a.time - b.time)
+      } else {
+        this.annotationTable.sort((a, b) => b.time - a.time)
+      }
+      this.sortTimeOrderAsc = !this.sortTimeOrderAsc;
+      return
+    }
+
+    if (this.sortOrder[key]) {
+      this.annotationTable.sort((a, b) => {
+        if (a[key] > b[key]) {
+          return 1
+        }
+        if (a[key] < b[key]) {
+          return -1
+        }
+        return 0
+      })
+    } else {
+      this.annotationTable.sort((a, b) => {
+        if (a[key] > b[key]) {
+          return -1
+        }
+        if (a[key] < b[key]) {
+          return 1
+        }
+        return 0
+      })
+    }
+    this.sortOrder[key] = !this.sortOrder[key]
   }
 }

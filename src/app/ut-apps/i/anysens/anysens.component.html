@@ -153,14 +153,14 @@
       <button (click)="toggleTableShown(); R.resize()">Show Data Stats</button>
     </div>
 
-    <table *ngIf="annotationsShown">
+    <table *ngIf="annotationsShown" class="annos">
       <thead>
         <tr>
-          <th>Time</th>
-          <th>Measurement</th>
-          <th>Tags</th>
-          <th>Field</th>
-          <th>Text</th>
+          <th title="sort per time up/down" (click)="sortAnno('time')">Time</th>
+          <th title="sort per measurement up/down" (click)="sortAnno('measurement')">Measurement</th>
+          <th title="sort per tags up/down" (click)="sortAnno('tags')">Tags</th>
+          <th title="sort per field up/down" (click)="sortAnno('field')">Field</th>
+          <th title="sort per note text up/down" (click)="sortAnno('note')">Text</th>
           <th>OP</th>
         </tr>
       </thead>
@@ -182,7 +182,8 @@
           <td colspan="6">Inserting...</td>
         </tr>
         <tr *ngFor="let a of annotationTable">
-          <td (click)="highlightDygAnno(a.dygAnnoNr)" title="click me to highlight annotation" class="hov">{{ a.time | date :
+          <td (click)="highlightDygAnno(a.dygAnnoNr)" title="click me to highlight annotation" class="hov">{{ a.time |
+            date :
             'dd.MM.yyyy HH:mm:ss' }}</td>
           <td>{{ a.measurement }}</td>
           <td>{{ a.tags }}</td>
