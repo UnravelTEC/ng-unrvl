@@ -267,7 +267,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Output()
   returnGraphWidthOnChange = new EventEmitter<number>();
   @Output()
-  returnCurrentZoom = new EventEmitter<number>();
+  returnCurrentZoom = new EventEmitter<number[]>();
 
   public stats = false;
 
@@ -345,7 +345,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   updateGraph() {
     if (!this.Dygraph) {
       console.error('updateGraph: no Dygraph?');
-      // this.handleInitialData();
+      this.handleInitialData();
       return;
     }
 
@@ -445,6 +445,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         this.noData = true;
         this.waiting = false;
         return;
+      }
+      if (this.data.length == 0 && this.columnLabels.length == 0) {
+        this.noData = true;
+        this.waiting = true;
       }
       setTimeout(() => {
         this.waitForData();
@@ -1925,29 +1929,43 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     const newFrom = $event['value'];
 
     const toSetDate = new Date(newFrom.valueOf());
-    toSetDate.setHours(this.fromZoom.getHours());
-    toSetDate.setMinutes(this.fromZoom.getMinutes());
-    toSetDate.setSeconds(this.fromZoom.getSeconds());
-    toSetDate.setMilliseconds(this.fromZoom.getMilliseconds());
+    if (this.fromZoom) {
+      toSetDate.setHours(this.fromZoom.getHours());
+      toSetDate.setMinutes(this.fromZoom.getMinutes());
+      toSetDate.setSeconds(this.fromZoom.getSeconds());
+      toSetDate.setMilliseconds(this.fromZoom.getMilliseconds());
+    }
 
     this.fromZoom = toSetDate;
-    this.Dygraph.updateOptions({
-      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()],
-    });
+    if (this.toZoom && this.Dygraph) { // if no data loaded, to allow selecting from and to one after another
+      this.Dygraph.updateOptions({
+        dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()],
+      });
+    }
+    if (this.fromZoom && this.toZoom) {
+      this.returnCurrentZoom.emit([this.fromZoom.valueOf(), this.toZoom.valueOf()]);
+    }
   }
   toDatePickerChanged($event) {
     const newTo = $event['value'];
 
     const toSetDate = new Date(newTo.valueOf());
-    toSetDate.setHours(this.toZoom.getHours());
-    toSetDate.setMinutes(this.toZoom.getMinutes());
-    toSetDate.setSeconds(this.toZoom.getSeconds());
-    toSetDate.setMilliseconds(this.toZoom.getMilliseconds());
+    if (this.toZoom) {
+      toSetDate.setHours(this.toZoom.getHours());
+      toSetDate.setMinutes(this.toZoom.getMinutes());
+      toSetDate.setSeconds(this.toZoom.getSeconds());
+      toSetDate.setMilliseconds(this.toZoom.getMilliseconds());
+    }
 
     this.toZoom = toSetDate;
-    this.Dygraph.updateOptions({
-      dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()],
-    });
+    if (this.fromZoom && this.Dygraph) { // if no data loaded, to allow selecting from and to one after another
+      this.Dygraph.updateOptions({
+        dateWindow: [this.fromZoom.valueOf(), this.toZoom.valueOf()],
+      });
+    }
+    if (this.fromZoom && this.toZoom) {
+      this.returnCurrentZoom.emit([this.fromZoom.valueOf(), this.toZoom.valueOf()]);
+    }
   }
   onTimeset($event, which: string) {
     const target = which == 't' ? this.toZoom : this.fromZoom;

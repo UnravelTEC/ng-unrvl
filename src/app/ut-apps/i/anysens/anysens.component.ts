@@ -220,10 +220,13 @@ export class AnysensComponent implements OnInit {
     const nr_points = timerange / this.meanS;
     if (nr_points > 10000 && !this.h.bigQconfirm(nr_points)) {
       if (!this.labels.length) {
-        // at start to show "no data"
+        // at start to show "no data" in Dyg Window
         this.labels = [''];
       }
       return;
+    }
+    if (!this.data) { // at start to show "loading... in Dyg Window"
+      this.labels = [];
     }
 
     if (fromTo) {
@@ -633,6 +636,7 @@ export class AnysensComponent implements OnInit {
     if (!idata || !idata.length) {
       this.queryRunning = false;
       console.log('handleData: no data');
+      this.labels = [''];
       this.repeatAutoReloadIfEnabled();
       return;
     }
