@@ -283,7 +283,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     console.log('onChanges', this.changeTrigger);
-    if(this.changeTrigger == 3.14) { // hack to force resize
+    if (this.changeTrigger == 3.14) { // hack to force resize
       this.resize(50)
       return;
     }
@@ -1037,6 +1037,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     // console.log(data.dygraph);
     const parent = this['parent'];
     const showDevs = parent && parent.showDeviation;
+    const tscalm: unknown = this;
+    const g: Dygraph = <Dygraph>tscalm;
+    const locked = g.isSeriesLocked();
 
     // let html = '<table>';
     // html += '<tr><th colspan="3" class="header">' + (data.xHTML ? data.xHTML + ':' : 'Legend:') + '</th></tr>';
@@ -1052,17 +1055,17 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     // console.log(htmlID);
     function genToggle(label, htmlID) {
-      return htmlID
+      return (htmlID && !locked)
         ? `onmousedown="document['Dygraphs']['${htmlID}'].tVis4Label('${label}');" `
         : '';
     }
     function genHover(label, htmlID) {
-      return htmlID
+      return (htmlID && !locked)
         ? `onmouseover="document['Dygraphs']['${htmlID}'].selectSeries('${label}');"`
         : '';
     }
     function genSingleClick(label, htmlID) {
-      return htmlID
+      return (htmlID && !locked)
         ? `onmousedown="document['Dygraphs']['${htmlID}'].showSingle('${label}');" `
         : '';
     }
@@ -1107,7 +1110,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
             .roundAccurately(series.y, parent.roundDigits[i + 1])
       // .toLocaleString(); // replaced . with , in german, but has a bug: cut of after 3 digits after comma
       const isHighlighted = series.isHighlighted;
-      const cls = isHighlighted ? 'class="highlight"' : '';
+      const cls = isHighlighted ? 'class="highlight"' : (!locked ? 'class="h"' : '');
+      const title = !locked ? 'title="Toggle Display"' : '';
       const hoverCallback = genHover(series.label, htmlID);
       const toggleCallback = genToggle(series.label, htmlID);
       const setSingleCallback = genSingleClick(series.label, htmlID);
@@ -1181,7 +1185,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         valcells += '</td>';
       }
       html +=
-        `<tr style='color:${series.color};' ${cls} ${hoverCallback} title='Toggle Display'>` +
+        `<tr style='color:${series.color};' ${cls} ${hoverCallback} ${title}>` +
         `<th${textcolor} class="h"><span class='dash'>${series.dashHTML}</span><span class='one' ${setSingleCallback} title='Display alone'>[1]</span></th>` +
         `<th${textcolor} ${toggleCallback}>${labeltext}${colon}</th>` +
         `${valcells}</tr>`;
@@ -1696,6 +1700,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     this.resize();
   }
   public resize(t = 150) {
+    if (!this.Dygraph) {
+      console.log('Dyg-in resize(): no Dygraph!');
+      return;
+    }
     setTimeout(() => {
       this.Dygraph.resize(undefined, undefined);
     }, t);

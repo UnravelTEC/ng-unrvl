@@ -414,7 +414,6 @@ $red2: #ff7f88;
       border: 1px solid black;
 
       tr {
-        cursor: pointer;
         td,
         th {
           border-bottom: 1px solid black;
@@ -454,8 +453,9 @@ $red2: #ff7f88;
         }
       }
       tr.highlight,
-      tr:hover {
+      tr.h:hover {
         background-color: #8e8e8e;
+        cursor: pointer;
         th,
         td {
           color: $mainbg;

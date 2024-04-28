@@ -529,6 +529,7 @@ export class AnysensComponent implements OnInit {
     const rangeSeconds = this.h.parseToSeconds(param);
 
     this.userMeanS = this.calcMean(rangeSeconds);
+    this.interval = String(this.userMeanS);
     this.auto_interval = this.userMeanS;
     this.reload_timer = this.auto_interval;
 
