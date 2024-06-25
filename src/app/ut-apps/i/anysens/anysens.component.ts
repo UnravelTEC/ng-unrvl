@@ -105,7 +105,7 @@ export class AnysensComponent implements OnInit {
   background: string;
   host = '';
   value = '*';
-  referrer = 'Allsens';
+  referrer = 'I/Allsens';
   public from: number; // unix time from urlparam
   public to: number; // unix time from urlparam
 
