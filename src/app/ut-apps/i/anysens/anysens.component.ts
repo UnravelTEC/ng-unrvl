@@ -38,7 +38,7 @@ export class AnysensComponent implements OnInit {
     },
   };
   y2label = 'Atmospheric Pressure';
-  labelBlackList = ['mean_*']; // mean is when only 1 graph is returned
+  labelBlockList = ['mean_*']; // mean is when only 1 graph is returned
   public ls_taglist = {} // tagkey: true/false ; local copy of global taglist - so that even tags not present are remembered
   public taglist = {}; // only the tags the current dataset uses - so that displayed list is only as long as needed
 
@@ -160,7 +160,7 @@ export class AnysensComponent implements OnInit {
 
     for (const key in this.ls_taglist) {
       if (this.ls_taglist[key] === false) {
-        this.labelBlackList.push(key);
+        this.labelBlockList.push(key);
       }
     }
 
@@ -545,12 +545,12 @@ export class AnysensComponent implements OnInit {
     for (const key in this.taglist) {
       this.ls_taglist[key] = this.taglist[key]; // cp local taglist to ls_taglist
       if (this.taglist[key] === false) {
-        if (!this.labelBlackList.includes(key)) {
-          this.labelBlackList.push(key);
+        if (!this.labelBlockList.includes(key)) {
+          this.labelBlockList.push(key);
         }
       } else {
-        if (this.labelBlackList.includes(key)) {
-          this.labelBlackList.splice(this.labelBlackList.indexOf(key), 1);
+        if (this.labelBlockList.includes(key)) {
+          this.labelBlockList.splice(this.labelBlockList.indexOf(key), 1);
         }
       }
     }
@@ -618,8 +618,8 @@ export class AnysensComponent implements OnInit {
   }
 
   handleData(data: Object) {
-    console.log('received', data);
-    let ret = this.utHTTP.parseInfluxData(data, this.labelBlackList);
+    console.log('received', data, 'using labelBlocklist', this.labelBlockList);
+    let ret = this.utHTTP.parseInfluxData(data, this.labelBlockList);
     console.log('parsed', ret);
     if (ret['error']) {
       alert('Influx Error: ' + ret['error']);
