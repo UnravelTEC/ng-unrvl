@@ -106,7 +106,7 @@ export class HumidityComponent implements OnInit {
   sensor: String;
   ref_tsensor: String;
   ref_tid: String;
-  ref_tfield = "*";
+  ref_tfield = "/air_degC/";
   id: String;
   interval: string;
   background: string;
