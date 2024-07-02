@@ -231,7 +231,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
       this.utHTTP.influxMeanQuery(
         'location',
         timeQuery,
-        {},
+        { 'valid': 'yes' },
         this.meanS,
         '/lat|lon/'
       );
