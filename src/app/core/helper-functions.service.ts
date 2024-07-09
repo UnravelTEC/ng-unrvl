@@ -768,6 +768,24 @@ export class HelperFunctionsService {
     //=  10^5 * mw/R* * DD(r,T)/TK; AF(TD,TK) = 10^5 * mw/R* * SDD(TD)/TK
     // console.log('result:', aH);
   }
+  heatIndex(T, rH) {
+    if (rH < 40) {
+      return T
+    }
+    //source: https://de.wikipedia.org/wiki/Hitzeindex
+    const c1 = -8.784695, c2 = 1.61139411, c3 = 2.338549, c4 = -0.14611605, c5 = -1.2308094e-2,
+      c6 = -1.6424828e-2, c7 = 2.211732e-3, c8 = 7.2546e-4, c9 = -3.582e-6
+    const T2 = T * T
+    const H2 = rH * rH
+    const hi = c1 + c2 * T + c3 * rH + c4 * T * rH + c5 * T2 + c6 * H2 + c7 * T2 * rH + c8 * T * H2 + c9 * T2 * H2
+    if (hi < T) {
+      return T
+    }
+    return hi
+    //Grafana:  -8.784695 + 1.61139411 * $T + 2.338549 * $H -0.14611605 * $T * $H -1.2308094e-2 * $T2 -1.6424828e-2 * $H2 + 2.211732e-3 * $T2 * $H + 7.2546e-4 * $T * $H2 -3.582e-6 * $T2 * $H2
+  }
+
+
   dewPoint(argT, argRH, P = 972) {
     if (argT === null || argRH === null) return null;
     if (isNaN(argT) || isNaN(argRH)) return NaN;
