@@ -1194,4 +1194,107 @@ export class HelperFunctionsService {
       myself.userMeanS = Number(interval);
     }
   }
+
+  /**
+   * @param column regex to match which columns are unified
+   */
+  unifyColumns(column, data, Pshort_labels, Praw_labels, labelBlackListT = []) {
+    console.log('unifyColumns with', column);
+
+    const short_labels = cloneDeep(Pshort_labels);
+    const new_short_labels = [];
+    const raw_labels = cloneDeep(Praw_labels)
+    const new_raw_labels = [];
+
+    let newdata = [];
+
+    const indizes_to_merge = [];
+    let first_index = -1;
+    for (let l = 1; l < raw_labels.length; l++) {
+      const label = raw_labels[l];
+      if (!Object.prototype.hasOwnProperty.call(label, 'field')) {
+        continue
+      }
+      const fieldname = label.field;
+      // console.log('label:', label);
+
+      if (fieldname.match(column)) {
+        console.log('unifyColumns found',);
+        indizes_to_merge.push(l);
+        if (first_index == -1) {
+          first_index = l
+        }
+      }
+    }
+    for (let i = 0; i < indizes_to_merge.length; i++) {
+      const clabel = short_labels[indizes_to_merge[i] - 1];
+      console.log('to merge:', clabel);
+    }
+    console.log('indizes_to_merge', indizes_to_merge);
+
+
+    for (let c = 0; c < raw_labels.length; c++) {
+
+      if (c == 0) { // time column
+        for (let r = 0; r < data.length; r++) {
+          newdata.push([data[r][0]])
+        }
+        new_raw_labels.push(raw_labels[0])
+        // short_labes dont have date column
+        continue
+      }
+      if (c == first_index) {
+        for (let r = 0; r < data.length; r++) {
+          const old_row = data[r];
+          let new_nr = NaN;
+          for (let i = 0; i < indizes_to_merge.length; i++) {
+            let index = indizes_to_merge[i]
+            let cvalue = old_row[index]
+            if (!isNaN(cvalue) && cvalue != null) {
+              new_nr = cvalue;
+              break; // take first valid datapoint
+            }
+          }
+          newdata[r].push(new_nr)
+        }
+        // merge labels
+        const new_common_tags = cloneDeep(raw_labels[indizes_to_merge[0]].tags)
+        const new_raw_label = { 'metric': raw_labels[indizes_to_merge[0]].metric, 'tags': new_common_tags, 'field': raw_labels[indizes_to_merge[0]].field }
+        for (let i = 1; i < indizes_to_merge.length; i++) {
+          const index = indizes_to_merge[i];
+          const tags = raw_labels[index].tags;
+          for (const common_key in new_common_tags) {
+            if (!Object.prototype.hasOwnProperty.call(tags, common_key) || new_common_tags[common_key] != tags[common_key]) {
+              delete new_common_tags[common_key];
+            }
+          }
+        }
+        new_raw_labels.push(new_raw_label);
+        let new_short_label = new_raw_label.metric + ' merged: true, '
+        for (const key in new_common_tags) {
+          if (Object.prototype.hasOwnProperty.call(new_common_tags, key) && !labelBlackListT.includes(key)) {
+            const value = new_common_tags[key];
+            new_short_label += key + ': ' + value + ', '
+          }
+        }
+        new_common_tags['merged'] = 'true';
+        new_short_label += short_labels[first_index].split(/[,]+/).pop().trim();
+        new_short_labels.push(new_short_label)
+        continue;
+      }
+      if (indizes_to_merge.includes(c)) {
+        continue; // they have already been handled above
+      }
+
+      // push remaining rows
+      for (let r = 0; r < data.length; r++) {
+        const old_row = data[r];
+        newdata[r].push(old_row[c])
+      }
+      new_raw_labels.push(raw_labels[c])
+      new_short_labels.push(short_labels[c - 1])
+    }
+
+    return { "data": newdata, "raw_labels": new_raw_labels, "short_labels": new_short_labels }
+  }
 }

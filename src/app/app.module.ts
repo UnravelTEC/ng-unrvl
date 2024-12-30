@@ -190,6 +190,11 @@ const appRoutes: Routes = [
       import('./ut-apps/i/no2/no2.module').then((m) => m.No2Module),
   },
   {
+    path: 'Apps/I/outdoorAQ',
+    loadChildren: () =>
+      import('./ut-apps/i/outdoorAQ/outdoorAQ.module').then((m) => m.outdoorAQModule),
+  },
+  {
     path: 'Apps/Sensors',
     loadChildren: () =>
       import('./ut-apps/sensors/sensors.module').then((m) => m.SensorsModule),

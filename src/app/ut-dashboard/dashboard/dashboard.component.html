@@ -51,9 +51,15 @@
       *ngIf="gss.server.measurements.includes('gas') && gss.server.sensors && gss.server.sensors['NO2-A43F']"
       path="/Apps/I/NO2"
       icon="320px-Nitrogen-dioxide-3D-vdW.png"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="Outdoor Air Quality"
+      *ngIf="gss.server.measurements.includes('gas') && gss.server.sensors &&
+      (gss.server.sensors['NO2-A43F'] || gss.server.sensors['NO-A4'] || gss.server.sensors['OX-A431'] ||
+      gss.server.sensors['NO2-B43F'] || gss.server.sensors['NO-B4'] || gss.server.sensors['OX-B431'] || gss.server.sensors['CO-B4'])"
+      path="/Apps/I/outdoorAQ"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="Alphasense Gas"
       *ngIf="gss.server.measurements.includes('gas') && gss.server.sensors &&
-      (gss.server.sensors['NO2-A43F'] || gss.server.sensors['NO-A4'] || gss.server.sensors['OX-A431'] || gss.server.sensors['PID-AH2'])"
+      (gss.server.sensors['NO2-A43F'] || gss.server.sensors['NO-A4'] || gss.server.sensors['OX-A431'] || gss.server.sensors['PID-AH2'] ||
+      gss.server.sensors['NO2-B43F'] || gss.server.sensors['NO-B4'] || gss.server.sensors['OX-B431'] || gss.server.sensors['CO-B4'])"
       path="/Apps/I/Anysens"
       icon="manufacturers/alphasense.png"
       [queryParams]="{ measurement: 'gas', value: '/_V/', referrer: 'Dashboard' }"></app-ut-dashboard-tile>
