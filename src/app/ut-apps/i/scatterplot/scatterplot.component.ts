@@ -106,7 +106,7 @@ export class ScatterplotComponent implements OnInit {
       const rangeSeconds = Math.floor((timearray[1] - timearray[0]) / 1000);
       this.currentRange = this.h.createHRTimeString(rangeSeconds);
       if (!interval) {
-        this.userMeanS = this.calcMean(rangeSeconds);
+        this.userMeanS = this.h.calcMean(rangeSeconds, this.graphWidth);
         this.interval = String(this.userMeanS);
       } else {
         this.userMeanS = Number(interval);
@@ -116,11 +116,6 @@ export class ScatterplotComponent implements OnInit {
       this.scatterdata = this.createScatterData(this.data, this.from, this.to);
     }
   }
-  calcMean(secondsRange) {
-    const divider = Math.floor(secondsRange / this.graphWidth);
-    return divider > 1 ? divider : 1;
-  }
-
 
   constructor(private globalSettings: GlobalSettingsService, private utHTTP: UtFetchdataService, private h: HelperFunctionsService) {
     this.globalSettings.emitChange({ appName: 'Corellation' });
@@ -327,7 +322,7 @@ export class ScatterplotComponent implements OnInit {
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
 
-    this.userMeanS = this.calcMean(rangeSeconds);
+    this.userMeanS = this.h.calcMean(rangeSeconds, this.graphWidth);
     this.checkQ1();
     this.checkQ2();
   }

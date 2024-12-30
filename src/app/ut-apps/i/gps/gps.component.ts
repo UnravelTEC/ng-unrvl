@@ -29,14 +29,6 @@ export class GpsComponent implements OnInit {
   public fromTime: Date;
   public toTime: Date;
   public currentRange: string;
-  updateFromToTimes(timearray) {
-    // console.log(timearray);
-    this.fromTime = new Date(timearray[0]);
-    this.toTime = new Date(timearray[1]);
-    const rangeSeconds = Math.floor((timearray[1] - timearray[0]) / 1000);
-    this.currentRange = this.h.createHRTimeString(rangeSeconds);
-    this.userMeanS = this.calcMean(rangeSeconds);
-  }
   calcMean(secondsRange) {
     return 0.1;
   }
@@ -238,7 +230,7 @@ export class GpsComponent implements OnInit {
     this.labels = labels;
     this.data = idata;
     if (this.data.length) {
-      this.updateFromToTimes([this.data[0][0].valueOf(), this.data[this.data.length - 1][0].valueOf()])
+      this.h.updateFromToTimes([this.data[0][0].valueOf(), this.data[this.data.length - 1][0].valueOf()], this)
     }
     console.log(labels);
     console.log(idata);

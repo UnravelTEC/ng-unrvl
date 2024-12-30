@@ -163,7 +163,7 @@
   [colors]="colors"
   [YLabel]="measurement"
   (returnGraphWidthOnChange)="setGraphWidth($event)"
-  (returnCurrentZoom)="updateFromToTimes($event)"
+  (returnCurrentZoom)="h.updateFromToTimes($event, this)"
   showLogscaleSwitcher="false"
   #R
 ></app-ut-dygraph-in>

@@ -18,7 +18,7 @@
   [colors]="colors"
   YLabel="NO2, rH, T, PM"
   (returnGraphWidthOnChange)="setGraphWidth($event)"
-  (returnCurrentZoom)="updateFromToTimes($event)"
+  (returnCurrentZoom)="h.updateFromToTimes($event, this)"
   #R
 ></app-ut-dygraph-in>
 

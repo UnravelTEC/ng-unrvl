@@ -59,21 +59,6 @@ export class No2Component implements OnInit {
   public fromTime: Date;
   public toTime: Date;
   public currentRange: string;
-  updateFromToTimes(timearray, interval = '') {
-    // console.log(timearray);
-    this.fromTime = new Date(timearray[0]);
-    this.from = timearray[0];
-    this.toTime = new Date(timearray[1]);
-    this.to = timearray[1];
-    const rangeSeconds = Math.floor((timearray[1] - timearray[0]) / 1000);
-    this.currentRange = this.h.createHRTimeString(rangeSeconds);
-    if (!interval) {
-      this.userMeanS = this.calcMean(rangeSeconds);
-      this.interval = String(this.userMeanS);
-    } else {
-      this.userMeanS = Number(interval);
-    }
-  }
 
   labels = [];
   data = [];
@@ -110,17 +95,34 @@ export class No2Component implements OnInit {
 
   constructor(public gss: GlobalSettingsService, private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
-    private h: HelperFunctionsService,
+    public h: HelperFunctionsService,
     private sensorService: SensorService
   ) {
     this.gss.emitChange({ appName: this.appName });
+  }
+
+  ngOnInit(): void {
+    [
+      'userMeanS',
+      'userStartTime',
+      'tableShown',
+      'sideBarShown',
+      'show_deviation',
+    ].forEach((element) => {
+      const thing = this.localStorage.get(this.appName + element);
+      if (thing !== null) {
+        this[element] = thing;
+      }
+    });
+    this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
+
+    this.reload();
   }
 
   /**
    * @param column regex to match which columns are unified
    *
    */
-
   unifyColumns(column = /_V$/, data = []) {
     console.log('unifyColumns with', column);
 
@@ -421,24 +423,6 @@ export class No2Component implements OnInit {
     }
   }
 
-  ngOnInit(): void {
-    [
-      'userMeanS',
-      'userStartTime',
-      'tableShown',
-      'sideBarShown',
-      'show_deviation',
-    ].forEach((element) => {
-      const thing = this.localStorage.get(this.appName + element);
-      if (thing !== null) {
-        this[element] = thing;
-      }
-    });
-    this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
-
-    this.reload();
-  }
-
   reload(fromTo = false) {
     this.meanS = this.userMeanS;
     this.currentres = this.meanS;
@@ -495,14 +479,10 @@ export class No2Component implements OnInit {
 
     this.launchQuery(queries);
   }
-  calcMean(secondsRange) {
-    const divider = Math.floor(secondsRange / this.graphWidth);
-    return divider > 1 ? divider : 1;
-  }
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
 
-    this.userMeanS = this.calcMean(rangeSeconds);
+    this.userMeanS = this.h.calcMean(rangeSeconds, this.graphWidth);
 
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
     this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);

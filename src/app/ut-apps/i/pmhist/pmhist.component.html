@@ -29,7 +29,7 @@
   enableHighlightCallback="true"
   (returnHighlightedRow)="handleHighlightCallback($event)"
   (returnGraphWidthOnChange)="setGraphWidth($event)"
-  (returnCurrentZoom)="updateFromToTimes($event)"
+  (returnCurrentZoom)="h.updateFromToTimes($event, this)"
   #R
 ></app-ut-dygraph-in>
 <!-- showLogscaleSwitcher="false" -->

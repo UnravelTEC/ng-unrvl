@@ -33,7 +33,7 @@
             [YLabel]="ylabel"
             [Y2Label]="y2label"
             (returnGraphWidthOnChange)="setGraphWidth($event)"
-            (returnCurrentZoom)="updateFromToTimes($event)"
+            (returnCurrentZoom)="h.updateFromToTimes($event, this)"
             (returnRunningAvg)="handleRunningAvg($event)"
             #R
           ></app-ut-dygraph-in>

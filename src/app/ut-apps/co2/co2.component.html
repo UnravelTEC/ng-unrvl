@@ -11,7 +11,7 @@
   [colors]="colors"
   [backGroundLevels]="globalSettings['graphBackgrounds']['CO2_ppm']"
   (returnGraphWidthOnChange)="setGraphWidth($event)"
-  (returnCurrentZoom)="updateFromToTimes($event)"
+  (returnCurrentZoom)="h.updateFromToTimes($event, this)"
   #CO2
 >
 </app-ut-dygraph-in>

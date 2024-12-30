@@ -1172,4 +1172,26 @@ export class HelperFunctionsService {
       return false;
     }
   }
+  calcMean(secondsRange, graphWidth) {
+    const divider = Math.floor(secondsRange / graphWidth);
+    return divider > 1 ? divider : 1;
+  }
+
+  /**
+   * changes this.fromTime, from, toTime, to, currentRange, userMeanS, interval !!!
+   */
+  updateFromToTimes(timearray, myself, interval = '') {
+    myself.fromTime = new Date(timearray[0]);
+    myself.from = timearray[0];
+    myself.toTime = new Date(timearray[1]);
+    myself.to = timearray[1];
+    const rangeSeconds = Math.floor((timearray[1] - timearray[0]) / 1000);
+    myself.currentRange = this.createHRTimeString(rangeSeconds);
+    if (!interval) {
+      myself.userMeanS = this.calcMean(rangeSeconds, myself.graphWidth);
+      myself.interval = String(myself.userMeanS);
+    } else {
+      myself.userMeanS = Number(interval);
+    }
+  }
 }

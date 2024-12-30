@@ -181,14 +181,10 @@ export class BimboxComponent implements OnInit {
       'G'
     );
   }
-  calcMean(secondsRange) {
-    const divider = Math.floor(secondsRange / this.graphWidth);
-    return divider > 30 ? divider : 30;
-  }
 
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
-    this.userMeanS = this.calcMean(rangeSeconds);
+    this.userMeanS = this.h.calcMean(rangeSeconds, this.graphWidth);
     this.reload();
   }
 

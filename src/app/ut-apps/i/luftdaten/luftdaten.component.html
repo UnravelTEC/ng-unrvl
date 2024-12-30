@@ -9,7 +9,7 @@
   [colors]="colors"
   YLabel="rH, T, PM"
   (returnGraphWidthOnChange)="setGraphWidth($event)"
-  (returnCurrentZoom)="updateFromToTimes($event)"
+  (returnCurrentZoom)="h.updateFromToTimes($event, this)"
   #R
 ></app-ut-dygraph-in>
 

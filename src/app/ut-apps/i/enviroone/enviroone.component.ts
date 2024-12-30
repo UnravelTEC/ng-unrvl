@@ -82,14 +82,6 @@ export class EnvirooneComponent implements OnInit {
   public fromTime: Date;
   public toTime: Date;
   public currentRange: string;
-  updateFromToTimes(timearray) {
-    // console.log(timearray);
-    this.fromTime = new Date(timearray[0]);
-    this.toTime = new Date(timearray[1]);
-    const rangeSeconds = Math.floor((timearray[1] - timearray[0]) / 1000);
-    this.currentRange = this.h.createHRTimeString(rangeSeconds);
-    this.userMeanS = this.calcMean(rangeSeconds);
-  }
   db = 'envirograz000';
   server = 'https://newton.unraveltec.com';
 
@@ -216,14 +208,10 @@ export class EnvirooneComponent implements OnInit {
     if (queries) this.launchQuery(queries);
   }
 
-  calcMean(secondsRange) {
-    const divider = Math.floor(secondsRange / this.graphWidth);
-    return divider > 30 ? divider : 30;
-  }
-  changeMean(param) {
+    changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
 
-    this.userMeanS = this.calcMean(rangeSeconds);
+    this.userMeanS = this.h.calcMean(rangeSeconds, this.graphWidth);
 
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
     this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);

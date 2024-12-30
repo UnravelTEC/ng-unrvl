@@ -73,21 +73,6 @@ export class Scd30Component implements OnInit {
   public fromTime: Date;
   public toTime: Date;
   public currentRange: string;
-  updateFromToTimes(timearray, interval = '') {
-    // console.log(timearray);
-    this.fromTime = new Date(timearray[0]);
-    this.from = timearray[0];
-    this.toTime = new Date(timearray[1]);
-    this.to = timearray[1];
-    const rangeSeconds = Math.floor((timearray[1] - timearray[0]) / 1000);
-    this.currentRange = this.h.createHRTimeString(rangeSeconds);
-    if (!interval) {
-      this.userMeanS = this.calcMean(rangeSeconds);
-      this.interval = String(this.userMeanS);
-    } else {
-      this.userMeanS = Number(interval);
-    }
-  }
 
   appName = 'SCD30';
 
@@ -144,7 +129,7 @@ export class Scd30Component implements OnInit {
     if (this.from && this.to) {
       this.from = Number(this.from);
       this.to = Number(this.to);
-      this.updateFromToTimes([this.from, this.to], this.interval);
+      this.h.updateFromToTimes([this.from, this.to], this, this.interval);
       this.reload(true);
     } else {
       this.reload();
@@ -204,14 +189,11 @@ export class Scd30Component implements OnInit {
     this.launchQuery(queryH, 'H');
   }
 
-  calcMean(secondsRange) {
-    const divider = Math.floor(secondsRange / this.graphWidth);
-    return divider > 1 ? divider : 1;
-  }
+
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
 
-    this.userMeanS = this.calcMean(rangeSeconds);
+    this.userMeanS = this.h.calcMean(rangeSeconds, this.graphWidth);
 
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
     this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);
