@@ -379,7 +379,30 @@ export class SensorService {
         round_digits: 1,
       },
     },
+    'CO-B4': {
+      CO_V: {
+        round_digits: 7,
+      },
+    },
+    'NO-A4': {
+      NO_V: {
+        round_digits: 7,
+      },
+    },
+    'NO-B4': {
+      NO_V: {
+        round_digits: 7,
+      },
+    },
+    'NO2-A43F': {
+      NO2_V: {
+        round_digits: 7,
+      },
+    },
     'NO2-B43F': {
+      NO2_V: {
+        round_digits: 7,
+      },
       NO2_ppm: {
         round_digits: 4,
       },
@@ -390,17 +413,12 @@ export class SensorService {
         round_digits: 1,
       },
     },
-    'NO2-A43F': {
-      NO2_V: {
-        round_digits: 7,
-      },
-    },
-    'NO-A4': {
-      NO_V: {
-        round_digits: 7,
-      },
-    },
     'OX-A431': {
+      "O3+NO2_V": {
+        round_digits: 7,
+      },
+    },
+    'OX-B431': {
       "O3+NO2_V": {
         round_digits: 7,
       },
