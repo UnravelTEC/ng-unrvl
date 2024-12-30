@@ -117,6 +117,12 @@ $red2: #ff7f88;
     height: 1em;
     line-height: 1em;
     cursor: pointer;
+    mat-icon {
+      position: absolute;
+      top: -4px;
+      scale: 0.5;
+      opacity: 0.5;
+    }
   }
 
   .fromDate,
@@ -221,6 +227,9 @@ $red2: #ff7f88;
     width: 42px; // dyg y-width: 50px + paddings
     left: 1px;
     text-align: right;
+    mat-icon {
+      left: -5px;
+    }
   }
   .ymax,
   .y2max {
@@ -241,6 +250,9 @@ $red2: #ff7f88;
     width: 49px;
     text-align: left;
     border-right: 0px solid $graphbg; // used to "expand" inte left
+    mat-icon {
+      right: -15px;
+    }
   }
   .xmin,
   .xmax,

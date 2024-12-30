@@ -69,6 +69,7 @@ style.padding-bottom="20vh"-->
       [style.transform]="'translateX(' + yO + 'px)'"
       (click)="toggleYRSel('y1min')"
     >
+      <mat-icon *ngIf="yModes.y1min == 'fix'">lock</mat-icon>
       {{ yRange[0] | dygNr }}
     </div>
     <div
@@ -77,6 +78,7 @@ style.padding-bottom="20vh"-->
       [style.border-right-width]="y2O + 'px'"
       (click)="toggleYRSel('y2min')"
     >
+      <mat-icon *ngIf="yModes.y2min == 'fix'">lock</mat-icon>
       {{ y2Range[0] | dygNr }}
     </div>
     <div
@@ -85,6 +87,7 @@ style.padding-bottom="20vh"-->
       [style.transform]="'translateX(' + yO + 'px)'"
       (click)="toggleYRSel('y1max')"
     >
+      <mat-icon *ngIf="yModes.y1max == 'fix'">lock</mat-icon>
       {{ yRange[1] | dygNr }}
     </div>
     <div
@@ -93,6 +96,7 @@ style.padding-bottom="20vh"-->
       [style.border-right-width]="y2O + 'px'"
       (click)="toggleYRSel('y2max')"
     >
+      <mat-icon *ngIf="yModes.y2max == 'fix'">lock</mat-icon>
       {{ y2Range[1] | dygNr }}
     </div>
     <form *ngFor="let entry of yModes | keyvalue" class="{{ entry.key }}Sel">
