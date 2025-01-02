@@ -257,66 +257,6 @@ export class outdoorAQComponent implements OnInit {
     }
   }
 
-  convVtoPPB(raw_labels: Array<Object>, data: Array<any>) {
-    // 1. search for all _V source inputs
-    const V_columns = []; // {'c': $nr_column, 'gas': "$gas_string", 'serial': $nr }
-    const calfactors = {
-      '212460428': { // Sensor serial nr.
-        'offset': 0.002,
-        'factor': 4550 // 4.55 *1000 for mV - V
-      }
-    }
-    for (let i = 1; i < raw_labels.length; i++) { // col 0: Date
-      const clabel = raw_labels[i];
-      if (clabel['metric'] != 'gas' || !clabel['field'].endsWith('_V'))
-        continue;
-      const gas = clabel['field'].replace(/_V$/, '').replace(/^mean_/, '')
-      if (!gas || gas.length == 0)
-        continue;
-      console.log('convVtoPPB found gas', gas, 'in column', clabel);
-      const gastags = clabel['tags'];
-      let serial = '';
-      if (Object.prototype.hasOwnProperty.call(gastags, 'serial')) {
-        serial = gastags['serial']
-      } else {
-        console.log('convVtoPPB Fault: gas has no serial');
-        continue
-      }
-      V_columns.push({ 'c': i, 'gas': gas.toUpperCase(), 'serial': serial });
-    }
-
-    let first = false;
-    for (let i = 0; i < V_columns.length; i++) {
-      const gas_item = V_columns[i];
-      const offset = calfactors[gas_item['serial']]['offset']
-      const factor = calfactors[gas_item['serial']]['factor']
-      console.log('convVtoPPB serial', gas_item['serial'], 'o', offset, 'f', factor);
-
-
-      const new_raw_column_label = cloneDeep(raw_labels[gas_item['c']])
-      new_raw_column_label['field'] = new_raw_column_label['field'].replace(/_V/, "_ppb")
-      new_raw_column_label['tags']['SRC'] = 'computed'
-      raw_labels.push(new_raw_column_label);
-      this.short_labels.push(this.short_labels[gas_item['c'] - 1] // not nice to modify member vars
-        .replace('( V )', "( ppb )")
-        .replace(' NO', ' SRC: computed, NO')); // and hacky way to modify text
-
-      for (let r = 0; r < data.length; r++) {
-        const row = data[r];
-        const g = row[gas_item['c']];
-        let gas_ppb = NaN;
-        if (Number.isFinite(g)) {
-          gas_ppb = (g + offset) * factor
-          if (first == false) {
-            console.log('g', g, 'ppb', gas_ppb);
-            first = true;
-          }
-        }
-        row.push(gas_ppb)
-      }
-    }
-  }
-
   reload(fromTo = false) {
     this.meanS = this.userMeanS;
     this.currentres = this.meanS;
@@ -347,22 +287,23 @@ export class outdoorAQComponent implements OnInit {
       timeQuery,
       {},
       this.meanS,
-      '/_V$/'
-    ) +
-      this.utHTTP.influxMeanQuery(
-        'pressure',
-        timeQuery,
-        {},
-        this.meanS,
-        '/air_hPa/'
-      ) +
-      this.utHTTP.influxMeanQuery(
-        'temperature',
-        timeQuery,
-        {},
-        this.meanS,
-        '/air_degC/'
-      );
+      '/_V$/',
+      'channel,sensor,serial'
+    ); // +
+      // this.utHTTP.influxMeanQuery(
+      //   'pressure',
+      //   timeQuery,
+      //   {},
+      //   this.meanS,
+      //   '/air_hPa/'
+      // ) +
+      // this.utHTTP.influxMeanQuery(
+      //   'temperature',
+      //   timeQuery,
+      //   {},
+      //   this.meanS,
+      //   '/air_degC/'
+      // );
 
     this.launchQuery(queries);
   }
@@ -432,17 +373,21 @@ export class outdoorAQComponent implements OnInit {
     console.log('common_label:', ret['common_label']);
     console.log('short_labels:', ret['short_labels']);
 
-    const retNO = this.h.unifyColumns(/NO_V$/, idata, this.short_labels, this.raw_labels, this.labelBlackListT);
-    const retNO2 = this.h.unifyColumns(/ NO2_V$/, retNO["data"], retNO["short_labels"], retNO["raw_labels"], this.labelBlackListT);
-    const retCO = this.h.unifyColumns(/ CO_V$/, retNO2["data"], retNO2["short_labels"], retNO2["raw_labels"], this.labelBlackListT);
-    const retO3 = this.h.unifyColumns(/ O3+NO2_V$/, retCO["data"], retCO["short_labels"], retCO["raw_labels"], this.labelBlackListT);
-    idata = retO3.data;
-    this.raw_labels = retO3.raw_labels
-    this.short_labels = retO3.short_labels
+    // FIXME this.h.unifyColumns scrambles labels!
+    // const retNO = this.h.unifyColumns(/NO_V$/, idata, this.short_labels, this.raw_labels, this.labelBlackListT);
+    // const retNO2 = this.h.unifyColumns(/ NO2_V$/, retNO["data"], retNO["short_labels"], retNO["raw_labels"], this.labelBlackListT);
+    // const retCO = this.h.unifyColumns(/ CO_V$/, retNO2["data"], retNO2["short_labels"], retNO2["raw_labels"], this.labelBlackListT);
+    // const retO3 = this.h.unifyColumns(/ O3\+NO2_V$/, retCO["data"], retCO["short_labels"], retCO["raw_labels"], this.labelBlackListT);
+    // idata = retO3.data;
+    // this.raw_labels = retO3.raw_labels
+    // this.short_labels = retO3.short_labels
     // console.log('after unify raw labels:', cloneDeep(this.raw_labels));
     // console.log('after unify short labels:', cloneDeep(this.short_labels));
     // this.convUGPM3toPPB(this.raw_labels, idata);
-    //this.convVtoPPB(this.raw_labels, idata);
+    const retPPB = this.h.convVtoPPB(idata, this.raw_labels, this.short_labels);
+    idata = retPPB.data
+    this.raw_labels = retPPB.raw_labels
+    this.short_labels = retPPB.short_labels
     console.log('after raw labels:', cloneDeep(this.raw_labels));
     console.log('after short labels:', cloneDeep(this.short_labels));
 

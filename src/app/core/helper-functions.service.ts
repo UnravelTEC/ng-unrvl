@@ -1297,4 +1297,140 @@ export class HelperFunctionsService {
 
     return { "data": newdata, "raw_labels": new_raw_labels, "short_labels": new_short_labels }
   }
+  convVtoPPB(data: Array<any>, Praw_labels: Array<Object>, Pshort_labels: Array<string>) {
+    // 1. search for all _V source inputs
+    const V_columns = []; // {'c': $nr_column, 'gas': "$gas_string", 'serial': $nr }
+    const calfactors = {
+      '212460428': { // Sensor serial nr.
+        'offset': 0.002, // difference WE - AUX in V
+        'factor': 4550 // 4.55 *1000 for mV - V   : 1000 / sensitivity (mV/ppb)
+      },
+      '202180519': { // NO2-B43F bfg-lcair
+        'offset': 0.228 - 0.232,
+        'factor': 1000 / 0.207
+      },
+      '204831253': { // OX bfg-lcair
+        'offset': 0.240 - 0.225,
+        'factor': 1000 / 0.354
+      },
+      '162830053': { // CO bfg-lcair
+        'offset': 0.352 - 0.332,
+        'factor': 1000 / 0.493
+      },
+      '160910951': { // NO bfg-lcair
+        'offset': 0.278 - 0.276,
+        'factor': 1000 / 0.645
+      }
+
+    }
+    const raw_labels = cloneDeep(Praw_labels)
+    const short_labels = cloneDeep(Pshort_labels)
+
+    for (let i = 1; i < raw_labels.length; i++) { // col 0: Date
+      const clabel = raw_labels[i];
+      if (clabel['metric'] != 'gas' || !clabel['field'].endsWith('_V'))
+        continue;
+      const gas = clabel['field'].replace(/_V$/, '').replace(/^mean_/, '')
+      if (!gas || gas.length == 0)
+        continue;
+      console.log('convVtoPPB found gas', gas, 'in column', clabel);
+      const gastags = clabel['tags'];
+      let serial = '';
+      if (Object.prototype.hasOwnProperty.call(gastags, 'serial')) {
+        serial = gastags['serial']
+      } else {
+        console.log('convVtoPPB Fault: gas has no serial');
+        continue
+      }
+      V_columns.push({ 'c': i, 'gas': gas.toUpperCase(), 'serial': serial });
+    }
+
+    let first = false;
+    for (let i = 0; i < V_columns.length; i++) {
+      const gas_item = V_columns[i];
+      const offset = calfactors[gas_item['serial']]['offset']
+      const factor = calfactors[gas_item['serial']]['factor']
+      console.log('convVtoPPB serial', gas_item['serial'], 'o', offset, 'f', factor);
+
+
+      const new_raw_column_label = cloneDeep(raw_labels[gas_item['c']])
+      new_raw_column_label['field'] = new_raw_column_label['field'].replace(/_V/, "_ppb")
+      new_raw_column_label['tags']['SRC'] = 'computed'
+      raw_labels.push(new_raw_column_label);
+      short_labels.push(short_labels[gas_item['c'] - 1]
+        .replace('( V )', "( ppb )")
+        .replace('serial:', 'SRC: computed, serial:')); // hacky way to modify text
+
+      for (let r = 0; r < data.length; r++) {
+        const row = data[r];
+        const g = row[gas_item['c']];
+        let gas_ppb = NaN;
+        if (Number.isFinite(g)) {
+          gas_ppb = (g + offset) * factor
+          if (first == false) {
+            console.log('g', g, 'ppb', gas_ppb);
+            first = true;
+          }
+        }
+        row.push(gas_ppb)
+      }
+    }
+    return { 'data': data, 'short_labels': short_labels, 'raw_labels': raw_labels }
+  }
+  mol_masses = { 'NO2': 46.0055, 'CO': 28.010, 'NO': 30.006, 'O3': 47.997 }
+  gas_constant = 8.314472
+  convPPBtoUGPM3(data: Array<any>, Praw_labels: Array<Object>, Pshort_labels: Array<string>) {
+    const T = 20;
+    const P = 970;
+
+    const ppb_columns = [];
+    const raw_labels = cloneDeep(Praw_labels)
+    const short_labels = cloneDeep(Pshort_labels)
+
+    for (let i = 1; i < raw_labels.length; i++) { // col 0: Date
+      const clabel = raw_labels[i];
+      if (clabel['metric'] != 'gas' || !clabel['field'].endsWith('_ppb'))
+        continue;
+      const gas = clabel['field'].replace(/_ppb$/, '').replace(/^mean_/, '')
+      if (!gas || gas.length == 0)
+        continue;
+      if (!Object.prototype.hasOwnProperty.call(this.mol_masses, gas)) {
+        console.log('convPPBtoUGPM3 Fault: no molar mass for', gas);
+        continue
+      }
+      console.log('convPPBtoUGPM3 found gas', gas, 'in column', clabel);
+
+      ppb_columns.push({ 'c': i, 'gas': gas.toUpperCase() });
+    }
+
+    let first = false;
+    for (let i = 0; i < ppb_columns.length; i++) {
+      const gas_item = ppb_columns[i];
+      const mol_mass = this.mol_masses[gas_item['gas']]
+      console.log('convPPBtoUGPM3', gas_item['gas'], 'has mol mass', mol_mass);
+
+      const new_raw_column_label = cloneDeep(raw_labels[gas_item['c']])
+      new_raw_column_label['field'] = new_raw_column_label['field'].replace(/_ppb/, "_ugpm3")
+      new_raw_column_label['tags']['SRC'] = 'computed'
+      raw_labels.push(new_raw_column_label);
+      short_labels.push(short_labels[gas_item['c'] - 1]
+        .replace('( ppb )', "( µg / m³ )")
+        .replace(' NO', ' SRC: computed, NO')); // hacky way to modify text
+
+      for (let r = 0; r < data.length; r++) {
+        const row = data[r];
+        const g = row[gas_item['c']];
+        let gas_ppb = NaN;
+        if (Number.isFinite(g)) {
+          gas_ppb = g
+          if (first == false) {
+            console.log('g', g, 'ppb', gas_ppb);
+            first = true;
+          }
+        }
+        row.push(gas_ppb)
+      }
+    }
+    return { 'data': data, 'short_labels': short_labels, 'raw_labels': raw_labels }
+  }
 }

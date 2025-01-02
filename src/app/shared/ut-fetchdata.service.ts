@@ -155,7 +155,8 @@ export class UtFetchdataService {
     timeQuery: string,
     tagfilter: Object = {},
     mean_s = 30,
-    fields = '*'
+    fields = '*',
+    group_By = ''
   ) {
     let q = 'SELECT mean(' + fields + ') FROM ' + measurement;
     let timestring =
@@ -195,6 +196,9 @@ export class UtFetchdataService {
     // } else {
       groupBy += '*,time(' + timestring + ')';
     // }
+    if (group_By) {
+      groupBy = ' GROUP BY ' + group_By + ',time(' + timestring + ')';
+    }
 
     q += ' WHERE ' + whereClause + groupBy + ';';
     return q;
