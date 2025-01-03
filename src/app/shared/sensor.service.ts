@@ -380,48 +380,36 @@ export class SensorService {
       },
     },
     'CO-B4': {
-      CO_V: {
-        round_digits: 7,
-      },
+      CO_V: { round_digits: 7, },
+      CO_WE_V: { round_digits: 7, },
+      CO_AE_V: { round_digits: 7, },
     },
     'NO-A4': {
-      NO_V: {
-        round_digits: 7,
-      },
+      NO_V: { round_digits: 7, },
     },
     'NO-B4': {
-      NO_V: {
-        round_digits: 7,
-      },
+      NO_V: { round_digits: 7, },
+      NO_WE_V: { round_digits: 7, },
+      NO_AE_V: { round_digits: 7, },
     },
     'NO2-A43F': {
-      NO2_V: {
-        round_digits: 7,
-      },
+      NO2_V: { round_digits: 7, },
     },
     'NO2-B43F': {
-      NO2_V: {
-        round_digits: 7,
-      },
-      NO2_ppm: {
-        round_digits: 4,
-      },
-      NO2_ugpm3: {
-        round_digits: 1,
-      },
-      '*_degC': {
-        round_digits: 1,
-      },
+      NO2_V: { round_digits: 7, },
+      NO2_WE_V: { round_digits: 7, },
+      NO2_AE_V: { round_digits: 7, },
+      NO2_ppm: { round_digits: 4, },
+      NO2_ugpm3: { round_digits: 1, },
+      '*_degC': { round_digits: 1, },
     },
     'OX-A431': {
-      "O3+NO2_V": {
-        round_digits: 7,
-      },
+      "O3+NO2_V": { round_digits: 7, },
     },
     'OX-B431': {
-      "O3+NO2_V": {
-        round_digits: 7,
-      },
+      "O3+NO2_V": { round_digits: 7, },
+      "O3+NO2_WE_V": { round_digits: 7, },
+      "O3+NO2_AE_V": { round_digits: 7, },
     },
     'PID-AH2': {
       "VOC_V": {
@@ -561,7 +549,7 @@ export class SensorService {
     return [value, value, value];
   }
   getDeviationFunction(raw_label) {
-    if(this.h.getDeep(raw_label, ['tags', 'SRC']) == 'computed') {
+    if (this.h.getDeep(raw_label, ['tags', 'SRC']) == 'computed') {
       // TODO Fehlerfortpflanzung
       return this.nullDevFun;
     }

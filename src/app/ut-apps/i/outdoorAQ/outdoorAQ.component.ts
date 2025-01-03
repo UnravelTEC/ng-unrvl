@@ -288,7 +288,7 @@ export class outdoorAQComponent implements OnInit {
       {},
       this.meanS,
       '/_V$/',
-      'channel,sensor,serial'
+      'sensor,serial'
     ); // +
       // this.utHTTP.influxMeanQuery(
       //   'pressure',

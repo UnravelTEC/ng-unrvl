@@ -1297,9 +1297,7 @@ export class HelperFunctionsService {
 
     return { "data": newdata, "raw_labels": new_raw_labels, "short_labels": new_short_labels }
   }
-  mergeWEAE(data: Array<any>, Praw_labels: Array<Object>, Pshort_labels: Array<string>) {
 
-  }
   convVtoPPB(data: Array<any>, Praw_labels: Array<Object>, Pshort_labels: Array<string>) {
 
     const calfactors = {
@@ -1309,34 +1307,43 @@ export class HelperFunctionsService {
       },
       '202180519': { // NO2-B43F bfg-lcair
         'offset': 0.228 - 0.232,
+        'WE_zero': 0.228,
+        'AE_zero': 0.232,
         'factor': 1000 / 0.207
       },
       '204831253': { // OX bfg-lcair
         'offset': 0.240 - 0.225,
+        'WE_zero': 0.240,
+        'AE_zero': 0.225,
         'factor': 1000 / 0.354
       },
       '162830053': { // CO bfg-lcair
         'offset': 0.352 - 0.332,
+        'WE_zero': 0.352,
+        'AE_zero': 0.332,
         'factor': 1000 / 0.493
       },
       '160910951': { // NO bfg-lcair
         'offset': 0.278 - 0.276,
+        'WE_zero': 0.278,
+        'AE_zero': 0.276,
         'factor': 1000 / 0.645
       }
-
     }
+
     const raw_labels = cloneDeep(Praw_labels)
     const short_labels = cloneDeep(Pshort_labels)
     // 1. search for all _V source inputs
     const V_columns = []; // {'c': $nr_column, 'gas': "$gas_string", 'serial': $nr }
     for (let i = 1; i < raw_labels.length; i++) { // col 0: Date
       const clabel = raw_labels[i];
-      if (clabel['metric'] != 'gas' || !clabel['field'].endsWith('_V') || clabel['field'].endsWith('E_V')) // single WE/AE channels
+      const field = clabel['field'];
+      if (clabel['metric'] != 'gas' || !field.endsWith('_V'))
         continue;
-      const gas = clabel['field'].replace(/_V$/, '').replace(/^mean_/, '')
+      const gas = field.replace(/_V$/, '').replace(/^mean_/, '').replace(/_[WA]E$/, '')
       if (!gas || gas.length == 0)
         continue;
-      console.log('convVtoPPB found gas', gas, 'in column', clabel);
+      console.log('convVtoPPB found gas field', field, 'in column', clabel);
       const gastags = clabel['tags'];
       let serial = '';
       if (Object.prototype.hasOwnProperty.call(gastags, 'serial')) {
@@ -1345,38 +1352,85 @@ export class HelperFunctionsService {
         console.log('convVtoPPB Fault: gas has no serial');
         continue
       }
-      V_columns.push({ 'c': i, 'gas': gas.toUpperCase(), 'serial': serial });
+      let v_col = { 'c': i, 'gas': gas.toUpperCase(), 'serial': serial }
+      if (field.endsWith('E_V')) {
+        v_col['channeltype'] = field.substr(-4, 2)
+      } else {
+        v_col['channeltype'] = 'diff'
+      }
+      V_columns.push(v_col);
     }
 
     let first = false;
     for (let i = 0; i < V_columns.length; i++) {
       const gas_item = V_columns[i];
-      const offset = calfactors[gas_item['serial']]['offset']
-      const factor = calfactors[gas_item['serial']]['factor']
-      console.log('convVtoPPB serial', gas_item['serial'], 'o', offset, 'f', factor);
-
+      const serial = gas_item['serial']
+      const factor = calfactors[serial]['factor']
 
       const new_raw_column_label = cloneDeep(raw_labels[gas_item['c']])
-      new_raw_column_label['field'] = new_raw_column_label['field'].replace(/_V/, "_ppb")
-      new_raw_column_label['tags']['SRC'] = 'computed'
-      raw_labels.push(new_raw_column_label);
-      short_labels.push(short_labels[gas_item['c'] - 1]
-        .replace('( V )', "( ppb )")
-        .replace('serial:', 'SRC: computed, serial:')); // hacky way to modify text
 
-      for (let r = 0; r < data.length; r++) {
-        const row = data[r];
-        const g = row[gas_item['c']];
-        let gas_ppb = NaN;
-        if (Number.isFinite(g)) {
-          gas_ppb = (g + offset) * factor
-          if (first == false) {
-            console.log('g', g, 'ppb', gas_ppb);
-            first = true;
+      if (gas_item['channeltype'] == 'diff') {
+        const offset = calfactors[serial]['offset']
+        console.log('convVtoPPB serial', serial, 'o', offset, 'f', factor);
+
+        new_raw_column_label['field'] = new_raw_column_label['field'].replace(/_V/, "_ppb")
+        new_raw_column_label['tags']['SRC'] = 'computed'
+        raw_labels.push(new_raw_column_label);
+
+        short_labels.push(short_labels[gas_item['c'] - 1]
+          .replace('( V )', "( ppb )")
+          .replace('serial:', 'SRC: computed, serial:')); // hacky way to modify text
+
+        for (let r = 0; r < data.length; r++) {
+          const row = data[r];
+          const g = row[gas_item['c']];
+          let gas_ppb = NaN;
+          if (Number.isFinite(g)) {
+            gas_ppb = (g + offset) * factor
+            if (first == false) {
+              console.log('g', g, 'ppb', gas_ppb);
+              first = true;
+            }
+          }
+          row.push(gas_ppb)
+        }
+      } else if (gas_item['channeltype'] == 'WE') {
+        new_raw_column_label['field'] = new_raw_column_label['field'].replace(/_WE_V/, "_ppb")
+        new_raw_column_label['tags']['SRC'] = 'diff'
+        raw_labels.push(new_raw_column_label);
+
+        const WE_index = gas_item['c']
+        short_labels.push(short_labels[WE_index - 1]
+          .replace(' WE ( V )', "( ppb )")
+          .replace('serial:', 'SRC: diff, serial:')); // hacky way to modify text
+
+        // search for AE column
+        let AE_index = NaN;
+        for (let j = 1; j < V_columns.length; j++) { // AE its for sure not index 0
+          const AE_col = V_columns[j]
+          if (AE_col['serial'] == serial && AE_col['channeltype'] == "AE") {
+            AE_index = AE_col['c'];
+            break
           }
         }
-        row.push(gas_ppb)
-      }
+
+        const WE_zero = calfactors[serial]['WE_zero']
+        const AE_zero = calfactors[serial]['AE_zero']
+        for (let r = 0; r < data.length; r++) {
+          const row = data[r];
+          const WE = row[WE_index];
+          const AE = row[AE_index];
+          let gas_ppb = NaN;
+          if (Number.isFinite(WE) && Number.isFinite(AE)) {
+            gas_ppb = ((WE - WE_zero) - (AE - AE_zero)) * factor
+            if (first == false) {
+              console.log('g', gas_item['gas'], 'ppb', gas_ppb);
+              first = true;
+            }
+          }
+          row.push(gas_ppb)
+        }
+      } // AE is handled above
     }
     return { 'data': data, 'short_labels': short_labels, 'raw_labels': raw_labels }
   }
