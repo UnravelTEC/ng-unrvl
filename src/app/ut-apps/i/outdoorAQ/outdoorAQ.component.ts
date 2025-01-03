@@ -3,7 +3,7 @@ import { GlobalSettingsService } from 'app/core/global-settings.service';
 import { HelperFunctionsService } from 'app/core/helper-functions.service';
 import { LocalStorageService } from 'app/core/local-storage.service';
 import { SensorService } from 'app/shared/sensor.service';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep, forIn } from 'lodash-es';
 import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
 
 @Component({
@@ -88,6 +88,9 @@ export class outdoorAQComponent implements OnInit {
   public reload_timer = Infinity;
   public last_reload: number;
 
+  public show_ppb = true;
+  public show_V = true;
+
   public tableShown = true;
   public sideBarShown = true;
 
@@ -119,50 +122,50 @@ export class outdoorAQComponent implements OnInit {
     this.reload();
   }
 
-    /*
-    data needed:
-    adns voltage, tagged with NO2 and sensor serial + afe serial
-    calibration factors needed:
-    * differential offset (from db, changes?) - FOR SENSOR WITH SERIAL
-    * mv/ppb scale factor (from db) - FOR SENSOR WITH SERIAL
-    * log-threshold (see helper/ smoothNO2)
-    *
-    * we have 2 NO2 sensors -> but they've different names anyway.
-    *   how to calibrate for different serials?
-    *
-    * Goals:
-    *   visualise ppb
-    *   visualise µg/m³
-    *     - load P
-    *     - load air_degC
-    *   compare/calibrate to official NO2 values
-    *     per day/per week
-    *     - needs official Data (from DB?)
-    *
-    * Steps:
-    *  0 offset electrical (ADC/AFE) offset:
-    *   v_new = v_old + offset
-    *  1 convert to ppb (via offset + linear multiplication factor)
-    *   NO2_ppb = (v_old + offset) * Alphas_ppb_per_mV
-    *  2 convert to µg/m³ (via T + P) (TODO which smooting interval to use?)
-    *     .. currently, we use HMWs for all data anyway... is it more correct to calculate it for each 1s-datapoint than to avg over 1800?
-    *   NO2_ugpm3 = NO2_ppb * konstante * pressure / (T_Kelvin), konstante = 100*46.0055 [molar mass NO2] / 8.314472 [gasconst] = 553.31836
-    *  3 log-threshold (TODO WHEN?) - or just set values to 0, as officials to too?
-    * -> if global ± offset AFTER calc is used, this is influenced by P/T! -> use before!
-    *   => we use factory cal factors (offset + scale factor), and add our own over time
-    *  NOTE for calculating calibration params to official - use only "known good" values? (eg everything > threshold?)
-    *
-    * Datenstruktur zum Vergleich:
-    * metric: fieldname
-    *   temperature air_degC
-    *   humidity H2O_rel_percent
-    *   gas NO2_ugmp3 NO_ugpm3
-    *   particulate_matter pm10_ugpm3
-    *   pressure air_hPa
-    * tags: host=Graz-O P, operator=A15
-    *
-    * ug2
-  */
+  /*
+  data needed:
+  adns voltage, tagged with NO2 and sensor serial + afe serial
+  calibration factors needed:
+  * differential offset (from db, changes?) - FOR SENSOR WITH SERIAL
+  * mv/ppb scale factor (from db) - FOR SENSOR WITH SERIAL
+  * log-threshold (see helper/ smoothNO2)
+  *
+  * we have 2 NO2 sensors -> but they've different names anyway.
+  *   how to calibrate for different serials?
+  *
+  * Goals:
+  *   visualise ppb
+  *   visualise µg/m³
+  *     - load P
+  *     - load air_degC
+  *   compare/calibrate to official NO2 values
+  *     per day/per week
+  *     - needs official Data (from DB?)
+  *
+  * Steps:
+  *  0 offset electrical (ADC/AFE) offset:
+  *   v_new = v_old + offset
+  *  1 convert to ppb (via offset + linear multiplication factor)
+  *   NO2_ppb = (v_old + offset) * Alphas_ppb_per_mV
+  *  2 convert to µg/m³ (via T + P) (TODO which smooting interval to use?)
+  *     .. currently, we use HMWs for all data anyway... is it more correct to calculate it for each 1s-datapoint than to avg over 1800?
+  *   NO2_ugpm3 = NO2_ppb * konstante * pressure / (T_Kelvin), konstante = 100*46.0055 [molar mass NO2] / 8.314472 [gasconst] = 553.31836
+  *  3 log-threshold (TODO WHEN?) - or just set values to 0, as officials to too?
+  * -> if global ± offset AFTER calc is used, this is influenced by P/T! -> use before!
+  *   => we use factory cal factors (offset + scale factor), and add our own over time
+  *  NOTE for calculating calibration params to official - use only "known good" values? (eg everything > threshold?)
+  *
+  * Datenstruktur zum Vergleich:
+  * metric: fieldname
+  *   temperature air_degC
+  *   humidity H2O_rel_percent
+  *   gas NO2_ugmp3 NO_ugpm3
+  *   particulate_matter pm10_ugpm3
+  *   pressure air_hPa
+  * tags: host=Graz-O P, operator=A15
+  *
+  * ug2
+*/
 
   /*
   @param raw_labels Array of Object structure matching data columns
@@ -290,20 +293,20 @@ export class outdoorAQComponent implements OnInit {
       '/_V$/',
       'sensor,serial'
     ); // +
-      // this.utHTTP.influxMeanQuery(
-      //   'pressure',
-      //   timeQuery,
-      //   {},
-      //   this.meanS,
-      //   '/air_hPa/'
-      // ) +
-      // this.utHTTP.influxMeanQuery(
-      //   'temperature',
-      //   timeQuery,
-      //   {},
-      //   this.meanS,
-      //   '/air_degC/'
-      // );
+    // this.utHTTP.influxMeanQuery(
+    //   'pressure',
+    //   timeQuery,
+    //   {},
+    //   this.meanS,
+    //   '/air_hPa/'
+    // ) +
+    // this.utHTTP.influxMeanQuery(
+    //   'temperature',
+    //   timeQuery,
+    //   {},
+    //   this.meanS,
+    //   '/air_degC/'
+    // );
 
     this.launchQuery(queries);
   }
@@ -392,10 +395,47 @@ export class outdoorAQComponent implements OnInit {
     idata = retUG.data
     this.raw_labels = retUG.raw_labels
     this.short_labels = retUG.short_labels
-    console.log('after raw labels:', cloneDeep(this.raw_labels));
-    console.log('after short labels:', cloneDeep(this.short_labels));
+
+    if (!this.show_V  || !this.show_ppb) {
+      let keep_columns = [0] // date
+      for (let i = 1; i < this.raw_labels.length; i++) { // with "Date" on pos 0
+        const field = this.raw_labels[i]['field']
+        if (this.show_V && field.endsWith("_V")) {
+          keep_columns.push(i)
+        } else if (this.show_ppb && field.endsWith("_ppb")) {
+          keep_columns.push(i)
+        } else if(!field.endsWith("_V") && !field.endsWith("_ppb")) {
+          keep_columns.push(i)
+        }
+      }
+      console.log("keeping only", keep_columns);
+
+      const new_raw_labels = [{ metric: "Date", tags: {}, field: "" }];
+      const new_short_labels = [];
+      for (let i = 1; i < keep_columns.length; i++) {
+        const c = keep_columns[i];
+        new_raw_labels.push(this.raw_labels[c])
+        new_short_labels.push(this.short_labels[c - 1])
+      }
+      const new_data = []
+      for (let r = 0; r < idata.length; r++) {
+        const new_row = []
+        for (let c = 0; c < keep_columns.length; c++) {
+          new_row.push(idata[r][keep_columns[c]])
+        }
+        new_data.push(new_row)
+      }
+      console.log("after -V", cloneDeep(new_data));
+
+      idata = new_data
+      this.raw_labels = new_raw_labels
+      this.short_labels = new_short_labels
+    }
+    console.log('after -V raw labels:', cloneDeep(this.raw_labels));
+    console.log('after -V short labels:', cloneDeep(this.short_labels));
 
     let logscale = true;
+    this.data = idata;
     this.labels = ['Date'].concat(this.short_labels);
     const newColors = this.h.getColorsforLabels(this.labels);
     const numColumns = this.raw_labels.length;
@@ -447,6 +487,8 @@ export class outdoorAQComponent implements OnInit {
     console.log(idata);
     this.changeTrigger += 1;
     this.queryRunning = false;
+
+
 
     if (!this.data || !this.data[0]) {
       return;

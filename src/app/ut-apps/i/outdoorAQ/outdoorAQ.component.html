@@ -133,6 +133,32 @@
             </button>
           </div>
         </fieldset>
+        <fieldset>
+          <ul>
+            <li>
+              <!-- (ngModelChange)="toggleShowV($event)"
+               (ngModelChange)="toggleShowPPB($event)"-->
+              <mat-checkbox
+              [(ngModel)]="show_V"
+              name="show_V"
+              labelPosition="after"
+
+            >
+              Show Volts
+            </mat-checkbox>
+            </li>
+            <li>
+              <mat-checkbox
+              [(ngModel)]="show_ppb"
+              name="show_ppb"
+              labelPosition="after"
+
+            >
+              Show PPB
+            </mat-checkbox>
+            </li>
+          </ul>
+        </fieldset>
       </form>
     </div>
     <div id="anyfooter">

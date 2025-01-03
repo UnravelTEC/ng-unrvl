@@ -1345,7 +1345,7 @@ export class HelperFunctionsService {
       const gas = field.replace(/_V$/, '').replace(/^mean_/, '').replace(/_[WA]E$/, '')
       if (!gas || gas.length == 0)
         continue;
-      console.log('convVtoPPB found gas field', field, 'in column', clabel);
+      // console.log('convVtoPPB found gas field', field, 'in column', clabel);
       const gastags = clabel['tags'];
       let serial = '';
       if (Object.prototype.hasOwnProperty.call(gastags, 'serial')) {
@@ -1362,19 +1362,18 @@ export class HelperFunctionsService {
       }
       V_columns.push(v_col);
     }
-
+    console.log("Voltage columns:", V_columns);
 
     for (let i = 0; i < V_columns.length; i++) {
       const gas_item = V_columns[i];
-      const serial = gas_item['serial']
-      const factor = calfactors[serial]['factor']
 
       if (gas_item['gas'] == 'O3+NO2')
         continue; // is handeled after all others, when NO2 is computed
 
+      const serial = gas_item['serial']
+      const factor = calfactors[serial]['factor']
       const new_raw_column_label = cloneDeep(raw_labels[gas_item['c']])
 
-      let first = false;
       if (gas_item['channeltype'] == 'diff') {
         const offset = calfactors[serial]['offset']
         console.log('convVtoPPB serial', serial, 'o', offset, 'f', factor);
@@ -1387,15 +1386,16 @@ export class HelperFunctionsService {
           .replace('( V )', "( ppb )")
           .replace('serial:', 'SRC: computed, serial:')); // hacky way to modify text
 
+        let first = true;
         for (let r = 0; r < data.length; r++) {
           const row = data[r];
           const g = row[gas_item['c']];
           let gas_ppb = NaN;
           if (Number.isFinite(g)) {
             gas_ppb = (g + offset) * factor
-            if (first == false) {
-              console.log('g', g, 'ppb', gas_ppb);
-              first = true;
+            if (first == true) {
+              console.log('first gas V:', g, 'ppb', gas_ppb);
+              first = false;
             }
           }
           row.push(gas_ppb)
@@ -1407,12 +1407,12 @@ export class HelperFunctionsService {
 
         const WE_index = gas_item['c']
         short_labels.push(short_labels[WE_index - 1]
-          .replace(' WE ( V )', "( ppb )")
+          .replace(' WE ( V )', " ( ppb )")
           .replace('serial:', 'SRC: diff, serial:')); // hacky way to modify text
 
         // search for AE column
         let AE_index = NaN;
-        for (let j = 1; j < V_columns.length; j++) { // AE its for sure not index 0
+        for (let j = 0; j < V_columns.length; j++) {
           const AE_col = V_columns[j]
           if (AE_col['serial'] == serial && AE_col['channeltype'] == "AE") {
             AE_index = AE_col['c'];
@@ -1422,6 +1422,7 @@ export class HelperFunctionsService {
 
         const WE_zero = calfactors[serial]['WE_zero']
         const AE_zero = calfactors[serial]['AE_zero']
+        let first = true;
         for (let r = 0; r < data.length; r++) {
           const row = data[r];
           const WE = row[WE_index];
@@ -1429,9 +1430,9 @@ export class HelperFunctionsService {
           let gas_ppb = NaN;
           if (Number.isFinite(WE) && Number.isFinite(AE)) {
             gas_ppb = ((WE - WE_zero) - (AE - AE_zero)) * factor
-            if (first == false) {
-              console.log('g', gas_item['gas'], 'ppb', gas_ppb);
-              first = true;
+            if (first == true) {
+              console.log('first gas', gas_item['gas'], 'ppb', gas_ppb);
+              first = false;
             }
           }
           row.push(gas_ppb)
@@ -1463,7 +1464,7 @@ export class HelperFunctionsService {
 
         // search for AE column
         let AE_index = NaN;
-        for (let j = 1; j < V_columns.length; j++) { // AE its for sure not index 0
+        for (let j = 0; j < V_columns.length; j++) {
           const AE_col = V_columns[j]
           if (AE_col['serial'] == serial && AE_col['channeltype'] == "AE") {
             AE_index = AE_col['c'];
@@ -1473,7 +1474,7 @@ export class HelperFunctionsService {
         const WE_zero = calfactors[serial]['WE_zero']
         const AE_zero = calfactors[serial]['AE_zero']
         const NO2_sensitivity = calfactors[serial]['NO2_sensitivity'] * calfactors[serial]['gain'] / 1000000 // -> V/ppb
-        console.log("OX sensor NO2_sensitivity:", NO2_sensitivity, 'mV/ppb');
+        console.log("OX sensor NO2_sensitivity:", NO2_sensitivity, 'V/ppb');
 
         // search for NO2 column
         let NO2_index = NaN;
@@ -1493,7 +1494,7 @@ export class HelperFunctionsService {
           const AE = row[AE_index];
           let gas_ppb = NaN;
           if (Number.isFinite(WE) && Number.isFinite(AE)) {
-            const gas_V = ((WE - WE_zero) - (AE - AE_zero))
+            const gas_V = (WE - WE_zero) - (AE - AE_zero)
             const NO2_V = row[NO2_index] * NO2_sensitivity
             if (first == false) {
               console.log('gas_V:', gas_V, 'NO2_V', NO2_V);
@@ -1512,7 +1513,7 @@ export class HelperFunctionsService {
   mol_masses = { 'NO2': 46.0055, 'CO': 28.010, 'NO': 30.006, 'O3': 47.997 }
   gas_constant = 8.314472
   convPPBtoUGPM3(data: Array<any>, Praw_labels: Array<Object>, Pshort_labels: Array<string>) {
-    const T = 20;
+    const T = 5;
     const tK = T + 273.15
     const P = 970;
     let factors = {}
