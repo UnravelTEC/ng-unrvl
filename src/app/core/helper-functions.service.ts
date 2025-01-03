@@ -1315,7 +1315,9 @@ export class HelperFunctionsService {
         'offset': 0.240 - 0.225,
         'WE_zero': 0.240,
         'AE_zero': 0.225,
-        'factor': 1000 / 0.354
+        'factor': 1000 / 0.354,
+        'NO2_sensitivity': -607.06, // nA / ppm
+        'gain': -0.73 // mV / nA
       },
       '162830053': { // CO bfg-lcair
         'offset': 0.352 - 0.332,
@@ -1361,14 +1363,18 @@ export class HelperFunctionsService {
       V_columns.push(v_col);
     }
 
-    let first = false;
+
     for (let i = 0; i < V_columns.length; i++) {
       const gas_item = V_columns[i];
       const serial = gas_item['serial']
       const factor = calfactors[serial]['factor']
 
+      if (gas_item['gas'] == 'O3+NO2')
+        continue; // is handeled after all others, when NO2 is computed
+
       const new_raw_column_label = cloneDeep(raw_labels[gas_item['c']])
 
+      let first = false;
       if (gas_item['channeltype'] == 'diff') {
         const offset = calfactors[serial]['offset']
         console.log('convVtoPPB serial', serial, 'o', offset, 'f', factor);
@@ -1431,6 +1437,75 @@ export class HelperFunctionsService {
           row.push(gas_ppb)
         }
       } // AE is handled above
+    }
+
+    // O3
+    for (let i = 0; i < V_columns.length; i++) {
+      const gas_item = V_columns[i];
+      if (gas_item['gas'] != 'O3+NO2')
+        continue;
+
+      const serial = gas_item['serial']
+      const factor = calfactors[serial]['factor']
+      const new_raw_column_label = cloneDeep(raw_labels[gas_item['c']])
+      if (gas_item['channeltype'] == 'diff') {
+        const offset = calfactors[serial]['offset']
+        // console.log('convVtoPPB serial', serial, 'o', offset, 'f', factor);
+      } else if (gas_item['channeltype'] == 'WE') {
+        new_raw_column_label['field'] = new_raw_column_label['field'].replace(/O3\+NO2_WE_V/, "O3_ppb")
+        new_raw_column_label['tags']['SRC'] = 'diff'
+        raw_labels.push(new_raw_column_label);
+
+        const WE_index = gas_item['c']
+        short_labels.push(short_labels[WE_index - 1]
+          .replace('O₃ / NO₂ WE ( V )', "O₃ ( ppb )")
+          .replace('serial:', 'SRC: diff, serial:')); // hacky way to modify text
+
+        // search for AE column
+        let AE_index = NaN;
+        for (let j = 1; j < V_columns.length; j++) { // AE its for sure not index 0
+          const AE_col = V_columns[j]
+          if (AE_col['serial'] == serial && AE_col['channeltype'] == "AE") {
+            AE_index = AE_col['c'];
+            break
+          }
+        }
+        const WE_zero = calfactors[serial]['WE_zero']
+        const AE_zero = calfactors[serial]['AE_zero']
+        const NO2_sensitivity = calfactors[serial]['NO2_sensitivity'] * calfactors[serial]['gain'] / 1000000 // -> V/ppb
+        console.log("OX sensor NO2_sensitivity:", NO2_sensitivity, 'mV/ppb');
+
+        // search for NO2 column
+        let NO2_index = NaN;
+        for (let j = 0; j < raw_labels.length; j++) {
+          const NO2_col = raw_labels[j]
+          if (NO2_col['field'] == "NO2_ppb") {
+            // console.log('found NO col', NO2_col);
+            NO2_index = j;
+            break
+          }
+        }
+
+        let first = false;
+        for (let r = 0; r < data.length; r++) {
+          const row = data[r];
+          const WE = row[WE_index];
+          const AE = row[AE_index];
+          let gas_ppb = NaN;
+          if (Number.isFinite(WE) && Number.isFinite(AE)) {
+            const gas_V = ((WE - WE_zero) - (AE - AE_zero))
+            const NO2_V = row[NO2_index] * NO2_sensitivity
+            if (first == false) {
+              console.log('gas_V:', gas_V, 'NO2_V', NO2_V);
+              first = true;
+            }
+            const O3_V = gas_V - NO2_V
+            gas_ppb = O3_V * factor
+          }
+          row.push(gas_ppb)
+        }
+      }
+
     }
     return { 'data': data, 'short_labels': short_labels, 'raw_labels': raw_labels }
   }
