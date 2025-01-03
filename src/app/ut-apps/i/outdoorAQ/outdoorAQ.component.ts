@@ -388,6 +388,10 @@ export class outdoorAQComponent implements OnInit {
     idata = retPPB.data
     this.raw_labels = retPPB.raw_labels
     this.short_labels = retPPB.short_labels
+    const retUG = this.h.convPPBtoUGPM3(idata, this.raw_labels, this.short_labels)
+    idata = retUG.data
+    this.raw_labels = retUG.raw_labels
+    this.short_labels = retUG.short_labels
     console.log('after raw labels:', cloneDeep(this.raw_labels));
     console.log('after short labels:', cloneDeep(this.short_labels));
 

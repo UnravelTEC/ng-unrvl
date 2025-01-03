@@ -1297,9 +1297,11 @@ export class HelperFunctionsService {
 
     return { "data": newdata, "raw_labels": new_raw_labels, "short_labels": new_short_labels }
   }
+  mergeWEAE(data: Array<any>, Praw_labels: Array<Object>, Pshort_labels: Array<string>) {
+
+  }
   convVtoPPB(data: Array<any>, Praw_labels: Array<Object>, Pshort_labels: Array<string>) {
-    // 1. search for all _V source inputs
-    const V_columns = []; // {'c': $nr_column, 'gas': "$gas_string", 'serial': $nr }
+
     const calfactors = {
       '212460428': { // Sensor serial nr.
         'offset': 0.002, // difference WE - AUX in V
@@ -1325,10 +1327,11 @@ export class HelperFunctionsService {
     }
     const raw_labels = cloneDeep(Praw_labels)
     const short_labels = cloneDeep(Pshort_labels)
-
+    // 1. search for all _V source inputs
+    const V_columns = []; // {'c': $nr_column, 'gas': "$gas_string", 'serial': $nr }
     for (let i = 1; i < raw_labels.length; i++) { // col 0: Date
       const clabel = raw_labels[i];
-      if (clabel['metric'] != 'gas' || !clabel['field'].endsWith('_V'))
+      if (clabel['metric'] != 'gas' || !clabel['field'].endsWith('_V') || clabel['field'].endsWith('E_V')) // single WE/AE channels
         continue;
       const gas = clabel['field'].replace(/_V$/, '').replace(/^mean_/, '')
       if (!gas || gas.length == 0)
@@ -1381,7 +1384,15 @@ export class HelperFunctionsService {
   gas_constant = 8.314472
   convPPBtoUGPM3(data: Array<any>, Praw_labels: Array<Object>, Pshort_labels: Array<string>) {
     const T = 20;
+    const tK = T + 273.15
     const P = 970;
+    let factors = {}
+    for (const gas in this.mol_masses) {
+      if (Object.prototype.hasOwnProperty.call(this.mol_masses, gas)) {
+        const mm = this.mol_masses[gas];
+        factors[gas] = 0.1 * mm / this.gas_constant
+      }
+    }
 
     const ppb_columns = [];
     const raw_labels = cloneDeep(Praw_labels)
@@ -1406,29 +1417,30 @@ export class HelperFunctionsService {
     let first = false;
     for (let i = 0; i < ppb_columns.length; i++) {
       const gas_item = ppb_columns[i];
-      const mol_mass = this.mol_masses[gas_item['gas']]
-      console.log('convPPBtoUGPM3', gas_item['gas'], 'has mol mass', mol_mass);
+      const gas = gas_item['gas']
+      const mol_mass = this.mol_masses[gas]
+      const factor = factors[gas]
+      console.log('convPPBtoUGPM3', gas, 'has mol mass', mol_mass);
 
       const new_raw_column_label = cloneDeep(raw_labels[gas_item['c']])
       new_raw_column_label['field'] = new_raw_column_label['field'].replace(/_ppb/, "_ugpm3")
       new_raw_column_label['tags']['SRC'] = 'computed'
       raw_labels.push(new_raw_column_label);
       short_labels.push(short_labels[gas_item['c'] - 1]
-        .replace('( ppb )', "( µg / m³ )")
-        .replace(' NO', ' SRC: computed, NO')); // hacky way to modify text
+        .replace('( ppb )', "( µg / m³ )"))
 
       for (let r = 0; r < data.length; r++) {
         const row = data[r];
-        const g = row[gas_item['c']];
-        let gas_ppb = NaN;
-        if (Number.isFinite(g)) {
-          gas_ppb = g
+        const gas_ppb = row[gas_item['c']];
+        let gas_ugpm3 = NaN
+        if (Number.isFinite(gas_ppb)) {
+          gas_ugpm3 = gas_ppb * P * factor / tK
           if (first == false) {
-            console.log('g', g, 'ppb', gas_ppb);
+            console.log('g', gas, 'ppb', gas_ppb, 'µg', gas_ugpm3);
             first = true;
           }
         }
-        row.push(gas_ppb)
+        row.push(gas_ugpm3)
       }
     }
     return { 'data': data, 'short_labels': short_labels, 'raw_labels': raw_labels }
