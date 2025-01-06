@@ -232,15 +232,39 @@ export class GlobalSettingsService implements OnInit {
   }
   initializeInfluxCreds() {
     if (this.server.protocol == 'http') {
-      this.server.influxdb = 'telegraf';
-      this.server.influxuser = '';
-      this.server.influxpass = '';
-      console.log(
-        'initializeInfluxCreds: http -> no auth, db',
-        this.server.influxdb
-      );
-      this.triggerDBScan();
-      return;
+      if (this.server.influxVersion.startsWith("1")) {
+        this.server.influxdb = 'telegraf';
+        this.server.influxuser = '';
+        this.server.influxpass = '';
+        console.log(
+          'initializeInfluxCreds: no auth, db',
+          this.server.influxdb
+        );
+        this.triggerDBScan();
+        return;
+      }
+      if (this.server.influxVersion.startsWith("2")) {
+        this.server.influxdb = 'telegraf';
+        const lsinfluxuser = this.localStorage.get('influxuser');
+        const lsinfluxpass = this.localStorage.get('influxpass');
+
+        if (lsinfluxuser && lsinfluxpass) {
+          this.server.influxuser = lsinfluxuser;
+          this.server.influxpass = lsinfluxpass;
+          console.log(
+            'initializeInfluxCreds from localStorage:',
+            lsinfluxuser,
+            lsinfluxpass
+          );
+          this.triggerDBScan();
+          return;
+        }
+        if (!lsinfluxuser) {
+          this.server.influxuser = 'admin';
+        }
+        alert('Please enter Influx credentials to continue.')
+        return;
+      }
     }
     const lsinfluxdb = this.localStorage.get('influxdb');
     const lsinfluxuser = this.localStorage.get('influxuser');
@@ -550,7 +574,7 @@ export class GlobalSettingsService implements OnInit {
       this.checkForInfluxCounter = 0;
 
       console.log('SUCCESS: Influx health:', data);
-      this.server.influxVersion = data['version'];
+      this.server.influxVersion = data['version'].replace(/v/, ''); // influx 2 returns version with v at beginning
       this.initializeInfluxCreds();
     } else {
       this.emitChange({ status: '' });
@@ -576,7 +600,7 @@ export class GlobalSettingsService implements OnInit {
       }
     });
   }
-  updateLocalAddresses(addr) {}
+  updateLocalAddresses(addr) { }
 
   stripProtPort(input: string) {
     input = input.replace(/^http[s]*:\/\//, '');

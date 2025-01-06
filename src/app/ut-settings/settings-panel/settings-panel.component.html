@@ -69,7 +69,7 @@
   </section>
 </div>
 
-<div *ngIf="gss.server.type == 'PublicServer'">
+<div *ngIf="gss.server.type == 'PublicServer' || gss.server.influxVersion[0] == '2'">
   <section>
     <section>
       <app-influxsettings></app-influxsettings>
@@ -112,11 +112,11 @@
     <h2>Database</h2>
     <p>Status: {{ gss.server.databaseStatus }} </p>
     <p>Version: {{  gss.server.influxVersion ? 'Influx v' + gss.server.influxVersion : '' }} </p>
-    <div>Disk: 
+    <div>Disk:
       <ul *ngIf="dbstats">
         <li *ngFor="let entry of dbstats | keyvalue">{{ entry.key }}: {{ entry.value }}</li>
       </ul>
-      <button (click)="wipeDB()">Wipe</button> 
+      <button (click)="wipeDB()">Wipe</button>
     </div>
     <p>Retention time: {{ retentionTime == "0s" ? "Infinite" : retentionTime }} <span *ngIf="retentionTime && retentionTime != '0s'">({{ retentionTimeD }} days or {{ retentionTimeW }} weeks)</span>&nbsp;&nbsp;|&nbsp;Set new:&nbsp;&nbsp;
         <input
@@ -133,7 +133,7 @@
           >
             <mat-option value="d">days</mat-option>
             <mat-option selected="selected" value="w"> weeks</mat-option>
-      
+
           </mat-select>
         </mat-form-field>
         <button (click)="setRetentionTime()">Set</button>
