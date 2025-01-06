@@ -29,6 +29,8 @@ OPTIONS:
   -h -help --help     this help text
 
   {target}            hostname, required
+                        Special keyword "ngbeta"
+                        Special keyword "deb"
   [path]              optional (defaults to $target_path)
 
 EOH
