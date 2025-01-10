@@ -1405,9 +1405,17 @@ export class HelperFunctionsService {
         new_raw_column_label['tags']['SRC'] = 'diff'
         raw_labels.push(new_raw_column_label);
 
+        const new_diff_column_label = cloneDeep(raw_labels[gas_item['c']])
+        new_diff_column_label['field'] = new_diff_column_label['field'].replace(/_WE_V/, "_V")
+        new_diff_column_label['tags']['SRC'] = 'diff'
+        raw_labels.push(new_diff_column_label);
+
         const WE_index = gas_item['c']
         short_labels.push(short_labels[WE_index - 1]
           .replace(' WE ( V )', " ( ppb )")
+          .replace('serial:', 'SRC: diff, serial:')); // hacky way to modify text
+        short_labels.push(short_labels[WE_index - 1]
+          .replace(' WE ( V )', " ( V )")
           .replace('serial:', 'SRC: diff, serial:')); // hacky way to modify text
 
         // search for AE column
@@ -1428,14 +1436,17 @@ export class HelperFunctionsService {
           const WE = row[WE_index];
           const AE = row[AE_index];
           let gas_ppb = NaN;
+          let gas_diff_V = NaN;
           if (Number.isFinite(WE) && Number.isFinite(AE)) {
-            gas_ppb = ((WE - WE_zero) - (AE - AE_zero)) * factor
+            gas_diff_V = (WE - WE_zero) - (AE - AE_zero)
+            gas_ppb = gas_diff_V * factor
             if (first == true) {
               console.log('first gas', gas_item['gas'], 'ppb', gas_ppb);
               first = false;
             }
           }
           row.push(gas_ppb)
+          row.push(gas_diff_V)
         }
       } // AE is handled above
     }
@@ -1457,9 +1468,17 @@ export class HelperFunctionsService {
         new_raw_column_label['tags']['SRC'] = 'diff'
         raw_labels.push(new_raw_column_label);
 
+        const new_diff_column_label = cloneDeep(raw_labels[gas_item['c']])
+        new_diff_column_label['field'] = new_diff_column_label['field'].replace(/_WE_V/, "_V")
+        new_diff_column_label['tags']['SRC'] = 'diff'
+        raw_labels.push(new_diff_column_label);
+
         const WE_index = gas_item['c']
         short_labels.push(short_labels[WE_index - 1]
           .replace('O₃ / NO₂ WE ( V )', "O₃ ( ppb )")
+          .replace('serial:', 'SRC: diff, serial:')); // hacky way to modify text
+        short_labels.push(short_labels[WE_index - 1]
+          .replace('O₃ / NO₂ WE ( V )', "O₃ / NO₂ ( V )")
           .replace('serial:', 'SRC: diff, serial:')); // hacky way to modify text
 
         // search for AE column
@@ -1493,17 +1512,19 @@ export class HelperFunctionsService {
           const WE = row[WE_index];
           const AE = row[AE_index];
           let gas_ppb = NaN;
+          let gas_alldiff_V = NaN;
           if (Number.isFinite(WE) && Number.isFinite(AE)) {
-            const gas_V = (WE - WE_zero) - (AE - AE_zero)
+            gas_alldiff_V = (WE - WE_zero) - (AE - AE_zero)
             const NO2_V = row[NO2_index] * NO2_sensitivity
             if (first == false) {
-              console.log('gas_V:', gas_V, 'NO2_V', NO2_V);
+              console.log('gas_V:', gas_alldiff_V, 'NO2_V', NO2_V);
               first = true;
             }
-            const O3_V = gas_V - NO2_V
+            const O3_V = gas_alldiff_V - NO2_V
             gas_ppb = O3_V * factor
           }
           row.push(gas_ppb)
+          row.push(gas_alldiff_V)
         }
       }
 
