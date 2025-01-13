@@ -356,52 +356,53 @@ style.padding-bottom="20vh"-->
           </small>
           <table>
             <tr>
-              <th *ngFor="let label of dyGraphOptions['labels']">
-                {{ label === 'Date' ? 'Averages' : label }}
-              </th>
+              <ng-container *ngFor="let label of dyGraphOptions['labels']; let i=index;">
+                <th *ngIf="i == 0 || dyGraphOptions['visibility'][i-1]">
+                  {{ label === 'Date' ? '' : label }}
+                </th>
+              </ng-container>
               <th>All Series</th>
             </tr>
             <tr>
-              <td>Whole Dataset:</td>
-              <td *ngFor="let mean of averages">
-                {{ mean | number : pipeAvgFormat }}
-              </td>
+              <td>Average (All):</td>
+              <ng-container *ngFor="let mean of averages; let i=index;">
+                <td *ngIf="dyGraphOptions['visibility'][i]">
+                  {{ mean | number : pipeAvgFormat }}
+                </td>
+              </ng-container>
               <td>
                 {{ average | number : pipeAvgFormat }}
               </td>
             </tr>
             <tr>
-              <td>Visible Dataset:</td>
-              <td *ngFor="let mean of visibleAverages">
-                {{ mean | number : pipeAvgFormat }}
-              </td>
+              <td>Average (Visible):</td>
+              <ng-container *ngFor="let mean of visibleAverages; let i=index;">
+                <td *ngIf="dyGraphOptions['visibility'][i]">
+                  {{ mean | number : pipeAvgFormat }}
+                </td>
+              </ng-container>
               <td>
                 {{ visibleAverage | number : pipeAvgFormat }}
               </td>
             </tr>
-          </table>
-
-          <table>
-            <tr>
-              <th *ngFor="let label of dyGraphOptions['labels']">
-                {{ label === 'Date' ? 'Std. Deviations' : label }}
-              </th>
-              <th>All Series</th>
-            </tr>
-            <tr>
-              <td>Whole Dataset:</td>
-              <td *ngFor="let dev of stdDevs">
-                {{ dev | number : pipeStdDevFormat }}
-              </td>
+                 <tr>
+              <td>Std. Dev (All):</td>
+              <ng-container *ngFor="let dev of stdDevs; let i=index;">
+                <td *ngIf="dyGraphOptions['visibility'][i]">
+                  {{ dev | number : pipeStdDevFormat }}
+                </td>
+              </ng-container>
               <td>
                 {{ stdDev | number : pipeStdDevFormat }}
               </td>
             </tr>
             <tr>
-              <td>Visible Dataset:</td>
-              <td *ngFor="let dev of visibleStdDevs">
-                {{ dev | number : pipeStdDevFormat }}
-              </td>
+              <td>Std. Dev (Visible):</td>
+              <ng-container *ngFor="let dev of visibleStdDevs; let i=index;">
+                <td *ngIf="dyGraphOptions['visibility'][i]">
+                  {{ dev | number : pipeStdDevFormat }}
+                </td>
+              </ng-container>
               <td>
                 {{ visibleStdDev | number : pipeStdDevFormat }}
               </td>

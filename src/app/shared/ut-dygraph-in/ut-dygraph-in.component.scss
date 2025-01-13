@@ -656,11 +656,17 @@ div.optionsarea {
           th:first-child,
           td:first-child {
             border-left: 0;
+            width: 8em;
           }
 
           th {
             text-align: left;
-            border-bottom: 1px solid black;
+          }
+          td {
+            border-top: 1px solid black;
+          }
+          tr:hover td {
+            background-color: #3f3f3f;
           }
         }
       }
