@@ -1462,7 +1462,47 @@ export class HelperFunctionsService {
       const new_raw_column_label = cloneDeep(raw_labels[gas_item['c']])
       if (gas_item['channeltype'] == 'diff') {
         const offset = calfactors[serial]['offset']
-        // console.log('convVtoPPB serial', serial, 'o', offset, 'f', factor);
+        console.log('convVtoPPB serial', serial, 'o', offset, 'f', factor);
+        new_raw_column_label['field'] = new_raw_column_label['field'].replace(/O3\+NO2_V/, "O3_ppb")
+        new_raw_column_label['tags']['SRC'] = 'computed'
+        raw_labels.push(new_raw_column_label);
+
+        short_labels.push(short_labels[gas_item['c'] - 1]
+          .replace('O₃ / NO₂ ( V )', "O₃ ( ppb )")
+          .replace('serial:', 'SRC: computed, serial:')); // hacky way to modify text
+
+        const NO2_sensitivity = calfactors[serial]['NO2_sensitivity'] * calfactors[serial]['gain'] / 1000000 // -> V/ppb
+        console.log("OX sensor NO2_sensitivity:", NO2_sensitivity, 'V/ppb');
+
+        const OX_index = gas_item['c']
+        // search for NO2 column
+        let NO2_index = NaN;
+        for (let j = 0; j < raw_labels.length; j++) {
+          const NO2_col = raw_labels[j]
+          if (NO2_col['field'] == "NO2_ppb") {
+            // console.log('found NO col', NO2_col);
+            NO2_index = j;
+            break
+          }
+        }
+
+        let first = false;
+        for (let r = 0; r < data.length; r++) {
+          const row = data[r];
+          const OX = row[OX_index];
+
+          if (Number.isFinite(OX) && Number.isFinite(row[NO2_index])) {
+            const NO2_V = row[NO2_index] * NO2_sensitivity
+            if (first == false) {
+              console.log('gas_V:', OX, 'NO2_V', NO2_V);
+              first = true;
+            }
+            const O3_V = OX - NO2_V
+            row.push(O3_V * factor)
+          } else
+            row.push(NaN)
+        }
+
       } else if (gas_item['channeltype'] == 'WE') {
         new_raw_column_label['field'] = new_raw_column_label['field'].replace(/O3\+NO2_WE_V/, "O3_ppb")
         new_raw_column_label['tags']['SRC'] = 'diff'
