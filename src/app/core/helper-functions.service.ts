@@ -921,7 +921,7 @@ export class HelperFunctionsService {
   createHRTimeString(seconds) {
     // human-readable
     const currentMS = Math.round((seconds % 1) * 1000);
-    const textMS = currentMS ? String(currentMS) + 'ms' : '';
+    const textMS = currentMS ? String(currentMS) + ' ms' : '';
     const currentSeconds = Math.floor(seconds);
     const displayedSeconds = currentSeconds % 60;
     const textSeconds = displayedSeconds ? String(displayedSeconds) + '" ' : '';
@@ -932,10 +932,10 @@ export class HelperFunctionsService {
 
     const currentHours = Math.floor(currentMinutes / 60);
     const displayedHours = currentHours % 24;
-    const textHours = displayedHours ? String(displayedHours) + 'h ' : '';
+    const textHours = displayedHours ? String(displayedHours) + ' h ' : '';
 
     const currentDays = Math.floor(currentHours / 24);
-    const textDays = currentDays ? String(currentDays) + 'd ' : '';
+    const textDays = currentDays ? String(currentDays) + ' d ' : '';
 
     return (textDays + textHours + textMinutes + textSeconds + textMS).trim();
   }
