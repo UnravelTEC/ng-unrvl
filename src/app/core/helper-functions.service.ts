@@ -1300,19 +1300,22 @@ export class HelperFunctionsService {
 
   convVtoPPB(data: Array<any>, Praw_labels: Array<Object>, Pshort_labels: Array<string>) {
 
+    // V = (WE - WE_zero) - (AE - AE_zero)
+    // V = WE - AE - WE_zero + AE_zero
+    // V = WE - AE + (AE_zero - WE_zero)
     const calfactors = {
       '212460428': { // Sensor serial nr.
-        'offset': 0.002, // difference WE - AUX in V
-        'factor': 4550 // 4.55 *1000 for mV - V   : 1000 / sensitivity (mV/ppb)
+        'offset': 0.002, // AE_zero - WE_zero
+        'factor': 4550 // 4.55 *1000 for mV - V   : 1000 / sensitivity [mV/ppb] = ppb/V
       },
       '202180519': { // NO2-B43F bfg-lcair
-        'offset': 0.228 - 0.232,
+        'offset': 0.232 - 0.228,
         'WE_zero': 0.228,
         'AE_zero': 0.232,
-        'factor': 1000 / 0.207
+        'factor': 1000 / 0.207 // ppb/V
       },
       '204831253': { // OX bfg-lcair
-        'offset': 0.240 - 0.225,
+        'offset': 0.225 - 0.240,
         'WE_zero': 0.240,
         'AE_zero': 0.225,
         'factor': 1000 / 0.354,
@@ -1320,13 +1323,13 @@ export class HelperFunctionsService {
         'gain': -0.73 // mV / nA
       },
       '162830053': { // CO bfg-lcair
-        'offset': 0.352 - 0.332,
+        'offset': 0.332 - 0.352,
         'WE_zero': 0.352,
         'AE_zero': 0.332,
         'factor': 1000 / 0.493
       },
       '160910951': { // NO bfg-lcair
-        'offset': 0.278 - 0.276,
+        'offset': 0.276 - 0.278,
         'WE_zero': 0.278,
         'AE_zero': 0.276,
         'factor': 1000 / 0.645
@@ -1376,7 +1379,7 @@ export class HelperFunctionsService {
 
       if (gas_item['channeltype'] == 'diff') {
         const offset = calfactors[serial]['offset']
-        console.log('convVtoPPB serial', serial, 'o', offset, 'f', factor);
+        console.log('convVtoPPB',gas_item['gas'],'serial', serial, 'o', this.roundAccurately(offset, 4), 'f', this.roundAccurately(factor, 3));
 
         new_raw_column_label['field'] = new_raw_column_label['field'].replace(/_V/, "_ppb")
         new_raw_column_label['tags']['SRC'] = 'computed'
@@ -1462,7 +1465,7 @@ export class HelperFunctionsService {
       const new_raw_column_label = cloneDeep(raw_labels[gas_item['c']])
       if (gas_item['channeltype'] == 'diff') {
         const offset = calfactors[serial]['offset']
-        console.log('convVtoPPB serial', serial, 'o', offset, 'f', factor);
+        console.log('convVtoPPB OX serial', serial, 'o', this.roundAccurately(offset, 4), 'f', this.roundAccurately(factor, 3));
         new_raw_column_label['field'] = new_raw_column_label['field'].replace(/O3\+NO2_V/, "O3_ppb")
         new_raw_column_label['tags']['SRC'] = 'computed'
         raw_labels.push(new_raw_column_label);
