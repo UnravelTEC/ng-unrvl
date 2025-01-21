@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "1ec9ed4",
-  "SHA": "1ec9ed42d5a6f0b094b84bc609d6f55d8e98dd47",
+  "shortSHA": "05121ff",
+  "SHA": "05121ff239614135e26c51339680ba658cef91d7",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Mon Jan 6 18:06:38 2025 +0100",
-  "lastCommitMessage": "a little more help",
-  "lastCommitNumber": "1530"
+  "lastCommitTime": "Fri Jan 17 16:56:11 2025 +0100",
+  "lastCommitMessage": "calc O3 ppb too from diff source",
+  "lastCommitNumber": "1535"
 }

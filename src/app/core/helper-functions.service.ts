@@ -1379,7 +1379,7 @@ export class HelperFunctionsService {
 
       if (gas_item['channeltype'] == 'diff') {
         const offset = calfactors[serial]['offset']
-        console.log('convVtoPPB',gas_item['gas'],'serial', serial, 'o', this.roundAccurately(offset, 4), 'f', this.roundAccurately(factor, 3));
+        console.log('convVtoPPB', gas_item['gas'], 'serial', serial, 'o', this.roundAccurately(offset, 4), 'f', this.roundAccurately(factor, 3));
 
         new_raw_column_label['field'] = new_raw_column_label['field'].replace(/_V/, "_ppb")
         new_raw_column_label['tags']['SRC'] = 'computed'
@@ -1577,9 +1577,9 @@ export class HelperFunctionsService {
   mol_masses = { 'NO2': 46.0055, 'CO': 28.010, 'NO': 30.006, 'O3': 47.997 }
   gas_constant = 8.314472
   convPPBtoUGPM3(data: Array<any>, Praw_labels: Array<Object>, Pshort_labels: Array<string>) {
-    const T = 5;
-    const tK = T + 273.15
-    const P = 970;
+    let T = 5;
+    let tK = T + 273.15
+    let P = 970;
     let factors = {}
     for (const gas in this.mol_masses) {
       if (Object.prototype.hasOwnProperty.call(this.mol_masses, gas)) {
@@ -1591,9 +1591,19 @@ export class HelperFunctionsService {
     const ppb_columns = [];
     const raw_labels = cloneDeep(Praw_labels)
     const short_labels = cloneDeep(Pshort_labels)
+    let t_col = undefined;
+    let p_col = undefined;
 
     for (let i = 1; i < raw_labels.length; i++) { // col 0: Date
       const clabel = raw_labels[i];
+      if (clabel['metric'] == 'pressure' && clabel['field'] == 'air_hPa') {
+        p_col = i
+        continue
+      }
+      if (clabel['metric'] == 'temperature' && clabel['field'] == 'air_degC') {
+        t_col = i
+        continue
+      }
       if (clabel['metric'] != 'gas' || !clabel['field'].endsWith('_ppb'))
         continue;
       const gas = clabel['field'].replace(/_ppb$/, '').replace(/^mean_/, '')
@@ -1606,6 +1616,9 @@ export class HelperFunctionsService {
       console.log('convPPBtoUGPM3 found gas', gas, 'in column', clabel);
 
       ppb_columns.push({ 'c': i, 'gas': gas.toUpperCase() });
+    }
+    if (t_col || p_col) {
+      console.log('using temperature from col', t_col, 'and pressure from col', p_col);
     }
 
     let first = false;
@@ -1626,6 +1639,13 @@ export class HelperFunctionsService {
       for (let r = 0; r < data.length; r++) {
         const row = data[r];
         const gas_ppb = row[gas_item['c']];
+        if(p_col && !isNaN(row[p_col]) && row[p_col] != null) { // if no T or P data (happens if time res <1s), use last one (dont care in ms range)
+          P = row[p_col]
+        }
+        if (t_col && !isNaN(row[t_col]) && row[t_col] != null) {
+          T = row[t_col]
+          tK = T + 273.15
+        }
         let gas_ugpm3 = NaN
         if (Number.isFinite(gas_ppb)) {
           gas_ugpm3 = gas_ppb * P * factor / tK

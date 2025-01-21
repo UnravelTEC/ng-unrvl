@@ -54,7 +54,7 @@ export class outdoorAQComponent implements OnInit {
   public userStartTime = this.startTime;
   public meanS = 30;
   public currentres = 0;
-  public currentresText = '0s';
+  public currentresText = '0&thinsp;s';
   public userMeanS = this.meanS;
   public fromTime: Date;
   public toTime: Date;
@@ -292,21 +292,21 @@ export class outdoorAQComponent implements OnInit {
       this.meanS,
       '/_V$/',
       'sensor,serial'
-    ); // +
-    // this.utHTTP.influxMeanQuery(
-    //   'pressure',
-    //   timeQuery,
-    //   {},
-    //   this.meanS,
-    //   '/air_hPa/'
-    // ) +
-    // this.utHTTP.influxMeanQuery(
-    //   'temperature',
-    //   timeQuery,
-    //   {},
-    //   this.meanS,
-    //   '/air_degC/'
-    // );
+    ) +
+      this.utHTTP.influxMeanQuery(
+        'pressure',
+        timeQuery,
+        {},
+        this.meanS,
+        '/air_hPa/'
+      ) +
+      this.utHTTP.influxMeanQuery(
+        'temperature',
+        timeQuery,
+        {},
+        this.meanS,
+        '/air_degC/'
+      );
 
     this.launchQuery(queries);
   }
@@ -376,7 +376,7 @@ export class outdoorAQComponent implements OnInit {
     console.log('common_label:', ret['common_label']);
     console.log('short_labels:', ret['short_labels']);
 
-    // FIXME this.h.unifyColumns scrambles labels!
+    // FIXME this.h.unifyColumns scrambles labels! # Let Influx do the merge!
     // const retNO = this.h.unifyColumns(/NO_V$/, idata, this.short_labels, this.raw_labels, this.labelBlackListT);
     // const retNO2 = this.h.unifyColumns(/ NO2_V$/, retNO["data"], retNO["short_labels"], retNO["raw_labels"], this.labelBlackListT);
     // const retCO = this.h.unifyColumns(/ CO_V$/, retNO2["data"], retNO2["short_labels"], retNO2["raw_labels"], this.labelBlackListT);
@@ -396,41 +396,44 @@ export class outdoorAQComponent implements OnInit {
     this.raw_labels = retUG.raw_labels
     this.short_labels = retUG.short_labels
 
-    if (!this.show_V  || !this.show_ppb) {
-      let keep_columns = [0] // date
-      for (let i = 1; i < this.raw_labels.length; i++) { // with "Date" on pos 0
-        const field = this.raw_labels[i]['field']
-        if (this.show_V && field.endsWith("_V")) {
-          keep_columns.push(i)
-        } else if (this.show_ppb && field.endsWith("_ppb")) {
-          keep_columns.push(i)
-        } else if(!field.endsWith("_V") && !field.endsWith("_ppb")) {
-          keep_columns.push(i)
-        }
-      }
-      console.log("keeping only", keep_columns);
 
-      const new_raw_labels = [{ metric: "Date", tags: {}, field: "" }];
-      const new_short_labels = [];
-      for (let i = 1; i < keep_columns.length; i++) {
-        const c = keep_columns[i];
-        new_raw_labels.push(this.raw_labels[c])
-        new_short_labels.push(this.short_labels[c - 1])
+    let keep_columns = [0] // date
+    for (let i = 1; i < this.raw_labels.length; i++) { // with "Date" on pos 0
+      const field = this.raw_labels[i]['field']
+      if (field.endsWith('_degC') || field.endsWith('_hPa')) {
+        continue;
       }
-      const new_data = []
-      for (let r = 0; r < idata.length; r++) {
-        const new_row = []
-        for (let c = 0; c < keep_columns.length; c++) {
-          new_row.push(idata[r][keep_columns[c]])
-        }
-        new_data.push(new_row)
+      if (this.show_V && field.endsWith("_V")) {
+        keep_columns.push(i)
+      } else if (this.show_ppb && field.endsWith("_ppb")) {
+        keep_columns.push(i)
+      } else if (!field.endsWith("_V") && !field.endsWith("_ppb")) {
+        keep_columns.push(i)
       }
-      console.log("after -V", cloneDeep(new_data));
-
-      idata = new_data
-      this.raw_labels = new_raw_labels
-      this.short_labels = new_short_labels
     }
+    console.log("keeping only", keep_columns);
+
+    const new_raw_labels = [{ metric: "Date", tags: {}, field: "" }];
+    const new_short_labels = [];
+    for (let i = 1; i < keep_columns.length; i++) {
+      const c = keep_columns[i];
+      new_raw_labels.push(this.raw_labels[c])
+      new_short_labels.push(this.short_labels[c - 1])
+    }
+    const new_data = []
+    for (let r = 0; r < idata.length; r++) {
+      const new_row = []
+      for (let c = 0; c < keep_columns.length; c++) {
+        new_row.push(idata[r][keep_columns[c]])
+      }
+      new_data.push(new_row)
+    }
+    console.log("after -V", cloneDeep(new_data));
+
+    idata = new_data
+    this.raw_labels = new_raw_labels
+    this.short_labels = new_short_labels
+
     console.log('after -V raw labels:', cloneDeep(this.raw_labels));
     console.log('after -V short labels:', cloneDeep(this.short_labels));
 
