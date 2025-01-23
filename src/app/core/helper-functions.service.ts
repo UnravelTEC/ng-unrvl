@@ -1308,6 +1308,14 @@ export class HelperFunctionsService {
         'offset': 0.002, // AE_zero - WE_zero
         'factor': 4550 // 4.55 *1000 for mV - V   : 1000 / sensitivity [mV/ppb] = ppb/V
       },
+      '202180518': { // NO2-B43F ut-lcair
+        'offset': 0.224 - 0.239, // -15mV
+        'WE_zero': 0.239,
+        'WE_elzero': 0.239,
+        'AE_zero': 0.220,
+        'AE_elzero': 0.224,
+        'factor': 1000 / 0.202 // ppb/V
+      },
       '202180519': { // NO2-B43F bfg-lcair
         'offset': 0.232 - 0.228,
         'WE_zero': 0.228,
