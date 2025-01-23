@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
 import { formatDate } from '@angular/common';
 import * as FileSaver from 'file-saver';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep, first } from 'lodash-es';
 
 @Injectable({
   providedIn: 'root',
@@ -1240,7 +1240,7 @@ export class HelperFunctionsService {
           newdata.push([data[r][0]])
         }
         new_raw_labels.push(raw_labels[0])
-        // short_labes dont have date column
+        // short_labels dont have date column
         continue
       }
       if (c == first_index) {
@@ -1311,38 +1311,58 @@ export class HelperFunctionsService {
       '202180519': { // NO2-B43F bfg-lcair
         'offset': 0.232 - 0.228,
         'WE_zero': 0.228,
-        'AE_zero': 0.232,
+        'WE_elzero': 0.228,
+        'AE_zero': 0.230,
+        'AE_elzero': 0.232,
         'factor': 1000 / 0.207 // ppb/V
       },
       '204831253': { // OX bfg-lcair
         'offset': 0.225 - 0.240,
-        'WE_zero': 0.240,
+        'WE_zero': 0.241,
+        'WE_elzero': 0.240,
         'AE_zero': 0.225,
+        'AE_elzero': 0.225,
         'factor': 1000 / 0.354,
         'NO2_sensitivity': -607.06, // nA / ppm
         'gain': -0.73 // mV / nA
       },
       '162830053': { // CO bfg-lcair
         'offset': 0.332 - 0.352,
-        'WE_zero': 0.352,
-        'AE_zero': 0.332,
+        'WE_zero': 0.426,
+        'WE_elzero': 0.352,
+        'AE_zero': 0.319,
+        'AE_elzero': 0.332,
         'factor': 1000 / 0.493
       },
       '160910951': { // NO bfg-lcair
         'offset': 0.276 - 0.278,
-        'WE_zero': 0.278,
-        'AE_zero': 0.276,
+        'WE_zero': 0.300,
+        'WE_elzero': 0.278,
+        'AE_zero': 0.289,
+        'AE_elzero': 0.276,
         'factor': 1000 / 0.645
       }
+    }
+    // from Alphasense AAN 803-01
+    const AE_n = {
+      'CO-B4': [{ "t": -30, 'n': -1 }, { "t": 20, 'n': -1 }, { "t": 30, 'n': -3.8 }, { "t": 50, 'n': -3.8 }],
+      'NO-B4': [{ "t": -30, 'n': 1.04 }, { "t": 10, 'n': 1.04 }, { "t": 20, 'n': 1.82 }, { "t": 30, 'n': 2 }, { "t": 50, 'n': 2 }],
+      'NO2-B43F': [{ "t": -30, 'n': 0.76 }, { "t": 10, 'n': 0.76 }, { "t": 20, 'n': 0.68 }, { "t": 30, 'n': 0.23 }, { "t": 50, 'n': 0.23 }],
+      'OX-B431': [{ "t": -30, 'n': 0.77 }, { "t": 0, 'n': 0.77 }, { "t": 10, 'n': 1.56 }, { "t": 30, 'n': 1.56 }, { "t": 40, 'n': 2.85 }],
     }
 
     const raw_labels = cloneDeep(Praw_labels)
     const short_labels = cloneDeep(Pshort_labels)
+    let t_col = undefined;
     // 1. search for all _V source inputs
     const V_columns = []; // {'c': $nr_column, 'gas': "$gas_string", 'serial': $nr }
     for (let i = 1; i < raw_labels.length; i++) { // col 0: Date
       const clabel = raw_labels[i];
       const field = clabel['field'];
+      if (clabel['metric'] == 'temperature' && clabel['field'] == 'air_degC') {
+        t_col = i
+        continue
+      }
       if (clabel['metric'] != 'gas' || !field.endsWith('_V'))
         continue;
       const gas = field.replace(/_V$/, '').replace(/^mean_/, '').replace(/_[WA]E$/, '')
@@ -1357,7 +1377,7 @@ export class HelperFunctionsService {
         console.log('convVtoPPB Fault: gas has no serial');
         continue
       }
-      let v_col = { 'c': i, 'gas': gas.toUpperCase(), 'serial': serial }
+      let v_col = { 'c': i, 'gas': gas.toUpperCase(), 'serial': serial, 'sensor': gastags['sensor'] }
       if (field.endsWith('E_V')) {
         v_col['channeltype'] = field.substr(-4, 2)
       } else {
@@ -1367,13 +1387,31 @@ export class HelperFunctionsService {
     }
     console.log("Voltage columns:", V_columns);
 
+    let T = 20
+    let first_t = T;
+    if (t_col) {
+      for (let r = 0; r < data.length; r++) { // search for the first valid T
+        const element = data[r][t_col]
+        if (Number.isFinite(element)) {
+          T = element; first_t = element;
+          break;
+        }
+      }
+    }
+
+    const chosen_ns = {}
+
     for (let i = 0; i < V_columns.length; i++) {
       const gas_item = V_columns[i];
 
       if (gas_item['gas'] == 'O3+NO2')
-        continue; // is handeled after all others, when NO2 is computed
-
+        continue; // is handled after all others, when NO2 is computed
       const serial = gas_item['serial']
+      const sensor = gas_item['sensor']
+      if (!Object.prototype.hasOwnProperty.call(calfactors, serial)) {
+        console.error(serial, 'of', sensor, 'not found in', calfactors);
+        continue
+      }
       const factor = calfactors[serial]['factor']
       const new_raw_column_label = cloneDeep(raw_labels[gas_item['c']])
 
@@ -1431,17 +1469,54 @@ export class HelperFunctionsService {
           }
         }
 
-        const WE_zero = calfactors[serial]['WE_zero']
-        const AE_zero = calfactors[serial]['AE_zero']
+        const WE_z = calfactors[serial]['WE_zero']
+        const WE_ez = calfactors[serial]['WE_elzero']
+        const AE_z = calfactors[serial]['AE_zero']
+        const AE_ez = calfactors[serial]['AE_elzero']
+        const sensors_ns = AE_n[sensor]
         let first = true;
+
+        chosen_ns[sensor] = []
         for (let r = 0; r < data.length; r++) {
           const row = data[r];
           const WE = row[WE_index];
           const AE = row[AE_index];
+          if (Number.isFinite(row[t_col])) {
+            T = row[t_col]
+          }
+          let n = undefined
+          for (let n_i = 0; n_i < sensors_ns.length - 1; n_i++) {
+            const element = sensors_ns[n_i];
+            const e_t = element['t']
+            const next_element = sensors_ns[n_i + 1];
+            const next_t = next_element['t']
+            if (n_i == 0 && T < e_t) {
+              n = element['n']
+              break
+            }
+            if (T > e_t && T < next_t) {
+              if (element['n'] == next_element['n']) {
+                n = element['n']
+                break
+              }
+              const diff_t_factor = (T - e_t) / (next_t - e_t)
+              n = element['n'] + ((next_element['n'] - element['n']) * diff_t_factor)
+              break
+            }
+          }
+          if (!n) {
+            n = sensors_ns[sensors_ns.length - 1]['n']
+            console.log('is T', T, 'that high for', sensor, '?');
+          }
+          chosen_ns[sensor].push(n)
+
           let gas_ppb = NaN;
           let gas_diff_V = NaN;
           if (Number.isFinite(WE) && Number.isFinite(AE)) {
-            gas_diff_V = (WE - WE_zero) - (AE - AE_zero)
+            // const WE_offset =
+            const zWE = WE - WE_z
+            const zAE = (AE - AE_z) * n
+            gas_diff_V = (zWE - WE_ez) - (zAE - AE_ez)
             gas_ppb = gas_diff_V * factor
             if (first == true) {
               console.log('first gas', gas_item['gas'], 'ppb', gas_ppb);
@@ -1454,6 +1529,7 @@ export class HelperFunctionsService {
       } // AE is handled above
     }
 
+    T = first_t
     // O3
     for (let i = 0; i < V_columns.length; i++) {
       const gas_item = V_columns[i];
@@ -1461,6 +1537,11 @@ export class HelperFunctionsService {
         continue;
 
       const serial = gas_item['serial']
+      const sensor = gas_item['sensor']
+      if (!Object.prototype.hasOwnProperty.call(calfactors, serial)) {
+        console.error(serial, 'of', sensor, 'not found in', calfactors);
+        continue
+      }
       const factor = calfactors[serial]['factor']
       const new_raw_column_label = cloneDeep(raw_labels[gas_item['c']])
       if (gas_item['channeltype'] == 'diff') {
@@ -1533,8 +1614,11 @@ export class HelperFunctionsService {
             break
           }
         }
-        const WE_zero = calfactors[serial]['WE_zero']
-        const AE_zero = calfactors[serial]['AE_zero']
+        const WE_z = calfactors[serial]['WE_zero']
+        const WE_ez = calfactors[serial]['WE_elzero']
+        const AE_z = calfactors[serial]['AE_zero']
+        const AE_ez = calfactors[serial]['AE_elzero']
+        const sensors_ns = AE_n[sensor]
         const NO2_sensitivity = calfactors[serial]['NO2_sensitivity'] * calfactors[serial]['gain'] / 1000000 // -> V/ppb
         console.log("OX sensor NO2_sensitivity:", NO2_sensitivity, 'V/ppb');
 
@@ -1550,14 +1634,45 @@ export class HelperFunctionsService {
         }
 
         let first = false;
+        chosen_ns[sensor] = []
         for (let r = 0; r < data.length; r++) {
           const row = data[r];
           const WE = row[WE_index];
           const AE = row[AE_index];
+          if (Number.isFinite(row[t_col])) {
+            T = row[t_col]
+          }
+          let n = undefined
+          for (let n_i = 0; n_i < sensors_ns.length - 1; n_i++) {
+            const element = sensors_ns[n_i];
+            const e_t = element['t']
+            const next_element = sensors_ns[n_i + 1];
+            const next_t = next_element['t']
+            if (n_i == 0 && T < e_t) {
+              n = element['n']
+              break
+            }
+            if (T > e_t && T < next_t) {
+              if (element['n'] == next_element['n']) {
+                n = element['n']
+                break
+              }
+              const diff_t_factor = (T - e_t) / (next_t - e_t)
+              n = element['n'] + ((next_element['n'] - element['n']) * diff_t_factor)
+              break
+            }
+          }
+          if (!n) {
+            n = sensors_ns[sensors_ns.length - 1]['n']
+            console.log('is T', T, 'that high for', sensor, '?');
+          }
+          chosen_ns[sensor].push(n)
           let gas_ppb = NaN;
           let gas_alldiff_V = NaN;
           if (Number.isFinite(WE) && Number.isFinite(AE)) {
-            gas_alldiff_V = (WE - WE_zero) - (AE - AE_zero)
+            const zWE = WE - WE_z
+            const zAE = (AE - AE_z) * n
+            gas_alldiff_V = (zWE - WE_ez) - (zAE - AE_ez)
             const NO2_V = row[NO2_index] * NO2_sensitivity
             if (first == false) {
               console.log('gas_V:', gas_alldiff_V, 'NO2_V', NO2_V);
@@ -1570,8 +1685,9 @@ export class HelperFunctionsService {
           row.push(gas_alldiff_V)
         }
       }
-
     }
+    console.log('chosen_ns', chosen_ns);
+
     return { 'data': data, 'short_labels': short_labels, 'raw_labels': raw_labels }
   }
   mol_masses = { 'NO2': 46.0055, 'CO': 28.010, 'NO': 30.006, 'O3': 47.997 }
@@ -1639,10 +1755,10 @@ export class HelperFunctionsService {
       for (let r = 0; r < data.length; r++) {
         const row = data[r];
         const gas_ppb = row[gas_item['c']];
-        if(p_col && !isNaN(row[p_col]) && row[p_col] != null) { // if no T or P data (happens if time res <1s), use last one (dont care in ms range)
+        if (p_col && Number.isFinite(row[p_col])) { // if no T or P data (happens if time res <1s), use last one (dont care in ms range)
           P = row[p_col]
         }
-        if (t_col && !isNaN(row[t_col]) && row[t_col] != null) {
+        if (t_col && Number.isFinite(row[t_col])) {
           T = row[t_col]
           tK = T + 273.15
         }
