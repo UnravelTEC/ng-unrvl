@@ -1352,11 +1352,46 @@ export class HelperFunctionsService {
       }
     }
     // from Alphasense AAN 803-01
-    const AE_n = {
-      'CO-B4': [{ "t": -30, 'n': -1 }, { "t": 20, 'n': -1 }, { "t": 30, 'n': -3.8 }, { "t": 50, 'n': -3.8 }],
-      'NO-B4': [{ "t": -30, 'n': 1.04 }, { "t": 10, 'n': 1.04 }, { "t": 20, 'n': 1.82 }, { "t": 30, 'n': 2 }, { "t": 50, 'n': 2 }],
-      'NO2-B43F': [{ "t": -30, 'n': 0.76 }, { "t": 10, 'n': 0.76 }, { "t": 20, 'n': 0.68 }, { "t": 30, 'n': 0.23 }, { "t": 50, 'n': 0.23 }],
-      'OX-B431': [{ "t": -30, 'n': 0.77 }, { "t": 0, 'n': 0.77 }, { "t": 10, 'n': 1.56 }, { "t": 30, 'n': 1.56 }, { "t": 40, 'n': 2.85 }],
+    // const AE_n = {
+    //   'CO-B4': [{ "t": -30, 'n': -1 }, { "t": 20, 'n': -1 }, { "t": 30, 'n': -3.8 }, { "t": 50, 'n': -3.8 }],
+    //   'NO-B4': [{ "t": -30, 'n': 1.04 }, { "t": 10, 'n': 1.04 }, { "t": 20, 'n': 1.82 }, { "t": 30, 'n': 2 }, { "t": 50, 'n': 2 }],
+    //   'NO2-B43F': [{ "t": -30, 'n': 0.76 }, { "t": 10, 'n': 0.76 }, { "t": 20, 'n': 0.68 }, { "t": 30, 'n': 0.23 }, { "t": 50, 'n': 0.23 }],
+    //   'OX-B431': [{ "t": -30, 'n': 0.77 }, { "t": 0, 'n': 0.77 }, { "t": 10, 'n': 1.56 }, { "t": 30, 'n': 1.56 }, { "t": 40, 'n': 2.85 }],
+    // }
+    // from AAN 803-05
+    const n_s = {
+      'CO-B4': [{ "t": -30, 'n': 0.7 }, { "t": 0, 'n': 0.7 }, { "t": 10, 'n': 1 }, { "t": 20, 'n': 3 }, { "t": 30, 'n': 3.5 }, { "t": 50, 'n': -4.5 }],
+      'NO-B4': [{ "t": -30, 'n': 2.9 }, { "t": -20, 'n': 2.9 }, { "t": -10, 'n': 2.2 }, { "t": 0, 'n': 1.8 },
+      { "t": 10, 'n': 1.7 }, { "t": 20, 'n': 1.6 }, { "t": 30, 'n': 1.5 }, { "t": 40, 'n': 1.4 }, { "t": 50, 'n': 1.3 }],
+      'NO2-B43F': [{ "t": -30, 'n': 1.3 }, { "t": 0, 'n': 1.3 }, { "t": 10, 'n': 1 }, { "t": 20, 'n': 0.6 }, { "t": 30, 'n': 0.4 }, { "t": 40, 'n': 0.2 }, { "t": 50, 'n': -1.5 }],
+      'OX-B431': [{ "t": -30, 'n': 0.9 }, { "t": -20, 'n': 0.9 }, { "t": -10, 'n': 1 }, { "t": 0, 'n': 1.3 },
+      { "t": 10, 'n': 1.5 }, { "t": 20, 'n': 1.7 }, { "t": 30, 'n': 2 }, { "t": 40, 'n': 2.5 }, { "t": 50, 'n': 3.7 }],
+    }
+    const k_s = {
+      'NO-B4': [{ "t": -30, 'n': 1.8 }, { "t": -20, 'n': 1.8 }, { "t": -10, 'n': 1.4 }, { "t": 0, 'n': 1.1 },
+      { "t": 10, 'n': 1.1 }, { "t": 20, 'n': 1 }, { "t": 30, 'n': 0.9 }, { "t": 40, 'n': 0.9 }, { "t": 50, 'n': 0.8 }],
+    }
+
+    // @param sensor  only for log output
+    function lin_interp(T, t_v_obj, sensor = 'notprovided') {
+      for (let n_i = 0; n_i < t_v_obj.length - 1; n_i++) {
+        const element = t_v_obj[n_i];
+        const e_t = element['t']
+        const next_element = t_v_obj[n_i + 1];
+        const next_t = next_element['t']
+        if (n_i == 0 && T < e_t) {
+          return (element['n'])
+        }
+        if (T > e_t && T < next_t) {
+          if (element['n'] == next_element['n']) {
+            return (element['n'])
+          }
+          const diff_t_factor = (T - e_t) / (next_t - e_t)
+          return (element['n'] + ((next_element['n'] - element['n']) * diff_t_factor))
+        }
+      }
+      console.log('is T', T, 'that high for', sensor, '?');
+      return (t_v_obj[t_v_obj.length - 1]['n'])
     }
 
     const raw_labels = cloneDeep(Praw_labels)
@@ -1411,8 +1446,9 @@ export class HelperFunctionsService {
 
     for (let i = 0; i < V_columns.length; i++) {
       const gas_item = V_columns[i];
+      const gas = gas_item['gas']
 
-      if (gas_item['gas'] == 'O3+NO2')
+      if (gas == 'O3+NO2')
         continue; // is handled after all others, when NO2 is computed
       const serial = gas_item['serial']
       const sensor = gas_item['sensor']
@@ -1423,6 +1459,7 @@ export class HelperFunctionsService {
       const factor = calfactors[serial]['factor']
       const new_raw_column_label = cloneDeep(raw_labels[gas_item['c']])
 
+      // for differential measurement, no T compensation algo possible!
       if (gas_item['channeltype'] == 'diff') {
         const offset = calfactors[serial]['offset']
         console.log('convVtoPPB', gas_item['gas'], 'serial', serial, 'o', this.roundAccurately(offset, 4), 'f', this.roundAccurately(factor, 3));
@@ -1481,7 +1518,7 @@ export class HelperFunctionsService {
         const WE_ez = calfactors[serial]['WE_elzero']
         const AE_z = calfactors[serial]['AE_zero']
         const AE_ez = calfactors[serial]['AE_elzero']
-        const sensors_ns = AE_n[sensor]
+
         let first = true;
 
         chosen_ns[sensor] = []
@@ -1492,39 +1529,31 @@ export class HelperFunctionsService {
           if (Number.isFinite(row[t_col])) {
             T = row[t_col]
           }
-          let n = undefined
-          for (let n_i = 0; n_i < sensors_ns.length - 1; n_i++) {
-            const element = sensors_ns[n_i];
-            const e_t = element['t']
-            const next_element = sensors_ns[n_i + 1];
-            const next_t = next_element['t']
-            if (n_i == 0 && T < e_t) {
-              n = element['n']
-              break
-            }
-            if (T > e_t && T < next_t) {
-              if (element['n'] == next_element['n']) {
-                n = element['n']
-                break
-              }
-              const diff_t_factor = (T - e_t) / (next_t - e_t)
-              n = element['n'] + ((next_element['n'] - element['n']) * diff_t_factor)
-              break
-            }
+          let n;
+          if (sensor == "NO-B4") { // algo = 2
+            n = lin_interp(T, k_s[sensor], sensor)
           }
-          if (!n) {
-            n = sensors_ns[sensors_ns.length - 1]['n']
-            console.log('is T', T, 'that high for', sensor, '?');
+          else { // algo = 1
+            n = lin_interp(T, n_s[sensor], sensor)
           }
+
           chosen_ns[sensor].push(n)
 
           let gas_ppb = NaN;
           let gas_diff_V = NaN;
           if (Number.isFinite(WE) && Number.isFinite(AE)) {
-            // const WE_offset =
-            const zWE = WE - WE_z
-            const zAE = (AE - AE_z) * n
-            gas_diff_V = (zWE - WE_ez) - (zAE - AE_ez)
+            // Algo 1 from AAN 803-05
+            if (sensor != "NO-B4") {
+              gas_diff_V = (WE - WE_ez) - (n * (AE - AE_ez))
+            } else {
+              gas_diff_V = (WE - WE_ez) - (n * (WE_z / AE_z) * (AE - AE_ez))
+            }
+
+            // algo from AAN 803-01
+            // const zWE = WE - WE_z
+            // const zAE = (AE - AE_z) * n
+            // gas_diff_V = (zWE - WE_ez) - (zAE - AE_ez)
+
             gas_ppb = gas_diff_V * factor
             if (first == true) {
               console.log('first gas', gas_item['gas'], 'ppb', gas_ppb);
@@ -1626,7 +1655,7 @@ export class HelperFunctionsService {
         const WE_ez = calfactors[serial]['WE_elzero']
         const AE_z = calfactors[serial]['AE_zero']
         const AE_ez = calfactors[serial]['AE_elzero']
-        const sensors_ns = AE_n[sensor]
+        const sensors_ns = n_s[sensor]
         const NO2_sensitivity = calfactors[serial]['NO2_sensitivity'] * calfactors[serial]['gain'] / 1000000 // -> V/ppb
         console.log("OX sensor NO2_sensitivity:", NO2_sensitivity, 'V/ppb');
 
@@ -1650,37 +1679,16 @@ export class HelperFunctionsService {
           if (Number.isFinite(row[t_col])) {
             T = row[t_col]
           }
-          let n = undefined
-          for (let n_i = 0; n_i < sensors_ns.length - 1; n_i++) {
-            const element = sensors_ns[n_i];
-            const e_t = element['t']
-            const next_element = sensors_ns[n_i + 1];
-            const next_t = next_element['t']
-            if (n_i == 0 && T < e_t) {
-              n = element['n']
-              break
-            }
-            if (T > e_t && T < next_t) {
-              if (element['n'] == next_element['n']) {
-                n = element['n']
-                break
-              }
-              const diff_t_factor = (T - e_t) / (next_t - e_t)
-              n = element['n'] + ((next_element['n'] - element['n']) * diff_t_factor)
-              break
-            }
-          }
-          if (!n) {
-            n = sensors_ns[sensors_ns.length - 1]['n']
-            console.log('is T', T, 'that high for', sensor, '?');
-          }
+          let n = lin_interp(T, n_s[sensor], sensor)
           chosen_ns[sensor].push(n)
           let gas_ppb = NaN;
           let gas_alldiff_V = NaN;
           if (Number.isFinite(WE) && Number.isFinite(AE)) {
-            const zWE = WE - WE_z
-            const zAE = (AE - AE_z) * n
-            gas_alldiff_V = (zWE - WE_ez) - (zAE - AE_ez)
+            gas_alldiff_V = (WE - WE_ez) - (n * (AE - AE_ez))
+            // from AAN 803-01
+            // const zWE = WE - WE_z
+            // const zAE = (AE - AE_z) * n
+            // gas_alldiff_V = (zWE - WE_ez) - (zAE - AE_ez)
             const NO2_V = row[NO2_index] * NO2_sensitivity
             if (first == false) {
               console.log('gas_V:', gas_alldiff_V, 'NO2_V', NO2_V);
