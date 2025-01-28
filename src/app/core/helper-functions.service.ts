@@ -1377,17 +1377,18 @@ export class HelperFunctionsService {
       for (let n_i = 0; n_i < t_v_obj.length - 1; n_i++) {
         const element = t_v_obj[n_i];
         const e_t = element['t']
+        const e_n = element['n']
         const next_element = t_v_obj[n_i + 1];
         const next_t = next_element['t']
-        if (n_i == 0 && T < e_t) {
-          return (element['n'])
+        if (T == e_t || (n_i == 0 && T < e_t)) {
+          return (e_n)
         }
         if (T > e_t && T < next_t) {
-          if (element['n'] == next_element['n']) {
-            return (element['n'])
+          if (e_n == next_element['n']) {
+            return (e_n)
           }
           const diff_t_factor = (T - e_t) / (next_t - e_t)
-          return (element['n'] + ((next_element['n'] - element['n']) * diff_t_factor))
+          return (e_n + ((next_element['n'] - e_n) * diff_t_factor))
         }
       }
       console.log('is T', T, 'that high for', sensor, '?');

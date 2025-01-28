@@ -46,11 +46,11 @@
           <label>Resolution:</label>
           <span class="cRange" title="{{currentres}}&thinsp;s">{{ currentresText }}</span><br />
 
-          <!-- <label style="display: inline-block">Range:</label> -->
-          <!-- <span class="cRange">{{ currentRange }}</span> -->
-          <!-- <p>
+          <label style="display: inline-block">Range:</label>
+          <span class="cRange">{{ currentRange }}</span>
+          <p>
             <a
-              routerLink="/Apps/I/Anysens"
+              routerLink="/Apps/I/outdoorAQ"
               [queryParams]="{
                 measurement: measurement,
                 sensor: sensor,
@@ -61,20 +61,29 @@
               routerLinkActive="active"
               >Permalink</a
             >
-          </p> -->
+          </p>
         </fieldset>
         <fieldset [disabled]="queryRunning == true || autoreload">
           <h3>{{ queryRunning ? 'Query running...' : 'Query current view:' }}</h3>
-          <label for="userMeanS">Resolution (s):</label>
-          <input
-            type="number"
-            id="userMeanS"
-            min="0"
-            name="userMeanS"
-            [(ngModel)]="userMeanS"
-            (ngModelChange)="saveMean($event)"
-            style="width: 4em"
-          />
+          Resolution:
+          <ul>
+            <li>
+              <label for="userMeanS"> (s):</label>
+              <input
+                type="number"
+                id="userMeanS"
+                min="0"
+                name="userMeanS"
+                [(ngModel)]="userMeanS"
+                (ngModelChange)="saveMean($event)"
+                style="width: 4em"
+              />
+            </li>
+            <li>
+
+            </li>
+          </ul>
+
 
           <div style="width: 100%; text-align: right; margin-top: -1.8em">
             <button type="submit">
