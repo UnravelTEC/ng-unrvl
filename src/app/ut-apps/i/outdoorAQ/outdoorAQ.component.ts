@@ -467,7 +467,8 @@ export class outdoorAQComponent implements OnInit {
       //     idata[r][c] = this.h.smoothNO2(idata[r][c]);
       //   }
       // }
-      if (item.match(/hPa/)) {
+//      if (item.match(/hPa/)) {
+      if (item.match(/n_T/)) {
         this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
         this.extraDyGraphConfig.series[this.short_labels[c - 1]] = {
           axis: 'y2',

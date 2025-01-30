@@ -1373,7 +1373,8 @@ export class HelperFunctionsService {
     }
 
     // @param sensor  only for log output
-    function lin_interp(T, t_v_obj, sensor = 'notprovided') {
+    function lin_interp(t, t_v_obj, sensor = 'notprovided') {
+      const T = t + 0;
       for (let n_i = 0; n_i < t_v_obj.length - 1; n_i++) {
         const element = t_v_obj[n_i];
         const e_t = element['t']
@@ -1490,20 +1491,29 @@ export class HelperFunctionsService {
       } else if (gas_item['channeltype'] == 'WE') {
         new_raw_column_label['field'] = new_raw_column_label['field'].replace(/_WE_V/, "_ppb")
         new_raw_column_label['tags']['SRC'] = 'diff'
+        new_raw_column_label['tags']['compensated'] = 'YES'
         raw_labels.push(new_raw_column_label);
 
         const new_diff_column_label = cloneDeep(raw_labels[gas_item['c']])
         new_diff_column_label['field'] = new_diff_column_label['field'].replace(/_WE_V/, "_V")
         new_diff_column_label['tags']['SRC'] = 'diff'
+        new_diff_column_label['tags']['compensated'] = 'YES'
         raw_labels.push(new_diff_column_label);
+
+        const new_n_label = cloneDeep(raw_labels[gas_item['c']])
+        new_n_label['field'] = "n_T"
+        raw_labels.push(new_n_label)
 
         const WE_index = gas_item['c']
         short_labels.push(short_labels[WE_index - 1]
           .replace(' WE ( V )', " ( ppb )")
-          .replace('serial:', 'SRC: diff, serial:')); // hacky way to modify text
+          .replace('serial:', 'SRC: diff, compensated: YES, serial:')); // hacky way to modify text
         short_labels.push(short_labels[WE_index - 1]
           .replace(' WE ( V )', " ( V )")
-          .replace('serial:', 'SRC: diff, serial:')); // hacky way to modify text
+          .replace('serial:', 'SRC: diff, compensated: YES, serial:')); // hacky way to modify text
+
+        short_labels.push(short_labels[WE_index - 1]
+          .replace(' WE ( V )', " n_T")); // hacky way to modify text
 
         // search for AE column
         let AE_index = NaN;
@@ -1546,7 +1556,7 @@ export class HelperFunctionsService {
             // Algo 1 from AAN 803-05
             if (sensor != "NO-B4") {
               gas_diff_V = (WE - WE_ez) - (n * (AE - AE_ez))
-            } else {
+            } else { // Algo 2
               gas_diff_V = (WE - WE_ez) - (n * (WE_z / AE_z) * (AE - AE_ez))
             }
 
@@ -1563,6 +1573,7 @@ export class HelperFunctionsService {
           }
           row.push(gas_ppb)
           row.push(gas_diff_V)
+          row.push(n)
         }
       } // AE is handled above
     }
@@ -1587,11 +1598,19 @@ export class HelperFunctionsService {
         console.log('convVtoPPB OX serial', serial, 'o', this.roundAccurately(offset, 4), 'f', this.roundAccurately(factor, 3));
         new_raw_column_label['field'] = new_raw_column_label['field'].replace(/O3\+NO2_V/, "O3_ppb")
         new_raw_column_label['tags']['SRC'] = 'computed'
+        new_raw_column_label['tags']['compensated'] = 'YES'
         raw_labels.push(new_raw_column_label);
+
+        const new_n_label = cloneDeep(raw_labels[gas_item['c']])
+        new_n_label['field'] = "n_T"
+        raw_labels.push(new_n_label)
 
         short_labels.push(short_labels[gas_item['c'] - 1]
           .replace('O₃ / NO₂ ( V )', "O₃ ( ppb )")
-          .replace('serial:', 'SRC: computed, serial:')); // hacky way to modify text
+          .replace('serial:', 'SRC: computed, compensated: YES, serial:')); // hacky way to modify text
+
+        short_labels.push(short_labels[gas_item['c'] - 1]
+          .replace('O₃ / NO₂ ( V )', "O₃ n_T")); // hacky way to modify text
 
         const NO2_sensitivity = calfactors[serial]['NO2_sensitivity'] * calfactors[serial]['gain'] / 1000000 // -> V/ppb
         console.log("OX sensor NO2_sensitivity:", NO2_sensitivity, 'V/ppb');
@@ -1628,19 +1647,29 @@ export class HelperFunctionsService {
       } else if (gas_item['channeltype'] == 'WE') {
         new_raw_column_label['field'] = new_raw_column_label['field'].replace(/O3\+NO2_WE_V/, "O3_ppb")
         new_raw_column_label['tags']['SRC'] = 'diff'
+        new_raw_column_label['tags']['compensated'] = 'YES'
         raw_labels.push(new_raw_column_label);
 
         const new_diff_column_label = cloneDeep(raw_labels[gas_item['c']])
         new_diff_column_label['field'] = new_diff_column_label['field'].replace(/_WE_V/, "_V")
         new_diff_column_label['tags']['SRC'] = 'diff'
+        new_diff_column_label['tags']['compensated'] = 'YES'
         raw_labels.push(new_diff_column_label);
+
+        const new_n_label = cloneDeep(raw_labels[gas_item['c']])
+        new_n_label['field'] = "n_T"
+        raw_labels.push(new_n_label)
 
         const WE_index = gas_item['c']
         short_labels.push(short_labels[WE_index - 1]
           .replace('O₃ / NO₂ WE ( V )', "O₃ ( ppb )")
-          .replace('serial:', 'SRC: diff, serial:')); // hacky way to modify text
+          .replace('serial:', 'SRC: diff, compensated: YES, serial:')); // hacky way to modify text
         short_labels.push(short_labels[WE_index - 1]
           .replace('O₃ / NO₂ WE ( V )', "O₃ / NO₂ ( V )")
+          .replace('serial:', 'SRC: diff, compensated: YES, serial:')); // hacky way to modify text
+
+        short_labels.push(short_labels[WE_index - 1]
+          .replace('O₃ / NO₂ WE ( V )', "O₃ / NO₂ n_T")
           .replace('serial:', 'SRC: diff, serial:')); // hacky way to modify text
 
         // search for AE column
@@ -1700,6 +1729,7 @@ export class HelperFunctionsService {
           }
           row.push(gas_ppb)
           row.push(gas_alldiff_V)
+          row.push(n)
         }
       }
     }
