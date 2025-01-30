@@ -8,22 +8,25 @@
       type="text"
       id="influxuser"
       [(ngModel)]="username"
-      [disabled]="gss.server.databaseStatus != 'up'"
+
     /><br />
+    <!-- [disabled]="gss.server.databaseStatus != 'up'" -->
 
     <label for="influxpass"> Password </label
     ><input
       type="{{ hidepw ? 'password' : 'text' }}"
       id="influxpass"
       [(ngModel)]="password"
-      [disabled]="gss.server.databaseStatus != 'up'"
+
     /><mat-icon (click)="hidepw = !hidepw">{{
       hidepw ? 'visibility' : 'visibility_off'
     }}</mat-icon
     ><br />
+    <!-- [disabled]="gss.server.databaseStatus != 'up'" -->
     <label *ngIf="note">{{ note }}</label>
     <label *ngIf="errortext" class="error">{{ errortext }}</label>
     <button (click)="login()">Login</button>
+    <button (click)="saveSettings()">Save</button>
   </div>
 
   <div class="flow">

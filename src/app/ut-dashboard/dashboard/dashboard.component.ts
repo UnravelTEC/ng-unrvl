@@ -35,7 +35,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     ADS1115: {
       description: 'Voltages',
       icon: 'manufacturers/TI_copyrighted.svg',
-      queryParams: { measurement: 'voltage', value: '/^ch/'},
+      queryParams: { measurement: 'voltage', value: '/^ch/' },
     },
     BME280: {
       description: 'Environmental',
@@ -44,13 +44,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     BMP280: {
       description: 'Pressure',
       icon: 'manufacturers/Bosch.svg',
-      queryParams: {  measurement: 'pressure' },
+      queryParams: { measurement: 'pressure' },
     },
     DS18B20: {
       description: 'Temperature',
       icon: 'manufacturers/Maxim_Integrated.svg',
       queryParams: { measurement: 'temperature' },
-     },
+    },
     TSL2561: {
       description: 'Brightness',
       icon: 'manufacturers/Ams.svg  ',
@@ -83,6 +83,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       description: 'Particulate Matter',
       icon: 'manufacturers/sensirion.png',
     },
+    MCP9600: {
+      description: 'Thermocouple',
+      icon: 'noun_Temperature.png',
+      queryParams: { measurement: 'temperature' },
+    }
   };
   SAR = this.sensorAppRegistry;
   // EXSENSOR = {

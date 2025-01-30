@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "8577edd",
-  "SHA": "8577edd2d299657653ece100de205a77505433de",
+  "shortSHA": "1d20c2d",
+  "SHA": "1d20c2d430b82f454c192cdfef1f0ec2f78b0589",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Mon Jan 27 19:43:20 2025 +0100",
-  "lastCommitMessage": "impl Algo 1+2",
-  "lastCommitNumber": "1542"
+  "lastCommitTime": "Thu Jan 30 11:14:25 2025 +0100",
+  "lastCommitMessage": "show which column is compensated; AE compensation n",
+  "lastCommitNumber": "1544"
 }

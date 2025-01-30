@@ -555,7 +555,7 @@ export class GlobalSettingsService implements OnInit {
         console.log(
           'no Influx yet there',
           influxServer + InfluxHealthQuery,
-          ', 5s to next try.'
+          ', 5s to next try.', error
         );
         this.server.databaseStatus = 'down';
         this.checkForInfluxCounter++;

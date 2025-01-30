@@ -109,9 +109,19 @@ export class InfluxsettingsComponent implements OnInit, OnDestroy {
     // this.saveSettings();
   }
   saveSettings() {
-    this.localStorage.set('influxdb', this.gss.server.influxdb);
-    this.localStorage.set('influxuser', this.gss.server.influxuser);
-    this.localStorage.set('influxpass', this.gss.server.influxpass);
+    if(this.dbname) {
+      this.localStorage.set('influxdb', this.dbname);
+      this.gss.server.influxdb = this.dbname;
+    }
+    if (this.username) {
+      this.localStorage.set('influxuser', this.username);
+      this.gss.server.influxuser = this.username;
+    }
+    if (this.password) {
+      this.localStorage.set('influxpass', this.password);
+      this.gss.server.influxpass = this.password;
+    }
+
   }
   /*
   where do we have noauth & telegraf?

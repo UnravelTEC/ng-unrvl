@@ -23,10 +23,12 @@ export class UtFetchdataService {
     pass = this.gss.server.influxpass,
     forceauth = false
   ) {
-    console.log('getHTTPData:', thisurl, user, pass);
+    console.log('getHTTPData:', thisurl, user, pass, forceauth);
+    console.log(this.gss.server);
+
 
     if (
-      forceauth ||
+      forceauth || this.gss.server.influxVersion.startsWith("2") ||
       (thisurl.startsWith('https') && thisurl.search(/\/influxdb\//))
     ) {
       const httpOptions = {
