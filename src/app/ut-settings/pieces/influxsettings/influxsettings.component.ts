@@ -92,7 +92,7 @@ export class InfluxsettingsComponent implements OnInit, OnDestroy {
   handleDBlist(data: Object) {
     this.note = 'Authentication successful';
     this.queryRunning = false;
-    console.log(data);
+    console.log("handleDBlist", data);
     const values = this.h.getDeep(data, ['results', 0, 'series', 0, 'values']);
     this.databases = [];
     for (let i = 0; i < values.length; i++) {
@@ -103,6 +103,8 @@ export class InfluxsettingsComponent implements OnInit, OnDestroy {
     this.gss.server.influxpass = this.password;
     this.localStorage.set('influxuser', this.username);
     this.localStorage.set('influxpass', this.password);
+
+    this.gss.triggerDBScan()
   }
 
   ngOnDestroy() {
