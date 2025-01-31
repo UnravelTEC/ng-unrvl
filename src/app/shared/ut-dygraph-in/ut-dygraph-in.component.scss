@@ -380,10 +380,21 @@ $red2: #ff7f88;
       // width: 100%;
       // width: auto;
       pointer-events: none;
+      .legendHideInactive {
+        position: absolute;
+        top: 0;
+        right: 3em;
+        * {
+          cursor: pointer;
+        }
+      }
+      .legendHideInactive:hover {
+        color: white;
+      }
       .legendToggle {
         position: absolute;
         font-size: 1.2em;
-        min-width: 20em;
+        min-width: 3em;
         text-align: right;
         top: 0;
         right: 5px;
@@ -500,6 +511,9 @@ $red2: #ff7f88;
     }
     .legendToggle::after {
       content: "▼";
+    }
+    .legendHideInactive {
+      display: none;
     }
   }
 

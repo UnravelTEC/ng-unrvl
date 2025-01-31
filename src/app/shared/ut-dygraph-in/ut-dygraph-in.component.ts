@@ -252,6 +252,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
   public optionsOpen = false;
   public legendContentVisible = true;
+  public legendHideInactive = false;
 
   public panAmount = 0.5;
   public zoomValue = 5;
@@ -1037,10 +1038,15 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
   }
+  legendHideInactiveF() {
+    this.legendHideInactive = !this.legendHideInactive;
+    console.log("legendHideInactiveF new status:", this.legendHideInactive);
+  }
   legendFormatter(data) {
     // console.log(data.dygraph);
     const parent = this['parent'];
     const showDevs = parent && parent.showDeviation;
+    const hideInactive = parent && parent.legendHideInactive;
     const tscalm: unknown = this;
     const g: Dygraph = <Dygraph>tscalm;
     const locked = g.isSeriesLocked();
@@ -1051,10 +1057,16 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     const toggleScript = htmlID
       ? `onclick="document['Dygraphs']['${htmlID}'].toggleLegendContent('${htmlID}')"`
       : '';
+    const HideInactiveScript = htmlID
+    ? `onclick="document['Dygraphs']['${htmlID}'].legendHideInactiveF()"`
+    : '';
+    const inactiveChecked = hideInactive ? 'checked="checked"' : ''
     let html =
       '<div class="header">Legend: ' +
       (data.xHTML ? ' values @ ' + data.xHTML : '') +
-      `</div><div class="legendToggle" ${toggleScript} title="click to toggle legend">&nbsp;</div>`;
+      `</div><div class="legendHideInactive"><input type="checkbox" id="legendHideInactive" ${inactiveChecked} ${HideInactiveScript}>
+      <label for="legendHideInactive">Hide inactive</label></div>`
+      + `<div class="legendToggle" ${toggleScript} title="click to toggle legend">&nbsp;</div>`;
     html += '<table>';
 
     // console.log(htmlID);
@@ -1107,6 +1119,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     for (let i = 0; i < nrSeries; i++) {
       const series = data.series[i];
+      if (hideInactive && !series.isVisible) {
+        continue;
+      }
       const displayedValue =
         !series.hasOwnProperty('y') || isNaN(series.y)
           ? ''
