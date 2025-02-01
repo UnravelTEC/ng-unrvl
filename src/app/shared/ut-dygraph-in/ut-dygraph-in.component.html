@@ -25,6 +25,23 @@ style.padding-bottom="20vh"-->
       </div>
     </div>
 
+    <div class="filter {{ y2Range[1] === undefined ? 'noy2f' : '' }}" *ngIf="filtersactive" [style.transform]="'translateX(-' + y2O + 'px)'">
+      <button
+      (click)="filtersPanelOpen = !filtersPanelOpen"
+      class="toggleFilters"
+      title="Filters"
+      >
+        <mat-icon>filter_list</mat-icon>
+      </button>
+      <ul *ngIf="filtersPanelOpen">
+        <li><input type="checkbox" id="__ALL__" (click)="toggleUnitFilter('__ALL__')" checked><label for="__ALL__">Show All</label></li>
+        <li *ngFor="let unit of filterUnits">
+          <input type="checkbox" id="filter_{{ unit }}" (click)="toggleUnitFilter(unit)" checked>
+          <label for="filter_{{ unit }}">{{ unit }}</label>
+        </li>
+      </ul>
+    </div>
+
     <div
       class="overlapTickTexthider y1"
       [style.transform]="'translateX(' + yO + 'px)'"

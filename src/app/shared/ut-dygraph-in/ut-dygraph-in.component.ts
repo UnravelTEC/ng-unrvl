@@ -254,6 +254,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   public legendContentVisible = true;
   public legendHideInactive = false;
 
+  public filtersactive = true;
+  public filtersPanelOpen = false;
+  public filterUnits = [];
+
   public panAmount = 0.5;
   public zoomValue = 5;
   public zoomMultiplicator = 60;
@@ -765,6 +769,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
             units.push(unit[1]);
           }
         }
+        if (unit && this.filterUnits.indexOf(unit[1]) == -1) {
+          this.filterUnits.push(unit[1])
+        }
       }
       if (units.length) {
         newYlabel += ' (' + units.join(', ') + ')';
@@ -1058,8 +1065,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       ? `onclick="document['Dygraphs']['${htmlID}'].toggleLegendContent('${htmlID}')"`
       : '';
     const HideInactiveScript = htmlID
-    ? `onclick="document['Dygraphs']['${htmlID}'].legendHideInactiveF()"`
-    : '';
+      ? `onclick="document['Dygraphs']['${htmlID}'].legendHideInactiveF()"`
+      : '';
     const inactiveChecked = hideInactive ? 'checked="checked"' : ''
     let html =
       '<div class="header">Legend: ' +
@@ -1726,6 +1733,33 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     setTimeout(() => {
       this.Dygraph.resize(undefined, undefined);
     }, t);
+  }
+
+  toggleUnitFilter(toggleUnit) {
+    console.log('toggleUnitFilter', toggleUnit);
+
+    if (toggleUnit == "__ALL__") {
+      for (let i = 0; i < this.dyGraphOptions.visibility.length; i++) {
+        this.dyGraphOptions.visibility[i] = true;
+      }
+    } else {
+      for (let i = 1; i < this.columnLabels.length; i++) {
+        const serieslabel = this.columnLabels[i];
+        let unit = serieslabel.match(/\((.*)\)$/);
+        if (unit) {
+          unit = unit[1]
+        }
+        console.log(unit, toggleUnit, unit == toggleUnit);
+
+        if (unit == toggleUnit) {
+          this.dyGraphOptions.visibility[i - 1] =
+            !this.dyGraphOptions.visibility[i - 1];
+        }
+      }
+    }
+    this.Dygraph.updateOptions({
+      visibility: this.dyGraphOptions.visibility,
+    });
   }
 
   pan(direction: string) {

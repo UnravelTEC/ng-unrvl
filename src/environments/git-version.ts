@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "786f6f4",
-  "SHA": "786f6f46bc19d2b709471c956ebcb1b1f8a3b815",
+  "shortSHA": "fc6f56e",
+  "SHA": "fc6f56e85af4e4676717209e3191dcd5db6d7c93",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Thu Jan 30 20:41:34 2025 +0100",
-  "lastCommitMessage": "now works with influx2",
-  "lastCommitNumber": "1545"
+  "lastCommitTime": "Fri Jan 31 20:28:22 2025 +0100",
+  "lastCommitMessage": "legend: hide inactive switch",
+  "lastCommitNumber": "1547"
 }
