@@ -291,7 +291,7 @@ export class outdoorAQComponent implements OnInit {
       {},
       this.meanS,
       '/_V$/',
-      'sensor,serial'
+      'sensor,serial,mfgdate'
     ) +
       this.utHTTP.influxMeanQuery(
         'pressure',
@@ -434,6 +434,12 @@ export class outdoorAQComponent implements OnInit {
     this.raw_labels = new_raw_labels
     this.short_labels = new_short_labels
 
+    const numColumns = this.raw_labels.length;
+    for (let c = 1; c < numColumns; c++) {
+      const item = this.short_labels[c - 1];
+      this.short_labels[c - 1] = item.replace(/^gas sensor: /,'')
+    }
+
     console.log('after -V raw labels:', cloneDeep(this.raw_labels));
     console.log('after -V short labels:', cloneDeep(this.short_labels));
 
@@ -441,7 +447,7 @@ export class outdoorAQComponent implements OnInit {
     this.data = idata;
     this.labels = ['Date'].concat(this.short_labels);
     const newColors = this.h.getColorsforLabels(this.labels);
-    const numColumns = this.raw_labels.length;
+
     for (let c = 1; c < numColumns; c++) {
       const item = this.short_labels[c - 1];
 
