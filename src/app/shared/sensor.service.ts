@@ -381,13 +381,14 @@ export class SensorService {
     },
     'CO-B4': {
       CO_V: {
-        round_digits: 7, getDeviation: function (value) {
-          // dependent on gain and SPS TODO later
-          if (value === null) return null;
-          if (isNaN(value)) return NaN;
-          const dev = 0.00000781; // this is only the deviation from ADS1115 at gain=16, noise in reality much higher!
-          return [value - dev, value, value + dev];
-        }
+        round_digits: 7,
+        // getDeviation: function (value) {
+        //   // dependent on gain and SPS TODO later
+        //   if (value === null) return null;
+        //   if (isNaN(value)) return NaN;
+        //   const dev = 0.00000781; // this is only the deviation from ADS1115 at gain=16, noise in reality much higher!
+        //   return [value - dev, value, value + dev];
+        // }
       },
       CO_WE_V: { round_digits: 7, },
       CO_AE_V: { round_digits: 7, },

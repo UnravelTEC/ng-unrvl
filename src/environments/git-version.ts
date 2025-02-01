@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "0b2810e",
-  "SHA": "0b2810ea35ca5432a8d8cd82ad57aaa75c2befb8",
+  "shortSHA": "be6d987",
+  "SHA": "be6d9872cd6b0181026720985fd9e554cd7e1152",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Sat Feb 1 15:12:59 2025 +0100",
-  "lastCommitMessage": "unit filters v1",
-  "lastCommitNumber": "1548"
+  "lastCommitTime": "Sat Feb 1 20:46:59 2025 +0100",
+  "lastCommitMessage": "query for age; title",
+  "lastCommitNumber": "1551"
 }
