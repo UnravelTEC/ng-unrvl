@@ -784,6 +784,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       // newYlabel += ' (' + (units.length ? units.join(', ') : 'unitless') + ')';
       this.dyGraphOptions['ylabel'] = newYlabel;
     }
+    if (this.filterUnits.length < 2) {
+      this.filtersactive = false;
+    }
 
     this.dyGraphOptions['labels'] = this.columnLabels;
     // console.log('COLORS:', cloneDeep(this.colors), cloneDeep(this.h.colorArray));
@@ -1736,7 +1739,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   toggleUnitFilter(toggleUnit) {
-    console.log('toggleUnitFilter', toggleUnit);
+    // console.log('toggleUnitFilter', toggleUnit);
 
     if (toggleUnit == "__ALL__") {
       for (let i = 0; i < this.dyGraphOptions.visibility.length; i++) {
@@ -1749,7 +1752,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         if (unit) {
           unit = unit[1]
         }
-        console.log(unit, toggleUnit, unit == toggleUnit);
+        // console.log(unit, toggleUnit, unit == toggleUnit);
 
         if (unit == toggleUnit) {
           this.dyGraphOptions.visibility[i - 1] =
