@@ -37,7 +37,7 @@ export class outdoorAQComponent implements OnInit {
       },
     },
   };
-  y2label = 'Atmospheric Pressure';
+  y2label = 'Temperature AE correction';
   labelBlackListT = ['mean_*', 'ADC', 'maxrange_V', 'resolution_mV', 'resolution_bits', 'mode', 'averaged_count']; // mean is when only 1 graph is returned
   private sidebarWidth = '15rem';
   public currentSidebarWidth = this.sidebarWidth;
@@ -290,7 +290,7 @@ export class outdoorAQComponent implements OnInit {
       timeQuery,
       {},
       this.meanS,
-      '/_V$/',
+      '/_V|_ppm$/',
       'sensor,serial,mfgdate'
     ) +
       this.utHTTP.influxMeanQuery(
@@ -474,9 +474,9 @@ export class outdoorAQComponent implements OnInit {
       //   }
       // }
 //      if (item.match(/hPa/)) {
-      if (item.match(/n_T/)) {
+      if (item.match(/n.\(.factor.\)/u)) {
         this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
-        this.extraDyGraphConfig.series[this.short_labels[c - 1]] = {
+        this.extraDyGraphConfig.series[item] = {
           axis: 'y2',
         };
       }
