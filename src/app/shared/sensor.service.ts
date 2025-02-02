@@ -7,7 +7,7 @@ import { HelperFunctionsService } from 'app/core/helper-functions.service';
 export class SensorService {
   private Devs = {
     Bosch: {
-      T: function (value) {
+      T: function (value, raw_labels) {
         if (value === null) return null;
         if (isNaN(value) || value > 85 || value < -40) {
           return NaN;
@@ -30,7 +30,7 @@ export class SensorService {
         dev = 2; // guess
         return [value - dev, value, value + dev];
       },
-      P: function (value) {
+      P: function (value, raw_labels) {
         if (value === null) return null;
         if (isNaN(value) || value > 1100 || value < 300) {
           // abs. max would be 20000 hPa ?
@@ -47,7 +47,7 @@ export class SensorService {
     SFM3000: {
       flow_slm: {
         round_digits: 2,
-        getDeviation: function (value) {
+        getDeviation: function (value, raw_labels) {
           if (value === null) {
             return null;
           }
@@ -70,7 +70,7 @@ export class SensorService {
         resolution_b: 16,
         step: 0.0625, // 1/16°C
         round_digits: 2,
-        getDeviation: function (value) {
+        getDeviation: function (value, raw_labels) {
           if (value === null) {
             return null;
           }
@@ -100,7 +100,7 @@ export class SensorService {
       },
       H2O_rel_percent: {
         round_digits: 2,
-        getDeviation: function (value, envParams = { T_degC: 25, age_d: 42 }) {
+        getDeviation: function (value, raw_labels, envParams = { T_degC: 25, age_d: 42 }) {
           if (value === null) return null;
           if (isNaN(value) || value > 100 || value < 0) {
             return NaN;
@@ -140,7 +140,7 @@ export class SensorService {
     SCD30: {
       CO2_ppm: {
         round_digits: 1,
-        getDeviation: function (value, T = 25) {
+        getDeviation: function (value, raw_labels, T = 25) {
           if (T === undefined) T = 25;
           if (value === null) return null;
           if (isNaN(value) || value > 40000 || value < 0) {
@@ -157,7 +157,7 @@ export class SensorService {
       },
       sensor_degC: {
         round_digits: 1,
-        getDeviation: function (value) {
+        getDeviation: function (value, raw_labels) {
           if (value === null) return null;
           if (isNaN(value) || value > 120 || value < -40) {
             return NaN;
@@ -173,7 +173,7 @@ export class SensorService {
     SHT85: {
       air_degC: {
         round_digits: 2,
-        getDeviation: function (value) {
+        getDeviation: function (value, raw_labels) {
           if (value === null) return null;
           if (isNaN(value) || value > 125 || value < -40) {
             return NaN;
@@ -201,7 +201,7 @@ export class SensorService {
       },
       H2O_rel_percent: {
         round_digits: 2,
-        getDeviation: function (value) {
+        getDeviation: function (value, raw_labels) {
           if (value === null) return null;
           if (isNaN(value) || value < 0 || value > 100) {
             return NaN;
@@ -218,7 +218,7 @@ export class SensorService {
     SHTC3: {
       air_degC: {
         round_digits: 2,
-        getDeviation: function (value) {
+        getDeviation: function (value, raw_labels) {
           if (value === null) return null;
           if (isNaN(value) || value > 125 || value < -40) {
             return NaN;
@@ -238,7 +238,7 @@ export class SensorService {
       },
       H2O_rel_percent: {
         round_digits: 2,
-        getDeviation: function (value) {
+        getDeviation: function (value, raw_labels) {
           if (value === null) return null;
           if (isNaN(value) || value < 0 || value > 100) {
             return NaN;
@@ -260,7 +260,7 @@ export class SensorService {
     MCP9600: {
       probe_degC: {
         round_digits: 2,
-        getDeviation: function (value) {
+        getDeviation: function (value, raw_labels) {
           // we use same as probe (ASSUMING THE THERMOCOUPLE HAS BEEN CALIBRATED!!!!)
           if (value === null) return null;
           if (isNaN(value) || value < -40 || value > 125) {
@@ -279,7 +279,7 @@ export class SensorService {
       },
       chip_degC: {
         round_digits: 2,
-        getDeviation: function (value) {
+        getDeviation: function (value, raw_labels) {
           if (value === null) return null;
           if (isNaN(value) || value < -40 || value > 125) {
             return NaN;
@@ -317,7 +317,7 @@ export class SensorService {
       },
       '*_ugpm3': {
         round_digits: 1,
-        getDeviation: function (value) {
+        getDeviation: function (value, raw_labels) {
           if (value === null) return [null, null, null];
           if (isNaN(value) || value > 65000 || value < 0) {
             return [NaN, NaN, NaN];
@@ -338,7 +338,7 @@ export class SensorService {
         // Page6: ~±0.02K ADC Conversion error
 
         round_digits: 3,
-        getDeviation: function (value) {
+        getDeviation: function (value, raw_labels) {
           if (value === null) return null;
           if (isNaN(value) || value > 550 || value < -200) {
             return NaN;
@@ -382,7 +382,7 @@ export class SensorService {
     'CO-B4': {
       CO_V: {
         round_digits: 7,
-        // getDeviation: function (value) {
+        // getDeviation: function (value, raw_labels) {
         //   // dependent on gain and SPS TODO later
         //   if (value === null) return null;
         //   if (isNaN(value)) return NaN;
@@ -423,7 +423,7 @@ export class SensorService {
     'PID-AH2': {
       "VOC_V": {
         round_digits: 7,
-        getDeviation: function (value) {
+        getDeviation: function (value, raw_labels) {
           if (value === null) return null;
           if (isNaN(value)) { // || value < 550 || value < -200) {
             return NaN;
@@ -451,7 +451,7 @@ export class SensorService {
       // END legacy
       ch12_V: {
         round_digits: 7,
-        getDeviation: function (value) {
+        getDeviation: function (value, raw_labels) {
           if (value === null) return null;
           if (isNaN(value)) {
             return NaN;
@@ -462,7 +462,7 @@ export class SensorService {
       },
       ch34_V: {
         round_digits: 7,
-        getDeviation: function (value) {
+        getDeviation: function (value, raw_labels) {
           // dependent on gain and SPS TODO later
           if (value === null) return null;
           if (isNaN(value)) return NaN;
@@ -575,7 +575,11 @@ export class SensorService {
       const oldRow = data[r];
       let newRow = [oldRow[0]]; // Date
       for (let c = 1; c < nrcols; c++) {
-        newRow.push(deviFunctions[c](oldRow[c]));
+        if(!Array.isArray(oldRow[c])) { // maybe data given to Dyg is already with dev.
+          newRow.push(deviFunctions[c](oldRow[c], raw_labels[c]));
+        } else {
+          newRow.push(oldRow[c]);
+        }
       }
       dataWithDev.push(newRow);
     }

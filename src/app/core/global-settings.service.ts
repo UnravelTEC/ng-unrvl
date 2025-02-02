@@ -783,7 +783,7 @@ export class GlobalSettingsService implements OnInit {
         for (let r = 0; r < datalen; r++) {
           const currentNewRow = dataWithCal[r];
           const origVal = data[r][c];
-          if (origVal === null || isNaN(origVal)) {
+          if (origVal === null || isNaN(origVal) || Array.isArray(origVal)) {
             currentNewRow.push(origVal);
             continue;
           }
@@ -805,7 +805,7 @@ export class GlobalSettingsService implements OnInit {
         for (let r = 0; r < datalen; r++) {
           const currentNewRow = dataWithCal[r];
           const origVal = data[r][c];
-          if (origVal === null || isNaN(origVal)) {
+          if (origVal === null || isNaN(origVal) || Array.isArray(origVal)) {
             currentNewRow.push(origVal);
             continue;
           }
