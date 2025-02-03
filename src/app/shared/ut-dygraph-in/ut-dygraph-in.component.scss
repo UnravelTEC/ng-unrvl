@@ -414,7 +414,7 @@ $red2: #ff7f88;
       pointer-events: none;
       .legendHideInactive {
         position: absolute;
-        top: 0;
+        top: 0.35em;
         right: 3em;
         * {
           cursor: pointer;
@@ -465,7 +465,8 @@ $red2: #ff7f88;
 
     table {
       border-collapse: collapse;
-      margin-top: 1.6em;
+      margin-top: 1.85em;
+      min-width: 400px;
       border: 1px solid black;
 
       tr {
@@ -619,6 +620,8 @@ div.optionsarea {
   div.options {
     padding-left: 0.15rem;
     padding-right: 0.15rem;
+    margin-right: 5px;
+    margin-top: 5px;
     background: rgba(128, 128, 128, 0.719);
     display: flex;
     flex-wrap: wrap;
@@ -720,6 +723,11 @@ div.optionsarea {
     }
     #stats {
       height: auto;
+      button {
+        height: 2.4em;
+        padding-bottom: 0.9em;
+        padding-top: 4px;
+      }
     }
   }
 }
