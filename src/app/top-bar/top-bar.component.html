@@ -1,5 +1,5 @@
 <nav *ngIf="hide == false">
-  <a routerLink="/Dashboard" routerLinkActive="active" class="icon"
+  <a routerLink="/Dashboard" routerLinkActive="active" class="icon" title="Dashboard"
     ><mat-icon>home</mat-icon></a
   >
   <!-- <em class=search>Search</em> -->
@@ -11,7 +11,7 @@
   <!-- <a routerLink="/Store" routerLinkActive="active">Store</a> -->
   <em class="date">{{ currentTime | date: 'dd.MM.yyyy HH:mm' }}</em>
 
-  <em id="mqtt">
+  <!-- <em id="mqtt">
     <span
       class="{{ mqtt.status }}"
       title="MQTT status: {{ mqtt.status }} on {{ mqtt.serverName }}"
@@ -26,7 +26,7 @@
         </ul>
       </div>
     </span>
-  </em>
+  </em> -->
 
   <em id="db">
     <span
@@ -50,7 +50,7 @@
   ><mat-icon *ngIf="!gss.client.isFullscreen">fullscreen</mat-icon
     ><mat-icon *ngIf="gss.client.isFullscreen">fullscreen_exit</mat-icon
       ></a>
-  <a routerLink="/Settings" routerLinkActive="active" class="icon"
+  <a routerLink="/Settings" routerLinkActive="active" class="icon" title="System Settings"
     ><mat-icon>settings</mat-icon></a
   >
 </nav>
