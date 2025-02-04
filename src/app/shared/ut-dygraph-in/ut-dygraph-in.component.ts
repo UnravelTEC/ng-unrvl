@@ -1060,6 +1060,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     const tscalm: unknown = this;
     const g: Dygraph = <Dygraph>tscalm;
     const locked = g.isSeriesLocked();
+    const nrSeries = data.series.length;
 
     // let html = '<table>';
     // html += '<tr><th colspan="3" class="header">' + (data.xHTML ? data.xHTML + ':' : 'Legend:') + '</th></tr>';
@@ -1073,9 +1074,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     const inactiveChecked = hideInactive ? 'checked="checked"' : ''
     let html =
       '<div class="header">Legend: ' +
-      (data.xHTML ? ' values @ ' + data.xHTML : '') +
-      `</div><div class="legendHideInactive"><input type="checkbox" id="legendHideInactive" ${inactiveChecked} ${HideInactiveScript}>
-      <label for="legendHideInactive">Hide inactive</label></div>`
+      (data.xHTML ? ' values @ ' + data.xHTML : '') + '</div>' +
+      (nrSeries > 1 ? `<div class="legendHideInactive"><input type="checkbox" id="legendHideInactive" ${inactiveChecked} ${HideInactiveScript}>
+      <label for="legendHideInactive">Hide inactive</label></div>` : '')
       + `<div class="legendToggle" ${toggleScript} title="click to toggle legend">&nbsp;</div>`;
     html += '<table>';
 
@@ -1096,7 +1097,6 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         : '';
     }
 
-    const nrSeries = data.series.length;
     let currentUnit = '';
     let currentIndex = -1;
     let currentY = -Infinity;
