@@ -13,13 +13,13 @@ export class HelperFunctionsService {
 
   // sorted in order of usage
   colors = {
-    blue: ['#0000FF', '#6883FF', '#000055', '#394CFF', '#000094'],
-    green: ['#008D0A', '#69F97B', '#002402', '#1EF93A', '#023C0A'],
-    brown: ['#FF5B00', '#FFDD73', '#561D0B', '#FF9C06', '#883A06'],
-    red: ['#E10000', '#FF7F88', '#520000', '#F81E25', '#990000'],
-    navy: ['#0061A6', '#00D9FF', '#001341', '#007CC2', '#002C54'],
-    violet: ['#842BFF', '#FFEBFF', '#2B0069', '#C78DFF', '#470994'],
-    olive: ['#00805C', '#8CE2CD', '#002913', '#37A389', '#003C24'],
+    blue: ['#0000FF', '#6883FF', '#000055', '#394CFF', '#000094'], // Ozone
+    green: ['#008D0A', '#69F97B', '#002402', '#1EF93A', '#023C0A'], // pressure
+    brown: ['#FF5B00', '#FFDD73', '#561D0B', '#FF9C06', '#883A06'], // NO2
+    red: ['#E10000', '#FF7F88', '#520000', '#F81E25', '#990000'], // T
+    navy: ['#0061A6', '#00D9FF', '#001341', '#007CC2', '#002C54'], // CO ?
+    violet: ['#842BFF', '#FFEBFF', '#2B0069', '#C78DFF', '#470994'], // CO2
+    olive: ['#00805C', '#8CE2CD', '#002913', '#37A389', '#003C24'], // NO ?
   };
   colorOrder = ['green', 'blue', 'red', 'brown', 'olive', 'navy', 'violet'];
   colorArray = [];
@@ -108,6 +108,11 @@ export class HelperFunctionsService {
       humidity: 'blue',
       pressure: 'green',
       particulate_matter: 'brown',
+      OX: 'blue',
+      NO2: 'brown',
+      "CO-": 'navy',
+      "SCD30 CO": 'violet',
+      "NO-": 'olive',
       gas: 'violet',
     };
     // console.log('new Colors:', this.colorArray);
@@ -589,7 +594,11 @@ export class HelperFunctionsService {
         header +=
           element.replace(/,/g, ';') + ' (lower error range)' + separator;
       }
-      header += element.replace(/,/g, ';'); // data label
+      if (i === 0) {
+        header = "Unix Timestamp (s)"
+      } else {
+        header += element.replace(/,/g, ';'); // data label
+      }
       if (i > 0 && isWithBounds == 3) {
         header +=
           separator + element.replace(/,/g, ';') + ' (upper error range)';
@@ -600,7 +609,7 @@ export class HelperFunctionsService {
       if (i === 0) {
         header +=
           separator +
-          'Date (' +
+          'Time (' +
           (utc
             ? 'UTC'
             : new Date()
@@ -677,7 +686,7 @@ export class HelperFunctionsService {
     const name =
       formatDate(startDate, 'yyyy-MM-dd_HH.mm.ss', 'en-uk') +
       '-' +
-      formatDate(endDate, 'HH.mm.ss', 'en-uk') +
+      formatDate(endDate, 'yyyy-MM-dd_HH.mm.ss', 'en-uk') +
       '.csv';
     FileSaver.saveAs(blob, name);
   }
@@ -1309,7 +1318,7 @@ export class HelperFunctionsService {
     console.error('parsemfgdate no match:', datestring);
 
   }
-  convVtoPPB(data: Array<any>, Praw_labels: Array<Object>, Pshort_labels: Array<string>) {
+  convVtoPPB(data: Array<any>, Praw_labels: Array<Object>, Pshort_labels: Array<string>, show_dev: boolean = false) {
     const MS_P_D = 1000 * 60 * 60 * 24 * 356;
 
     // V = (WE - WE_zero) - (AE - AE_zero)
@@ -1373,9 +1382,9 @@ export class HelperFunctionsService {
         const sensor = calfactors[serial];
         if (Object.prototype.hasOwnProperty.call(sensor, 'sensitivity')) {
           sensor['factor'] = 1000 / sensor['sensitivity']
-          sensor['zerodrift_y_V'] = [ sensor['sensitivity'] * sensor['zerodrift_y_ppb'][0] / 1000,
-                                      sensor['sensitivity'] * sensor['zerodrift_y_ppb'][1] / 1000,
-                                      sensor['sensitivity'] * sensor['zerodrift_y_ppb'][2] / 1000 ]
+          sensor['zerodrift_y_V'] = [sensor['sensitivity'] * sensor['zerodrift_y_ppb'][0] / 1000,
+          sensor['sensitivity'] * sensor['zerodrift_y_ppb'][1] / 1000,
+          sensor['sensitivity'] * sensor['zerodrift_y_ppb'][2] / 1000]
         }
         if (Object.prototype.hasOwnProperty.call(sensor, 'WE_elzero')) {
           sensor['offset'] = sensor['AE_elzero'] - sensor['WE_elzero']
@@ -1595,23 +1604,24 @@ export class HelperFunctionsService {
             }
 
             const sensor_age_y = (row[0].valueOf() - sensor_birthday.valueOf()) / MS_P_D;
-            const current_factor = [ 1000 / (sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[0]))),
-                                     1000 / (sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[1]))),
-                                     1000 / (sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[2]))) ]
-            const current_zerodrift = [ zerodrift_y_V[0] * sensor_age_y,
-                                        zerodrift_y_V[1] * sensor_age_y,
-                                        zerodrift_y_V[2] * sensor_age_y ]
+            const current_factor = [1000 / (sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[0]))),
+            1000 / (sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[1]))),
+            1000 / (sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[2])))]
+            const current_zerodrift = [zerodrift_y_V[0] * sensor_age_y,
+            zerodrift_y_V[1] * sensor_age_y,
+            zerodrift_y_V[2] * sensor_age_y]
 
-            gas_ppb = [ (gas_diff_V + current_zerodrift[0]) * current_factor[0],
-                        (gas_diff_V + current_zerodrift[1]) * current_factor[1],
-                        (gas_diff_V + current_zerodrift[2]) * current_factor[2] ]
+            gas_ppb = [(gas_diff_V + current_zerodrift[0]) * current_factor[0],
+            (gas_diff_V + current_zerodrift[1]) * current_factor[1],
+            (gas_diff_V + current_zerodrift[2]) * current_factor[2]]
+
             if (first == true) {
               console.log('first gas', gas_item['gas'], 'ppb', gas_ppb, 'age (y)', sensor_age_y, 'zerodrift',
                 current_zerodrift, 'sens.dr.', sensitivity_drift_p_y) // (1 + (sensor_age_y * sensitivity_drift_p_y)));
               first = false;
             }
           }
-          row.push(gas_ppb)
+          row.push(show_dev ? gas_ppb : gas_ppb[1])
           row.push(gas_diff_V)
           row.push(n)
         }
@@ -1761,29 +1771,30 @@ export class HelperFunctionsService {
             gas_alldiff_V = (WE - WE_ez) - (n * (AE - AE_ez))
 
             const sensor_age_y = (row[0].valueOf() - sensor_birthday.valueOf()) / MS_P_D;
-            const current_factor = [ 1000 / (sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[0]))),
-                                     1000 / (sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[1]))),
-                                     1000 / (sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[2]))) ]
-            const current_zerodrift = [ zerodrift_y_V[0] * sensor_age_y,
-                                        zerodrift_y_V[1] * sensor_age_y,
-                                        zerodrift_y_V[2] * sensor_age_y ]
+            const current_factor = [1000 / (sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[0]))),
+            1000 / (sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[1]))),
+            1000 / (sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[2])))]
+            const current_zerodrift = [zerodrift_y_V[0] * sensor_age_y,
+            zerodrift_y_V[1] * sensor_age_y,
+            zerodrift_y_V[2] * sensor_age_y]
 
-            const NO2_V = [ row[NO2_index][1] * (NO2_sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[0]))),
-                            row[NO2_index][1] * (NO2_sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[1]))),
-                            row[NO2_index][1] * (NO2_sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[2]))) ]
+            const NO2_ppb = Array.isArray(row[NO2_index]) ? row[NO2_index][1] : row[NO2_index];
+            const NO2_V = [NO2_ppb * (NO2_sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[0]))),
+            NO2_ppb * (NO2_sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[1]))),
+            NO2_ppb * (NO2_sensitivity * (1 + (sensor_age_y * sensitivity_drift_p_y[2])))]
             if (first == false) {
               console.log('gas_V:', gas_alldiff_V, 'NO2_V', NO2_V, 'age (y)', sensor_age_y, 'zerodrift',
-                current_zerodrift, 'sens.dr.', sensitivity_drift_p_y )// (1 + (sensor_age_y * sensitivity_drift_p_y)));
+                current_zerodrift, 'sens.dr.', sensitivity_drift_p_y)// (1 + (sensor_age_y * sensitivity_drift_p_y)));
               first = true;
             }
-            const O3_V = [ gas_alldiff_V - NO2_V[0],
-                           gas_alldiff_V - NO2_V[1],
-                           gas_alldiff_V - NO2_V[2] ]
-            gas_ppb = [ (O3_V[0] + current_zerodrift[0]) * current_factor[0],
-                        (O3_V[1] + current_zerodrift[1]) * current_factor[1],
-                        (O3_V[2] + current_zerodrift[2]) * current_factor[2] ]
+            const O3_V = [gas_alldiff_V - NO2_V[0],
+            gas_alldiff_V - NO2_V[1],
+            gas_alldiff_V - NO2_V[2]]
+            gas_ppb = [(O3_V[0] + current_zerodrift[0]) * current_factor[0],
+            (O3_V[1] + current_zerodrift[1]) * current_factor[1],
+            (O3_V[2] + current_zerodrift[2]) * current_factor[2]]
           }
-          row.push(gas_ppb)
+          row.push(show_dev ? gas_ppb : gas_ppb[1])
           row.push(gas_alldiff_V)
           row.push(n)
         }
@@ -1868,15 +1879,15 @@ export class HelperFunctionsService {
         if (Number.isFinite(gas_ppb)) {
           row.push(gas_ppb * P * factor / tK)
         } else if (Array.isArray(gas_ppb)) {
-          row.push([ gas_ppb[0] * P * factor / tK,
-                     gas_ppb[1] * P * factor / tK,
-                     gas_ppb[2] * P * factor / tK ])
+          row.push([gas_ppb[0] * P * factor / tK,
+          gas_ppb[1] * P * factor / tK,
+          gas_ppb[2] * P * factor / tK])
         } else {
           row.push(NaN)
         }
 
         if (first == false) {
-          console.log('g', gas, 'ppb', gas_ppb, 'µg', row[row.length-1]);
+          console.log('g', gas, 'ppb', gas_ppb, 'µg', row[row.length - 1]);
           first = true;
         }
       }

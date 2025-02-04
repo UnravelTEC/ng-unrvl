@@ -89,7 +89,9 @@ export class outdoorAQComponent implements OnInit {
   public last_reload: number;
 
   public show_ppb = true;
-  public show_V = true;
+  public show_V = false;
+  public show_n = false;
+  public show_dev = false;
 
   public tableShown = true;
   public sideBarShown = true;
@@ -387,7 +389,7 @@ export class outdoorAQComponent implements OnInit {
     // console.log('after unify raw labels:', cloneDeep(this.raw_labels));
     // console.log('after unify short labels:', cloneDeep(this.short_labels));
     // this.convUGPM3toPPB(this.raw_labels, idata);
-    const retPPB = this.h.convVtoPPB(idata, this.raw_labels, this.short_labels);
+    const retPPB = this.h.convVtoPPB(idata, this.raw_labels, this.short_labels, this.show_dev);
     idata = retPPB.data
     this.raw_labels = retPPB.raw_labels
     this.short_labels = retPPB.short_labels
@@ -400,7 +402,7 @@ export class outdoorAQComponent implements OnInit {
     let keep_columns = [0] // date
     for (let i = 1; i < this.raw_labels.length; i++) { // with "Date" on pos 0
       const field = this.raw_labels[i]['field']
-      if (field.endsWith('_degC') || field.endsWith('_hPa')) {
+      if (!this.show_n && (field.endsWith('_degC') || field.endsWith('_hPa') || field.startsWith('n ('))) {
         continue;
       }
       if (this.show_V && field.endsWith("_V")) {
@@ -435,9 +437,10 @@ export class outdoorAQComponent implements OnInit {
     this.short_labels = new_short_labels
 
     const numColumns = this.raw_labels.length;
+    const labelsForColors = ['Date'].concat(cloneDeep(this.short_labels));
     for (let c = 1; c < numColumns; c++) {
       const item = this.short_labels[c - 1];
-      this.short_labels[c - 1] = item.replace(/^gas sensor: /,'')
+      this.short_labels[c - 1] = item.replace(/^gas sensor: /, '')
     }
 
     console.log('after -V raw labels:', cloneDeep(this.raw_labels));
@@ -446,7 +449,7 @@ export class outdoorAQComponent implements OnInit {
     let logscale = true;
     this.data = idata;
     this.labels = ['Date'].concat(this.short_labels);
-    const newColors = this.h.getColorsforLabels(this.labels);
+    const newColors = this.h.getColorsforLabels(labelsForColors);
 
     for (let c = 1; c < numColumns; c++) {
       const item = this.short_labels[c - 1];
@@ -473,7 +476,7 @@ export class outdoorAQComponent implements OnInit {
       //     idata[r][c] = this.h.smoothNO2(idata[r][c]);
       //   }
       // }
-//      if (item.match(/hPa/)) {
+      //      if (item.match(/hPa/)) {
       if (item.match(/n.\(.factor.\)/u)) {
         this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
         this.extraDyGraphConfig.series[item] = {

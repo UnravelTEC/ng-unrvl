@@ -142,7 +142,7 @@
             </button>
           </div>
         </fieldset>
-        <!--<fieldset>
+        <fieldset>
            <ul>
             <li>
               <mat-checkbox
@@ -154,7 +154,7 @@
               Show Volts
             </mat-checkbox>
             </li>
-            <li>
+            <!-- <li>
               <mat-checkbox
               [(ngModel)]="show_ppb"
               name="show_ppb"
@@ -162,10 +162,30 @@
 
             >
               Show PPB
+              </mat-checkbox>
+            </li> -->
+            <li>
+              <mat-checkbox
+              [(ngModel)]="show_n"
+              name="show_n"
+              labelPosition="after"
+
+            >
+              Show compensation factors/values
+            </mat-checkbox>
+            </li>
+            <li>
+              <mat-checkbox
+              [(ngModel)]="show_dev"
+              name="show_dev"
+              labelPosition="after"
+
+            >
+              Show deviation ranges
             </mat-checkbox>
             </li>
           </ul>
-        </fieldset> -->
+        </fieldset>
       </form>
     </div>
     <div id="anyfooter">
