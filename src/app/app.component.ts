@@ -51,6 +51,7 @@ export class AppComponent implements OnInit {
         this.toggleFooter(obj['footer']);
         return;
       }
+      /* deactiviate for portforwarding on remote, we no longer have no RPi screens in Use.
       if (obj.hasOwnProperty('TricorderLocal')) {
         if (obj['TricorderLocal'] === true) {
           this.cursor = 'none';
@@ -62,7 +63,7 @@ export class AppComponent implements OnInit {
           this.cursor = 'auto';
         }
         return;
-      }
+      } */
       if (obj.hasOwnProperty('hostname')) {
         this.hostName = obj['hostname'];
         this.setTitle();
