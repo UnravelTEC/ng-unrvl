@@ -413,6 +413,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         true
       );
     }
+    for (let i = 1; i < this.columnLabels.length; i++) {
+      const serieslabel = this.columnLabels[i];
+      const unit = serieslabel.match(/\((.*)\)$/);
+      if (unit && this.filterUnits.indexOf(unit[1]) == -1) {
+        this.filterUnits.push(unit[1])
+      }
+    }
 
     this.updateAverages();
 
@@ -420,7 +427,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       file: this.displayedData,
       labels: this.columnLabels,
       xlabel: this.XLabel,
-      axes: this.dyGraphOptions.axes,
+      series: this.extraDyGraphConfig['series'],
+      axes: this.extraDyGraphConfig['axes'],
+      y2label: this.Y2Label,
       visibility: this.dyGraphOptions.visibility,
       dateWindow: this.dyGraphOptions['dateWindow'],
       customBars: this.showDeviation,
