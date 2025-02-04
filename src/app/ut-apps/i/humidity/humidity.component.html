@@ -135,7 +135,7 @@
           </button>
         </div>
       </fieldset>
-      <fieldset id="tags">
+      <!-- <fieldset id="tags">
         <h3>Series Tags</h3>
         <div *ngIf="tagsShown" style="margin-top: 0.75rem;">
           <label>Show tags (reload data to apply)</label>
@@ -145,26 +145,26 @@
                 (ngModelChange)="changeTaglist($event)">
                 {{ l.key }}
               </mat-checkbox>
-              <!-- {{ l.key }} -->
+              < !-- {{ l.key }} -- >
             </div>
           </div>
         </div>
         <button class="togglebtn" (click)="toggleTags()" type="button">
           {{ tagsShown ? "^" : "v" }}
         </button>
-      </fieldset>
+      </fieldset> -->
     </form>
   </div>
   <div id="anyfooter">
     <div *ngIf="!tableShown">
-      <button (click)="toggleTableShown(); R.resize()">Show Data Table</button>
+      <button (click)="toggleTableShown(); R.resize()">Show Data Stats</button>
     </div>
     <table *ngIf="tableShown">
       <thead>
         <tr>
           <th>Series</th>
-          <th>latest value</th>
-          <th>latest data</th>
+          <th>last value</th>
+          <th>last timestamp</th>
           <th>average (all)</th>
           <th style="position: relative; padding-right: 2.2em">
             average (visible)
