@@ -620,8 +620,18 @@ export class HelperFunctionsService {
     }
     header += linebreak;
 
+    function toText(value): String {
+      if (isNaN(value))
+        return "NaN";
+      if (value === null)
+        return '';
+      return String(value)
+    }
+
     let csvbody = '';
     function parseRow(row) {
+      // console.log(row);
+
       let line = '';
       for (let column = 0; column < row.length; column++) {
         const element = row[column];
@@ -634,11 +644,10 @@ export class HelperFunctionsService {
           if (isWithBounds) {
             if (Array.isArray(element)) {
               for (let i = 0; i < element.length; i++) {
-                const bound = element[i];
                 if (i > 0) {
                   line += separator;
                 }
-                line += String(bound);
+                line += toText(element[i]);
               }
             } else {
               // null or NaN
@@ -646,11 +655,11 @@ export class HelperFunctionsService {
                 if (i > 0) {
                   line += separator;
                 }
-                line += String(element);
+                line += toText(element);
               }
             }
           } else {
-            line += String(element);
+            line += toText(element);
           }
         }
       }
@@ -676,7 +685,7 @@ export class HelperFunctionsService {
     }
 
     const csv = header + csvbody;
-    // console.log(csv);
+    console.log(csv);
 
     const blob = new Blob([csv], { type: 'text/csv' });
 
@@ -1010,7 +1019,7 @@ export class HelperFunctionsService {
 
   // https://medium.com/swlh/how-to-round-to-a-certain-number-of-decimal-places-in-javascript-ed74c471c1b8
   roundAccurately(nr, decPlaces) {
-    if (isNaN(nr)) {
+    if (isNaN(nr) || nr === null || nr === undefined || nr === true || nr === false) {
       return nr;
     }
     if (nr < 1e-5 || nr > 1e5) {
