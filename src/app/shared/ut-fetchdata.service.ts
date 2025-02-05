@@ -477,14 +477,15 @@ export class UtFetchdataService {
       console.log("Median Gap:", gap);
 
       const maxGap = gap * 1.1;
-      const gap_row = new Array(newArray.length[0]).fill(NaN);
+      const rowsize = newArray[0].length
 
       for (let i = 1; i < newArray.length; i++) {
         const currentGap = newArray[i][0].valueOf() - newArray[i - 1][0].valueOf()
         if (currentGap > maxGap) {
-          gap_row[0] = new Date(newArray[i][0].valueOf() - gap)
-          console.log('inserted Gap Row at', gap_row[0]);
-          newArray.splice(i, 0, gap_row)
+          const newGapRow = new Array(rowsize).fill(NaN);
+          newGapRow[0] = new Date(newArray[i][0].valueOf() - gap)
+          console.log('inserted Gap Row at', newGapRow[0]);
+          newArray.splice(i, 0, newGapRow)
           i++
         }
       }
