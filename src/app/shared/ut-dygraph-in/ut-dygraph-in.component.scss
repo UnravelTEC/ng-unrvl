@@ -493,6 +493,9 @@ $red2: #ff7f88;
           border-left-width: 0;
           padding: 0.1em 0;
         }
+        td.value {
+          font-weight: bold;
+        }
         td.d {
           padding: 0 0 0 5px;
           font-style: italic;
