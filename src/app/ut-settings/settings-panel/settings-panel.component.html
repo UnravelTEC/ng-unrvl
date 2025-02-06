@@ -86,18 +86,18 @@
     <app-display-brightness (brightnessEvent)="setNewBN($event)" #bn></app-display-brightness>
   </section>
 
-  <section>
+  <!-- <section>
     <app-network></app-network>
-  </section>
+  </section> -->
 
   <section class="{{ fanspeed.disabled ? 'hidden' : '' }}">
     <app-fan-speed #fanspeed></app-fan-speed>
   </section>
 
   <section>
-    <h2>Hostname</h2>
+    <!-- <h2>Hostname</h2>
     <p>Current hostname: {{ gss.server.hostname }}</p>
-    <p>Set new hostname: <input type="text" id="newHostname" [(ngModel)]="newHostname" /><button (click)="setNewHostname()">Set</button></p>
+    <p>Set new hostname: <input type="text" id="newHostname" [(ngModel)]="newHostname" /><button (click)="setNewHostname()">Set</button></p> -->
 
     <hr>
     <h2>System Services</h2>
@@ -116,9 +116,11 @@
       <ul *ngIf="dbstats">
         <li *ngFor="let entry of dbstats | keyvalue">{{ entry.key }}: {{ entry.value }}</li>
       </ul>
-      <button (click)="wipeDB()">Wipe</button>
+      <!-- <button (click)="wipeDB()">Wipe</button> -->
     </div>
-    <p>Retention time: {{ retentionTime == "0s" ? "Infinite" : retentionTime }} <span *ngIf="retentionTime && retentionTime != '0s'">({{ retentionTimeD }} days or {{ retentionTimeW }} weeks)</span>&nbsp;&nbsp;|&nbsp;Set new:&nbsp;&nbsp;
+    <p>Retention time: {{ retentionTime == "0s" ? "Infinite" : retentionTime }}
+      <span *ngIf="retentionTime && retentionTime != '0s'">({{ retentionTimeD }} days or {{ retentionTimeW }} weeks)</span>
+      <!-- &nbsp;&nbsp;|&nbsp;Set new:&nbsp;&nbsp;
         <input
             type="number"
             id="userRetentionValue"
@@ -136,9 +138,10 @@
 
           </mat-select>
         </mat-form-field>
-        <button (click)="setRetentionTime()">Set</button>
+        <button (click)="setRetentionTime()">Set</button> -->
     </p>
-    <p>Temporal resolution:  {{ tempoRes }} &nbsp;&nbsp;|&nbsp;Set new &nbsp;
+    <p>Temporal resolution:  {{ tempoRes }}
+       <!-- &nbsp;&nbsp;|&nbsp;Set new &nbsp;
       <mat-form-field>
         <mat-label>Choose</mat-label>
         <mat-select
@@ -151,7 +154,7 @@
           <mat-option value="1ns">1 ns</mat-option>
         </mat-select>
       </mat-form-field>
-      <button (click)="setTempoRes()">Set</button>
+      <button (click)="setTempoRes()">Set</button> -->
     </p>
   </section>
 
@@ -165,7 +168,7 @@
       </tr>
       <tr *ngFor="let s of gss.server.sensors | keyvalue">
         <td>{{ s.key }}</td>
-        <td><span *ngFor="let m of s.value['measurements']">{{ m }}</span></td>
+        <td><span *ngFor="let m of s.value['measurements']">{{ m }}&nbsp;</span></td>
         <td>
           <a routerLink="/Settings/Sensors/SCD30" routerLinkActive="active" class="small"
             *ngIf="s.key == 'SCD30'">Configuration</a>
