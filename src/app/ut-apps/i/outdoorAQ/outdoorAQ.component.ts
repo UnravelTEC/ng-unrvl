@@ -93,10 +93,11 @@ export class outdoorAQComponent implements OnInit {
   public show_n = false;
   public show_dev = false;
 
-  public tableShown = true;
+  public tableShown = false;
   public sideBarShown = true;
 
-  appName = 'outdoorAQ';
+  public appName = 'Gaseous Pollutants';
+
 
   constructor(public gss: GlobalSettingsService, private localStorage: LocalStorageService,
     private utHTTP: UtFetchdataService,
@@ -111,6 +112,9 @@ export class outdoorAQComponent implements OnInit {
       'userMeanS',
       'userStartTime',
       'tableShown',
+      'show_V',
+      'show_n',
+      'show_dev',
       'sideBarShown',
       'show_deviation',
     ].forEach((element) => {
@@ -339,6 +343,15 @@ export class outdoorAQComponent implements OnInit {
 
     this.localStorage.set(this.appName + 'sideBarShown', this.sideBarShown);
     console.log('toggleSidebar', this.currentSidebarWidth);
+  }
+  saveCheckBoxes() {
+    [
+      'show_V',
+      'show_n',
+      'show_dev',
+    ].forEach((element) => {
+      const thing = this.localStorage.set(this.appName + element, this[element]);
+    });
   }
   launchQuery(clause: string) {
     if (!this.gss.influxReady()) {

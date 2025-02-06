@@ -2,8 +2,8 @@
 <div id="anyapp">
     <div id="anyheader">
       <h2>
-        Outdoor Air Quality
-        <small *ngIf="common_label != measurement">( {{ common_label }} )</small>
+        {{ appName }}
+        <!-- <small *ngIf="common_label != measurement">( {{ common_label }} )</small> -->
       </h2>
       <!-- small spaces in ( )-->
 
@@ -149,7 +149,7 @@
               [(ngModel)]="show_V"
               name="show_V"
               labelPosition="after"
-
+              (click)="saveCheckBoxes()"
             >
               Show Volts
             </mat-checkbox>

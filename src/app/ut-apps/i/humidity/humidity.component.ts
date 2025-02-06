@@ -108,7 +108,7 @@ export class HumidityComponent implements OnInit {
   public reload_timer = Infinity;
   public last_reload: number;
 
-  public tableShown = true;
+  public tableShown = false;
   public sideBarShown = true;
   public tagsShown = true;
 
@@ -387,7 +387,7 @@ export class HumidityComponent implements OnInit {
   handleData(data: Object) {
     console.log('received', data);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlackList);
-    console.log('parsed', ret);
+    console.log('parsed', cloneDeep(ret));
     if (ret['error']) {
       alert('Influx Error: ' + ret['error']);
       this.queryRunning = false;
@@ -400,10 +400,11 @@ export class HumidityComponent implements OnInit {
     this.short_labels = ret['short_labels'];
     this.common_label = ret['common_label'];
     this.raw_labels = ret['raw_labels'];
-    console.log('orig labels:', this.orig_labels);
-    console.log('raw labels:', ret['raw_labels']);
+    const nrColumns = this.raw_labels.length
+    console.log('orig labels:', cloneDeep(this.orig_labels));
+    console.log('raw labels:', cloneDeep(ret['raw_labels']));
     console.log('common_label:', ret['common_label']);
-    console.log('short_labels:', ret['short_labels']);
+    console.log('short_labels:', cloneDeep(ret['short_labels']));
 
 
 
@@ -487,7 +488,6 @@ export class HumidityComponent implements OnInit {
               }
             }
           }
-
         }
       }
       console.log(new_raw_labels, new_short_labels);
@@ -528,8 +528,8 @@ export class HumidityComponent implements OnInit {
     this.labels = ['Date'].concat(this.short_labels);
     this.data = idata;
     this.colors = newColors;
-    console.log(labels);
-    console.log(idata);
+    console.log("this.labels", this.labels);
+    console.log("idata", idata);
     this.changeTrigger += 1;
     this.queryRunning = false;
 
