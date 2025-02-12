@@ -32,11 +32,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   sensorAppRegistry = {
     // default sensor app path: /Apps/Sensors/$SENSORNAME
     // any sensor without own app (with queryParams) gets its path and params set to Anysens in Constructor
-    ADS1115: {
-      description: 'Voltages',
-      icon: 'manufacturers/TI_copyrighted.svg',
-      queryParams: { measurement: 'voltage', value: '/^ch/' },
-    },
+    // ADS1115: {
+    //   description: 'Voltages',
+    //   icon: 'manufacturers/TI_copyrighted.svg',
+    //   queryParams: { measurement: 'voltage', value: '/^ch/' },
+    // },
     BME280: {
       description: 'Environmental',
       icon: 'manufacturers/Bosch.svg',
@@ -65,16 +65,16 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       icon: 'manufacturers/invensense.png',
       queryParams: { measurement: 'acceleration,magnetic_field,rotation' },
     },
-    "NO2-B43F": {
-      description: 'NO₂ Gas',
-      icon: 'manufacturers/alphasense.png',
-      queryParams: { measurement: 'gas', value: '/^NO2/' },
-    },
-    "OPC-N3": {
-      description: 'Particulate Matter',
-      icon: 'manufacturers/alphasense.png',
-      queryParams: { measurement: 'particulate_matter', value: '/^p/' },
-    },
+    // "NO2-B43F": {
+    //   description: 'NO₂ Gas',
+    //   icon: 'manufacturers/alphasense.png',
+    //   queryParams: { measurement: 'gas', value: '/^NO2/' },
+    // },
+    // "OPC-N3": {
+    //   description: 'Particulate Matter',
+    //   icon: 'manufacturers/alphasense.png',
+    //   queryParams: { measurement: 'particulate_matter', value: '/^p/' },
+    // },
     SCD30: {
       description: 'NDIR CO₂',
       icon: 'manufacturers/sensirion.png',

@@ -123,7 +123,7 @@
           </button>
         </div>
       </fieldset>
-      <fieldset id="tags">
+      <!-- <fieldset id="tags">
         <h3>Series Tags</h3>
         <div *ngIf="tagsShown">
           <label>Show tags (reload data to apply)</label>
@@ -133,27 +133,27 @@
                 (ngModelChange)="changeTaglist($event)">
                 {{ l.key }}
               </mat-checkbox>
-              <!-- {{ l.key }} -->
+              < !-- {{ l.key }} -- >
             </div>
           </div>
         </div>
         <button class="togglebtn" (click)="toggleTags()" type="button">
           {{ tagsShown ? '^' : 'v' }}
         </button>
-      </fieldset>
+      </fieldset> -->
     </form>
   </div>
 
   <div id="anyfooter">
     <div class="btncontainer">
       <!--  *ngIf="!annotationsShown"  *ngIf="!tableShown"-->
-      <button (click)="toggleAnnotationsShown(); R.resize()">
+      <!-- <button (click)="toggleAnnotationsShown(); R.resize()">
         {{ annotationsShown ? "Hide" : "Show" }} Annotations
-      </button>
+      </button> -->
       <button (click)="toggleTableShown(); R.resize()">{{ tableShown ? "Hide" : "Show" }} Data Stats</button>
     </div>
 
-    <table *ngIf="annotationsShown" class="annos">
+    <!-- <table *ngIf="annotationsShown" class="annos">
       <thead>
         <tr>
           <th title="sort per time up/down" (click)="sortAnno('time')">Time</th>
@@ -193,7 +193,7 @@
               (click)="delAnnotation(a.measurement, a.field, a.dygColumnNr, a.time)" title="Delete">X</button></td>
         </tr>
       </tbody>
-    </table>
+    </table> -->
     <table *ngIf="tableShown">
       <thead>
         <tr>

@@ -2,23 +2,38 @@
 
   <h2>Graphs</h2>
   <div class="panel">
-    <app-ut-dashboard-tile title="Indoor Climate" path="/Apps/I/IndoorClimate"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="Particulate Matter"
+      *ngIf="gss.server.measurements.includes('particulate_matter')"
+      path="/Apps/I/Anysens"
+      [queryParams]="{ measurement: 'particulate_matter', value: '/^p/', referrer: 'Dashboard' }"
+      ></app-ut-dashboard-tile>
+
+      <app-ut-dashboard-tile title="Gaseous Pollutants"
+      *ngIf="gss.server.measurements.includes('gas') && gss.server.sensors &&
+      (gss.server.sensors['NO2-A43F'] || gss.server.sensors['NO-A4'] || gss.server.sensors['OX-A431'] ||
+      gss.server.sensors['NO2-B43F'] || gss.server.sensors['NO-B4'] || gss.server.sensors['OX-B431'] || gss.server.sensors['CO-B4'])"
+      path="/Apps/I/outdoorAQ"></app-ut-dashboard-tile>
+
+    <!-- <app-ut-dashboard-tile *ngIf="gss.server.measurements.includes('particulate_matter')" title="PM Histogram" path="/Apps/I/Pmhist"></app-ut-dashboard-tile> -->
+
+    <!-- <app-ut-dashboard-tile title="Indoor Climate" path="/Apps/I/IndoorClimate"></app-ut-dashboard-tile>  (µg/m³) -->
 <!--
     <app-ut-dashboard-tile title="CO₂ Graph"
       *ngIf="gss.server.sensors && (gss.server.sensors['SCD30'] || gss.server.sensors['SCD40'])"
       path="/Apps/CO2" icon="284px-Carbon_dioxide_3D_spacefill.png"></app-ut-dashboard-tile> -->
     <!-- <app-ut-dashboard-tile title="Air Temperature" path="/Apps/Sensors/DS18B20" icon="noun_Temperature.png"></app-ut-dashboard-tile> -->
 
-    <app-ut-dashboard-tile title="NDIR CO₂"
+    <!-- <app-ut-dashboard-tile title="NDIR CO₂"
       *ngIf="gss.server.sensors && gss.server.sensors['SCD30']"
       path="/Apps/I/Anysens"
       icon="284px-Carbon_dioxide_3D_spacefill.png"
       [queryParams]="{ measurement: 'gas', value: '/CO2/', background: 'CO2_ppm', sensor: 'SCD30', ylabel: 'CO₂', referrer: 'Dashboard' }"
-      ></app-ut-dashboard-tile>
+      ></app-ut-dashboard-tile> -->
 
-    <app-ut-dashboard-tile title="Humidity"
+    <app-ut-dashboard-tile title="Air Humidity"
       *ngIf="gss.server.measurements.includes('humidity')"
       path="/Apps/I/Humidity"
+      [queryParams]="{ sensor: 'SCD30' }"
       icon="320px-Water_molecule.svg.png"
       ></app-ut-dashboard-tile>
       <!-- [queryParams]="{ measurement: 'humidity', referrer: 'Dashboard' }" -->
@@ -41,28 +56,19 @@
       [queryParams]="{ measurement: 'pressure', value: '/air_hPa/', referrer: 'Dashboard' }"></app-ut-dashboard-tile>
     <!-- <app-ut-dashboard-tile title="Air Pressure" path="/Apps/I/Pressure" icon="320px-Pressure_gauge.svg.png"></app-ut-dashboard-tile> -->
     <!-- <app-ut-dashboard-tile bg="#FFF" title="Temperature Map" path="/Apps/I/Enviromap" icon="noun_Temperature.png" [queryParams]="{ measurement: 'temperature', column:'°C', sensor:'DS18B20', referrer: 'Dashboard' }"></app-ut-dashboard-tile> -->
-    <app-ut-dashboard-tile *ngIf="gss.server.measurements.includes('particulate_matter')" title="Particulate Matter Histogram" path="/Apps/I/Pmhist"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Particulate Matter (µg/m³)"
-      *ngIf="gss.server.measurements.includes('particulate_matter')"
-      path="/Apps/I/Anysens"
-      [queryParams]="{ measurement: 'particulate_matter', value: '/_ugpm3/', referrer: 'Dashboard' }"
-      ></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Alphasense NO2"
+
+    <!-- <app-ut-dashboard-tile title="Alphasense NO2"
       *ngIf="gss.server.measurements.includes('gas') && gss.server.sensors && gss.server.sensors['NO2-A43F']"
       path="/Apps/I/NO2"
       icon="320px-Nitrogen-dioxide-3D-vdW.png"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Outdoor Air Quality"
-      *ngIf="gss.server.measurements.includes('gas') && gss.server.sensors &&
-      (gss.server.sensors['NO2-A43F'] || gss.server.sensors['NO-A4'] || gss.server.sensors['OX-A431'] ||
-      gss.server.sensors['NO2-B43F'] || gss.server.sensors['NO-B4'] || gss.server.sensors['OX-B431'] || gss.server.sensors['CO-B4'])"
-      path="/Apps/I/outdoorAQ"></app-ut-dashboard-tile>
+
     <app-ut-dashboard-tile title="Alphasense Gas"
       *ngIf="gss.server.measurements.includes('gas') && gss.server.sensors &&
       (gss.server.sensors['NO2-A43F'] || gss.server.sensors['NO-A4'] || gss.server.sensors['OX-A431'] || gss.server.sensors['PID-AH2'] ||
       gss.server.sensors['NO2-B43F'] || gss.server.sensors['NO-B4'] || gss.server.sensors['OX-B431'] || gss.server.sensors['CO-B4'])"
       path="/Apps/I/Anysens"
       icon="manufacturers/alphasense.png"
-      [queryParams]="{ measurement: 'gas', value: '/_V/', referrer: 'Dashboard' }"></app-ut-dashboard-tile>
+      [queryParams]="{ measurement: 'gas', value: '/_V/', referrer: 'Dashboard' }"></app-ut-dashboard-tile> -->
   </div>
 
   <hr>
@@ -100,19 +106,19 @@
   <div class="panel">
     <app-ut-dashboard-tile title="Database Series" path="/Apps/I/Allsens" bg="#FFF" icon="influxdata-logo--symbol--pool-alpha.png"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="Historical Queries" path="/Apps/I/Timequery" bg="#FFF" icon="date_range.svg"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Corellation Plot" path="/Apps/I/Corellation" bg="#FFF" icon="scatterplot.png"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Annotations" path="/Apps/Annotations" bg="#FFF" icon="chat_bubble_outline.svg"></app-ut-dashboard-tile>
+    <!-- <app-ut-dashboard-tile title="Corellation Plot" path="/Apps/I/Corellation" bg="#FFF" icon="scatterplot.png"></app-ut-dashboard-tile> -->
+    <!-- <app-ut-dashboard-tile title="Annotations" path="/Apps/Annotations" bg="#FFF" icon="chat_bubble_outline.svg"></app-ut-dashboard-tile> -->
 
 
-    <app-ut-dashboard-tile title="Influx Playground" path="/Apps/Influx-Test" bg="#FFF" icon="influxdata-logo--symbol--pool-alpha.png"></app-ut-dashboard-tile>
+    <!-- <app-ut-dashboard-tile title="Influx Playground" path="/Apps/Influx-Test" bg="#FFF" icon="influxdata-logo--symbol--pool-alpha.png"></app-ut-dashboard-tile> -->
     <app-ut-dashboard-tile title="Sensor Overview" *ngIf="gss.server.type == 'Tricorder'" path="/Apps/Sensors"  icon="manufacturers/Raspberry_Pi.svg"></app-ut-dashboard-tile>
 
     <app-ut-dashboard-tile title="Operating System" path="/Apps/System"  icon="manufacturers/Raspberry_Pi.svg"></app-ut-dashboard-tile>
   </div>
-  <h2>Beta Apps</h2>
+  <!-- <h2>Beta Apps</h2>
   <div class="panel">
     <app-ut-dashboard-tile title="Calibrations" path="/Apps/Calibrations" bg="#FFF" icon="calibration.svg"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="MQTT Test" path="/Apps/MQTT-Test" icon="mqtt.png"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="Geoplots" path="/Apps/I/Sensemaps" bg="#FFF" icon="map.svg"></app-ut-dashboard-tile>
-  </div>
+  </div> -->
 </div>
