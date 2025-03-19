@@ -195,6 +195,11 @@ const appRoutes: Routes = [
       import('./ut-apps/i/outdoorAQ/outdoorAQ.module').then((m) => m.outdoorAQModule),
   },
   {
+    path: 'Apps/I/MICS6814',
+    loadChildren: () =>
+      import('./ut-apps/i/MICS6814/MICS6814.module').then((m) => m.MICS6814Module),
+  },
+  {
     path: 'Apps/Sensors',
     loadChildren: () =>
       import('./ut-apps/sensors/sensors.module').then((m) => m.SensorsModule),

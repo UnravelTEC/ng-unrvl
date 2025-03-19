@@ -51,6 +51,10 @@
       *ngIf="gss.server.measurements.includes('gas') && gss.server.sensors && gss.server.sensors['NO2-A43F']"
       path="/Apps/I/NO2"
       icon="320px-Nitrogen-dioxide-3D-vdW.png"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="SGX MICS6814"
+      *ngIf="gss.server.measurements.includes('gas') && gss.server.sensors && gss.server.sensors['MICS6814']"
+      path="/Apps/I/MICS6814"
+      icon="manufacturers/SGX.jpg"></app-ut-dashboard-tile>
     <app-ut-dashboard-tile title="Outdoor Air Quality"
       *ngIf="gss.server.measurements.includes('gas') && gss.server.sensors &&
       (gss.server.sensors['NO2-A43F'] || gss.server.sensors['NO-A4'] || gss.server.sensors['OX-A431'] ||
