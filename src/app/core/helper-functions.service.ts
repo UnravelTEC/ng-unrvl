@@ -153,7 +153,7 @@ export class HelperFunctionsService {
         }
       }
     }
-    // console.log('getColorsforLabels:', newColors);
+    console.log('getColorsforLabels from:', labels, 'to', newColors);
 
     return newColors;
   }

@@ -25,7 +25,13 @@ export class MICS6814Component implements OnInit {
     pointSize: 3,
     logscale: false,
     series: {
-      'pressure sensor: BME280, pressure (hPa)': {
+      'NH₃ ( Ohm )': {
+        axis: 'y2',
+      },
+      'RED ( Ohm )': {
+        axis: 'y2',
+      },
+      'OX ( Ohm )': {
         axis: 'y2',
       },
     },
@@ -296,8 +302,8 @@ export class MICS6814Component implements OnInit {
 
 
 
-     const numColumns = this.raw_labels.length;
-    const labelsForColors = ['Date'].concat(cloneDeep(this.short_labels));
+    const numColumns = this.raw_labels.length;
+
     for (let c = 1; c < numColumns; c++) {
       const item = this.short_labels[c - 1];
       this.short_labels[c - 1] = item.replace(/^gas sensor: /, '')
@@ -307,12 +313,35 @@ export class MICS6814Component implements OnInit {
     console.log('after -V short labels:', cloneDeep(this.short_labels));
 
     let logscale = true;
-    this.data = idata;
-    this.labels = ['Date'].concat(this.short_labels);
-    const newColors = this.h.getColorsforLabels(labelsForColors);
 
+    const labelsForColors = ['Date'];
+
+    const VCC = 5;
     for (let c = 1; c < numColumns; c++) {
       const item = this.short_labels[c - 1];
+      let Rf = 15000
+      if(item.match('RED')) {
+        Rf = 1000000
+      }
+
+      this.short_labels.push(item.replace("V","Ohm"))
+      const new_raw_label = cloneDeep(this.raw_labels[c])
+      new_raw_label['field'] = new_raw_label['field'].replace("_V", "_R")
+      this.raw_labels.push(new_raw_label)
+
+      labelsForColors.push('gas')
+      labelsForColors.push('gas')
+
+      for (let r = 0; r < idata.length; r++) {
+        const Um = idata[r][c];
+        let Rs;
+        if (!Number.isNaN(Um) && Um !== null) {
+          Rs = (Um * Rf) / (VCC - Um)
+        } else {
+          Rs = Um // NaN or null
+        }
+        idata[r].push(Rs)
+      }
 
       // if (logscale == true) {
       //   for (let r = 0; r < idata.length; r++) {
@@ -345,6 +374,8 @@ export class MICS6814Component implements OnInit {
       }
       this.round_digits.push(this.sensorService.getDigits(this.raw_labels[c]));
     }
+    this.data = idata;
+    this.labels = ['Date'].concat(this.short_labels);
     // console.log(cloneDeep(this.dygLabels));
     if (logscale) {
       console.log('scale: log');
@@ -352,6 +383,8 @@ export class MICS6814Component implements OnInit {
     } else {
       console.log('scale: lin');
     }
+
+    const newColors = this.h.getColorsforLabels(labelsForColors);
 
     this.startTime = this.userStartTime;
     this.data = idata;
