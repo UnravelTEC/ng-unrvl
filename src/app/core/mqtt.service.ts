@@ -179,8 +179,16 @@ export class MqttService {
     // console.log(
     //   'topic:' + message['topic'] + ' payload: ' + message['payloadString']
     // );
+    let payLoadObj;
+    try {
+      payLoadObj = JSON.parse(message['payloadString']);
+    } catch (error) {
+      console.error("onMessageArrived", error, message)
+      return;
+    }
+
     const topic = message['topic'];
-    const payLoadObj = JSON.parse(message['payloadString']);
+
     payLoadObj.topic = topic;
     const sensor = topic.match(/sensors\/(.*)\//) || [];
     if (sensor.length > 1 && payLoadObj['tags']) {

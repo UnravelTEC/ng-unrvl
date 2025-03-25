@@ -5,11 +5,11 @@ import * as Paho from 'paho-mqtt';
 // import cloneDeep from 'lodash-es/cloneDeep';
 
 @Component({
-  selector: 'app-mqtt',
-  templateUrl: './mqtt.component.html',
-  styleUrls: ['./mqtt.component.scss']
+  selector: 'app-evaporator',
+  templateUrl: './evaporator.component.html',
+  styleUrls: ['./evaporator.component.scss']
 })
-export class MqttComponent implements OnInit, OnDestroy {
+export class EvaporatorComponent implements OnInit, OnDestroy {
   status = 'init'; // | connecting | connected | failed | lost
   public disconnects = 0;
   private client;
@@ -21,6 +21,7 @@ export class MqttComponent implements OnInit, OnDestroy {
   public mqttMessages = [
     { date: new Date(), topic: 'sample topic', payload: 'sample payload' }
   ];
+  public retainedMqttMessages = [];
   public maxlen = 3;
   public updateMessages = true;
 
@@ -28,7 +29,7 @@ export class MqttComponent implements OnInit, OnDestroy {
     [new Date(new Date().valueOf() - 1000), 1],
     [new Date(), 2]
   ];
-  public dygLabels = ['Date','particulate_matter_typpartsize_um'];
+  public dygLabels = ['Date', 'particulate_matter_typpartsize_um'];
   changeTrigger = 0;
 
   public sensorData = {};
@@ -63,6 +64,14 @@ export class MqttComponent implements OnInit, OnDestroy {
     left: '0',
     right: '0'
   };
+
+  public flow_conf = undefined;
+  public flow_real = undefined;
+  public flow_new = 1000;
+
+  public temp_conf = -1;
+  public temp_real = -42;
+  public temp_new = 0;
 
   constructor(private globalSettings: GlobalSettingsService) {
     this.globalSettings.emitChange({ appName: 'MQTT-test' });
@@ -103,11 +112,31 @@ export class MqttComponent implements OnInit, OnDestroy {
     father.status = 'connected';
   }
 
+  setValves(newstatus) {
+    this.client.publish(this.globalSettings.server.hostname + "/actuators/MAGVALVES",
+      '{ "values":{"state":"' + newstatus + '"} }',
+      0,
+      true);
+  }
+  setFlow() {
+    if (this.flow_new >= 0 && this.flow_new <= 1150) {
+    this.client.publish(this.globalSettings.server.hostname + "/actuators/MFC",
+      '{ "values":{"flow_scm":"' + this.flow_new + '"} }',
+      0,
+      true);
+    } else {
+      alert("flow must be between 0 and 1150 sccm")
+    }
+  }
+  setTemp() {
+
+  }
+
   onMessageArrived(message: Object) {
     const father = document['MQTT_TEST']['father'];
 
     const arr = message['topic'].split('/');
-    if (arr.length < 2) {
+    if (arr.length < 2) { // e.g. topic "influx"
       console.log(message);
       return;
     }
@@ -117,6 +146,18 @@ export class MqttComponent implements OnInit, OnDestroy {
     console.log('got MQTT message from sensor ', sensor, ' about ', metric, message);
     try {
       const payload = JSON.parse(message['payloadString']);
+
+      if (payload["values"]) {
+        const values = payload["values"]
+        if (values.hasOwnProperty("probe_degC")) {
+          father.temp_real = values["probe_degC"];
+        }
+        if (values.hasOwnProperty("flow_sccm")) {
+          father.flow_real = values["flow_sccm"];
+        }
+
+      }
+
       const value = payload['value'];
       let tags = JSON.parse(message['payloadString']);
       const TSString = tags['UTS'];
@@ -138,10 +179,21 @@ export class MqttComponent implements OnInit, OnDestroy {
       const sentDate =
         valueTimestamp > 0 ? new Date(valueTimestamp) : new Date();
 
-      father.dygData.push([sentDate, Number(value)]);
+      // father.dygData.push([sentDate, Number(value)]);
       // father.graph.updateGraph()
       father.changeTrigger += 1;
       // console.log(cloneDeep(father.dygData));
+
+      if (message['retained']) {
+        const msg = {
+          date: sentDate,
+          topic: message['topic'],
+          payload: message['payloadString'],
+          destinationName: message['destinationName'],
+          qos: message['qos'],
+        };
+        father.retainedMqttMessages.unshift(msg);
+      }
 
       if (father.updateMessages) {
         // console.log('msg:', message);
