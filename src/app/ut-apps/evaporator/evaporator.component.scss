@@ -3,6 +3,9 @@ table {
   th {
     vertical-align: top;
   }
+  td.on {
+    background-color: green;
+  }
 }
 
 h2, h3 {

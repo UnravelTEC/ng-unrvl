@@ -10,9 +10,10 @@
 
 <div>
   <h2>Magnetic Valves</h2>
+  <!-- State: {{valve_state}} {{valve_reason}} -->
   <table class="messages">
     <tr>
-      <td class="ventilation">
+      <td class="{{ valve_state == 'ventilation' ? 'on' : 'off'}}">
         Venting
       </td>
       <td>
@@ -20,7 +21,7 @@
       </td>
     </tr>
     <tr>
-      <td class="measure">
+      <td class="{{ valve_state == 'measure' ? 'on' : 'off'}}">
         Measure
       </td>
       <td>
@@ -28,7 +29,7 @@
       </td>
     </tr>
     <tr>
-      <td class="flush">
+      <td class="{{ valve_state == 'off' ? 'on' : 'off'}}">
         Off
       </td>
       <td>
@@ -36,7 +37,7 @@
       </td>
     </tr>
     <tr>
-      <td>
+      <td class="{{ valve_state == 'flush' ? 'on' : 'off'}}">
         Flush
       </td>
       <td>

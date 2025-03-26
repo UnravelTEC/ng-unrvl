@@ -73,6 +73,9 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   public temp_real = -42;
   public temp_new = 0;
 
+  public valve_state = "";
+  public valve_reason = "";
+
   constructor(private globalSettings: GlobalSettingsService) {
     this.globalSettings.emitChange({ appName: 'MQTT-test' });
   }
@@ -113,7 +116,7 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   }
 
   setValves(newstatus) {
-    this.client.publish(this.globalSettings.server.hostname + "/actuators/MAGVALVES",
+    this.client.publish(this.globalSettings.server.hostname + "/actuators/MAGVALVES/set",
       '{ "values":{"state":"' + newstatus + '"} }',
       0,
       true);
@@ -146,7 +149,7 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
     const sensor = arr[2];
     const metric = arr[arr.length - 1];
 
-    console.log('got MQTT message from sensor ', sensor, ' about ', metric, message);
+    console.log('got MQTT message from sensor', sensor, 'about', metric, message);
     try {
       const payload = JSON.parse(message['payloadString']);
 
@@ -167,6 +170,10 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
           if(metric == "settings") {
             father.temp_conf = values["target_degC"];
           }
+        }
+        if (values.hasOwnProperty("state") && metric == "settings") {
+          father.valve_state = values["state"];
+          father.valve_reason = values["reason"];
         }
 
       }
