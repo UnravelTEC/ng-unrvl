@@ -84,8 +84,8 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
     this.client = new Paho.Client(server, 1885, this.clientID);
     this.client.onConnectionLost = this.onConnectionLost;
     this.client.onMessageArrived = this.onMessageArrived;
-    document['MQTT_TEST'] = this.client;
-    document['MQTT_TEST']['father'] = this;
+    document['MQTT_CLIENT'] = this.client;
+    document['MQTT_CLIENT']['father'] = this;
     console.log('onInit', this.client);
     this.connect();
 
@@ -107,8 +107,8 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   onConnect() {
     console.log('onConnect');
     // console.log(this);
-    const father = document['MQTT_TEST']['father'];
-    document['MQTT_TEST'].subscribe(father.topic);
+    const father = document['MQTT_CLIENT']['father'];
+    document['MQTT_CLIENT'].subscribe(father.topic);
     father.status = 'connected';
   }
 
@@ -120,8 +120,8 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   }
   setFlow() {
     if (this.flow_new >= 0 && this.flow_new <= 1150) {
-    this.client.publish(this.globalSettings.server.hostname + "/actuators/MFC",
-      '{ "values":{"flow_scm":"' + this.flow_new + '"} }',
+    this.client.publish(this.globalSettings.server.hostname + "/actuators/MFC/set",
+      '{ "values":{"flow_sccm":' + this.flow_new + '} }',
       0,
       true);
     } else {
@@ -129,11 +129,14 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
     }
   }
   setTemp() {
-
+    this.client.publish(this.globalSettings.server.hostname + "/actuators/HEATER/1/set",
+      '{ "values":{"target_degC":' + this.temp_new + '} }',
+      0,
+      true);
   }
 
   onMessageArrived(message: Object) {
-    const father = document['MQTT_TEST']['father'];
+    const father = document['MQTT_CLIENT']['father'];
 
     const arr = message['topic'].split('/');
     if (arr.length < 2) { // e.g. topic "influx"
@@ -141,7 +144,7 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
       return;
     }
     const sensor = arr[2];
-    const metric = arr[3];
+    const metric = arr[arr.length - 1];
 
     console.log('got MQTT message from sensor ', sensor, ' about ', metric, message);
     try {
@@ -153,7 +156,17 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
           father.temp_real = values["probe_degC"];
         }
         if (values.hasOwnProperty("flow_sccm")) {
-          father.flow_real = values["flow_sccm"];
+          if(metric == "airflow") {
+            father.flow_real = values["flow_sccm"];
+          }
+          if(metric == "settings") {
+            father.flow_conf = values["flow_sccm"];
+          }
+        }
+        if (values.hasOwnProperty("target_degC")) {
+          if(metric == "settings") {
+            father.temp_conf = values["target_degC"];
+          }
         }
 
       }
@@ -219,10 +232,10 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   onFailure(message) {
     console.error('MQTT failure on connect');
     console.error(message);
-    document['MQTT_TEST']['father'].status = 'failed';
+    document['MQTT_CLIENT']['father'].status = 'failed';
   }
   onConnectionLost(responseObject) {
-    const father = document['MQTT_TEST']['father'];
+    const father = document['MQTT_CLIENT']['father'];
     console.error('onConnectionLost object: ', responseObject);
     if (responseObject.errorCode !== 0) {
       console.error('onConnectionLost:', responseObject.errorMessage);
