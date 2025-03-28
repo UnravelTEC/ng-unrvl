@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GlobalSettingsService } from '../../core/global-settings.service';
 import * as Paho from 'paho-mqtt';
+import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
+import { LocalStorageService } from 'app/core/local-storage.service';
 
 // import cloneDeep from 'lodash-es/cloneDeep';
 
@@ -76,12 +78,18 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   public valve_state = "";
   public valve_reason = "";
 
-  constructor(private globalSettings: GlobalSettingsService) {
-    this.globalSettings.emitChange({ appName: 'MQTT-test' });
+  public services = []; // only gets filled with 1 entry
+  public loadingText = 'Initializing...';
+
+  private ls_api_user;
+  private ls_api_pass;
+
+  constructor(private gss: GlobalSettingsService, private utHTTP: UtFetchdataService, private localStorage: LocalStorageService,) {
+    this.gss.emitChange({ appName: 'Evaporator Control' });
   }
 
   ngOnInit() {
-    let server = this.globalSettings.server.serverName;
+    let server = this.gss.server.serverName;
     console.log(server);
 
     this.client = new Paho.Client(server, 1885, this.clientID);
@@ -91,6 +99,10 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
     document['MQTT_CLIENT']['father'] = this;
     console.log('onInit', this.client);
     this.connect();
+
+    this.ls_api_user = this.localStorage.get('api_user');
+    this.ls_api_pass = this.localStorage.get('api_pass');
+    this.getService();
 
     // this.dygLabels = ;
   }
@@ -116,24 +128,24 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   }
 
   setValves(newstatus) {
-    this.client.publish(this.globalSettings.server.hostname + "/actuators/MAGVALVES/set",
-      '{ "values":{"state":"' + newstatus + '"} }',
+    this.client.publish(this.gss.server.hostname + "/actuators/MAGVALVES/set",
+      JSON.stringify({ "values": { "state": newstatus }, "UTS": new Date().valueOf() / 1000 }),
       0,
       true);
   }
   setFlow() {
     if (this.flow_new >= 0 && this.flow_new <= 1150) {
-    this.client.publish(this.globalSettings.server.hostname + "/actuators/MFC/set",
-      '{ "values":{"flow_sccm":' + this.flow_new + '} }',
-      0,
-      true);
+      this.client.publish(this.gss.server.hostname + "/actuators/MFC/set",
+        JSON.stringify({ "values": { "flow_sccm": this.flow_new }, "UTS": new Date().valueOf() / 1000 }),
+        0,
+        true);
     } else {
       alert("flow must be between 0 and 1150 sccm")
     }
   }
   setTemp() {
-    this.client.publish(this.globalSettings.server.hostname + "/actuators/HEATER/1/set",
-      '{ "values":{"target_degC":' + this.temp_new + '} }',
+    this.client.publish(this.gss.server.hostname + "/actuators/HEATER/1/set",
+      JSON.stringify({ "values": { "target_degC": this.temp_new }, "UTS": new Date().valueOf() / 1000 }),
       0,
       true);
   }
@@ -159,15 +171,15 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
           father.temp_real = values["probe_degC"];
         }
         if (values.hasOwnProperty("flow_sccm")) {
-          if(metric == "airflow") {
+          if (metric == "airflow") {
             father.flow_real = values["flow_sccm"];
           }
-          if(metric == "settings") {
+          if (metric == "settings") {
             father.flow_conf = values["flow_sccm"];
           }
         }
         if (values.hasOwnProperty("target_degC")) {
-          if(metric == "settings") {
+          if (metric == "settings") {
             father.temp_conf = values["target_degC"];
           }
         }
@@ -250,5 +262,91 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
     father.status = 'lost';
     father.disconnects += 1;
     father.connect();
+  }
+
+  // copied & modified from services.component TODO split into ng service
+  getService() {
+    this.utHTTP
+      .getHTTPData(
+        this.gss.getAPIEndpoint() + 'system/services.php?service=scd30'
+      )
+      .subscribe(
+        (data: Object) => this.acceptService(data),
+        (error) => this.gss.displayHTTPerror(error)
+      );
+    this.loadingText = 'Loading...';
+  }
+  acceptService(data: Object) {
+    console.log('services:', data);
+    if (data && data['services']) {
+      this.services = data['services'];
+      this.loadingText = '';
+    } else {
+      this.loadingText = 'Error, no fancontrol service.';
+    }
+  }
+
+  // copied from services.component TODO split into ng service
+  startService(service: string) {
+    console.log('starting', service);
+    this.services.forEach((serviceItem) => {
+      if (serviceItem['name'] == service) {
+        serviceItem['running'] = undefined;
+      }
+    });
+    this.sendCmd(service, 'start');
+  }
+  stopService(service: string) {
+    console.log('stopping', service);
+    this.services.forEach((serviceItem) => {
+      if (serviceItem['name'] == service) {
+        serviceItem['running'] = undefined;
+      }
+    });
+    this.sendCmd(service, 'stop');
+  }
+  enableService(service: string) {
+    console.log('enabling', service);
+    this.services.forEach((serviceItem) => {
+      if (serviceItem['name'] == service) {
+        serviceItem['onboot'] = undefined;
+      }
+    });
+    this.sendCmd(service, 'enable');
+  }
+  disableService(service: string) {
+    console.log('disabling', service);
+    this.services.forEach((serviceItem) => {
+      if (serviceItem['name'] == service) {
+        serviceItem['onboot'] = undefined;
+      }
+    });
+    this.sendCmd(service, 'disable');
+  }
+
+  sendCmd(service: String, cmd: String) {
+    this.utHTTP
+      .getHTTPData(
+        this.gss.getAPIEndpoint() +
+        'system/service.php?cmd=' +
+        cmd +
+        '&service=' +
+        service,
+        this.ls_api_user,
+        this.ls_api_pass,
+        true
+      )
+      .subscribe(
+        (data: Object) => this.checkSuccessOfCommand(data),
+        (error) => this.gss.displayHTTPerror(error)
+      );
+  }
+  checkSuccessOfCommand(data: Object) {
+    console.log('success:', data);
+    if (!data['success']) {
+      alert('last command unsuccessful');
+    } else {
+      this.getService();
+    }
   }
 }

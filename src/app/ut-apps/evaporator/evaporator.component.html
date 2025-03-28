@@ -1,5 +1,5 @@
-<div>
-  Progress:
+<div style="position: absolute; right: 5px;">
+  MQTT:
   <span *ngIf="status === 'init'">Initializing...</span>
   <span *ngIf="status === 'connecting'">Connecting...</span>
   <span *ngIf="status === 'connected'">Connected.</span>
@@ -8,7 +8,7 @@
   ({{ disconnects }})
 </div>
 
-<div>
+<div class="block">
   <h2>Magnetic Valves</h2>
   <!-- State: {{valve_state}} {{valve_reason}} -->
   <table class="messages">
@@ -47,16 +47,16 @@
   </table>
 </div>
 
-<div>
+<div class="block">
   <h2>Mass Flow Controller</h2>
   <table class="messages">
     <tr>
-      <td style="min-width: 15em;">Configured flow: {{ flow_conf }} sccm</td>
-      <td>Current Flow {{ flow_real }} sccm</td>
+      <td style="min-width: 15em;">Configured flow: {{ flow_conf | number : '1.0-2' }} sccm</td>
+      <td style="min-width: 15em;">Current Flow {{ flow_real | number : '1.0-2' }} sccm</td>
     </tr>
     <tr>
       <td>
-        New Flow: <input type="number" style="width: 5em;" [(ngModel)]="flow_new"/> sccm
+        New Flow: <input type="number" style="width: 5em;" [(ngModel)]="flow_new" /> sccm
       </td>
       <td>
         <button (click)="setFlow()">Set</button>
@@ -65,14 +65,14 @@
   </table>
 </div>
 
-<div>
+<div class="block">
   <h2>
     Heater
   </h2>
   <table class="messages">
     <tr>
-      <td style="min-width: 20em;">Configured target temperature: {{ temp_conf }} °C</td>
-      <td>Current temperature {{ temp_real }} °C</td>
+      <td style="min-width: 20em;">Configured target temperature: {{ temp_conf | number : '1.0-2' }} °C</td>
+      <td style="min-width: 15em;">Current temperature {{ temp_real | number : '1.0-2' }} °C</td>
     </tr>
     <tr>
       <td>
@@ -84,6 +84,8 @@
     </tr>
   </table>
 </div>
+
+<hr>
 
 <div>
   Topic:
