@@ -1,8 +1,12 @@
 .block {
-  display: inline-block;
+  float: left;
   border: 1px solid gray;
   margin: 1em;
   padding-bottom: 1em;
+
+  p {
+    margin: 1em;
+  }
 }
 
 table {

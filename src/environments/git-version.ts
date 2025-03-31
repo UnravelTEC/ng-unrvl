@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "e034998",
-  "SHA": "e03499812fec02ce0e92120a25d4245a37f7785a",
+  "shortSHA": "f53bfe3",
+  "SHA": "f53bfe39c1690fb8d87a12d3a5c8235a1e7cffa6",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Wed Mar 26 17:42:17 2025 +0100",
-  "lastCommitMessage": "display state of valves",
-  "lastCommitNumber": "1572"
+  "lastCommitTime": "Fri Mar 28 18:30:23 2025 +0100",
+  "lastCommitMessage": "evaporator++",
+  "lastCommitNumber": "1573"
 }

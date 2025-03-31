@@ -19,6 +19,14 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   // public topic = '+/sensors/SPS30/particulate_matter_typpartsize_um';
 
   public topic = '#';
+  public topics = [
+    'evaporator/actuators/MAGVALVES/settings',
+    'evaporator/actuators/PWM/gpio18/settings',
+    'evaporator/actuators/MFC/settings',
+    'evaporator/actuators/MFC/airflow',
+    'evaporator/sensors/MCP9600/temperature',
+    'evaporator/sensors/FANSPEED/fanspeed',
+  ]
 
   public mqttMessages = [
     { date: new Date(), topic: 'sample topic', payload: 'sample payload' }
@@ -80,9 +88,12 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
 
   public services = []; // only gets filled with 1 entry
   public loadingText = 'Initializing...';
+  public fanspeed = 0;
 
   private ls_api_user;
   private ls_api_pass;
+
+  public debugmqtt:boolean = false;
 
   constructor(private gss: GlobalSettingsService, private utHTTP: UtFetchdataService, private localStorage: LocalStorageService,) {
     this.gss.emitChange({ appName: 'Evaporator Control' });
@@ -109,8 +120,15 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.stop();
   }
+
+  toggleDebug() {
+    this.debugmqtt = !this.debugmqtt;
+  }
+
   stop() {
-    this.client.unsubscribe(this.topic, {});
+    for (let i = 0; i < this.topics.length; i++) {
+      this.client.unsubscribe(this.topics[i], {});
+    }
   }
   connect() {
     this.client.connect({
@@ -123,7 +141,10 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
     console.log('onConnect');
     // console.log(this);
     const father = document['MQTT_CLIENT']['father'];
-    document['MQTT_CLIENT'].subscribe(father.topic);
+    for (let i = 0; i < father.topics.length; i++) {
+      document['MQTT_CLIENT'].subscribe(father.topics[i]);
+    }
+
     father.status = 'connected';
   }
 
@@ -167,27 +188,28 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
 
       if (payload["values"]) {
         const values = payload["values"]
-        if (values.hasOwnProperty("probe_degC")) {
-          father.temp_real = values["probe_degC"];
-        }
-        if (values.hasOwnProperty("flow_sccm")) {
-          if (metric == "airflow") {
+        switch (metric) {
+          case "temperature":
+            father.temp_real = values["probe_degC"];
+            break;
+          case "fanspeed":
+            father.fanspeed = values["fanspeed_rpm"];
+            break;
+          case "airflow":
             father.flow_real = values["flow_sccm"];
-          }
-          if (metric == "settings") {
-            father.flow_conf = values["flow_sccm"];
-          }
+            break;
+          case "settings":
+            if (values.hasOwnProperty("target_degC")) {
+              father.temp_conf = values["target_degC"];
+            }
+            if (values.hasOwnProperty("state")) {
+              father.valve_state = values["state"];
+              father.valve_reason = values["reason"];
+            }
+            if (values.hasOwnProperty("flow_sccm")) {
+              father.flow_conf = values["flow_sccm"];
+            }
         }
-        if (values.hasOwnProperty("target_degC")) {
-          if (metric == "settings") {
-            father.temp_conf = values["target_degC"];
-          }
-        }
-        if (values.hasOwnProperty("state") && metric == "settings") {
-          father.valve_state = values["state"];
-          father.valve_reason = values["reason"];
-        }
-
       }
 
       const value = payload['value'];
@@ -268,7 +290,7 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   getService() {
     this.utHTTP
       .getHTTPData(
-        this.gss.getAPIEndpoint() + 'system/services.php?service=scd30'
+        this.gss.getAPIEndpoint() + 'system/services.php?service=gpiofancontrol'
       )
       .subscribe(
         (data: Object) => this.acceptService(data),
