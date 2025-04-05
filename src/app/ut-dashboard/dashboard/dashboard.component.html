@@ -5,7 +5,10 @@
     <app-ut-dashboard-tile title="Indoor Climate"
     *ngIf="gss.server.measurements.includes('gas')"
     path="/Apps/I/IndoorClimate"></app-ut-dashboard-tile>
-    <app-ut-dashboard-tile title="Evaporator" path="/Apps/Evaporator"></app-ut-dashboard-tile>
+
+    <app-ut-dashboard-tile title="Evaporator"
+    *ngIf="gss.server['hostname'] == 'evaporator'"
+    path="/Apps/Evaporator"></app-ut-dashboard-tile>
 <!--
     <app-ut-dashboard-tile title="CO₂ Graph"
       *ngIf="gss.server.sensors && (gss.server.sensors['SCD30'] || gss.server.sensors['SCD40'])"

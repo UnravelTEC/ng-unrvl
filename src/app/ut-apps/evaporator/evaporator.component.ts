@@ -21,7 +21,7 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   public topic = '#';
   public topics = [
     'evaporator/actuators/MAGVALVES/settings',
-    'evaporator/actuators/PWM/gpio18/settings',
+    'evaporator/actuators/HEATER/1/settings',
     'evaporator/actuators/MFC/settings',
     'evaporator/actuators/MFC/airflow',
     'evaporator/sensors/MCP9600/temperature',
