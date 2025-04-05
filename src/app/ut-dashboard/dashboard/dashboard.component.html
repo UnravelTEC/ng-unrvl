@@ -6,6 +6,10 @@
     *ngIf="gss.server.measurements.includes('gas')"
     path="/Apps/I/IndoorClimate"></app-ut-dashboard-tile>
 
+    <app-ut-dashboard-tile title="Nano4E Testbench"
+    *ngIf="gss.server['hostname'] == 'nano4e-gen2'"
+    path="/Apps/Nano4E-Gen2"></app-ut-dashboard-tile>
+
     <app-ut-dashboard-tile title="Evaporator"
     *ngIf="gss.server['hostname'] == 'evaporator'"
     path="/Apps/Evaporator"></app-ut-dashboard-tile>
