@@ -1,6 +1,6 @@
 
 <div class="block">
-  <h2>Magnetic Valves</h2>
+  <h2>Digital Board Power:&nbsp;</h2>
   <!-- State: {{valve_state}} {{valve_reason}} -->
   <table class="messages">
     <!-- <tr *ngFor="let board of gpios | keyvalue">
@@ -13,7 +13,7 @@
       </td>
     </tr> -->
     <tr>
-      <td class="{{ gpios['DIGITBOARD']['MICS_HEATER'] == true ? 'on' : 'off'}}">
+      <td class="{{ gpios['DIGITBOARD']['MICS_HEATER'] }}">
         MICS6814 Heater
       </td>
       <td>
@@ -22,7 +22,7 @@
       </td>
     </tr>
     <tr>
-      <td class="{{ gpios['DIGITBOARD']['3V3_SUPPLY'] == true ? 'on' : 'off'}}">
+      <td class="{{ gpios['DIGITBOARD']['3V3_SUPPLY'] }}">
         3V3 switched power supply
       </td>
       <td>
@@ -31,7 +31,7 @@
       </td>
     </tr>
     <tr>
-      <td class="{{ gpios['DIGITBOARD']['5V_SUPPLY'] == true ? 'on' : 'off'}}">
+      <td class="{{ gpios['DIGITBOARD']['5V_SUPPLY'] }}">
         5V switched power supply
       </td>
       <td>
@@ -40,7 +40,7 @@
       </td>
     </tr>
     <tr>
-      <td class="{{ gpios['DIGITBOARD']['SCD30_SUPPLY'] == true ? 'on' : 'off'}}">
+      <td class="{{ gpios['DIGITBOARD']['SCD30_SUPPLY'] }}">
         SCD30 CO2 sensor switched power supply
       </td>
       <td>

@@ -212,7 +212,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
               for (const pinname in father.pins[board]) {
                 if (Object.prototype.hasOwnProperty.call(father.pins[board], pinname)) {
                   const hexmask = father.pins[board][pinname];
-                  father.gpios[board][pinname] = !Boolean(hexmask & value)
+                  father.gpios[board][pinname] = (!Boolean(hexmask & value)) ? "on" : "off"
                 }
               }
 
