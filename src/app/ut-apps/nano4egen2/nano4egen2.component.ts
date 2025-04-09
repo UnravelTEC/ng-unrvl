@@ -3,6 +3,7 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
 import * as Paho from 'paho-mqtt';
 import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
 import { LocalStorageService } from 'app/core/local-storage.service';
+import { cloneDeep } from 'lodash-es';
 
 // import cloneDeep from 'lodash-es/cloneDeep';
 
@@ -25,6 +26,18 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     'nano4e-gen2/actuators/GPIOEXP/AFEBOARD2/settings',
     'nano4e-gen2/actuators/GPIOEXP/AFEBOARD3/settings',
     'nano4e-gen2/actuators/GPIOEXP/AFEBOARD4/settings',
+    'nano4e-gen2/actuators/DAC/AFEBOARD1/MEAS/settings',
+    'nano4e-gen2/actuators/DAC/AFEBOARD1/LED/settings',
+    'nano4e-gen2/actuators/DAC/AFEBOARD1/HEAT/settings',
+    'nano4e-gen2/actuators/DAC/AFEBOARD2/MEAS/settings',
+    'nano4e-gen2/actuators/DAC/AFEBOARD2/LED/settings',
+    'nano4e-gen2/actuators/DAC/AFEBOARD2/HEAT/settings',
+    'nano4e-gen2/actuators/DAC/AFEBOARD3/MEAS/settings',
+    'nano4e-gen2/actuators/DAC/AFEBOARD3/LED/settings',
+    'nano4e-gen2/actuators/DAC/AFEBOARD3/HEAT/settings',
+    'nano4e-gen2/actuators/DAC/AFEBOARD4/MEAS/settings',
+    'nano4e-gen2/actuators/DAC/AFEBOARD4/LED/settings',
+    'nano4e-gen2/actuators/DAC/AFEBOARD4/HEAT/settings',
     'nano4e-gen2/actuators/HEATER/1/settings',
     'nano4e-gen2/actuators/MFC/settings',
     'nano4e-gen2/actuators/MFC/airflow',
@@ -79,16 +92,24 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     right: '0'
   };
 
-  public flow_conf = undefined;
-  public flow_real = undefined;
-  public flow_new = 1000;
+  public DACstatus = { "AFEBOARD1": { "LED": { "ch1_V": undefined } } }
+  public channels = ["ch1_V", "ch2_V", "ch3_V", "ch4_V"];
+  public channelNames = { "ch1_V": "Channel 1", "ch2_V": "Channel 2", "ch3_V": "Channel 3", "ch4_V": "Channel 4" }
+  public DACnewValues = {}
 
   public temp_conf = -1;
   public temp_real = -42;
   public temp_new = 0;
 
-  public pins = { 'DIGITBOARD': { 'MICS_HEATER': 0b0001, '3V3_SUPPLY': 0b0010, '5V_SUPPLY': 0b0100, 'SCD30_SUPPLY': 0b1000 } };
+  public pins = {
+    'DIGITBOARD': { 'MICS_HEATER': 0b0001, '3V3_SUPPLY': 0b0010, '5V_SUPPLY': 0b0100, 'SCD30_SUPPLY': 0b1000 },
+    "AFEBOARD1": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED4": 0b1000000, "HEATER": 0b10000000 },
+    "AFEBOARD2": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED4": 0b1000000, "HEATER": 0b10000000 },
+    "AFEBOARD3": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED4": 0b1000000, "HEATER": 0b10000000 },
+    "AFEBOARD4": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED4": 0b1000000, "HEATER": 0b10000000 },
+  };
   public gpios = { 'DIGITBOARD': { 'MICS_HEATER': undefined, '3V3_SUPPLY': undefined, '5V_SUPPLY': undefined, 'SCD30_SUPPLY': undefined } };
+  public pinNames = {'MICS_HEATER': 'MICS6814 Heater', '3V3_SUPPLY': '3V3 switched power supply', '5V_SUPPLY': '5V switched power supply', 'SCD30_SUPPLY': 'SCD30 CO2 sensor switched power supply'}
   public valve_reason = "";
 
   public services = []; // only gets filled with 1 entry
@@ -102,6 +123,32 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
 
   constructor(private gss: GlobalSettingsService, private utHTTP: UtFetchdataService, private localStorage: LocalStorageService,) {
     this.gss.emitChange({ appName: 'Nano4E-Gen2 Control' });
+
+    const DACtypes = ["MEAS", "LED", "HEAT"]
+    for (let i = 1; i <= 4; i++) {
+      const board = "AFEBOARD" + String(i)
+      this.DACstatus[board] = {}
+      DACtypes.forEach(DACname => {
+        this.DACstatus[board][DACname] = {}
+        this.channels.forEach(channel => {
+          this.DACstatus[board][DACname][channel] = NaN
+        });
+      });
+    }
+    this.DACnewValues = cloneDeep(this.DACstatus)
+
+    for (const boardname in this.pins) {
+      if (Object.prototype.hasOwnProperty.call(this.pins, boardname)) {
+        const board = this.pins[boardname];
+        this.gpios[boardname] = {}
+        for (const pinkey in board) {
+          if (Object.prototype.hasOwnProperty.call(board, pinkey)) {
+            this.gpios[boardname][pinkey] = undefined
+          }
+        }
+      }
+    }
+
   }
 
   ngOnInit() {
@@ -161,17 +208,36 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
       0,
       true);
   }
-  setFlow() {
-    if (this.flow_new >= 0 && this.flow_new <= 1150) {
-      this.client.publish(this.gss.server.hostname + "/actuators/MFC/set",
-        JSON.stringify({ "values": { "flow_sccm": this.flow_new }, "UTS": new Date().valueOf() / 1000 }),
-        0,
-        true);
-    } else {
-      alert("flow must be between 0 and 1150 sccm")
+
+  setDAC() {
+    for (const AFEBOARDid in this.DACnewValues) {
+      if (Object.prototype.hasOwnProperty.call(this.DACnewValues, AFEBOARDid)) {
+        const AFEBOARD = this.DACnewValues[AFEBOARDid];
+        for (const DACid in AFEBOARD) {
+          if (Object.prototype.hasOwnProperty.call(AFEBOARD, DACid)) {
+            const DAC = AFEBOARD[DACid];
+            let values = {}
+            for (const key in DAC) {
+              if (Object.prototype.hasOwnProperty.call(DAC, key)) {
+                const value = DAC[key];
+                if (!isNaN(value) && value !== undefined && value !== null) {
+                  values[key] = value;
+                }
+              }
+            }
+            if (Object.keys(values).length > 0) {
+              const payload = { "values": values, "UTS": new Date().valueOf() / 1000 }
+              this.client.publish(this.gss.server.hostname + "/actuators/DAC/" + AFEBOARDid + "/" + DACid + "/set",
+                JSON.stringify(payload),
+                0,
+                true);
+              console.log(payload);
+
+            }
+          }
+        }
+      }
     }
-  }
-  setTemp() {
     this.client.publish(this.gss.server.hostname + "/actuators/HEATER/1/set",
       JSON.stringify({ "values": { "target_degC": this.temp_new }, "UTS": new Date().valueOf() / 1000 }),
       0,
@@ -186,10 +252,15 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
       console.log(message);
       return;
     }
-    const sensor = arr[2];
+    const type = arr[1];
+    const actor = arr[2];
     const metric = arr[arr.length - 1];
 
-    console.log('got MQTT message from sensor', sensor, 'about', metric, message);
+    if (type == "sensor")
+      console.log('got MQTT message from sensor', actor, 'about', metric, message);
+    if (type == "actuator")
+      console.log('got MQTT message from t', actor, 'about', metric, message);
+
     try {
       const payload = JSON.parse(message['payloadString']);
 
@@ -198,12 +269,6 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
         switch (metric) {
           case "temperature":
             father.temp_real = values["probe_degC"];
-            break;
-          case "fanspeed":
-            father.fanspeed = values["fanspeed_rpm"];
-            break;
-          case "airflow":
-            father.flow_real = values["flow_sccm"];
             break;
           case "settings":
             if (values.hasOwnProperty("reg")) {
@@ -217,12 +282,13 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
               }
 
             }
-            if (values.hasOwnProperty("state")) {
-              father.valve_state = values["state"];
-              father.valve_reason = values["reason"];
-            }
-            if (values.hasOwnProperty("flow_sccm")) {
-              father.flow_conf = values["flow_sccm"];
+
+            if (actor == "DAC") {
+              father.channels.forEach(channel => {
+                if (values.hasOwnProperty(channel)) {
+                  father.DACstatus[arr[3]][arr[4]][channel] = values[channel]
+                }
+              });
             }
         }
       }
@@ -235,13 +301,13 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
       const index = JSON.stringify(tags);
 
       // console.log(payload);
-      if (!father.sensorData[sensor]) {
-        father.sensorData[sensor] = {};
+      if (!father.sensorData[actor]) {
+        father.sensorData[actor] = {};
       }
-      if (!father.sensorData[sensor][metric]) {
-        father.sensorData[sensor][metric] = {};
+      if (!father.sensorData[actor][metric]) {
+        father.sensorData[actor][metric] = {};
       }
-      father.sensorData[sensor][metric][index] = { value: value, tags: tags };
+      father.sensorData[actor][metric][index] = { value: value, tags: tags };
 
       let valueTimestamp = Number(TSString) * 1000;
 

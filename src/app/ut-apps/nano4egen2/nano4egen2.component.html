@@ -1,57 +1,47 @@
+<div class="evap-inner" style="position: relative;">
 
-<div class="block">
-  <h2>Digital Board Power:&nbsp;</h2>
-  <!-- State: {{valve_state}} {{valve_reason}} -->
-  <table class="messages">
-    <!-- <tr *ngFor="let board of gpios | keyvalue">
-      <td class="{{ board.value['MICS_HEATER'] == true ? 'on' : 'off'}}">
-        MICS6814 Heater
-      </td>
-      <td>
-        <button (click)="setGPIO(board, 'MICS_HEATER', true)">On</button><br>
-        <button (click)="setGPIO(board, 'MICS_HEATER', false)">Off</button>
-      </td>
-    </tr> -->
-    <tr>
-      <td class="{{ gpios['DIGITBOARD']['MICS_HEATER'] }}">
-        MICS6814 Heater
-      </td>
-      <td>
-        <button (click)="setGPIO('DIGITBOARD', 'MICS_HEATER', true)">On</button><br>
-        <button (click)="setGPIO('DIGITBOARD', 'MICS_HEATER', false)">Off</button>
-      </td>
-    </tr>
-    <tr>
-      <td class="{{ gpios['DIGITBOARD']['3V3_SUPPLY'] }}">
-        3V3 switched power supply
-      </td>
-      <td>
-        <button (click)="setGPIO('DIGITBOARD', '3V3_SUPPLY', true)">On</button><br>
-        <button (click)="setGPIO('DIGITBOARD', '3V3_SUPPLY', false)">Off</button>
-      </td>
-    </tr>
-    <tr>
-      <td class="{{ gpios['DIGITBOARD']['5V_SUPPLY'] }}">
-        5V switched power supply
-      </td>
-      <td>
-        <button (click)="setGPIO('DIGITBOARD', '5V_SUPPLY', true)">On</button><br>
-        <button (click)="setGPIO('DIGITBOARD', '5V_SUPPLY', false)">Off</button>
-      </td>
-    </tr>
-    <tr>
-      <td class="{{ gpios['DIGITBOARD']['SCD30_SUPPLY'] }}">
-        SCD30 CO2 sensor switched power supply
-      </td>
-      <td>
-        <button (click)="setGPIO('DIGITBOARD', 'SCD30_SUPPLY', true)">On</button><br>
-        <button (click)="setGPIO('DIGITBOARD', 'SCD30_SUPPLY', false)">Off</button>
-      </td>
-    </tr>
-  </table>
-</div>
+  <div class="block" *ngFor="let board of gpios | keyvalue">
+    <h2>{{board.key}} Power:&nbsp;</h2>
+    <table class="messages">
+      <tr *ngFor="let pin of board.value | keyvalue">
+        <td class="{{ gpios[board.key][pin.key] }}">
+          {{ pinNames[pin.key] ? pinNames[pin.key] : pin.key}}
+        </td>
+        <td>
+          <button (click)="setGPIO(board.key, pin.key, true)">On</button><br>
+          <button (click)="setGPIO(board.key, pin.key, false)">Off</button>
+        </td>
+      </tr>
+    </table>
+  </div>
 
-<!-- <div class="block">
+  <div class="block">
+    <h2>DAC Status:&nbsp;<button (click)="setDAC()">Set</button></h2>
+    <table class="messages" *ngFor="let board of DACstatus | keyvalue">
+      <tr>
+        <th colspan="2">{{ board.key }}</th>
+      </tr>
+      <tr *ngFor="let DACname of board.value | keyvalue">
+        <th>{{ DACname.key }}</th>
+        <td>
+          <table>
+            <tr *ngFor="let channel of DACname.value | keyvalue">
+              <td>
+                {{ channelNames[channel.key] }}
+              </td>
+              <td>{{ channel.value }} V</td>
+              <td>
+                <input type="number" style="width: 5em;"
+                  [(ngModel)]="DACnewValues[board.key][DACname.key][channel.key]" />
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- <div class="block">
   <h2>Mass Flow Controller</h2>
   <table class="messages">
     <tr>
@@ -109,71 +99,67 @@
 
 
 
-<div style="position: absolute; bottom: 0.5em; right: 0.5em;">
-  <button (click)="toggleDebug()">NQTT</button>
-</div>
+  <div *ngIf="debugmqtt == true">
+    <hr style="clear: both">
 
-<div *ngIf="debugmqtt == true">
-  <hr style="clear: both">
-
-  <div>
-    MQTT:
-    <span *ngIf="status === 'init'">Initializing...</span>
-    <span *ngIf="status === 'connecting'">Connecting...</span>
-    <span *ngIf="status === 'connected'">Connected.</span>
-    <span *ngIf="status === 'failed'">Connection failed.</span>
-    <span *ngIf="status === 'lost'">Connection lost.</span>
-    ({{ disconnects }})
-  </div>
+    <div>
+      MQTT:
+      <span *ngIf="status === 'init'">Initializing...</span>
+      <span *ngIf="status === 'connecting'">Connecting...</span>
+      <span *ngIf="status === 'connected'">Connected.</span>
+      <span *ngIf="status === 'failed'">Connection failed.</span>
+      <span *ngIf="status === 'lost'">Connection lost.</span>
+      ({{ disconnects }})
+    </div>
 
 
-  <button (click)="stop()">
-    Stop
-  </button>
+    <button (click)="stop()">
+      Stop
+    </button>
 
-  <div>
-    <h3>Latest MQTT messages:</h3>
-    <table class="messages">
-      <tr>
-        <th>Time</th>
-        <th>Topic</th>
-        <th>Qos</th>
-        <th>Retained</th>
-        <!-- <th>destinationName</th> -->
-        <th>Payload</th>
-      </tr>
-      <tr *ngFor="let message of mqttMessages">
-        <td>{{ message.date }}</td>
-        <td>{{ message.topic }}</td>
-        <td>{{ message.qos }}</td>
-        <td>{{ message.retained }}</td>
-        <!-- <td>{{ message.destinationName }}</td> -->
-        <td>{{ message.payload }}</td>
-      </tr>
-    </table>
-  </div>
+    <div>
+      <h3>Latest MQTT messages:</h3>
+      <table class="messages">
+        <tr>
+          <th>Time</th>
+          <th>Topic</th>
+          <th>Qos</th>
+          <th>Retained</th>
+          <!-- <th>destinationName</th> -->
+          <th>Payload</th>
+        </tr>
+        <tr *ngFor="let message of mqttMessages">
+          <td>{{ message.date }}</td>
+          <td>{{ message.topic }}</td>
+          <td>{{ message.qos }}</td>
+          <td>{{ message.retained }}</td>
+          <!-- <td>{{ message.destinationName }}</td> -->
+          <td>{{ message.payload }}</td>
+        </tr>
+      </table>
+    </div>
 
-  <div>
-    <h3>Retained MQTT messages:</h3>
-    <table class="messages">
-      <tr>
-        <th>Time</th>
-        <th>Topic</th>
-        <th>Qos</th>
-        <!-- <th>destinationName</th> -->
-        <th>Payload</th>
-      </tr>
-      <tr *ngFor="let message of retainedMqttMessages">
-        <td>{{ message.date }}</td>
-        <td>{{ message.topic }}</td>
-        <td>{{ message.qos }}</td>
-        <!-- <td>{{ message.destinationName }}</td> -->
-        <td>{{ message.payload }}</td>
-      </tr>
-    </table>
-  </div>
+    <div>
+      <h3>Retained MQTT messages:</h3>
+      <table class="messages">
+        <tr>
+          <th>Time</th>
+          <th>Topic</th>
+          <th>Qos</th>
+          <!-- <th>destinationName</th> -->
+          <th>Payload</th>
+        </tr>
+        <tr *ngFor="let message of retainedMqttMessages">
+          <td>{{ message.date }}</td>
+          <td>{{ message.topic }}</td>
+          <td>{{ message.qos }}</td>
+          <!-- <td>{{ message.destinationName }}</td> -->
+          <td>{{ message.payload }}</td>
+        </tr>
+      </table>
+    </div>
 
-  <!-- <div class="testgraph">
+    <!-- <div class="testgraph">
   <app-ut-dygraph-in
     [style]="graphstyle"
     [data]="dygData"
@@ -183,7 +169,7 @@
   >
   </app-ut-dygraph-in>
 </div> -->
-  <!--
+    <!--
 <h3>Data:</h3>
 <table class="outer">
   <tr *ngFor="let sensor of sensorData | keyvalue">
@@ -213,5 +199,9 @@
     </td>
   </tr>
 </table> -->
+  </div>
 
+  <div style="position: absolute; top: 3.5em; right: 0.5em;">
+    <button (click)="toggleDebug()">MQTT</button>
+  </div>
 </div>

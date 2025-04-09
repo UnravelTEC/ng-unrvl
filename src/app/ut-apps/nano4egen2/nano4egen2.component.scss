@@ -22,7 +22,8 @@ table {
   }
 }
 
-h2, h3 {
+h2,
+h3 {
   margin-left: 1rem;
 }
 
@@ -48,17 +49,39 @@ table.outer {
 }
 
 table.messages {
-  margin: 0 1em;
+  margin: 1em 1em 0 1em;
   border: 1px solid black;
-  th, td {
+  th,
+  td {
     border: 1px solid black;
     padding: 0.2em;
   }
-  th:first-child, td:first-child {
+  th:first-child,
+  td:first-child {
     width: 10em;
     min-width: 10em;
     max-width: 10em;
   }
+  table {
+    // inner channel table
+    margin: -0.2em;
+    border: 0;
+    td {
+      border: 0;
+    }
+    tr:first-child td {
+      border: 0;
+    }
+    tr td {
+      border-top: 1px solid black;
+    }
+    td + td {
+      width: 4em;
+    }
+  }
+}
+table.messages:first-child {
+  margin-top: 0;
 }
 
 .testgraph {
