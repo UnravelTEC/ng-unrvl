@@ -10,11 +10,15 @@
 }
 
 .animateOnClick {
-  transition: background-color 1000ms ease-in-out;
-  background-color: #565656;
+  transition: background-color 500ms ease-out;
+  background-color: #565656 !important;
+  // border-color: red;
+  // border-width: 1px;
+  // border-style: solid;
 }
 .animateOnClickShow {
-  background-color: green;
+  background-color: green !important;
+  // border-color: yellow;
 }
 
 table {

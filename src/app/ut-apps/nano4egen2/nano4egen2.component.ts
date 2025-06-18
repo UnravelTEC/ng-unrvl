@@ -264,7 +264,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
       this.animateOnClickShow = true;
       setTimeout(() => {
         this.animateOnClickShow = false;
-      }, 2000);
+      }, 500);
     }
     this.client.publish(this.gss.server.hostname + "/actuators/HEATER/1/set",
       JSON.stringify({ "values": { "target_degC": this.temp_new }, "UTS": new Date().valueOf() / 1000 }),
