@@ -15,8 +15,8 @@
     </table>
   </div>
 
-  <div class="block">
-    <h2>DAC Status:&nbsp;<button (click)="setDAC()">Set</button></h2>
+  <form class="block" (submit)="setDAC()">
+    <h2>DAC Status:&nbsp;<button type="submit" class="animateOnClick {{ animateOnClickShow ? 'animateOnClickShow' : '' }}">Set</button></h2>
     <table class="messages" *ngFor="let board of DACstatus | keyvalue">
       <tr>
         <th colspan="2">{{ board.key }}</th>
@@ -29,17 +29,20 @@
               <td>
                 {{ channelNames[channel.key] }}
               </td>
-              <td>{{ channel.value }} V</td>
+              <td>{{ channel.value }}&thinsp;V</td>
               <td>
-                <input type="number" style="width: 5em;"
+                <input type="number" style="width: 5em;" step="0.01"
                   [(ngModel)]="DACnewValues[board.key][DACname.key][channel.key]" />
+              </td>
+              <td>
+                {{ DACnewValuesSent[board.key][DACname.key][channel.key] | number}}
               </td>
             </tr>
           </table>
         </td>
       </tr>
     </table>
-  </div>
+  </form>
 
   <!-- <div class="block">
   <h2>Mass Flow Controller</h2>

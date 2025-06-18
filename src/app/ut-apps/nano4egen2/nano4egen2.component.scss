@@ -9,6 +9,14 @@
   }
 }
 
+.animateOnClick {
+  transition: background-color 1000ms ease-in-out;
+  background-color: #565656;
+}
+.animateOnClickShow {
+  background-color: green;
+}
+
 table {
   border-collapse: collapse;
   th {

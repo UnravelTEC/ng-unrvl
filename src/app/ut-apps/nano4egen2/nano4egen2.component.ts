@@ -96,6 +96,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
   public channels = ["ch1_V", "ch2_V", "ch3_V", "ch4_V"];
   public channelNames = { "ch1_V": "Channel 1", "ch2_V": "Channel 2", "ch3_V": "Channel 3", "ch4_V": "Channel 4" }
   public DACnewValues = {}
+  public DACnewValuesSent = {}
 
   public temp_conf = -1;
   public temp_real = -42;
@@ -109,7 +110,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     "AFEBOARD4": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED4": 0b1000000, "HEATER": 0b10000000 },
   };
   public gpios = { 'DIGITBOARD': { 'MICS_HEATER': undefined, '3V3_SUPPLY': undefined, '5V_SUPPLY': undefined, 'SCD30_SUPPLY': undefined } };
-  public pinNames = {'MICS_HEATER': 'MICS6814 Heater', '3V3_SUPPLY': '3V3 switched power supply', '5V_SUPPLY': '5V switched power supply', 'SCD30_SUPPLY': 'SCD30 CO2 sensor switched power supply'}
+  public pinNames = { 'MICS_HEATER': 'MICS6814 Heater', '3V3_SUPPLY': '3V3 switched power supply', '5V_SUPPLY': '5V switched power supply', 'SCD30_SUPPLY': 'SCD30 CO2 sensor switched power supply' }
   public valve_reason = "";
 
   public services = []; // only gets filled with 1 entry
@@ -136,6 +137,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
       });
     }
     this.DACnewValues = cloneDeep(this.DACstatus)
+    this.DACnewValuesSent = cloneDeep(this.DACstatus)
 
     for (const boardname in this.pins) {
       if (Object.prototype.hasOwnProperty.call(this.pins, boardname)) {
@@ -209,7 +211,23 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
       true);
   }
 
+  public animateOnClickShow = false;
   setDAC() {
+    for (const AFEBOARDid in this.DACnewValuesSent) {
+      if (Object.prototype.hasOwnProperty.call(this.DACnewValuesSent, AFEBOARDid)) {
+        const AFEBOARD = this.DACnewValuesSent[AFEBOARDid];
+        for (const DACid in AFEBOARD) {
+          if (Object.prototype.hasOwnProperty.call(AFEBOARD, DACid)) {
+            const DAC = AFEBOARD[DACid];
+            for (const channel in DAC) {
+              if (Object.prototype.hasOwnProperty.call(DAC, channel)) {
+                DAC[channel] = NaN
+              }
+            }
+          }
+        }
+      }
+    }
     for (const AFEBOARDid in this.DACnewValues) {
       if (Object.prototype.hasOwnProperty.call(this.DACnewValues, AFEBOARDid)) {
         const AFEBOARD = this.DACnewValues[AFEBOARDid];
@@ -217,11 +235,11 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
           if (Object.prototype.hasOwnProperty.call(AFEBOARD, DACid)) {
             const DAC = AFEBOARD[DACid];
             let values = {}
-            for (const key in DAC) {
-              if (Object.prototype.hasOwnProperty.call(DAC, key)) {
-                const value = DAC[key];
+            for (const channel in DAC) {
+              if (Object.prototype.hasOwnProperty.call(DAC, channel)) {
+                const value = DAC[channel];
                 if (!isNaN(value) && value !== undefined && value !== null) {
-                  values[key] = value;
+                  values[channel] = value;
                 }
               }
             }
@@ -232,11 +250,21 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
                 0,
                 true);
               console.log(payload);
+              for (const channel in values) {
+                if (Object.prototype.hasOwnProperty.call(values, channel)) {
+                  const value = values[channel];
+                  this.DACnewValuesSent[AFEBOARDid][DACid][channel] = value
+                }
+              }
 
             }
           }
         }
       }
+      this.animateOnClickShow = true;
+      setTimeout(() => {
+        this.animateOnClickShow = false;
+      }, 2000);
     }
     this.client.publish(this.gss.server.hostname + "/actuators/HEATER/1/set",
       JSON.stringify({ "values": { "target_degC": this.temp_new }, "UTS": new Date().valueOf() / 1000 }),
