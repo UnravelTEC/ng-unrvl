@@ -11,11 +11,14 @@
           <button (click)="setGPIO(board.key, pin.key, true)">On</button><br>
           <button (click)="setGPIO(board.key, pin.key, false)">Off</button>
         </td>
+        <td>
+          <button (click)="setGPIO(board.key, pin.key, gpios[board.key][pin.key] == 'off')">Toggle</button>
+        </td>
       </tr>
     </table>
   </div>
 
-  <form class="block" (submit)="setDAC()">
+  <form class="block" (submit)="setDAC()" style="clear: both;">
     <h2>DAC Status:&nbsp;<button type="submit"
         class="animateOnClick {{ animateOnClickShow ? 'animateOnClickShow' : '' }}">Set</button></h2>
     <table class="messages" *ngFor="let board of DACstatus | keyvalue">

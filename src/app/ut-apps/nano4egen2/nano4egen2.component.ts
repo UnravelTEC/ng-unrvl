@@ -226,6 +226,9 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
       JSON.stringify({ "values": values, "UTS": new Date().valueOf() / 1000 }),
       0,
       true);
+    console.log(this.gss.server.hostname + "/actuators/GPIOEXP/" + expander + "/set",
+       { "values": { pin: newstatus }, "UTS": new Date().valueOf() / 1000 });
+
   }
 
   public animateOnClickShow = false;
