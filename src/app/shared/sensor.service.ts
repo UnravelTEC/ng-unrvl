@@ -32,9 +32,12 @@ export class SensorService {
       },
       P: function (value, raw_labels) {
         if (value === null) return null;
-        if (isNaN(value) || value > 1100 || value < 300) {
+        if (isNaN(value)) { // || value > 1100 || value < 300) {
           // abs. max would be 20000 hPa ?
           return NaN;
+        }
+        if ( value > 1100 || value < 300) {
+          return [value, value, value];
         }
         const dev = 1; // hPa
         // TODO dev = 1.7 hPa if T < 0
