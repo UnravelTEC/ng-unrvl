@@ -237,12 +237,25 @@ export class AnysensComponent implements OnInit {
       params['id'] = this.id;
     }
 
+    let groupby_list = []
+    if (this.taglist) {
+      for (const key in this.taglist) {
+        if (Object.prototype.hasOwnProperty.call(this.taglist, key)) {
+          const value = this.taglist[key];
+          if (value) {
+            groupby_list.push('"' + key + '"')
+          }
+        }
+      }
+    }
+
     return this.utHTTP.influxMeanQuery(
       this.measurement,
       timeQuery,
       params,
       this.meanS,
-      this.value
+      this.value,
+      groupby_list.join()
     );
   }
 
@@ -522,7 +535,7 @@ export class AnysensComponent implements OnInit {
     this.reload();
   }
   changeTaglist(param) {
-    // console.log(this.taglist);
+    console.log(this.taglist);
     for (const key in this.taglist) {
       this.ls_taglist[key] = this.taglist[key]; // cp local taglist to ls_taglist
       if (this.taglist[key] === false) {

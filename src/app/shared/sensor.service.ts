@@ -437,6 +437,12 @@ export class SensorService {
         },
       },
     },
+    Nano4E: {
+      "px1_V": { round_digits: 7, },
+      "px2_V": { round_digits: 7, },
+      "px3_V": { round_digits: 7, },
+      "px4_V": { round_digits: 7, },
+    },
     ADS1115: {
       // BEGIN no longer a value, but a tag (here for compatibility)
       resolution_mV: {
