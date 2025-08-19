@@ -20,12 +20,12 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
 
   public topic = '#';
   public topics = [
-    'evaporator/actuators/MAGVALVES/settings',
-    'evaporator/actuators/HEATER/1/settings',
-    'evaporator/actuators/MFC/settings',
-    'evaporator/actuators/MFC/airflow',
-    'evaporator/sensors/MCP9600/temperature',
-    'evaporator/sensors/FANSPEED/fanspeed',
+    this.gss.server.hostname + '/actuators/MAGVALVES/settings',
+    this.gss.server.hostname + '/actuators/HEATER/1/settings',
+    this.gss.server.hostname + '/actuators/MFC/settings',
+    this.gss.server.hostname + '/actuators/MFC/airflow',
+    this.gss.server.hostname + '/sensors/MCP9600/temperature',
+    this.gss.server.hostname + '/sensors/FANSPEED/fanspeed',
   ]
 
   public mqttMessages = [
