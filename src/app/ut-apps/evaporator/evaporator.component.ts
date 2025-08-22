@@ -20,13 +20,13 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
 
   public topic = '#';
   public topics = [
-    this.gss.server.hostname + '/actuators/MAGVALVES/settings',
-    this.gss.server.hostname + '/actuators/HEATER/1/settings',
-    this.gss.server.hostname + '/actuators/MFC/settings',
-    this.gss.server.hostname + '/actuators/MFC/airflow',
-    this.gss.server.hostname + '/sensors/MCP9600/temperature',
-    this.gss.server.hostname + '/sensors/FANSPEED/fanspeed',
-  ]
+      '/actuators/MAGVALVES/settings',
+      '/actuators/HEATER/1/settings',
+      '/actuators/MFC/settings',
+      '/actuators/MFC/airflow',
+      '/sensors/MCP9600/temperature',
+      '/sensors/FANSPEED/fanspeed',
+  ];
 
   public mqttMessages = [
     { date: new Date(), topic: 'sample topic', payload: 'sample payload' }
@@ -93,7 +93,7 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   private ls_api_user;
   private ls_api_pass;
 
-  public debugmqtt:boolean = false;
+  public debugmqtt: boolean = false;
 
   constructor(private gss: GlobalSettingsService, private utHTTP: UtFetchdataService, private localStorage: LocalStorageService,) {
     this.gss.emitChange({ appName: 'Evaporator Control' });
@@ -127,7 +127,7 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
 
   stop() {
     for (let i = 0; i < this.topics.length; i++) {
-      this.client.unsubscribe(this.topics[i], {});
+      this.client.unsubscribe(this.gss.server.hostname + this.topics[i], {});
     }
   }
   connect() {
@@ -141,8 +141,9 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
     console.log('onConnect');
     // console.log(this);
     const father = document['MQTT_CLIENT']['father'];
+    console.log('mqtt Evaporator: subscribing to', this.gss.server.hostname, father.topics);
     for (let i = 0; i < father.topics.length; i++) {
-      document['MQTT_CLIENT'].subscribe(father.topics[i]);
+      document['MQTT_CLIENT'].subscribe(this.gss.server.hostname + father.topics[i]);
     }
 
     father.status = 'connected';
