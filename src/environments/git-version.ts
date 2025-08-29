@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "5e6ef7c",
-  "SHA": "5e6ef7c542d12e1a1cb2cf163232ed20a88ad412",
+  "shortSHA": "91f29fb",
+  "SHA": "91f29fb6fb87b7a891fd291deebf99867c40168d",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Tue Aug 19 12:31:33 2025 +0200",
-  "lastCommitMessage": "fix hostname bug in evaporator app",
-  "lastCommitNumber": "1587"
+  "lastCommitTime": "Fri Aug 22 08:31:19 2025 +0200",
+  "lastCommitMessage": "fix hostnames in evap",
+  "lastCommitNumber": "1588"
 }

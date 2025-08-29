@@ -141,9 +141,9 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
     console.log('onConnect');
     // console.log(this);
     const father = document['MQTT_CLIENT']['father'];
-    console.log('mqtt Evaporator: subscribing to', this.gss.server.hostname, father.topics);
+    console.log('mqtt Evaporator: subscribing to', father.gss.server.hostname, father.topics);
     for (let i = 0; i < father.topics.length; i++) {
-      document['MQTT_CLIENT'].subscribe(this.gss.server.hostname + father.topics[i]);
+      document['MQTT_CLIENT'].subscribe(father.gss.server.hostname + father.topics[i]);
     }
 
     father.status = 'connected';
