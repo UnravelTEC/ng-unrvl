@@ -80,6 +80,11 @@ const appRoutes: Routes = [
       import('./ut-apps/evaporator/evaporator.module').then((m) => m.EvaporatorModule),
   },
   {
+    path: 'Apps/Gastestbench',
+    loadChildren: () =>
+      import('./ut-apps/gastestbench/gastestbench.module').then((m) => m.GastestbenchModule),
+  },
+  {
     path: 'Apps/Nano4E-Gen2',
     loadChildren: () =>
       import('./ut-apps/nano4egen2/nano4egen2.module').then((m) => m.Nano4EGen2Module),

@@ -15,6 +15,9 @@
     <app-ut-dashboard-tile title="Evaporator"
     *ngIf="gss.server['hostname'] == 'evaporator'"
     path="/Apps/Evaporator"></app-ut-dashboard-tile>
+    <app-ut-dashboard-tile title="Gas Test Bench"
+    *ngIf="gss.server['hostname'] == 'gastestbench'"
+    path="/Apps/Gastestbench"></app-ut-dashboard-tile>
 <!--
     <app-ut-dashboard-tile title="CO₂ Graph"
       *ngIf="gss.server.sensors && (gss.server.sensors['SCD30'] || gss.server.sensors['SCD40'])"
