@@ -111,6 +111,19 @@ export class GastestbenchComponent implements OnInit, OnDestroy {
   public hum_flush_new = 50;
   public hum_evap_new = 50;
 
+  public anEvapSet = false
+  public anEvapStart = false
+  public anEvapStop = false
+  public anEvapRHStart = false
+  public anEvapRHStop = false
+  public anFlushSet = false
+  public anFlushStart = false
+  public anFlushStop = false
+
+  public anFanStart = false
+  public anFanStop = false
+  public anHeatSet = false
+
   public temp_conf = -1;
   public temp_real = -42;
   public temp_new = 0;
@@ -190,6 +203,11 @@ export class GastestbenchComponent implements OnInit, OnDestroy {
     father.status = 'connected';
   }
 
+  anClk(item) {
+    this[item] = true;
+    setTimeout(() => { this[item] = false; }, 500);
+  }
+
   setValves(newstatus) {
     this.client.publish(this.gss.server.hostname + "/actuators/MAGVALVES/set",
       JSON.stringify({ "values": { "state": newstatus }, "UTS": new Date().valueOf() / 1000 }),
@@ -204,6 +222,8 @@ export class GastestbenchComponent implements OnInit, OnDestroy {
     } else {
       alert("flush flow must be between 0 and 5 slm, rH between 0 and 100 %")
     }
+    this.anFlushSet = true
+    setTimeout(() => { this.anFlushSet = false; }, 500);
   }
   setEvap() {
     if (this.flow_evap_new >= 0 && this.flow_evap_new <= 5 && this.hum_evap_new >= 0 && this.hum_evap_new <= 100) {
@@ -213,6 +233,8 @@ export class GastestbenchComponent implements OnInit, OnDestroy {
     } else {
       alert("evap flow must be between 0 and 5 slm, rH between 0 and 100 %")
     }
+    this.anEvapSet = true
+    setTimeout(() => { this.anEvapSet = false; }, 500);
   }
   setTemp() {
     this.client.publish(this.gss.server.hostname + "/actuators/HEATER/1/set",

@@ -76,7 +76,7 @@
       </td>
     </tr>
     <tr>
-      <td colspan="3"><button type="submit">Set</button></td>
+      <td colspan="3"><button type="submit" class="animateOnClick {{ anFlushSet ? 'Show' : '' }}">Set</button></td>
     </tr>
   </table>
   <h3>Services:
@@ -186,7 +186,7 @@
       </td>
     </tr>
     <tr>
-      <td colspan="3"><button type="submit">Set</button></td>
+      <td colspan="3"><button type="submit" class="animateOnClick {{ anEvapSet ? 'Show' : '' }}">Set</button></td>
     </tr>
   </table>
   <h3>Services:
@@ -194,10 +194,12 @@
   <table class="messages">
     <tr>
       <th style="width: 10em;">
-        <button type="submit" (click)="actionPath('evap', 'start')" title="Start">
+        <button type="submit" (click)="actionPath('evap', 'start'); anClk('anEvapStart')" title="Start"
+          class="animateOnClick {{ anEvapStart ? 'Show' : '' }}">
           <mat-icon>play_circle_outline</mat-icon>
         </button>&nbsp;
-        <button type="submit" (click)="actionPath('evap', 'stop')" title="Stop">
+        <button type="submit" (click)="actionPath('evap', 'stop'); anClk('anEvapStop')" title="Stop"
+          class="animateOnClick {{ anEvapStop ? 'Show' : '' }}">
           <mat-icon>pause_circle_outline</mat-icon>
         </button>
       </th>
@@ -212,10 +214,12 @@
         : '??' }}
       </td>
       <td>
-        <button type="submit" (click)="sendCmd('rhcontrol-evap', 'start')" title="Start">
+        <button type="submit" (click)="sendCmd('rhcontrol-evap', 'start'); anClk('anEvapRHStart')" title="Start"
+          class="animateOnClick {{ anEvapRHStart ? 'Show' : '' }}">
           <mat-icon>play_circle_outline</mat-icon>
         </button>&nbsp;
-        <button type="submit" (click)="sendCmd('rhcontrol-evap', 'stop')" title="Stop">
+        <button type="submit" (click)="sendCmd('rhcontrol-evap', 'stop'); anClk('anEvapRHStop')" title="Stop"
+          class="animateOnClick {{ anEvapRHStop ? 'Show' : '' }}">
           <mat-icon>pause_circle_outline</mat-icon>
         </button>
       </td>
@@ -255,7 +259,7 @@
   </table>
 </form>
 
-<div class="block">
+<form class="block" (submit)="setTemp(); anClk('anHeatSet')">
   <h2>
     Heater
   </h2>
@@ -269,11 +273,11 @@
         New target: <input type="number" style="width: 5em;" [(ngModel)]="temp_new" /> °C
       </td>
       <td>
-        <button (click)="setTemp()">Set</button>
+        <button class="animateOnClick {{ anHeatSet ? 'Show' : '' }}">Set</button>
       </td>
     </tr>
   </table>
-</div>
+</form>
 
 <div class="block">
   <h2>
@@ -291,10 +295,12 @@
   </p>
 
   <p>
-    <button type="submit" (click)="startService('gpiofancontrol')" title="Start">
+    <button (click)="startService('gpiofancontrol'); anClk('anFanStart')" title="Start"
+      class="animateOnClick {{ anFanStart ? 'Show' : '' }}">
       <mat-icon>play_circle_outline</mat-icon>
     </button>&nbsp;
-    <button type="submit" (click)="stopService('gpiofancontrol')" title="Stop">
+    <button (click)="stopService('gpiofancontrol'); anClk('anFanStop')" title="Stop"
+      class="animateOnClick {{ anFanStop ? 'Show' : '' }}">
       <mat-icon>pause_circle_outline</mat-icon>
     </button>
   </p>
