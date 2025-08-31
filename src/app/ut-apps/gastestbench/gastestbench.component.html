@@ -1,4 +1,3 @@
-
 <div class="block">
   <h2>Magnetic Valves</h2>
   <!-- State: {{valve_state}} {{valve_reason}} -->
@@ -38,23 +37,223 @@
   </table>
 </div>
 
-<div class="block">
-  <h2>Mass Flow Controller</h2>
+<form class="block" (submit)="setFlush()">
+  <h2>Humidity Path "flush"</h2>
   <table class="messages">
     <tr>
-      <td style="min-width: 15em;">Configured flow: {{ flow_conf | number : '1.0-2' }} sccm</td>
-      <td style="min-width: 15em;">Current Flow {{ flow_real | number : '1.0-2' }} sccm</td>
+      <th></th>
+      <th>Flow</th>
+      <th>Humidity</th>
+    </tr>
+    <tr>
+      <td>Configured</td>
+      <td style="min-width: 5em; text-align: right;">
+        Dry: {{ flow_flush_dry_target | number : '1.0-2' }} slm<br>
+        Wet: {{ flow_flush_wet_target | number : '1.0-2' }} slm<br>
+        Sum: {{ flow_flush_target | number : '1.0-2' }} slm
+      </td>
+      <td style="min-width: 5em; text-align: right;">{{ hum_flush_target | number : '1.0-2' }} %</td>
+    </tr>
+    <tr>
+      <td>Current</td>
+      <td style="min-width: 5em; text-align: right;">
+        Dry: {{ flow_flush_dry_real | number : '1.0-2' }} slm<br>
+        Wet: {{ flow_flush_wet_real | number : '1.0-2' }} slm<br>
+        Sum: {{ flow_flush_dry_real + flow_flush_wet_real | number : '1.0-2' }} slm</td>
+      <td style="min-width: 5em; text-align: right;">{{ hum_flush_real | number : '1.0-2' }} %</td>
     </tr>
     <tr>
       <td>
-        New Flow: <input type="number" style="width: 5em;" [(ngModel)]="flow_new" /> sccm
+        New
       </td>
       <td>
-        <button (click)="setFlow()">Set</button>
+        <input type="number" style="width: 5em;" [(ngModel)]="flow_flush_new" id="flow_flush_new"
+          name="flow_flush_new" /> slm
+      </td>
+      <td>
+        <input type="number" style="width: 5em;" [(ngModel)]="hum_flush_new" id="hum_flush_new" name="hum_flush_new" />
+        %
+      </td>
+    </tr>
+    <tr>
+      <td colspan="3"><button type="submit">Set</button></td>
+    </tr>
+  </table>
+  <h3>Services:
+  </h3>
+  <table class="messages">
+    <tr>
+      <th style="width: 10em;">
+        <button type="submit" (click)="actionPath('flush', 'start')" title="Start">
+          <mat-icon>play_circle_outline</mat-icon>
+        </button>&nbsp;
+        <button type="submit" (click)="actionPath('flush', 'stop')" title="Stop">
+          <mat-icon>pause_circle_outline</mat-icon>
+        </button>
+      </th>
+      <th style="width: 4em;">Status</th>
+      <th></th>
+    </tr>
+    <tr>
+      <td> rhcontrol-flush </td>
+      <td>
+        {{ services && services['rhcontrol-flush'] !== undefined ?
+        (services['rhcontrol-flush'] == true ? "Running" : "Off")
+        : '??' }}
+      </td>
+      <td>
+        <button type="submit" (click)="sendCmd('rhcontrol-flush', 'start')" title="Start">
+          <mat-icon>play_circle_outline</mat-icon>
+        </button>&nbsp;
+        <button type="submit" (click)="sendCmd('rhcontrol-flush', 'stop')" title="Stop">
+          <mat-icon>pause_circle_outline</mat-icon>
+        </button>
+      </td>
+    </tr>
+    <tr>
+      <td> sfc6000-flush-dryair </td>
+      <td>
+        {{ services && services['sfc6000-flush-dryair'] !== undefined ?
+        ( services['sfc6000-flush-dryair'] == true ? "Running" : "Off")
+        : '??' }}
+      </td>
+      <td>
+        <button type="submit" (click)="sendCmd('sfc6000-flush-dryair', 'start')" title="Start">
+          <mat-icon>play_circle_outline</mat-icon>
+        </button>&nbsp;
+        <button type="submit" (click)="sendCmd('sfc6000-flush-dryair', 'stop')" title="Stop">
+          <mat-icon>pause_circle_outline</mat-icon>
+        </button>
+      </td>
+    </tr>
+    <tr>
+      <td>sfc6000-flush-wetair</td>
+      <td>
+        {{ services && services['sfc6000-flush-wetair'] !== undefined ?
+        ( services['sfc6000-flush-wetair'] == true ? "Running" : "Off")
+        : '??' }}
+      </td>
+      <td>
+        <button type="submit" (click)="sendCmd('sfc6000-flush-wetair', 'start')" title="Start">
+          <mat-icon>play_circle_outline</mat-icon>
+        </button>&nbsp;
+        <button type="submit" (click)="sendCmd('sfc6000-flush-wetair', 'stop')" title="Stop">
+          <mat-icon>pause_circle_outline</mat-icon>
+        </button>
       </td>
     </tr>
   </table>
-</div>
+
+
+
+</form>
+<form (submit)="setEvap()" class="block">
+  <h2>Humidity Path "evap"</h2>
+  <table class="messages">
+    <tr>
+      <th></th>
+      <th>Flow</th>
+      <th>Humidity</th>
+    </tr>
+    <tr>
+      <td>Configured</td>
+      <td style="min-width: 5em; text-align: right;">
+        Dry: {{ flow_evap_dry_target | number : '1.0-2' }} slm<br>
+        Wet: {{ flow_evap_wet_target | number : '1.0-2' }} slm<br>
+        Sum: {{ flow_evap_target | number : '1.0-2' }} slm
+      </td>
+      <td style="min-width: 5em; text-align: right;">{{ hum_evap_target | number : '1.0-2' }} %</td>
+    </tr>
+    <tr>
+      <td>Current</td>
+      <td style="min-width: 5em; text-align: right;">
+        Dry: {{ flow_evap_dry_real | number : '1.0-2' }} slm<br>
+        Wet: {{ flow_evap_wet_real | number : '1.0-2' }} slm<br>
+        Sum: {{ flow_evap_dry_real + flow_evap_wet_real | number : '1.0-2' }} slm
+      </td>
+      <td style="min-width: 5em; text-align: right;">{{ hum_evap_real | number : '1.0-2' }} %</td>
+    </tr>
+    <tr>
+      <td>
+        New
+      </td>
+      <td>
+        <input type="number" style="width: 5em;" [(ngModel)]="flow_evap_new" id="flow_evap_new" name="flow_evap_new" />
+        slm
+      </td>
+      <td>
+        <input type="number" style="width: 5em;" [(ngModel)]="hum_evap_new" id="hum_evap_new" name="hum_evap_new" /> %
+      </td>
+    </tr>
+    <tr>
+      <td colspan="3"><button type="submit">Set</button></td>
+    </tr>
+  </table>
+  <h3>Services:
+  </h3>
+  <table class="messages">
+    <tr>
+      <th style="width: 10em;">
+        <button type="submit" (click)="actionPath('evap', 'start')" title="Start">
+          <mat-icon>play_circle_outline</mat-icon>
+        </button>&nbsp;
+        <button type="submit" (click)="actionPath('evap', 'stop')" title="Stop">
+          <mat-icon>pause_circle_outline</mat-icon>
+        </button>
+      </th>
+      <th style="width: 4em;">Status</th>
+      <th></th>
+    </tr>
+    <tr>
+      <td> rhcontrol-evap </td>
+      <td>
+        {{ services && services['rhcontrol-evap'] !== undefined ?
+        (services['rhcontrol-evap'] == true ? "Running" : "Off")
+        : '??' }}
+      </td>
+      <td>
+        <button type="submit" (click)="sendCmd('rhcontrol-evap', 'start')" title="Start">
+          <mat-icon>play_circle_outline</mat-icon>
+        </button>&nbsp;
+        <button type="submit" (click)="sendCmd('rhcontrol-evap', 'stop')" title="Stop">
+          <mat-icon>pause_circle_outline</mat-icon>
+        </button>
+      </td>
+    </tr>
+    <tr>
+      <td> sfc6000-evap-dryair </td>
+      <td>
+        {{ services && services['sfc6000-evap-dryair'] !== undefined ?
+        ( services['sfc6000-evap-dryair'] == true ? "Running" : "Off")
+        : '??' }}
+      </td>
+      <td>
+        <button type="submit" (click)="sendCmd('sfc6000-evap-dryair', 'start')" title="Start">
+          <mat-icon>play_circle_outline</mat-icon>
+        </button>&nbsp;
+        <button type="submit" (click)="sendCmd('sfc6000-evap-dryair', 'stop')" title="Stop">
+          <mat-icon>pause_circle_outline</mat-icon>
+        </button>
+      </td>
+    </tr>
+    <tr>
+      <td>sfc6000-evap-wetair</td>
+      <td>
+        {{ services && services['sfc6000-evap-wetair'] !== undefined ?
+        ( services['sfc6000-evap-wetair'] == true ? "Running" : "Off")
+        : '??' }}
+      </td>
+      <td>
+        <button type="submit" (click)="sendCmd('sfc6000-evap-wetair', 'start')" title="Start">
+          <mat-icon>play_circle_outline</mat-icon>
+        </button>&nbsp;
+        <button type="submit" (click)="sendCmd('sfc6000-evap-wetair', 'stop')" title="Stop">
+          <mat-icon>pause_circle_outline</mat-icon>
+        </button>
+      </td>
+    </tr>
+  </table>
+</form>
 
 <div class="block">
   <h2>
@@ -62,12 +261,12 @@
   </h2>
   <table class="messages">
     <tr>
-      <td style="min-width: 20em;">Configured target temperature: {{ temp_conf | number : '1.0-2' }} °C</td>
-      <td style="min-width: 15em;">Current temperature {{ temp_real | number : '1.0-2' }} °C</td>
+      <td style="min-width: 13em;">Configured target: {{ temp_conf | number : '1.0-2' }} °C</td>
+      <td style="min-width: 9em;">Current {{ temp_real | number : '1.0-2' }} °C</td>
     </tr>
     <tr>
       <td>
-        New target temperature: <input type="number" style="width: 5em;" [(ngModel)]="temp_new" /> °C
+        New target: <input type="number" style="width: 5em;" [(ngModel)]="temp_new" /> °C
       </td>
       <td>
         <button (click)="setTemp()">Set</button>
@@ -78,15 +277,23 @@
 
 <div class="block">
   <h2>
-    Cooling Fan
+    Air Source
   </h2>
   <p>
-    Status: {{ services && services[0] && services[0]['running'] ? "Running" : "Off" }}. {{ fanspeed}} rpm.
+    Pressure xx mbar
   </p>
+  <h3>Pump</h3>
+  <p>
+    Status: {{ services && services['gpiofancontrol'] !== undefined ? (services['gpiofancontrol'] == true ? "Running" :
+    "Off") : '??'
+    }}. {{
+    fanspeed}} rpm.
+  </p>
+
   <p>
     <button type="submit" (click)="startService('gpiofancontrol')" title="Start">
       <mat-icon>play_circle_outline</mat-icon>
-    </button>
+    </button>&nbsp;
     <button type="submit" (click)="stopService('gpiofancontrol')" title="Stop">
       <mat-icon>pause_circle_outline</mat-icon>
     </button>

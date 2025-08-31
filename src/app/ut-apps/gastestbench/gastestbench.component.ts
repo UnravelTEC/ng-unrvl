@@ -7,11 +7,11 @@ import { LocalStorageService } from 'app/core/local-storage.service';
 // import cloneDeep from 'lodash-es/cloneDeep';
 
 @Component({
-  selector: 'app-evaporator',
-  templateUrl: './evaporator.component.html',
-  styleUrls: ['./evaporator.component.scss']
+  selector: 'app-gastestbench',
+  templateUrl: './gastestbench.component.html',
+  styleUrls: ['./gastestbench.component.scss']
 })
-export class EvaporatorComponent implements OnInit, OnDestroy {
+export class GastestbenchComponent implements OnInit, OnDestroy {
   status = 'init'; // | connecting | connected | failed | lost
   public disconnects = 0;
   private client;
@@ -20,13 +20,25 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
 
   public topic = '#';
   public topics = [
-      '/actuators/MAGVALVES/settings',
-      '/actuators/HEATER/1/settings',
-      '/actuators/MFC/settings',
-      '/actuators/MFC/airflow',
-      '/sensors/MCP9600/temperature',
-      '/sensors/FANSPEED/fanspeed',
+    '/actuators/MAGVALVES/settings',
+    '/actuators/HEATER/1/settings',
+    '/actuators/rhcontrol/evap/settings',
+    '/actuators/rhcontrol/flush/settings',
+    '/actuators/MFC/evap-dry/set',
+    '/actuators/MFC/evap-wet/set',
+    '/actuators/MFC/flush-dry/set',
+    '/actuators/MFC/flush-wet/set',
+    '/sensors/SFC6000/airflow',
+    '/sensors/MCP9600/temperature',
+    '/sensors/BME280/humidity',
+    '/sensors/SCD30/humidity',
+    '/sensors/FANSPEED/fanspeed',
   ];
+
+  // STATUS check
+  // humidity OK (innerhalb x %)
+  // Flow OK (innerhalb x %)
+  // T OK
 
   public mqttMessages = [
     { date: new Date(), topic: 'sample topic', payload: 'sample payload' }
@@ -75,9 +87,29 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
     right: '0'
   };
 
-  public flow_conf = undefined;
-  public flow_real = undefined;
-  public flow_new = 1000;
+  public flow_flush_target = undefined;
+  public flow_flush_wet_target = undefined
+  public flow_flush_dry_target = undefined
+  public flow_evap_target = undefined;
+  public flow_evap_wet_target = undefined;
+  public flow_evap_dry_target = undefined;
+
+  public flow_flush_real = undefined;
+  public flow_flush_wet_real = undefined;
+  public flow_flush_dry_real = undefined;
+  public flow_evap_real = undefined;
+  public flow_evap_wet_real = undefined;
+  public flow_evap_dry_real = undefined;
+
+  public flow_flush_new = 1;
+  public flow_evap_new = 1;
+
+  public hum_flush_target = undefined
+  public hum_evap_target = undefined;
+  public hum_flush_real = undefined;
+  public hum_evap_real = undefined;
+  public hum_flush_new = 50;
+  public hum_evap_new = 50;
 
   public temp_conf = -1;
   public temp_real = -42;
@@ -86,7 +118,10 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   public valve_state = "";
   public valve_reason = "";
 
-  public services = []; // only gets filled with 1 entry
+  public evap_rh_sensor = "BME280"
+  public flush_rh_sensor = "SCD30"
+
+  public services = {};
   public loadingText = 'Initializing...';
   public fanspeed = 0;
 
@@ -96,7 +131,7 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   public debugmqtt: boolean = false;
 
   constructor(private gss: GlobalSettingsService, private utHTTP: UtFetchdataService, private localStorage: LocalStorageService,) {
-    this.gss.emitChange({ appName: 'Evaporator Control' });
+    this.gss.emitChange({ appName: 'Gastestbench Control' });
   }
 
   ngOnInit() {
@@ -113,7 +148,13 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
 
     this.ls_api_user = this.localStorage.get('api_user');
     this.ls_api_pass = this.localStorage.get('api_pass');
-    this.getService();
+    this.getService('gpiofancontrol');
+    this.getService('sfc6000-evap-wetair');
+    this.getService('sfc6000-evap-dryair');
+    this.getService('sfc6000-flush-wetair');
+    this.getService('sfc6000-flush-dryair');
+    this.getService('rhcontrol-evap');
+    this.getService('rhcontrol-flush');
 
     // this.dygLabels = ;
   }
@@ -141,7 +182,7 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
     console.log('onConnect');
     // console.log(this);
     const father = document['MQTT_CLIENT']['father'];
-    console.log('mqtt Evaporator: subscribing to', father.gss.server.hostname, father.topics);
+    console.log('mqtt Gastestbench: subscribing to', father.gss.server.hostname, father.topics);
     for (let i = 0; i < father.topics.length; i++) {
       document['MQTT_CLIENT'].subscribe(father.gss.server.hostname + father.topics[i]);
     }
@@ -155,14 +196,22 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
       0,
       true);
   }
-  setFlow() {
-    if (this.flow_new >= 0 && this.flow_new <= 1150) {
-      this.client.publish(this.gss.server.hostname + "/actuators/MFC/set",
-        JSON.stringify({ "values": { "flow_sccm": this.flow_new }, "UTS": new Date().valueOf() / 1000 }),
-        0,
-        true);
+  setFlush() {
+    if (this.flow_flush_new >= 0 && this.flow_flush_new <= 5 && this.hum_flush_new >= 0 && this.hum_flush_new <= 100) {
+      const payload = { "values": { "target_flow_slm": this.flow_flush_new, "target_rH": this.hum_flush_new }, "UTS": new Date().valueOf() / 1000 }
+      console.log(this.gss.server.hostname + "/actuators/rhcontrol/flush/set", payload);
+      this.client.publish(this.gss.server.hostname + "/actuators/rhcontrol/flush/set", JSON.stringify(payload), 0, true);
     } else {
-      alert("flow must be between 0 and 1150 sccm")
+      alert("flush flow must be between 0 and 5 slm, rH between 0 and 100 %")
+    }
+  }
+  setEvap() {
+    if (this.flow_evap_new >= 0 && this.flow_evap_new <= 5 && this.hum_evap_new >= 0 && this.hum_evap_new <= 100) {
+      const payload = { "values": { "target_flow_slm": this.flow_evap_new, "target_rH": this.hum_evap_new }, "UTS": new Date().valueOf() / 1000 }
+      console.log(this.gss.server.hostname + "/actuators/rhcontrol/evap/set", payload);
+      this.client.publish(this.gss.server.hostname + "/actuators/rhcontrol/evap/set", JSON.stringify(payload), 0, true);
+    } else {
+      alert("evap flow must be between 0 and 5 slm, rH between 0 and 100 %")
     }
   }
   setTemp() {
@@ -176,14 +225,17 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
     const father = document['MQTT_CLIENT']['father'];
 
     const arr = message['topic'].split('/');
-    if (arr.length < 2) { // e.g. topic "influx"
+    if (arr.length < 2 && father.debugmqtt) { // e.g. topic "influx"
       console.log(message);
       return;
     }
     const sensor = arr[2];
     const metric = arr[arr.length - 1];
 
-    console.log('got MQTT message from sensor', sensor, 'about', metric, message);
+    if (father.debugmqtt) {
+      console.log('got MQTT message from sensor', sensor, 'about', metric, message);
+    }
+
     try {
       const payload = JSON.parse(message['payloadString']);
 
@@ -197,7 +249,23 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
             father.fanspeed = values["fanspeed_rpm"];
             break;
           case "airflow":
-            father.flow_real = values["flow_sccm"];
+            const tags = payload['tags']
+            if (tags["target"] == "flush-wet")
+              father.flow_flush_wet_real = values["flow_slm"];
+            if (tags["target"] == "flush-dry")
+              father.flow_flush_dry_real = values["flow_slm"];
+            if (tags["target"] == "evap-wet")
+              father.flow_evap_wet_real = values["flow_slm"];
+            if (tags["target"] == "evap-dry")
+              father.flow_evap_dry_real = values["flow_slm"];
+            break;
+          case "humidity":
+            if (sensor == father.evap_rh_sensor) {
+              father.hum_evap_real = values["H2O_rel_percent"]
+            }
+            if (sensor == father.flush_rh_sensor) {
+              father.hum_flush_real = values["H2O_rel_percent"]
+            }
             break;
           case "settings":
             if (values.hasOwnProperty("target_degC")) {
@@ -207,8 +275,29 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
               father.valve_state = values["state"];
               father.valve_reason = values["reason"];
             }
-            if (values.hasOwnProperty("flow_sccm")) {
-              father.flow_conf = values["flow_sccm"];
+            if (values.hasOwnProperty("target_flow_slm")) {
+              const path = arr[arr.length - 2];
+              if (path == "flush") {
+                father.flow_flush_target = values["target_flow_slm"]
+                father.hum_flush_target = values["target_rH"]
+              }
+              if (path == "evap") {
+                father.flow_evap_target = values["target_flow_slm"]
+                father.hum_evap_target = values["target_rH"]
+              }
+            }
+            break;
+          case "set":
+            if (arr[arr.length - 3] == "MFC") {
+              const mfc = arr[arr.length - 2]
+              if (mfc == "evap-dry")
+                father.flow_evap_dry_target = values["flow_slm"];
+              if (mfc == "evap-wet")
+                father.flow_evap_wet_target = values["flow_slm"];
+              if (mfc == "flush-dry")
+                father.flow_flush_dry_target = values["flow_slm"];
+              if (mfc == "flush-wet")
+                father.flow_flush_wet_target = values["flow_slm"];
             }
         }
       }
@@ -288,10 +377,10 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   }
 
   // copied & modified from services.component TODO split into ng service
-  getService() {
+  getService(service) {
     this.utHTTP
       .getHTTPData(
-        this.gss.getAPIEndpoint() + 'system/services.php?service=gpiofancontrol'
+        this.gss.getAPIEndpoint() + 'system/services.php?service=' + service
       )
       .subscribe(
         (data: Object) => this.acceptService(data),
@@ -302,50 +391,59 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   acceptService(data: Object) {
     console.log('services:', data);
     if (data && data['services']) {
-      this.services = data['services'];
+      const item = data['services'][0]
+      this.services[item['name']] = item['running']
+      console.log(this.services);
       this.loadingText = '';
     } else {
-      this.loadingText = 'Error, no fancontrol service.';
+      this.loadingText = 'Error, no service returned.';
     }
+  }
+
+  actionPath(path, action) {
+    console.log('action:', path, action);
+    // this.sendCmd('rhcontrol-' + path, action);
+    this.sendCmd('sfc6000-' + path + '-dryair', action);
+    this.sendCmd('sfc6000-' + path + '-wetair', action);
   }
 
   // copied from services.component TODO split into ng service
   startService(service: string) {
     console.log('starting', service);
-    this.services.forEach((serviceItem) => {
-      if (serviceItem['name'] == service) {
-        serviceItem['running'] = undefined;
-      }
-    });
+    // this.services.forEach((serviceItem) => {
+    //   if (serviceItem['name'] == service) {
+    //     serviceItem['running'] = undefined;
+    //   }
+    // });
     this.sendCmd(service, 'start');
   }
   stopService(service: string) {
     console.log('stopping', service);
-    this.services.forEach((serviceItem) => {
-      if (serviceItem['name'] == service) {
-        serviceItem['running'] = undefined;
-      }
-    });
+    // this.services.forEach((serviceItem) => {
+    //   if (serviceItem['name'] == service) {
+    //     serviceItem['running'] = undefined;
+    //   }
+    // });
     this.sendCmd(service, 'stop');
   }
-  enableService(service: string) {
-    console.log('enabling', service);
-    this.services.forEach((serviceItem) => {
-      if (serviceItem['name'] == service) {
-        serviceItem['onboot'] = undefined;
-      }
-    });
-    this.sendCmd(service, 'enable');
-  }
-  disableService(service: string) {
-    console.log('disabling', service);
-    this.services.forEach((serviceItem) => {
-      if (serviceItem['name'] == service) {
-        serviceItem['onboot'] = undefined;
-      }
-    });
-    this.sendCmd(service, 'disable');
-  }
+  // enableService(service: string) {
+  //   console.log('enabling', service);
+  //   this.services.forEach((serviceItem) => {
+  //     if (serviceItem['name'] == service) {
+  //       serviceItem['onboot'] = undefined;
+  //     }
+  //   });
+  //   this.sendCmd(service, 'enable');
+  // }
+  // disableService(service: string) {
+  //   console.log('disabling', service);
+  //   this.services.forEach((serviceItem) => {
+  //     if (serviceItem['name'] == service) {
+  //       serviceItem['onboot'] = undefined;
+  //     }
+  //   });
+  //   this.sendCmd(service, 'disable');
+  // }
 
   sendCmd(service: String, cmd: String) {
     this.utHTTP
@@ -369,7 +467,8 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
     if (!data['success']) {
       alert('last command unsuccessful');
     } else {
-      this.getService();
+      this.getService(data['service']);
     }
   }
 }
+
