@@ -30,8 +30,8 @@ export class GastestbenchComponent implements OnInit, OnDestroy {
     '/actuators/MFC/flush-wet/set',
     '/sensors/SFC6000/airflow',
     '/sensors/MCP9600/temperature',
-    '/sensors/BME280/humidity',
-    '/sensors/SCD30/humidity',
+    '/sensors/SHTC3/humidity',
+    '/sensors/SHT85/humidity',
     '/sensors/FANSPEED/fanspeed',
   ];
 
@@ -131,8 +131,8 @@ export class GastestbenchComponent implements OnInit, OnDestroy {
   public valve_state = "";
   public valve_reason = "";
 
-  public evap_rh_sensor = "BME280"
-  public flush_rh_sensor = "SCD30"
+  public evap_rh_sensor = "SHTC3"
+  public flush_rh_sensor = "SHT85"
 
   public services = {};
   public loadingText = 'Initializing...';
