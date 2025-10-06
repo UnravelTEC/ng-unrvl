@@ -517,6 +517,14 @@ export class SensorService {
         round_digits: 0,
       },
     },
+    RaspberryPi: {
+      '*_V': {
+        round_digits: 7,
+      },
+      '*_A': {
+        round_digits: 7,
+      }
+    }
   };
   constructor(private h: HelperFunctionsService) { }
 
