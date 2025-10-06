@@ -21,7 +21,7 @@
   <form class="block" (submit)="setDAC()" style="clear: both;">
     <h2>DAC Status:&nbsp;<button type="submit"
         class="animateOnClick {{ animateOnClickShow ? 'animateOnClickShow' : '' }}">Set</button></h2>
-    <table class="messages" *ngFor="let board of DACstatus | keyvalue">
+    <table class="messages" *ngFor="let board of DACstatus | keyvalue" style="float: left;">
       <tr>
         <th colspan="2">{{ board.key }}</th>
       </tr>
@@ -33,11 +33,16 @@
               <td>
                 {{ channelNames[channel.key] }}
               </td>
-              <td>{{ channel.value }}&thinsp;V</td>
+              <td>{{ channel.value >= 0 ? channel.value : '?' }}&thinsp;V</td>
               <td>
                 <input type="number" style="width: 5em;" step="0.01"
                   class="animateOnClick {{ (animateOnClickShow && DACnewValuesSent[board.key][DACname.key][channel.key] >= 0) ? 'animateOnClickShow' : '' }}"
-                  [(ngModel)]="DACnewValues[board.key][DACname.key][channel.key]" id="{{board.key}}{{DACname.key}}{{channel.key}}"/>
+                  [(ngModel)]="DACnewValues[board.key][DACname.key][channel.key]"
+                  id="{{board.key}}{{DACname.key}}{{channel.key}}" />
+              </td>
+              <td>
+                {{ DACnewValuesUserUnit[board.key][DACname.key][channel.key] >= 0 ?
+                DACnewValuesUserUnit[board.key][DACname.key][channel.key] : '?' }}&#8239;{{ userUnits[DACname.key] }}
               </td>
               <!-- <td>
                 <div class="animateOnClick">

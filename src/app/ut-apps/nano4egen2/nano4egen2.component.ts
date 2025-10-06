@@ -97,6 +97,9 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
   public channelNames = { "ch1_V": "Channel 1", "ch2_V": "Channel 2", "ch3_V": "Channel 3", "ch4_V": "Channel 4" }
   public DACnewValues = {}
   public DACnewValuesSent = {}
+  public DACnewValuesUserUnit = {}
+  public userUnits = { 'HEAT': '°C', 'LED': 'mA', 'MEAS': 'mA' }
+  public userUnitsConvFactor = { 'HEAT': 0.1, 'LED': 0.01, 'MEAS': 0.01 }
 
   public temp_conf = -1;
   public temp_real = -42;
@@ -155,6 +158,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     }
     this.DACnewValues = cloneDeep(this.DACstatus)
     this.DACnewValuesSent = cloneDeep(this.DACstatus)
+    this.DACnewValuesUserUnit = cloneDeep(this.DACstatus)
 
     for (const boardname in this.pins) {
       if (Object.prototype.hasOwnProperty.call(this.pins, boardname)) {
@@ -227,7 +231,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
       0,
       true);
     console.log(this.gss.server.hostname + "/actuators/GPIOEXP/" + expander + "/set",
-       { "values": { pin: newstatus }, "UTS": new Date().valueOf() / 1000 });
+      { "values": { pin: newstatus }, "UTS": new Date().valueOf() / 1000 });
 
   }
 
@@ -260,6 +264,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
                 const value = DAC[channel];
                 if (!isNaN(value) && value !== undefined && value !== null) {
                   values[channel] = value;
+                  this.DACnewValuesUserUnit[AFEBOARDid][DACid][channel] = value * this.userUnitsConvFactor[DAC]
                 }
               }
             }
@@ -335,6 +340,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
               father.channels.forEach(channel => {
                 if (values.hasOwnProperty(channel)) {
                   father.DACstatus[arr[3]][arr[4]][channel] = values[channel]
+                  father.DACnewValuesUserUnit[arr[3]][arr[4]][channel] = values[channel] * father.userUnitsConvFactor[arr[4]]
                 }
               });
             }
