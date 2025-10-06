@@ -33,15 +33,17 @@
               <td>
                 {{ channelNames[channel.key] }}
               </td>
-              <td>{{ channel.value >= 0 ? channel.value : '?' }}&thinsp;V</td>
+              <td>{{ channel.value >= 0 ? channel.value : '?' }}&#8239;V</td>
+              <td>/&nbsp;{{ DACstatusUserUnit[board.key][DACname.key][channel.key] >= 0 ?
+                DACstatusUserUnit[board.key][DACname.key][channel.key] : '?' }}&#8239;{{ userUnits[DACname.key] }}
+              </td>
               <td>
                 <input type="number" style="width: 5em;" step="0.01"
                   class="animateOnClick {{ (animateOnClickShow && DACnewValuesSent[board.key][DACname.key][channel.key] >= 0) ? 'animateOnClickShow' : '' }}"
                   [(ngModel)]="DACnewValues[board.key][DACname.key][channel.key]"
-                  id="{{board.key}}{{DACname.key}}{{channel.key}}" />
+                  id="{{board.key}}{{DACname.key}}{{channel.key}}" (ngModelChange)="calcUserUnit(board.key,DACname.key,channel.key)"/>
               </td>
-              <td>
-                {{ DACnewValuesUserUnit[board.key][DACname.key][channel.key] >= 0 ?
+              <td>V&nbsp;/&nbsp;{{ DACnewValuesUserUnit[board.key][DACname.key][channel.key] >= 0 ?
                 DACnewValuesUserUnit[board.key][DACname.key][channel.key] : '?' }}&#8239;{{ userUnits[DACname.key] }}
               </td>
               <!-- <td>

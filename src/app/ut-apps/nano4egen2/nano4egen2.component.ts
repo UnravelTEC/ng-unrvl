@@ -93,13 +93,14 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
   };
 
   public DACstatus = { "AFEBOARD1": { "LED": { "ch1_V": undefined } } }
+  public DACstatusUserUnit = {}
   public channels = ["ch1_V", "ch2_V", "ch3_V", "ch4_V"];
   public channelNames = { "ch1_V": "Channel 1", "ch2_V": "Channel 2", "ch3_V": "Channel 3", "ch4_V": "Channel 4" }
   public DACnewValues = {}
   public DACnewValuesSent = {}
   public DACnewValuesUserUnit = {}
-  public userUnits = { 'HEAT': '°C', 'LED': 'mA', 'MEAS': 'mA' }
-  public userUnitsConvFactor = { 'HEAT': 0.1, 'LED': 0.01, 'MEAS': 0.01 }
+  public userUnits = { 'HEAT': 'mA', 'LED': 'mA', 'MEAS': 'mA' }
+  public userUnitsConvFactor = { 'HEAT': 10, 'LED': 10, 'MEAS': 0.01 }
 
   public temp_conf = -1;
   public temp_real = -42;
@@ -156,6 +157,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
         });
       });
     }
+    this.DACstatusUserUnit = cloneDeep(this.DACstatus)
     this.DACnewValues = cloneDeep(this.DACstatus)
     this.DACnewValuesSent = cloneDeep(this.DACstatus)
     this.DACnewValuesUserUnit = cloneDeep(this.DACstatus)
@@ -340,7 +342,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
               father.channels.forEach(channel => {
                 if (values.hasOwnProperty(channel)) {
                   father.DACstatus[arr[3]][arr[4]][channel] = values[channel]
-                  father.DACnewValuesUserUnit[arr[3]][arr[4]][channel] = values[channel] * father.userUnitsConvFactor[arr[4]]
+                  father.DACstatusUserUnit[arr[3]][arr[4]][channel] = values[channel] * father.userUnitsConvFactor[arr[4]]
                 }
               });
             }
@@ -419,6 +421,13 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     father.status = 'lost';
     father.disconnects += 1;
     father.connect();
+  }
+
+  calcUserUnit(board, dac, channel) {
+
+
+    this.DACnewValuesUserUnit[board][dac][channel] = this.DACnewValues[board][dac][channel] * this.userUnitsConvFactor[dac]
+    console.log(board, dac, channel, this.DACnewValuesUserUnit[board][dac][channel], this.DACnewValues[board][dac][channel], this.userUnitsConvFactor[dac]);
   }
 
   // copied & modified from services.component TODO split into ng service
