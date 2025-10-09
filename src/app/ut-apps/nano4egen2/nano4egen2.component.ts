@@ -92,6 +92,8 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     right: '0'
   };
 
+  public DACstep = {};
+
   public DACstatus = { "AFEBOARD1": { "LED": { "ch1_V": undefined } } }
   public DACstatusUserUnit = {}
   public channels = ["ch1_V", "ch2_V", "ch3_V", "ch4_V"];
@@ -99,8 +101,8 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
   public DACnewValues = {}
   public DACnewValuesSent = {}
   public DACnewValuesUserUnit = {}
-  public userUnits = { 'HEAT': 'mA', 'LED': 'mA', 'MEAS': 'mA' }
-  public userUnitsConvFactor = { 'HEAT': 10, 'LED': 10, 'MEAS': 0.01 }
+  public userUnits = { 'HEAT': 'mA', 'LED': 'mA', 'MEAS': 'µA' }
+  public userUnitsConvFactor = { 'HEAT': 10, 'LED': 10, 'MEAS': 10 }
 
   public temp_conf = -1;
   public temp_real = -42;
@@ -173,6 +175,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
         }
       }
     }
+    this.DACstep = { '0-2.048': (2.048 / 4095).toFixed(4), '2.048-4.096': (4.096 / 4095).toFixed(4), '4.096-5': (5 / 4095).toFixed(5) }
 
   }
 

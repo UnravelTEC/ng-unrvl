@@ -19,8 +19,24 @@
   </div>
 
   <form class="block" (submit)="setDAC()" style="clear: both;">
-    <h2>DAC Status:&nbsp;<button type="submit"
-        class="animateOnClick {{ animateOnClickShow ? 'animateOnClickShow' : '' }}">Set</button></h2>
+    <table>
+      <tr>
+        <td>
+          <h2>DAC Status:</h2>
+        </td>
+        <td>
+          &nbsp;&nbsp;&nbsp;<button type="submit" class="animateOnClick {{ animateOnClickShow ? 'animateOnClickShow' : '' }}">Set</button>
+        </td>
+        <td>
+          DAC steps:
+          <ul style="float: right;">
+            <li *ngFor="let step of DACstep | keyvalue">{{ step.key }} : {{ step.value }}</li>
+          </ul>
+        </td>
+      </tr>
+    </table>
+
+
     <table class="messages" *ngFor="let board of DACstatus | keyvalue" style="float: left;">
       <tr>
         <th colspan="2">{{ board.key }}</th>
@@ -38,10 +54,12 @@
                 DACstatusUserUnit[board.key][DACname.key][channel.key] : '?' }}&#8239;{{ userUnits[DACname.key] }}
               </td>
               <td>
-                <input type="number" style="width: 5em;" step="0.01"
+                <input type="number" style="width: 5em;" step="0.0005" min="0" max="4.8"
                   class="animateOnClick {{ (animateOnClickShow && DACnewValuesSent[board.key][DACname.key][channel.key] >= 0) ? 'animateOnClickShow' : '' }}"
                   [(ngModel)]="DACnewValues[board.key][DACname.key][channel.key]"
-                  id="{{board.key}}{{DACname.key}}{{channel.key}}" (ngModelChange)="calcUserUnit(board.key,DACname.key,channel.key)"/>
+                  id="id{{board.key}}{{DACname.key}}{{channel.key}}"
+                  name="name{{board.key}}{{DACname.key}}{{channel.key}}"
+                  (ngModelChange)="calcUserUnit(board.key,DACname.key,channel.key)" />
               </td>
               <td>V&nbsp;/&nbsp;{{ DACnewValuesUserUnit[board.key][DACname.key][channel.key] >= 0 ?
                 DACnewValuesUserUnit[board.key][DACname.key][channel.key] : '?' }}&#8239;{{ userUnits[DACname.key] }}
