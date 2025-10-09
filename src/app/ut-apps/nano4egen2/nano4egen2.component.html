@@ -25,7 +25,8 @@
           <h2>DAC Status:</h2>
         </td>
         <td>
-          &nbsp;&nbsp;&nbsp;<button type="submit" class="animateOnClick {{ animateOnClickShow ? 'animateOnClickShow' : '' }}">Set</button>
+          &nbsp;&nbsp;&nbsp;<button type="submit"
+            class="animateOnClick {{ animateOnClickShow ? 'animateOnClickShow' : '' }}">Set</button>
         </td>
         <td>
           DAC steps:
@@ -70,7 +71,41 @@
                 </div>
               </td> -->
             </tr>
+
           </table>
+        </td>
+      </tr>
+
+    </table>
+  </form>
+
+  <form class="block" (submit)="setChipCfg()" style="clear: both;">
+    <h2>Nano4E Sensor Chip Information</h2>
+    <table class="messages" *ngFor="let board of Nano4EChipCfg | keyvalue" style="float: left;">
+      <tr>
+        <th colspan="2">Nano4E Chip in {{ board.key }}</th>
+      </tr>
+      <tr>
+        <td>Chip Name/ID:</td>
+        <td><input type="text" [(ngModel)]="Nano4EChipCfg[board.key]['name']" id="Nano4E{{board.key}}name"
+            name="Nano4E{{board.key}}name" /></td>
+      </tr>
+      <tr *ngFor="let led of board.value['leds'] | keyvalue">
+        <td>{{ led.key }}</td>
+        <td><input type="number" step="1" min="100" max="700" style="width: 5em;"
+            [(ngModel)]="Nano4EChipCfg[board.key]['leds'][led.key]" id="Led{{board.key}}-{{led.key}}"
+            name="Led{{board.key}}-{{led.key}}" />nm</td>
+      </tr>
+      <tr>
+        <th colspan="2">Surface deposition material:</th>
+      </tr>
+      <tr *ngFor="let s of board.value['surfaces'] | keyvalue">
+        <th>{{s.key}}</th>
+        <td>
+          <input type="text" [(ngModel)]="Nano4EChipCfg[board.key]['surfaces'][s.key]['name']"
+            id="sname{{board.key}}-{{s.key}}" name="sname{{board.key}}-{{s.key}}">
+          &nbsp;<label for="en{{board.key}}-{{s.key}}">Enabled</label>
+          <input type="checkbox" [(ngModel)]="Nano4EChipCfg[board.key]['surfaces'][s.key]['enabled']" name="en{{board.key}}-{{s.key}}" id="en{{board.key}}-{{s.key}}">
         </td>
       </tr>
     </table>

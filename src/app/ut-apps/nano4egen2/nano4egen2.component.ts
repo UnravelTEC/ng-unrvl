@@ -3,7 +3,7 @@ import { GlobalSettingsService } from '../../core/global-settings.service';
 import * as Paho from 'paho-mqtt';
 import { UtFetchdataService } from 'app/shared/ut-fetchdata.service';
 import { LocalStorageService } from 'app/core/local-storage.service';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep, forIn } from 'lodash-es';
 
 // import cloneDeep from 'lodash-es/cloneDeep';
 
@@ -116,6 +116,24 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     "AFEBOARD3": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED4": 0b1000000, "HEATER": 0b10000000 },
     "AFEBOARD4": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED4": 0b1000000, "HEATER": 0b10000000 },
   };
+
+  public Nano4EChipCfgTempl = {
+    "name": "",
+    "leds": { "LED11": undefined, "LED12": undefined, "LED21": undefined, "LED22": undefined, "LED31": undefined, "LED32": undefined, "LED4": undefined },
+    "surfaces": {
+      "px1": { "name": "", "enabled": true },
+      "px2": { "name": "", "enabled": true },
+      "px3": { "name": "", "enabled": true },
+      "px4": { "name": "", "enabled": true }
+    },
+  }
+  public Nano4EChipCfg = {
+    "AFEBOARD1": {},
+    "AFEBOARD2": {},
+    "AFEBOARD3": {},
+    "AFEBOARD4": {}
+  }
+
   public gpios = {
     'DIGITBOARD': {
       'MICS_HEATER': undefined,
@@ -175,6 +193,11 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
         }
       }
     }
+
+    for (const afename in this.Nano4EChipCfg) {
+      this.Nano4EChipCfg[afename] = cloneDeep(this.Nano4EChipCfgTempl)
+    }
+
     this.DACstep = { '0-2.048': (2.048 / 4095).toFixed(4), '2.048-4.096': (4.096 / 4095).toFixed(4), '4.096-5': (5 / 4095).toFixed(5) }
 
   }
@@ -300,6 +323,10 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
       JSON.stringify({ "values": { "target_degC": this.temp_new }, "UTS": new Date().valueOf() / 1000 }),
       0,
       true);
+  }
+  setChipCfg() {
+    console.log(this.Nano4EChipCfg);
+
   }
 
   onMessageArrived(message: Object) {
