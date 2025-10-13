@@ -104,6 +104,16 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
   public userUnits = { 'HEAT': 'mA', 'LED': 'mA', 'MEAS': 'µA' }
   public userUnitsConvFactor = { 'HEAT': 10, 'LED': 10, 'MEAS': 10 }
 
+  // example_payload = {
+  //   "config": {
+  //     "tags": { "chipname": "allein" },
+  //     "ch1": { "enabled": true, "tags": { "material": "a" } },
+  //     "ch2": { "enabled": true, "tags": { "material": "b" } },
+  //     "ch3": { "enabled": true, "tags": { "material": "c" } },
+  //     "ch4": { "enabled": true, "tags": { "material": "d" } }
+  //   }
+  // }
+
   public temp_conf = -1;
   public temp_real = -42;
   public temp_new = 0;
@@ -133,6 +143,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     "AFEBOARD3": {},
     "AFEBOARD4": {}
   }
+  public ADCtopics = {}
 
   public gpios = {
     'DIGITBOARD': {
@@ -196,6 +207,9 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
 
     for (const afename in this.Nano4EChipCfg) {
       this.Nano4EChipCfg[afename] = cloneDeep(this.Nano4EChipCfgTempl)
+    }
+    for (let i = 1; i <= 4; i++) {
+      this.ADCtopics["AFEBOARD" + i.toString()] = this.gss.server.serverName + '/sensors/ADS1115/i2c-3_0x' + (0x47 + i).toString(16) + '/config'
     }
 
     this.DACstep = { '0-2.048': (2.048 / 4095).toFixed(4), '2.048-4.096': (4.096 / 4095).toFixed(4), '4.096-5': (5 / 4095).toFixed(5) }
@@ -324,9 +338,35 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
       0,
       true);
   }
-  setChipCfg() {
-    console.log(this.Nano4EChipCfg);
-
+  setChipCfg(chip = "") {
+    console.log("setChipCfg", chip, this.Nano4EChipCfg);
+    if (chip) {
+      const data = this.Nano4EChipCfg[chip]
+      const payload = {}
+      if (data["name"]) {
+        payload["tags"] = { "chipname": data["name"] }
+      }
+      for (const surface in data['surfaces']) {
+        const plkey = "ch" + surface.slice(-1)
+        const px = data['surfaces'][surface]
+        payload[plkey] = { "enabled": px["enabled"], "tags": { "material": px["name"] } }
+      }
+      for (const led in data['leds']) {
+        const channel = "ch" + led.charAt(3)
+        const valkey = led + "_nm"
+        const value = data['leds'][led] ? String(data['leds'][led]) : ""
+        if(channel in payload) {
+          payload[channel]["tags"][valkey] = value
+        } else
+        payload[channel] = { "tags": { valkey : value } }
+      }
+      this.client.publish(this.ADCtopics[chip],
+        JSON.stringify({ "config": payload, "UTS": new Date().valueOf() / 1000 }),
+        0,
+        true);
+      console.log("mqtt sent to", this.ADCtopics[chip], payload);
+      // LED-nm extra, needs to be syncronized with GPIOEXP
+    }
   }
 
   onMessageArrived(message: Object) {

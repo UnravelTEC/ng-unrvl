@@ -79,11 +79,12 @@
     </table>
   </form>
 
-  <form class="block" (submit)="setChipCfg()" style="clear: both;">
+  <form class="block" style="clear: both;">
+    <!-- (submit)="setChipCfg()" -->
     <h2>Nano4E Sensor Chip Information</h2>
     <table class="messages" *ngFor="let board of Nano4EChipCfg | keyvalue" style="float: left;">
-      <tr>
-        <th colspan="2">Nano4E Chip in {{ board.key }}</th>
+      <tr style="position: relative;">
+        <th colspan="2">Nano4E Chip in {{ board.key }} <button (click)="setChipCfg(board.key)" style="position: absolute; right: 4px;">Set</button></th>
       </tr>
       <tr>
         <td>Chip Name/ID:</td>
