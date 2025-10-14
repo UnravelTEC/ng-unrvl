@@ -304,6 +304,10 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
             for (const channel in DAC) {
               if (Object.prototype.hasOwnProperty.call(DAC, channel)) {
                 const value = DAC[channel];
+                if (DACid == "HEAT" && value > 2.5) {
+                  alert(String(value) + " too high for heater " + channel + " @ " + AFEBOARDid)
+                  continue;
+                }
                 if (!isNaN(value) && value !== undefined && value !== null) {
                   values[channel] = value;
                   this.DACnewValuesUserUnit[AFEBOARDid][DACid][channel] = value * this.userUnitsConvFactor[DAC]
@@ -355,10 +359,10 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
         const channel = "ch" + led.charAt(3)
         const valkey = led + "_nm"
         const value = data['leds'][led] ? String(data['leds'][led]) : ""
-        if(channel in payload) {
+        if (channel in payload) {
           payload[channel]["tags"][valkey] = value
         } else
-        payload[channel] = { "tags": { valkey : value } }
+          payload[channel] = { "tags": { valkey: value } }
       }
       this.client.publish(this.ADCtopics[chip],
         JSON.stringify({ "config": payload, "UTS": new Date().valueOf() / 1000 }),
