@@ -36,7 +36,7 @@ export class SensorService {
           // abs. max would be 20000 hPa ?
           return NaN;
         }
-        if ( value > 1100 || value < 300) {
+        if (value > 1100 || value < 300) {
           return [value, value, value];
         }
         const dev = 1; // hPa
@@ -438,10 +438,34 @@ export class SensorService {
       },
     },
     Nano4E: {
-      "px1_V": { round_digits: 7, },
-      "px2_V": { round_digits: 7, },
-      "px3_V": { round_digits: 7, },
-      "px4_V": { round_digits: 7, },
+      "px1_V": {
+        round_digits: 7,
+        getDeviation: function (value, raw_labels) {
+          if (value <= 0) return [NaN, NaN, NaN];
+          return [value, value, value];
+        }
+      },
+      "px2_V": {
+        round_digits: 7,
+        getDeviation: function (value, raw_labels) {
+          if (value <= 0) return [NaN, NaN, NaN];
+          return [value, value, value];
+        }
+      },
+      "px3_V": {
+        round_digits: 7,
+        getDeviation: function (value, raw_labels) {
+          if (value <= 0) return [NaN, NaN, NaN];
+          return [value, value, value];
+        }
+      },
+      "px4_V": {
+        round_digits: 7,
+        getDeviation: function (value, raw_labels) {
+          if (value <= 0) return [NaN, NaN, NaN];
+          return [value, value, value];
+        }
+      },
     },
     ADS1115: {
       // BEGIN no longer a value, but a tag (here for compatibility)
@@ -592,7 +616,7 @@ export class SensorService {
       const oldRow = data[r];
       let newRow = [oldRow[0]]; // Date
       for (let c = 1; c < nrcols; c++) {
-        if(!Array.isArray(oldRow[c])) { // maybe data given to Dyg is already with dev.
+        if (!Array.isArray(oldRow[c])) { // maybe data given to Dyg is already with dev.
           newRow.push(deviFunctions[c](oldRow[c], raw_labels[c]));
         } else {
           newRow.push(oldRow[c]);

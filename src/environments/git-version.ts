@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "8d1e5da",
-  "SHA": "8d1e5dafb1b1ab958d0710c6946760360d7387eb",
+  "shortSHA": "e9707c6",
+  "SHA": "e9707c6375318c1966072b390fb0610a9ffeb6b2",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Thu Oct 9 11:41:16 2025 +0200",
-  "lastCommitMessage": "display DAC steps",
-  "lastCommitNumber": "1597"
+  "lastCommitTime": "Mon Oct 13 16:28:17 2025 +0200",
+  "lastCommitMessage": "integrade LED nm cfg",
+  "lastCommitNumber": "1599"
 }

@@ -193,8 +193,9 @@ style.padding-bottom="20vh"-->
       <div
         class="logy y1"
         (click)="switchLogScale()"
-        *ngIf="yRange[0] > 0 && yRange[1] > 0"
+
       >
+      <!-- *ngIf="yRange[0] > 0 && yRange[1] > 0"  -->
         <div class="{{ dyGraphOptions.axes.y.logscale ? 'active' : '' }}">
           log
         </div>
