@@ -787,18 +787,35 @@ export class Nano4EComponent implements OnInit {
       this.data = undefined;
       this.data = tmpdata;
     } else {
-      this.orig_labels = cloneDeep(ret['orig_labels']);
-      this.short_labels = ret['short_labels'];
-      this.common_label = ret['common_label'];
-      this.raw_labels = ret['raw_labels'];
-      this.labels = ['Date'].concat(this.short_labels);
-      console.log('new orig labels:', ret['orig_labels']);
-      console.log('new raw labels:', ret['raw_labels']);
-      console.log('new common_label:', ret['common_label']);
-      console.log('new short_labels:', ret['short_labels']);
 
-      for (let rli = 1; rli < this.raw_labels.length; rli++) { // 1 because 0 is only Date column
-        const raw_tags = this.raw_labels[rli].tags;
+
+      this.orig_labels = cloneDeep(ret['orig_labels']);
+      const short_labels = ret['short_labels'];
+      const raw_labels = ret['raw_labels'];
+
+      console.log('new orig labels before R:', ret['orig_labels']);
+      console.log('new raw labels before R:', ret['raw_labels']);
+      console.log('new common_label before R:', ret['common_label']);
+      console.log('new short_labels before R:', ret['short_labels']);
+
+      // change to R's
+      for (let i = 1; i < raw_labels.length; i++) {
+        const rlabel = raw_labels[i];
+        const rlabeltags = rlabel.tags
+        const meas_curr = parseFloat(rlabeltags["meas_current_uA"]) * 10e-6
+        console.log(rlabel, rlabeltags["meas_current_uA"], meas_curr, 'A', short_labels[i - 1].replace('( V )', '( Ω )'));
+
+        raw_labels[i] = rlabel['field'].replace(/_V/, "_Ohm");
+        short_labels[i - 1] = short_labels[i - 1].replace('( V )', '( Ω )')
+        for (let r = 0; r < idata.length; r++) {
+          if (idata[r][i] > 0) {
+            idata[r][i] = idata[r][i] / meas_curr;
+          }
+        }
+      }
+
+      for (let rli = 1; rli < raw_labels.length; rli++) { // 1 because 0 is only Date column
+        const raw_tags = raw_labels[rli].tags;
         for (const key in raw_tags) {
           if (Object.prototype.hasOwnProperty.call(raw_tags, key)) {
             if (!Object.prototype.hasOwnProperty.call(this.taglist, key)) {
@@ -811,18 +828,15 @@ export class Nano4EComponent implements OnInit {
         }
       }
 
+      this.short_labels = short_labels
+      this.common_label = ret['common_label'];
+      this.raw_labels = raw_labels;
+      this.labels = ['Date'].concat(this.short_labels);
+
       this.colors = this.h.getColorsforLabels(new_labels);
 
       for (let c = 1; c < numColumns; c++) {
         const c_label = new_labels[c];
-
-        if (c_label.match(/hPa/)) {
-          this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
-          this.extraDyGraphConfig.series[this.short_labels[c - 1]] = {
-            axis: 'y2',
-          };
-        }
-
         this.round_digits.push(
           this.sensorService.getDigits(this.raw_labels[c])
         );

@@ -1145,7 +1145,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         !series.hasOwnProperty('y') || isNaN(series.y)
           ? ''
           : parent.h
-            .roundAccurately(series.y, parent.roundDigits[i + 1])
+            .roundAccurately(series.y, parent.roundDigits[i + 1]).toLocaleString()
       // .toLocaleString(); // replaced . with , in german, but has a bug: cut of after 3 digits after comma
       const isHighlighted = series.isHighlighted;
       const cls = isHighlighted ? 'class="highlight"' : (!locked ? 'class="h"' : '');
@@ -1179,9 +1179,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
                   parent.roundDigits[i + 1]
                 );
                 if (dlower == dupper) {
-                  devtext = dlower ? '±' + String(dlower) : ''; // if no dev defined
+                  devtext = dlower ? '±' + dlower.toLocaleString() : ''; // if no dev defined
                 } else {
-                  devtext = '-' + String(dlower) + ' +' + String(dupper);
+                  devtext = '-' + dlower.toLocaleString() + ' +' + dupper.toLocaleString();
                 }
               }
             }
@@ -1211,10 +1211,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
                 compareText += '+';
               }
               compareText +=
-                String(
-                  parent.h.roundAccurately(diff, parent.roundDigits[i + 1])
-                ) +
-                '&thinsp;' +
+                parent.h.roundAccurately(diff, parent.roundDigits[i + 1]).toLocaleString()
+                + '&thinsp;' +
                 unit;
             }
           }
