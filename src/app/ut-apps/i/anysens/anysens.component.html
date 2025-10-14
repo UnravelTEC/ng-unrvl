@@ -75,7 +75,7 @@
         </div>
       </fieldset>
 
-      <fieldset [disabled]="queryRunning == true || autoreload">
+      <fieldset [disabled]="queryRunning == true || autoreload" style="position: relative;">
         <h3>
           {{
           queryRunning && !autoreload
@@ -83,7 +83,8 @@
           : 'Query latest data:'
           }}
         </h3>
-        <mat-form-field style="margin-top: -0.5rem; margin-bottom: -1rem">
+        <button (click)="reload()" type="button" [disabled]="autoreload" style="position: absolute; top: 0.5em; right: 0.5em; z-index: 10;"><mat-icon>refresh</mat-icon></button>
+        <mat-form-field style="margin-top: -0.5rem; margin-bottom: -1rem; min-width: 4em !important;">
           <mat-label>Show range from now</mat-label>
           <mat-select [(ngModel)]="userStartTime" name="startTime" (closed)="changeMean(userStartTime)"
             [disabled]="queryRunning == true || autoreload">
@@ -94,10 +95,12 @@
             <mat-option value="6h">6 h</mat-option>
             <mat-option value="24h">24 h</mat-option>
             <mat-option value="7d">1 week</mat-option>
-            <mat-option value="30d">1 month</mat-option>
+            <mat-option value="30d">1 mon.</mat-option>
             <mat-option value="356d">1 year</mat-option>
           </mat-select>
         </mat-form-field>
+
+
       </fieldset>
 
       <fieldset>
@@ -134,6 +137,16 @@
                 {{ l.key }}
               </mat-checkbox>
               <!-- {{ l.key }} -->
+            </div>
+            <div class="taglist">
+              Blacklisted tags:
+
+              <div *ngFor="let l of ls_taglist | keyvalue">
+                <mat-checkbox [(ngModel)]="ls_taglist[l.key]" [name]="l.key" labelPosition="after"
+                  (ngModelChange)="changeTaglist($event)">
+                  {{ l.key }}
+                </mat-checkbox>
+              </div>
             </div>
           </div>
         </div>
