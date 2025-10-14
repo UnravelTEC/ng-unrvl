@@ -8,11 +8,11 @@ import { cloneDeep } from 'lodash-es';
 import { SensorService } from 'app/shared/sensor.service';
 
 @Component({
-  selector: 'app-anysens',
-  templateUrl: './anysens.component.html',
-  styleUrls: ['./anysens.component.scss'],
+  selector: 'app-nano4e',
+  templateUrl: './nano4e.component.html',
+  styleUrls: ['./nano4e.component.scss'],
 })
-export class AnysensComponent implements OnInit {
+export class Nano4EComponent implements OnInit {
   colors = [];
   graphWidth = 1500;
   setGraphWidth(width) {
@@ -52,7 +52,7 @@ export class AnysensComponent implements OnInit {
     right: '0.5rem',
   };
 
-  public startTime = '6h';
+  public startTime = '1h';
   public dygStartTime: string; // used on autoUpdate
   public userStartTime = this.startTime;
   public meanS = 30;
@@ -78,13 +78,13 @@ export class AnysensComponent implements OnInit {
   public allAverages = [];
   public visibleAverages = [];
 
-  appName = 'Any Sens';
+  appName = 'Nano4E Sensor';
 
   changeTrigger = 0;
 
-  measurement = 'temperature';
+  measurement = 'gas';
   ylabel = '';
-  sensor: string;
+  sensor = "Nano4E";
   id: string;
   interval: string;
   background: string;
@@ -140,7 +140,7 @@ export class AnysensComponent implements OnInit {
     this.reload_timer = this.auto_interval;
 
     this.ls_taglist = this.localStorage.get(this.appName + 'taglist');
-    if(!this.ls_taglist) { // sometimes, ls returns "null" or so
+    if (!this.ls_taglist) { // sometimes, ls returns "null" or so
       this.ls_taglist = {}
     }
 
@@ -580,10 +580,9 @@ export class AnysensComponent implements OnInit {
     this.localStorage.set(this.appName + 'tagsShown', this.tagsShown);
   }
   toggleAllTags() {
-    this.allTagsShown = !this.allTagsShown;
-    this.localStorage.set(this.appName + 'allTagsShown', this.allTagsShown);
-  }
-
+     this.allTagsShown = !this.allTagsShown;
+     this.localStorage.set(this.appName + 'allTagsShown', this.allTagsShown);
+   }
 
   launchQuery(clause: string) {
     if (!this.gss.influxReady()) {

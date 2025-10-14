@@ -227,6 +227,11 @@ const appRoutes: Routes = [
       ),
   },
   {
+    path: 'Apps/Sensors/Nano4E',
+    loadChildren: () =>
+      import('./ut-apps/sensors/nano4e/nano4e.module').then((m) => m.Nano4EModule),
+  },
+  {
     path: 'Apps/Sensors/SCD30',
     loadChildren: () =>
       import('./ut-apps/sensors/scd30/scd30.module').then((m) => m.Scd30Module),
