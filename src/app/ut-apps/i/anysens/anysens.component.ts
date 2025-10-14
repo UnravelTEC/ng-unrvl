@@ -128,6 +128,7 @@ export class AnysensComponent implements OnInit {
       'tableShown',
       'sideBarShown',
       'tagsShown',
+      'allTagsShown',
       'show_deviation',
     ].forEach((element) => {
       const thing = this.localStorage.get(this.appName + element);
@@ -140,7 +141,7 @@ export class AnysensComponent implements OnInit {
     this.reload_timer = this.auto_interval;
 
     this.ls_taglist = this.localStorage.get(this.appName + 'taglist');
-    if(!this.ls_taglist) { // sometimes, ls returns "null" or so
+    if (!this.ls_taglist) { // sometimes, ls returns "null" or so
       this.ls_taglist = {}
     }
 
@@ -239,10 +240,10 @@ export class AnysensComponent implements OnInit {
     }
 
     let groupby_list = []
-    if (this.taglist) {
-      for (const key in this.taglist) {
-        if (Object.prototype.hasOwnProperty.call(this.taglist, key)) {
-          const value = this.taglist[key];
+    if (this.ls_taglist) {
+      for (const key in this.ls_taglist) {
+        if (Object.prototype.hasOwnProperty.call(this.ls_taglist, key)) {
+          const value = this.ls_taglist[key];
           if (value) {
             groupby_list.push('"' + key + '"')
           }

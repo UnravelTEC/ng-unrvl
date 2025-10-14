@@ -128,6 +128,7 @@ export class Nano4EComponent implements OnInit {
       'tableShown',
       'sideBarShown',
       'tagsShown',
+      'allTagsShown',
       'show_deviation',
     ].forEach((element) => {
       const thing = this.localStorage.get(this.appName + element);
@@ -239,10 +240,10 @@ export class Nano4EComponent implements OnInit {
     }
 
     let groupby_list = []
-    if (this.taglist) {
-      for (const key in this.taglist) {
-        if (Object.prototype.hasOwnProperty.call(this.taglist, key)) {
-          const value = this.taglist[key];
+    if (this.ls_taglist) {
+      for (const key in this.ls_taglist) {
+        if (Object.prototype.hasOwnProperty.call(this.ls_taglist, key)) {
+          const value = this.ls_taglist[key];
           if (value) {
             groupby_list.push('"' + key + '"')
           }
@@ -580,9 +581,9 @@ export class Nano4EComponent implements OnInit {
     this.localStorage.set(this.appName + 'tagsShown', this.tagsShown);
   }
   toggleAllTags() {
-     this.allTagsShown = !this.allTagsShown;
-     this.localStorage.set(this.appName + 'allTagsShown', this.allTagsShown);
-   }
+    this.allTagsShown = !this.allTagsShown;
+    this.localStorage.set(this.appName + 'allTagsShown', this.allTagsShown);
+  }
 
   launchQuery(clause: string) {
     if (!this.gss.influxReady()) {
@@ -662,23 +663,6 @@ export class Nano4EComponent implements OnInit {
             c_label
           );
           break;
-        }
-      }
-    }
-
-    for (let c = 1; c < numColumns; c++) {
-      const c_label = new_labels[c];
-
-      // NO2: ppm -> ppb
-      if (c_label.match(/NO₂ \(ppm\)/)) {
-        new_labels[c] = c_label.replace(/ppm/, 'ppb');
-        for (let r = 0; r < idata.length; r++) {
-          idata[r][c] *= 1000;
-        }
-      }
-      if (c_label.match(/NO₂ \(µg\/m³\)/)) {
-        for (let r = 0; r < idata.length; r++) {
-          idata[r][c] = this.h.smoothNO2(idata[r][c]);
         }
       }
     }
