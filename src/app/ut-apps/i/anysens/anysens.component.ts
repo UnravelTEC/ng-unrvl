@@ -108,6 +108,8 @@ export class AnysensComponent implements OnInit {
   public tagsShown = true;
   public allTagsShown = false;
 
+  public Object = Object; // to use Object.hasOwn() in html
+
   public annotationTable = []; // [{time_t:Date, time:Date, measurement: "", tags: "", field: "", OP: "CRUD", text: "" }]
 
   constructor(

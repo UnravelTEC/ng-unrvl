@@ -153,7 +153,7 @@
           <div *ngIf="allTagsShown" class="taglist">
             <div *ngFor="let l of ls_taglist | keyvalue">
               <mat-checkbox [(ngModel)]="ls_taglist[l.key]" [name]="l.key" labelPosition="after"
-                (ngModelChange)="changeTaglist($event)" *ngIf="!(taglist.includes(l.key))">
+                (ngModelChange)="changeTaglist($event)" *ngIf="!(Object.hasOwn(taglist, l.key))">
                 {{ l.key }}
               </mat-checkbox>
             </div>
