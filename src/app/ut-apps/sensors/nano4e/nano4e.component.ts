@@ -802,7 +802,7 @@ export class Nano4EComponent implements OnInit {
       for (let i = 1; i < raw_labels.length; i++) {
         const rlabel = raw_labels[i];
         const rlabeltags = rlabel.tags
-        const meas_curr = parseFloat(rlabeltags["meas_current_uA"]) * 10e-6
+        const meas_curr = parseFloat(rlabeltags["meas_current_uA"]) * 1e-6
         console.log(rlabel, rlabeltags["meas_current_uA"], meas_curr, 'A', short_labels[i - 1].replace('( V )', '( Ω )'));
 
         raw_labels[i] = rlabel['field'].replace(/_V/, "_Ohm");
