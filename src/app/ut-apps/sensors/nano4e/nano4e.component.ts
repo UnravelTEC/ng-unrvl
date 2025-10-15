@@ -808,6 +808,10 @@ export class Nano4EComponent implements OnInit {
         raw_labels[i] = rlabel['field'].replace(/_V/, "_Ohm");
         short_labels[i - 1] = short_labels[i - 1].replace('( V )', '( Ω )')
         for (let r = 0; r < idata.length; r++) {
+          if (meas_curr == 0) {
+            idata[r][i] = NaN;
+            continue;
+          }
           if (idata[r][i] > 0) {
             idata[r][i] = idata[r][i] / meas_curr;
           }

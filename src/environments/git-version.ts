@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "564028e",
-  "SHA": "564028e3e580c46810905ad6b8d0163e23673654",
+  "shortSHA": "4f2e0c2",
+  "SHA": "4f2e0c2ab8b9df040c56c35d4779a7cb72fe10d9",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Tue Oct 14 13:37:36 2025 +0200",
-  "lastCommitMessage": "fix Object not there bug",
-  "lastCommitNumber": "1605"
+  "lastCommitTime": "Tue Oct 14 16:10:30 2025 +0200",
+  "lastCommitMessage": "safety alert if heater V > 2.5",
+  "lastCommitNumber": "1607"
 }
