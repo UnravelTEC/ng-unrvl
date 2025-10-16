@@ -174,7 +174,7 @@ export class Nano4EComponent implements OnInit {
       }
     });
     this.gss.emitChange({
-      appName: this.measurement + (this.sensor ? ' ' + this.sensor : ''),
+      appName: "Nano4E"
     });
 
     this.ylabel = this.measurement
@@ -897,7 +897,8 @@ export class Nano4EComponent implements OnInit {
     if (this.autoreload) {
       setTimeout(() => {
         if (this.autoreload) {
-          this.reloadMissingToNow();
+          // this.reloadMissingToNow();
+          this.reload();
         }
       }, this.auto_interval * 1000);
     }
