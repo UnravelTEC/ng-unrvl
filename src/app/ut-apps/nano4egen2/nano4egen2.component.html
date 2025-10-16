@@ -47,12 +47,14 @@
         <td>
           <table>
             <tr *ngFor="let channel of DACname.value | keyvalue">
-              <td>
+              <td style="width: 100%;">
                 {{ channelNames[channel.key] }}
               </td>
               <td>{{ channel.value >= 0 ? channel.value : '?' }}&#8239;V</td>
               <td>/&nbsp;{{ DACstatusUserUnit[board.key][DACname.key][channel.key] >= 0 ?
-                DACstatusUserUnit[board.key][DACname.key][channel.key] : '?' }}&#8239;{{ userUnits[DACname.key] }}
+                DACstatusUserUnit[board.key][DACname.key][channel.key] : '?' }}&#8239;{{ userUnits[DACname.key] }}<span
+                  *ngIf="DACname.key == 'HEAT'">&nbsp;/&nbsp;{{ heatTemps[board.key][channel.key] | number :
+                  '1.0-2'}}&#8239;°C</span>
               </td>
               <td>
                 <input type="number" style="width: 5em;" step="0.0005" min="0" max="4.8"
@@ -63,7 +65,9 @@
                   (ngModelChange)="calcUserUnit(board.key,DACname.key,channel.key)" />
               </td>
               <td>V&nbsp;/&nbsp;{{ DACnewValuesUserUnit[board.key][DACname.key][channel.key] >= 0 ?
-                DACnewValuesUserUnit[board.key][DACname.key][channel.key] : '?' }}&#8239;{{ userUnits[DACname.key] }}
+                DACnewValuesUserUnit[board.key][DACname.key][channel.key] : '?' }}&#8239;{{ userUnits[DACname.key]
+                }}<span *ngIf="DACname.key == 'HEAT'">&nbsp;/&nbsp;{{ heatTempsUser[board.key][channel.key] | number :
+                  '1.0-2'}}&#8239;°C</span>
               </td>
               <!-- <td>
                 <div class="animateOnClick">
@@ -84,7 +88,8 @@
     <h2>Nano4E Sensor Chip Information</h2>
     <table class="messages" *ngFor="let board of Nano4EChipCfg | keyvalue" style="float: left;">
       <tr style="position: relative;">
-        <th colspan="2">Nano4E Chip in {{ board.key }} <button (click)="setChipCfg(board.key)" style="position: absolute; right: 4px;">Set</button></th>
+        <th colspan="2">Nano4E Chip in {{ board.key }} <button (click)="setChipCfg(board.key)"
+            style="position: absolute; right: 4px;">Set</button></th>
       </tr>
       <tr>
         <td>Chip Name/ID:</td>
@@ -106,7 +111,8 @@
           <input type="text" [(ngModel)]="Nano4EChipCfg[board.key]['surfaces'][s.key]['name']"
             id="sname{{board.key}}-{{s.key}}" name="sname{{board.key}}-{{s.key}}">
           &nbsp;<label for="en{{board.key}}-{{s.key}}">Enabled</label>
-          <input type="checkbox" [(ngModel)]="Nano4EChipCfg[board.key]['surfaces'][s.key]['enabled']" name="en{{board.key}}-{{s.key}}" id="en{{board.key}}-{{s.key}}">
+          <input type="checkbox" [(ngModel)]="Nano4EChipCfg[board.key]['surfaces'][s.key]['enabled']"
+            name="en{{board.key}}-{{s.key}}" id="en{{board.key}}-{{s.key}}">
         </td>
       </tr>
     </table>

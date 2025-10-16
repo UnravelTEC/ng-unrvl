@@ -97,12 +97,64 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
   public DACstatus = { "AFEBOARD1": { "LED": { "ch1_V": undefined } } }
   public DACstatusUserUnit = {}
   public channels = ["ch1_V", "ch2_V", "ch3_V", "ch4_V"];
-  public channelNames = { "ch1_V": "Channel 1", "ch2_V": "Channel 2", "ch3_V": "Channel 3", "ch4_V": "Channel 4" }
+  public channelNames = { "ch1_V": "Px 1", "ch2_V": "Px 2", "ch3_V": "Px 3", "ch4_V": "Px 4" }
   public DACnewValues = {}
   public DACnewValuesSent = {}
   public DACnewValuesUserUnit = {}
   public userUnits = { 'HEAT': 'mA', 'LED': 'mA', 'MEAS': 'µA' }
   public userUnitsConvFactor = { 'HEAT': 10, 'LED': 10, 'MEAS': 10 }
+  public heatTemps = {
+    "AFEBOARD1": { "ch1_V": undefined, "ch2_V": undefined, "ch3_V": undefined, "ch4_V": undefined },
+    "AFEBOARD2": { "ch1_V": undefined, "ch2_V": undefined, "ch3_V": undefined, "ch4_V": undefined },
+    "AFEBOARD3": { "ch1_V": undefined, "ch2_V": undefined, "ch3_V": undefined, "ch4_V": undefined },
+    "AFEBOARD4": { "ch1_V": undefined, "ch2_V": undefined, "ch3_V": undefined, "ch4_V": undefined }
+  }
+  public heatTempsUser = {
+    "AFEBOARD1": { "ch1_V": undefined, "ch2_V": undefined, "ch3_V": undefined, "ch4_V": undefined },
+    "AFEBOARD2": { "ch1_V": undefined, "ch2_V": undefined, "ch3_V": undefined, "ch4_V": undefined },
+    "AFEBOARD3": { "ch1_V": undefined, "ch2_V": undefined, "ch3_V": undefined, "ch4_V": undefined },
+    "AFEBOARD4": { "ch1_V": undefined, "ch2_V": undefined, "ch3_V": undefined, "ch4_V": undefined }
+  }
+
+
+  public heatCurve = [
+    [0, 0],
+    [6, 10],
+    [7.5, 20],
+    [10, 30],
+    [11.5, 40],
+    [12.7, 50],
+    [13.6, 60],
+    [14.5, 70],
+    [15.3, 80],
+    [16, 90],
+    [16.7, 100],
+    [17.3, 110],
+    [17.7, 120],
+    [18.3, 130],
+    [18.7, 140],
+    [19.2, 150],
+    [19.5, 160],
+    [19.7, 170],
+    [20.1, 180],
+    [20.5, 190],
+    [20.7, 200],
+    [21.1, 210],
+    [21.3, 220],
+    [21.6, 230],
+    [21.8, 240],
+    [22.0, 250],
+    [22.25, 260],
+    [22.4, 270],
+    [22.7, 280],
+    [22.8, 290],
+    [23.0, 300],
+    [23.2, 310],
+    [23.5, 320],
+    [23.6, 330],
+    [23.7, 340],
+    [23.85, 350],
+  ]
 
   // example_payload = {
   //   "config": {
@@ -415,8 +467,13 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
             if (actor == "DAC") {
               father.channels.forEach(channel => {
                 if (values.hasOwnProperty(channel)) {
-                  father.DACstatus[arr[3]][arr[4]][channel] = values[channel]
-                  father.DACstatusUserUnit[arr[3]][arr[4]][channel] = values[channel] * father.userUnitsConvFactor[arr[4]]
+                  const board = arr[3]
+                  const DAC = arr[4];
+                  father.DACstatus[board][DAC][channel] = values[channel]
+                  father.DACstatusUserUnit[board][DAC][channel] = values[channel] * father.userUnitsConvFactor[arr[4]]
+                  if (DAC == 'HEAT') {
+                    father.heatTemps[board][channel] = father.calcHeatT(father.DACstatusUserUnit[board][DAC][channel]);
+                  }
                 }
               });
             }
@@ -497,10 +554,27 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     father.connect();
   }
 
+  private RT = 25;
+
+  calcHeatT(c_mA) {
+    for (let i = 0; i < (this.heatCurve.length - 1); i++) {
+      const element = this.heatCurve[i];
+      if (c_mA >= element[0] && c_mA < this.heatCurve[i + 1][0]) {
+        const delta_c = c_mA - element[0]
+        const step_c = this.heatCurve[i + 1][0] - element[0]
+        const step_K = this.heatCurve[i + 1][1] - element[1]
+        return this.RT + element[1] + ((delta_c / step_c) * step_K)
+      }
+    }
+    return -1;
+  }
+
   calcUserUnit(board, dac, channel) {
-
-
-    this.DACnewValuesUserUnit[board][dac][channel] = this.DACnewValues[board][dac][channel] * this.userUnitsConvFactor[dac]
+    const c_mA = Math.round(this.DACnewValues[board][dac][channel] * this.userUnitsConvFactor[dac] * 1000) / 1000
+    this.DACnewValuesUserUnit[board][dac][channel] = c_mA;
+    if (dac == 'HEAT') {
+      this.heatTempsUser[board][channel] = this.calcHeatT(c_mA);
+    }
     console.log(board, dac, channel, this.DACnewValuesUserUnit[board][dac][channel], this.DACnewValues[board][dac][channel], this.userUnitsConvFactor[dac]);
   }
 
