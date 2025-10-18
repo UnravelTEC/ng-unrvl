@@ -152,6 +152,7 @@ export class AnysensComponent implements OnInit {
         this.labelBlockList.push(key);
       }
     }
+    console.log('labelBlockList', this.labelBlockList);
 
     [
       'host',
@@ -581,15 +582,15 @@ export class AnysensComponent implements OnInit {
     this.tagsShown = !this.tagsShown;
     this.localStorage.set(this.appName + 'tagsShown', this.tagsShown);
   }
+  toggleAllTags() {
+    this.allTagsShown = !this.allTagsShown;
+    this.localStorage.set(this.appName + 'allTagsShown', this.allTagsShown);
+  }
   saveTags() {
     this.localStorage.set(this.appName + 'taglist', this.ls_taglist);
   }
   clearTags() {
     this.localStorage.set(this.appName + 'taglist', {});
-   }
-  toggleAllTags() {
-    this.allTagsShown = !this.allTagsShown;
-    this.localStorage.set(this.appName + 'allTagsShown', this.allTagsShown);
   }
 
 
