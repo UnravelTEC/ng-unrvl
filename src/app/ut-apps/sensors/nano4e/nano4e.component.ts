@@ -155,6 +155,7 @@ export class Nano4EComponent implements OnInit {
         this.labelBlockList.push(key);
       }
     }
+    console.log('labelBlockList', this.labelBlockList);
 
     [
       'host',
@@ -588,6 +589,12 @@ export class Nano4EComponent implements OnInit {
   toggleAllTags() {
     this.allTagsShown = !this.allTagsShown;
     this.localStorage.set(this.appName + 'allTagsShown', this.allTagsShown);
+  }
+  saveTags() {
+    this.localStorage.set(this.appName + 'taglist', this.ls_taglist);
+  }
+  clearTags() {
+    this.localStorage.set(this.appName + 'taglist', {});
   }
 
   launchQuery(clause: string) {
