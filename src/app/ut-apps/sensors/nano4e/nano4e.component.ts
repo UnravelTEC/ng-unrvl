@@ -23,7 +23,7 @@ export class Nano4EComponent implements OnInit {
   extraDyGraphConfig = {
     // connectSeparatedPoints: true,
     pointSize: 3,
-    logscale: false,
+    logscale: true,
     series: {
       'pressure sensor: BME280, pressure (hPa)': {
         axis: 'y2',
@@ -31,6 +31,9 @@ export class Nano4EComponent implements OnInit {
     },
 
     axes: {
+      y: {
+        logscale: true,
+      },
       y2: {
         independentTicks: true, // default opt here to have a filled object to access later
         // axisLabelWidth: 60, // set on demand

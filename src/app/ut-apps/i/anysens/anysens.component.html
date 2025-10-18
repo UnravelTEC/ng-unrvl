@@ -142,7 +142,13 @@
               <!-- {{ l.key }} -->
             </div>
           </div>
-
+          <br>
+          <button (click)="saveTags()" type="button">
+            save
+          </button>&nbsp;
+          <button (click)="clearTags()" type="button">
+            clear
+          </button>
           <label style="position: relative; margin: 1em 0;">
             All tags:
             <button style="position: absolute; top: 0; right: 0;" (click)="toggleAllTags()" type="button">
@@ -156,6 +162,7 @@
                 {{ l.key }}
               </mat-checkbox>
             </div>
+            <div>&nbsp;</div>
           </div>
         </div>
 

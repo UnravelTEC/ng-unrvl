@@ -552,7 +552,6 @@ export class AnysensComponent implements OnInit {
         }
       }
     }
-    this.localStorage.set(this.appName + 'taglist', this.ls_taglist);
   }
 
   toggleTableShown() {
@@ -582,6 +581,12 @@ export class AnysensComponent implements OnInit {
     this.tagsShown = !this.tagsShown;
     this.localStorage.set(this.appName + 'tagsShown', this.tagsShown);
   }
+  saveTags() {
+    this.localStorage.set(this.appName + 'taglist', this.ls_taglist);
+  }
+  clearTags() {
+    this.localStorage.set(this.appName + 'taglist', {});
+   }
   toggleAllTags() {
     this.allTagsShown = !this.allTagsShown;
     this.localStorage.set(this.appName + 'allTagsShown', this.allTagsShown);
