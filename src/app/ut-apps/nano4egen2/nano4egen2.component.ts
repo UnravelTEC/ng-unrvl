@@ -261,7 +261,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
       this.Nano4EChipCfg[afename] = cloneDeep(this.Nano4EChipCfgTempl)
     }
     for (let i = 1; i <= 4; i++) {
-      this.ADCtopics["AFEBOARD" + i.toString()] = this.gss.server.serverName + '/sensors/ADS1115/i2c-3_0x' + (0x47 + i).toString(16) + '/config'
+      this.ADCtopics["AFEBOARD" + i.toString()] = this.gss.server.hostname + '/sensors/ADS1115/i2c-3_0x' + (0x47 + i).toString(16) + '/config'
     }
 
     this.DACstep = { '0-2.048': (2.048 / 4095).toFixed(4), '2.048-4.096': (4.096 / 4095).toFixed(4), '4.096-5': (5 / 4095).toFixed(5) }
@@ -372,7 +372,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
                 JSON.stringify(payload),
                 0,
                 true);
-              console.log(payload);
+              console.log(this.gss.server.hostname + "/actuators/DAC/" + AFEBOARDid + "/" + DACid + "/set", payload);
               for (const channel in values) {
                 if (Object.prototype.hasOwnProperty.call(values, channel)) {
                   const value = values[channel];
