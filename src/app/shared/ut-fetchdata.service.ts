@@ -528,6 +528,14 @@ export class UtFetchdataService {
           }
         }
       }
+    } else {
+      const first_tagset = retval['raw_labels'][1].tags
+      for (const tkey in first_tagset) {
+        if (Object.prototype.hasOwnProperty.call(first_tagset, tkey)) {
+          const tvalue = first_tagset[tkey];
+          common_tags[tkey] = tvalue;
+        }
+      }
     }
     if (common_metric && retval['raw_labels'].length > 1) {
       retval['common_label'] = retval['raw_labels'][1].metric;
