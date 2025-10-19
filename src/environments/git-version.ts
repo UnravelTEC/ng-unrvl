@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "d325dc7",
-  "SHA": "d325dc75a6a7424ce6db9fd1a7fda82087c1183c",
+  "shortSHA": "b5769ad",
+  "SHA": "b5769ad125a2ea04699e99b711976f0bc47f48e4",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Thu Oct 16 14:21:56 2025 +0200",
-  "lastCommitMessage": "autoreload not incremental as bug workaround",
-  "lastCommitNumber": "1611"
+  "lastCommitTime": "Sat Oct 18 14:47:36 2025 +0200",
+  "lastCommitMessage": "fix mqtt topic hostname error",
+  "lastCommitNumber": "1615"
 }

@@ -260,10 +260,6 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     for (const afename in this.Nano4EChipCfg) {
       this.Nano4EChipCfg[afename] = cloneDeep(this.Nano4EChipCfgTempl)
     }
-    for (let i = 1; i <= 4; i++) {
-      this.ADCtopics["AFEBOARD" + i.toString()] = this.gss.server.hostname + '/sensors/ADS1115/i2c-3_0x' + (0x47 + i).toString(16) + '/config'
-    }
-
     this.DACstep = { '0-2.048': (2.048 / 4095).toFixed(4), '2.048-4.096': (4.096 / 4095).toFixed(4), '4.096-5': (5 / 4095).toFixed(5) }
 
   }
@@ -282,6 +278,10 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
 
     this.ls_api_user = this.localStorage.get('api_user');
     this.ls_api_pass = this.localStorage.get('api_pass');
+
+    for (let i = 1; i <= 4; i++) {
+      this.ADCtopics["AFEBOARD" + i.toString()] = this.gss.server.hostname + '/sensors/ADS1115/i2c-3_0x' + (0x47 + i).toString(16) + '/config'
+    }
     // this.getService();
 
     // this.dygLabels = ;
@@ -470,7 +470,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
                   const board = arr[3]
                   const DAC = arr[4];
                   father.DACstatus[board][DAC][channel] = values[channel]
-                  father.DACstatusUserUnit[board][DAC][channel] = values[channel] * father.userUnitsConvFactor[arr[4]]
+                  father.DACstatusUserUnit[board][DAC][channel] = Math.round(values[channel] * father.userUnitsConvFactor[arr[4]] * 1000) / 1000
                   if (DAC == 'HEAT') {
                     father.heatTemps[board][channel] = father.calcHeatT(father.DACstatusUserUnit[board][DAC][channel]);
                   }
