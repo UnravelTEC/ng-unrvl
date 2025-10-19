@@ -245,6 +245,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   public visibleStdDevs: number[] = [];
   public min = Infinity;
   public max = -Infinity;
+  private last_nr_series = 0;
 
   public noData = false;
   public waiting = true;
@@ -354,11 +355,14 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    while (
-      this.dyGraphOptions.visibility.length <
-      this.columnLabels.length - 1
-    ) {
-      this.dyGraphOptions.visibility.push(true);
+    if (this.columnLabels.length != this.last_nr_series) {
+      this.dyGraphOptions.visibility = []
+      while (
+        this.dyGraphOptions.visibility.length <
+        this.columnLabels.length - 1
+      ) {
+        this.dyGraphOptions.visibility.push(true);
+      }
     }
 
     this.dyGraphOptions['labels'] = this.columnLabels;
@@ -369,6 +373,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.dataReset = true;
       this.displayedData = [];
       this.dataWithDev = [];
+      this.last_nr_series = 0;
       this.Dygraph.updateOptions({
         file: [],
         labels: [],
@@ -404,6 +409,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       // if (this.checkOK4Dev()) { // why as this here?
       // }
       this.updateRoundDigits();
+      this.last_nr_series = this.columnLabels.length;
       this.dataReset = false;
     }
     if (this.colors && this.colors.length) {
@@ -748,6 +754,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
     this.noData = false;
+    this.last_nr_series = this.columnLabels.length;
 
     this.updateAverages();
     this.updateRoundDigits();
