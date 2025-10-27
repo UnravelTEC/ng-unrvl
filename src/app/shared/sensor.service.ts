@@ -266,7 +266,7 @@ export class SensorService {
         getDeviation: function (value, raw_labels) {
           // we use same as probe (ASSUMING THE THERMOCOUPLE HAS BEEN CALIBRATED!!!!)
           if (value === null) return null;
-          if (isNaN(value) || value < -40 || value > 125) {
+          if (isNaN(value) || value < -200 || value > 1500) {
             return NaN;
           }
           // has a max. resolution of 1/16K = 0.0625K

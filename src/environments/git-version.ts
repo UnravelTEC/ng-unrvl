@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "b5769ad",
-  "SHA": "b5769ad125a2ea04699e99b711976f0bc47f48e4",
+  "shortSHA": "437c22e",
+  "SHA": "437c22e5aa116e9589672e781467b7a10f6a89eb",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Sat Oct 18 14:47:36 2025 +0200",
-  "lastCommitMessage": "fix mqtt topic hostname error",
-  "lastCommitNumber": "1615"
+  "lastCommitTime": "Sun Oct 19 14:30:30 2025 +0200",
+  "lastCommitMessage": "fix ADC topics, rounding of mA",
+  "lastCommitNumber": "1618"
 }
