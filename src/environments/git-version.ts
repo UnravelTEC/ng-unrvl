@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "437c22e",
-  "SHA": "437c22e5aa116e9589672e781467b7a10f6a89eb",
+  "shortSHA": "2b49209",
+  "SHA": "2b49209a80cda127a458466d8199356aa8a672f0",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Sun Oct 19 14:30:30 2025 +0200",
-  "lastCommitMessage": "fix ADC topics, rounding of mA",
-  "lastCommitNumber": "1618"
+  "lastCommitTime": "Mon Oct 27 12:50:30 2025 +0100",
+  "lastCommitMessage": "thermocouple fix bounds",
+  "lastCommitNumber": "1619"
 }

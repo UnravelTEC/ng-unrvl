@@ -20,12 +20,12 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
 
   public topic = '#';
   public topics = [
-      '/actuators/MAGVALVES/settings',
-      '/actuators/HEATER/1/settings',
-      '/actuators/MFC/settings',
-      '/actuators/MFC/airflow',
-      '/sensors/MCP9600/temperature',
-      '/sensors/FANSPEED/fanspeed',
+    '/actuators/MAGVALVES/settings',
+    '/actuators/HEATER/1/settings',
+    '/actuators/MFC/settings',
+    '/actuators/MFC/airflow',
+    '/sensors/MCP9600/temperature',
+    '/sensors/FANSPEED/fanspeed',
   ];
 
   public mqttMessages = [
@@ -41,6 +41,9 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
   ];
   public dygLabels = ['Date', 'particulate_matter_typpartsize_um'];
   changeTrigger = 0;
+
+  public animateOnClickShowT = false;
+  public animateOnClickShowF = false;
 
   public sensorData = {};
   public sensorDataExample = {
@@ -161,6 +164,10 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
         JSON.stringify({ "values": { "flow_sccm": this.flow_new }, "UTS": new Date().valueOf() / 1000 }),
         0,
         true);
+      this.animateOnClickShowF = true;
+      setTimeout(() => {
+        this.animateOnClickShowF = false;
+      }, 500);
     } else {
       alert("flow must be between 0 and 1150 sccm")
     }
@@ -170,6 +177,10 @@ export class EvaporatorComponent implements OnInit, OnDestroy {
       JSON.stringify({ "values": { "target_degC": this.temp_new }, "UTS": new Date().valueOf() / 1000 }),
       0,
       true);
+    this.animateOnClickShowT = true;
+    setTimeout(() => {
+      this.animateOnClickShowT = false;
+    }, 500);
   }
 
   onMessageArrived(message: Object) {

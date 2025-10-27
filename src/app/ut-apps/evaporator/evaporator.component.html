@@ -38,7 +38,7 @@
   </table>
 </div>
 
-<div class="block">
+<form class="block"  (submit)="setFlow()">
   <h2>Mass Flow Controller</h2>
   <table class="messages">
     <tr>
@@ -50,13 +50,13 @@
         New Flow: <input type="number" style="width: 5em;" [(ngModel)]="flow_new" /> sccm
       </td>
       <td>
-        <button (click)="setFlow()">Set</button>
+        <button type="submit"  class="animateOnClick {{ animateOnClickShowF ? 'animateOnClickShow' : '' }}">Set</button>
       </td>
     </tr>
   </table>
-</div>
+</form>
 
-<div class="block">
+<form class="block" (submit)="setTemp()">
   <h2>
     Heater
   </h2>
@@ -70,11 +70,12 @@
         New target temperature: <input type="number" style="width: 5em;" [(ngModel)]="temp_new" /> °C
       </td>
       <td>
-        <button (click)="setTemp()">Set</button>
+        <button type="submit"
+            class="animateOnClick {{ animateOnClickShowT ? 'animateOnClickShow' : '' }}">Set</button>
       </td>
     </tr>
   </table>
-</div>
+</form>
 
 <div class="block">
   <h2>
