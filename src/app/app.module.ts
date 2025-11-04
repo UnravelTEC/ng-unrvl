@@ -232,6 +232,11 @@ const appRoutes: Routes = [
       import('./ut-apps/sensors/nano4e/nano4e.module').then((m) => m.Nano4EModule),
   },
   {
+    path: 'Apps/SafeION',
+    loadChildren: () =>
+      import('./ut-apps/i/safeion/safeion.module').then((m) => m.SafeionModule),
+  },
+  {
     path: 'Apps/Sensors/SCD30',
     loadChildren: () =>
       import('./ut-apps/sensors/scd30/scd30.module').then((m) => m.Scd30Module),
