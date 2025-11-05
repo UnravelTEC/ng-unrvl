@@ -7,43 +7,24 @@
     <div style="position: absolute; top: 0.8em; right: 7em; color: gray;" *ngIf="autoreload" title="Time until reload">
       {{ reload_timer | number }}s
     </div>
-    <a
-      id="backicon"
-      [routerLink]="'/Apps/I/' + referrer"
-      routerLinkActive="active"
-      title="Return to overview"
-      ><mat-icon>fullscreen_exit</mat-icon></a
-    >
-    <button
-      id="toggleSidebar"
-      (click)="toggleSidebar(); R.resize()"
-      title="Toggle sidebar"
-    >
+    <button type="button" style="scale: 0.75" *ngIf="queryRunning == true" title="Cancel current query"
+      (click)="queryRunning = false"><mat-icon>cancel</mat-icon></button>
+    <a id="backicon" [routerLink]="'/Apps/I/' + referrer" routerLinkActive="active"
+      title="Return to overview"><mat-icon>fullscreen_exit</mat-icon></a>
+    <button id="toggleSidebar" (click)="toggleSidebar(); R.resize()" title="Toggle sidebar">
       {{ sideBarShown ? '»' : '«' }}
     </button>
   </div>
   <div id="anybody">
     <div id="dygcontainerabs" [style.right]="currentSidebarWidth">
       <div id="dygcontainerrel">
-        <app-ut-dygraph-in
-          [data]="data"
-          [columnLabels]="labels"
-          [showDeviation]="show_deviation"
-          [rawLabels]="raw_labels"
-          [style]="graphstyle"
-          [changeTrigger]="changeTrigger"
-          [extraDyGraphConfig]="extraDyGraphConfig"
-          [startTime]="dygStartTime"
-          enableHighlightCallback="true"
-          [colors]="colors"
-          [backGroundLevels]="gss['graphBackgrounds'][background]"
-          [YLabel]="ylabel"
-          [Y2Label]="y2label"
-          (returnGraphWidthOnChange)="setGraphWidth($event)"
-          (returnCurrentZoom)="h.updateFromToTimes($event, this)"
-          (returnRunningAvg)="handleRunningAvg($event)"
-          #R
-        ></app-ut-dygraph-in>
+        <app-ut-dygraph-in [data]="data" [columnLabels]="labels" [showDeviation]="show_deviation"
+          [rawLabels]="raw_labels" [style]="graphstyle" [changeTrigger]="changeTrigger"
+          [extraDyGraphConfig]="extraDyGraphConfig" [startTime]="dygStartTime" enableHighlightCallback="true"
+          [colors]="colors" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
+          [Y2Label]="y2label" (returnGraphWidthOnChange)="setGraphWidth($event)"
+          (returnCurrentZoom)="h.updateFromToTimes($event, this)" (returnRunningAvg)="handleRunningAvg($event)"
+          #R></app-ut-dygraph-in>
       </div>
     </div>
 
@@ -68,15 +49,8 @@
       <fieldset [disabled]="queryRunning == true || autoreload">
         <h3>{{ queryRunning ? 'Query running...' : 'Query current view:' }}</h3>
         <label for="userMeanS">Resolution (s):</label>
-        <input
-          type="number"
-          id="userMeanS"
-          min="0"
-          name="userMeanS"
-          [(ngModel)]="userMeanS"
-          (ngModelChange)="saveMean($event)"
-          style="width: 4em"
-        />
+        <input type="number" id="userMeanS" min="0" name="userMeanS" [(ngModel)]="userMeanS"
+          (ngModelChange)="saveMean($event)" style="width: 4em" />
 
         <div style="width: 100%; text-align: right; margin-top: -1.8em">
           <button type="submit">
@@ -89,12 +63,8 @@
         <h3>{{ queryRunning ? 'Query running...' : 'Query latest data:' }}</h3>
         <mat-form-field>
           <mat-label>Show range from now</mat-label>
-          <mat-select
-            [(ngModel)]="userStartTime"
-            name="startTime"
-            (closed)="changeMean(userStartTime)"
-            [disabled]="queryRunning == true || autoreload"
-          >
+          <mat-select [(ngModel)]="userStartTime" name="startTime" (closed)="changeMean(userStartTime)"
+            [disabled]="queryRunning == true || autoreload">
             <mat-option value="15m">15 min.</mat-option>
             <mat-option value="1h" selected="selected"> 1h</mat-option>
             <mat-option value="6h">6 h</mat-option>
@@ -106,30 +76,14 @@
         </mat-form-field>
         <br />
         <div style="width: 100%">
-          <mat-checkbox
-            [(ngModel)]="autoreload"
-            name="autoreload"
-            labelPosition="after"
-            (ngModelChange)="toggleAutoReload($event)"
-          >
+          <mat-checkbox [(ngModel)]="autoreload" name="autoreload" labelPosition="after"
+            (ngModelChange)="toggleAutoReload($event)">
             auto
           </mat-checkbox>
           <label for="auto_s">every (s):</label>
-          <input
-            type="number"
-            min="0"
-            id="auto_s"
-            name="auto_s"
-            [(ngModel)]="auto_interval"
-            (ngModelChange)="changeAutoS($event)"
-            style="width: 3em"
-          />
-          <button
-            (click)="reload()"
-            type="button"
-            [disabled]="autoreload"
-            style="margin-left: 3em"
-          >
+          <input type="number" min="0" id="auto_s" name="auto_s" [(ngModel)]="auto_interval"
+            (ngModelChange)="changeAutoS($event)" style="width: 3em" />
+          <button (click)="reload()" type="button" [disabled]="autoreload" style="margin-left: 3em">
             <mat-icon>refresh</mat-icon>
             Reload
           </button>
