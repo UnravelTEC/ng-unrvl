@@ -105,8 +105,8 @@ export class Nano4EComponent implements OnInit {
   public reload_timer = Infinity;
   public last_reload: number;
 
-  public tableShown = true;
-  public annotationsShown = true;
+  public tableShown = false;
+  public annotationsShown = false;
   public sideBarShown = true;
   public tagsShown = true;
   public allTagsShown = false;
