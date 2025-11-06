@@ -86,7 +86,7 @@ export class UtFetchdataService {
     const localTagFilter = cloneDeep(tagfilter)
     localTagFilter['A_measurement'] = measurement;
     if (fieldname != '*') {
-      fieldname = fieldname.replace(/\/\^?/,'').replace(/\$?\/$/,'')
+      fieldname = fieldname.replace(/\/\^?/, '').replace(/\$?\/$/, '')
       localTagFilter['A_field'] = fieldname
     }
 
@@ -196,7 +196,7 @@ export class UtFetchdataService {
     //   }
     //   groupBy += 'host,id,time(' + timestring + ')';
     // } else {
-      groupBy += '*,time(' + timestring + ')';
+    groupBy += '*,time(' + timestring + ')';
     // }
     if (group_By) {
       groupBy = ' GROUP BY ' + group_By + ',time(' + timestring + ')';
@@ -275,13 +275,15 @@ export class UtFetchdataService {
     epoch: string = 'ms'
   ) {
     const tagBlackList = cloneDeep(labelBlackList);
+    console.log('parseInfluxData received', cloneDeep(data), 'using labelBlocklist', tagBlackList);
     let retval = { labels: [], data: [] };
 
-    const results = this.h.getDeep(data, ['results']);
+    let results = this.h.getDeep(data, ['results', 0, 'series', 0]);
     if (!results) {
       console.log('no results');
       return retval;
     }
+    results = data['results'];
     if (results[0] && results[0]['error']) {
       retval['error'] = results[0]['error'];
       console.log(
@@ -529,12 +531,16 @@ export class UtFetchdataService {
         }
       }
     } else {
-      const first_tagset = retval['raw_labels'][1].tags
-      for (const tkey in first_tagset) {
-        if (Object.prototype.hasOwnProperty.call(first_tagset, tkey)) {
-          const tvalue = first_tagset[tkey];
-          common_tags[tkey] = tvalue;
+      if (retval['raw_labels'][1] && retval['raw_labels'][1]['tags']) {
+        const first_tagset = retval['raw_labels'][1].tags
+        for (const tkey in first_tagset) {
+          if (Object.prototype.hasOwnProperty.call(first_tagset, tkey)) {
+            const tvalue = first_tagset[tkey];
+            common_tags[tkey] = tvalue;
+          }
         }
+      } else {
+        console.log('no raw label tags:', cloneDeep(retval['raw_labels']));
       }
     }
     if (common_metric && retval['raw_labels'].length > 1) {
@@ -561,7 +567,7 @@ export class UtFetchdataService {
           retval['short_labels'][i - 1] = retval['short_labels'][i - 1].replace(
             regex,
             ''
-          ).replace(/$/,'');
+          ).replace(/$/, '');
         }
       }
     }

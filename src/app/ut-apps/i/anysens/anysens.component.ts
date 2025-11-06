@@ -627,7 +627,6 @@ export class AnysensComponent implements OnInit {
   }
 
   handleData(data: Object) {
-    console.log('received', data, 'using labelBlocklist', this.labelBlockList);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlockList);
     console.log('parsed', ret);
     if (ret['error']) {
