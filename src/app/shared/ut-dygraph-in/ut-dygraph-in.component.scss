@@ -448,15 +448,13 @@ $red2: #ff7f88;
     padding: 5px;
     text-align: left;
     position: absolute !important;
-    top: 0px !important;
-    left: 0px !important; // y-w(50) + 5px margin + 5px padding + 1px axis-width
     overflow-x: visible;
     min-width: 20em; // width of time text (with seconds) on hovering
     max-height: 100%;
     overflow-y: auto;
     pointer-events: auto;
     div.header {
-      position: fixed;
+      position: absolute;
       top: 0;
       padding: 5px;
       z-index: 10;
@@ -530,6 +528,22 @@ $red2: #ff7f88;
         }
       }
     }
+  }
+  .mylegend.lu {
+    top: 0px !important;
+    left: 0px !important; // y-w(50) + 5px margin + 5px padding + 1px axis-width
+  }
+  .mylegend.ru {
+    top: 0px !important;
+    right: 0px !important;
+  }
+  .mylegend.rd {
+    bottom: 0px !important;
+    right: 0px !important;
+  }
+  .mylegend.ld {
+    bottom: 0px !important;
+    left: 0px !important;
   }
   .mylegend.cthide {
     // width: 20em;
@@ -684,6 +698,31 @@ div.optionsarea {
         .mat-form-field-infix {
           border-top: 0;
           padding: 0;
+        }
+      }
+
+      mat-radio-group.legendpos-radio {
+        float: right;
+        margin-top: -23px;
+        div.mdc-radio {
+          padding: 0 0 0 0 !important;
+        }
+        label.mdc-label {
+          line-height: 1;
+        }
+      }
+      table.l {
+        // background-color: red;
+        // border: 1px solid yellow;
+        border-width: 0;
+
+        td {
+          border-width: 0;
+          mat-radio-button {
+            div.mdc-form-field.mat-internal-form-field {
+              margin: -10px 0;
+            }
+          }
         }
       }
       .stats {

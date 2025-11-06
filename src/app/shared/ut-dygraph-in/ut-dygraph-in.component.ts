@@ -206,6 +206,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     highlightSeriesOpts: { strokeBorderWidth: 0, strokeWidth: 1.5 },
   };
 
+  public legendpos = "lu"
+
   public fromZoom: Date;
   public fromFormDate = new UntypedFormControl(new Date());
   public toZoom: Date;

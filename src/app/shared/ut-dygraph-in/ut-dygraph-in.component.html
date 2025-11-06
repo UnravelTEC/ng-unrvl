@@ -17,7 +17,7 @@ style.padding-bottom="20vh"-->
     >
       <div class="legendrelcontainer">
         <div
-          class="mylegend"
+          class="mylegend {{ legendpos }}"
           id="L_{{ htmlID }}"
           (wheel)="$event.stopPropagation()"
         ></div>
@@ -342,18 +342,30 @@ style.padding-bottom="20vh"-->
 
       <form class="subbox">
         <h5>Legend</h5>
-        <button
-          (click)="toggleLegend()"
-          *ngIf="dyGraphOptions.legend == 'always'"
-        >
-          Off
-        </button>
-        <button
-          (click)="toggleLegend()"
-          *ngIf="dyGraphOptions.legend != 'always'"
-        >
-          On
-        </button>
+        <button (click)="toggleLegend()">
+        {{ dyGraphOptions.legend == 'always' ? "Off" : "On" }}
+        </button>&nbsp;
+        <mat-radio-group class="legendpos-radio" [(ngModel)]="legendpos">
+          <table class="l">
+            <tr>
+              <td>
+                <mat-radio-button class="legendpos-radio" value="lu"></mat-radio-button>
+              </td>
+              <td>
+                <mat-radio-button class="legendpos-radio" value="ru"></mat-radio-button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <mat-radio-button class="legendpos-radio" value="ld"></mat-radio-button>
+              </td>
+              <td>
+                <mat-radio-button class="legendpos-radio" value="rd"></mat-radio-button>
+              </td>
+            </tr>
+          </table>
+        </mat-radio-group>
+        <!-- {{ legendpos }} -->
       </form>
 
       <form class="subbox" [style.width]="stats ? '100%' : ''" id="stats">
