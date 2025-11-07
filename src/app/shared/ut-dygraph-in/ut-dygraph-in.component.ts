@@ -1090,9 +1090,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       ? `onclick="document['Dygraphs']['${htmlID}'].legendHideInactiveF()"`
       : '';
     const inactiveChecked = hideInactive ? 'checked="checked"' : ''
+    const durationStr = (parent && data.x) ? ' | &Delta; ' + parent.h.createHRTimeString(Math.round((data.x - parent.fromZoom.valueOf()) / 1000)) : ''
+    const cDate = new Date(data.x)
+    const datestr = parent && (parent.fromZoom.toLocaleDateString() == parent.toZoom.toLocaleDateString()) ? '' : cDate.toLocaleDateString() + ' '
+    const timestr = datestr + cDate.toLocaleTimeString()
     let html =
       '<div class="header">Legend: ' +
-      (data.xHTML ? ' values @ ' + data.xHTML : '') + '</div>' +
+      (data.xHTML ? ' values @ ' + timestr + durationStr : '') + '</div>' +
       (nrSeries > 1 ? `<div class="legendHideInactive"><input type="checkbox" id="legendHideInactive" ${inactiveChecked} ${HideInactiveScript}>
       <label for="legendHideInactive">Hide inactive</label></div>` : '')
       + `<div class="legendToggle" ${toggleScript} title="click to toggle legend">&nbsp;</div>`;
