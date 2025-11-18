@@ -79,6 +79,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       description: 'NDIR CO₂',
       icon: 'manufacturers/sensirion.png',
     },
+    SHTC3: {
+      description: 'Humidity Sensor',
+      icon: 'manufacturers/sensirion.png',
+    },
+    SGP4x: {
+      description: 'MOx Dev Sensor',
+      icon: 'manufacturers/sensirion.png',
+    },
     SPS30: {
       description: 'Particulate Matter',
       icon: 'manufacturers/sensirion.png',

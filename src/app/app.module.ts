@@ -236,6 +236,11 @@ const appRoutes: Routes = [
     loadChildren: () =>
       import('./ut-apps/i/safeion/safeion.module').then((m) => m.SafeionModule),
   },
+   {
+    path: 'Apps/Safeiond',
+    loadChildren: () =>
+      import('./ut-apps/safeiond/safeiond.module').then((m) => m.SafeiondModule),
+  },
   {
     path: 'Apps/Sensors/SCD30',
     loadChildren: () =>

@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "a21304c",
-  "SHA": "a21304ca53f8a6cb47ed6eb3266f31e0732d9bb2",
+  "shortSHA": "4a8e646",
+  "SHA": "4a8e6462d3b05386cd3de8ba5f23a6c14d0f7fcd",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Thu Nov 6 09:25:26 2025 +0100",
-  "lastCommitMessage": "hide tables in anysens on default",
-  "lastCommitNumber": "1625"
+  "lastCommitTime": "Fri Nov 7 13:50:06 2025 +0100",
+  "lastCommitMessage": "legend: display time and date only if needed",
+  "lastCommitNumber": "1626"
 }
