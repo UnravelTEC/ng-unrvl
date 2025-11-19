@@ -953,13 +953,13 @@ export class HelperFunctionsService {
     const textHours = displayedHours ? String(displayedHours) + ' h ' : '';
 
     const currentDays = Math.floor(currentHours / 24);
-    const displayedDays = currentHours % 356;
+    const displayedDays = currentDays % 356;
     const textDays = displayedDays ? String(displayedDays) + ' d ' : '';
 
     const currentYears = Math.floor(currentDays / 356);
-    const textHears = currentYears ? String(currentYears) + ' y ' : '';
+    const textYears = currentYears ? String(currentYears) + ' y ' : '';
 
-    return (textHears + textDays + textHours + textMinutes + textSeconds + textMS).trim();
+    return (textYears + textDays + textHours + textMinutes + textSeconds + textMS).trim();
   }
 
   deepCopyInto(firstObj, secondObj) {
