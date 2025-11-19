@@ -7,6 +7,7 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
+import { GlobalSettingsService } from 'app/core/global-settings.service';
 import {
   latLng,
   Map,
@@ -61,12 +62,9 @@ export class MapComponent implements OnInit, OnDestroy {
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }
   );
+  public defaultLayer;
 
-  @Input() options: MapOptions = {
-    layers: [this.OSMofflineLayer], // only one baselayer -> default layer
-    zoom: this.z,
-    center: latLng(this.y, this.x),
-  };
+  @Input() options: MapOptions;
 
   public layersControl = {
     baseLayers: {
@@ -81,8 +79,14 @@ export class MapComponent implements OnInit, OnDestroy {
   public zoom: number;
 
   public htmlID: string;
-  constructor() {
+  constructor(public gss: GlobalSettingsService) {
     this.htmlID = 'map_' + (Math.random() + 1).toString();
+    this.defaultLayer = this.gss.server.protocol == 'https' ? this.OSMonlineLayer : this.OSMofflineLayer
+    this.options = {
+      layers: [this.defaultLayer], // only one baselayer -> default layer
+      zoom: this.z,
+      center: latLng(this.y, this.x),
+    };
   }
 
   ngOnInit() {
