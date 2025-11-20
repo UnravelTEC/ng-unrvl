@@ -82,6 +82,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     SHTC3: {
       description: 'Humidity Sensor',
       icon: 'manufacturers/sensirion.png',
+      queryParams: { measurement: 'humidity' },
     },
     SGP4x: {
       description: 'MOx Dev Sensor',
