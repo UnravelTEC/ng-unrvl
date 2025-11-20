@@ -13,7 +13,7 @@
     path="/Apps/Nano4E-Gen2"></app-ut-dashboard-tile>
 
     <app-ut-dashboard-tile title="SafeION"
-    *ngIf="gss.server['hostname'] == 'safeiond'"
+    *ngIf="gss.server['hostname'] == 'safeiond' || (gss.server['influxdb'] && gss.server['influxdb'] == 'safeiond')"
     bg="#FFF"
     path="/Apps/SafeION"></app-ut-dashboard-tile>
 

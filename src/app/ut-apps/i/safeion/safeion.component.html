@@ -171,7 +171,7 @@
     </form>
   </div>
 
-  <div id="anyfooter">
+  <div id="anyfooter" *ngIf="gss.client.localscreen == false">
     <div class="btncontainer">
       <!--  *ngIf="!annotationsShown"  *ngIf="!tableShown"-->
       <button (click)="toggleAnnotationsShown(); R.resize()">

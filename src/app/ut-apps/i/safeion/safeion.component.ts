@@ -260,7 +260,7 @@ export class SafeionComponent implements OnInit {
       params,
       this.meanS,
       this.value,
-      '"sensor","px1_degC","px2_degC","px3_degC","px4_degC"'
+      '"sensor"' // '"sensor","px1_degC","px2_degC","px3_degC","px4_degC"'
     ) + this.utHTTP.influxMeanQuery(
       "temperature",
       timeQuery,
