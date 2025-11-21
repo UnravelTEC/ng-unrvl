@@ -11,7 +11,7 @@
     <div style="position: absolute; top: 0.8em; right: 10em; color: gray" *ngIf="queryRunning == true"
       title="Query Age">
       {{ query_age | number : '1.1-1' }} s
-      <button type="button" style="scale: 0.75" title="Cancel current query" (click)="queryRunning = false"><mat-icon>cancel</mat-icon></button>
+      <button type="button" *ngIf="query_age > 3" style="scale: 0.75" title="Cancel current query" (click)="queryRunning = false"><mat-icon>cancel</mat-icon></button>
     </div>
 
     <a id="backicon" [routerLink]="'/Apps/' + referrer" routerLinkActive="active"

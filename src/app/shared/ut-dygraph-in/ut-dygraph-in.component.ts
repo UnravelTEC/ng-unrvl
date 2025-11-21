@@ -53,7 +53,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   XLabel = undefined;
   @Input()
-  runningAvgPoints = 0;
+  runningAvgPoints = 1;
   @Input()
   options = true;
   @Input()

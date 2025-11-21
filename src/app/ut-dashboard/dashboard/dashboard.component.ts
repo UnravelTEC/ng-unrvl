@@ -87,6 +87,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     SGP4x: {
       description: 'MOx Dev Sensor',
       icon: 'manufacturers/sensirion.png',
+      queryParams: { measurement: 'gas' },
     },
     SPS30: {
       description: 'Particulate Matter',

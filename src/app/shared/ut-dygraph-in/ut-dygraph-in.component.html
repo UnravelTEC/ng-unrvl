@@ -330,11 +330,12 @@ style.padding-bottom="20vh"-->
         <h5>Running Average</h5>
         <label for="runningAvgPoints"></label>
         <input
-          type="text"
+          type="number"
+          min="1"
           id="runningAvgPoints"
           name="runningAvgPoints"
           [(ngModel)]="runningAvgPoints"
-          style="width: 2em"
+          style="width: 3em"
           (change)="updateRoll()"
         />
         <span class="unit">Points</span>
