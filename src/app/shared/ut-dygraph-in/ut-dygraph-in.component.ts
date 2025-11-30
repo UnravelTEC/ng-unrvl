@@ -1090,6 +1090,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       ? `onclick="document['Dygraphs']['${htmlID}'].legendHideInactiveF()"`
       : '';
     const inactiveChecked = hideInactive ? 'checked="checked"' : ''
+    const optionsOpen = parent ? parent['optionsOpen'] : false;
+    const dyGOseries = parent ? parent.dyGraphOptions.series : undefined;
+
     const durationStr = (parent && data.x) ? ' | &Delta; ' + parent.h.createHRTimeString(Math.round((data.x - parent.fromZoom.valueOf()) / 1000)) : ''
     const cDate = new Date(data.x)
     const datestr = parent && (parent.fromZoom.toLocaleDateString() == parent.toZoom.toLocaleDateString()) ? '' : cDate.toLocaleDateString() + ' '
@@ -1117,6 +1120,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       return (htmlID && !locked)
         ? `onmousedown="document['Dygraphs']['${htmlID}'].showSingle('${label}');" `
         : '';
+    }
+    function genAxisSwitch(label) {
+      return (htmlID) ? `onclick="document['Dygraphs']['${htmlID}'].switchAxis('${label}')"`
+        : ''
     }
 
     let currentUnit = '';
@@ -1167,6 +1174,21 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       const toggleCallback = genToggle(series.label, htmlID);
       const setSingleCallback = genSingleClick(series.label, htmlID);
       const textcolor = series.isVisible ? '' : ' style="color:gray" ';
+      let axistext = ""
+      if (optionsOpen) {
+        console.log('LegendF:', series, dyGOseries);
+        axistext = "<td " + genAxisSwitch(series.label) + ">&nbsp;"
+        if (dyGOseries.hasOwnProperty(series.label) && dyGOseries[series.label].hasOwnProperty("axis")) {
+          axistext += dyGOseries[series.label]["axis"] + "</td>"
+        } else {
+          axistext += "y1</td>"
+        }
+        console.log(axistext);
+
+      } else {
+        axistext = ""
+      }
+
 
       const labeltext = series.labelHTML.replace(/\s?\((.*)\)$/, '');
       let valcells = '';
@@ -1237,9 +1259,33 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         `<tr style='color:${series.color};' ${cls} ${hoverCallback} ${title}>` +
         `<th${textcolor} class="h"><span class='dash'>${series.dashHTML}</span><span class='one' ${setSingleCallback} title='Display alone'>[1]</span></th>` +
         `<th${textcolor} ${toggleCallback}>${labeltext}${colon}</th>` +
-        `${valcells}</tr>`;
+        `${valcells}${axistext}</tr>`;
     }
     return html + '</table>';
+  }
+  switchAxis(label) {
+    if (!this.dyGraphOptions["series"]) {
+      this.dyGraphOptions["series"] = {}
+    }
+    if (this.dyGraphOptions["series"].hasOwnProperty(label)) {
+      const item = this.dyGraphOptions["series"][label]
+      if (item.hasOwnProperty("axis")) {
+        if (item["axis"] == "y2") {
+          item["axis"] = "y1"
+        } else {
+          item["axis"] = "y2"
+        }
+      } else {
+        item["axis"] = "y2"
+      }
+    } else {
+      this.dyGraphOptions["series"][label] = { "axis": "y2" }
+    }
+    this.Dygraph.updateOptions({
+      series: this.dyGraphOptions["series"],
+    });
+    console.log(this.dyGraphOptions["series"]);
+
   }
   selectSeries(name: string) {
     // this.Dygraph.clearSelection();
