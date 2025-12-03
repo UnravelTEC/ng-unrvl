@@ -509,6 +509,15 @@ $red2: #ff7f88;
           text-align: center;
           padding: 0 5px 0 3px;
         }
+        td.axsw div {
+          background-color: #8e8e8e;
+          border-radius: 10px;
+          border: 2px solid rgba(100, 100, 100, 0.8);
+          padding: -2px 0.5rem 0 0.5rem;
+        }
+        td.axsw div:hover {
+          background-color: rgba(100, 100, 100, 0.8);
+        }
       }
       tr.highlight,
       tr.h:hover {

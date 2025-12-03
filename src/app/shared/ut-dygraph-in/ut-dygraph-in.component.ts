@@ -49,7 +49,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   YLabel = this.defaultYlabel;
   @Input()
-  Y2Label = this.defaultYlabel;
+  Y2Label = '';
   @Input()
   XLabel = undefined;
   @Input()
@@ -745,6 +745,48 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     console.log("setDDandCalcIfNeeded:", this.displayedData);
   }
 
+  yAutoUnitLabel() {
+    console.log('startin auto unit label for', this.YLabel);
+    // if (this.YLabel.search(/\(.*\)$/) == -1) {
+    let newYlabel = this.YLabel;
+    let units = [];
+    let units2 = [];
+    for (let i = 1; i < this.columnLabels.length; i++) {
+      const serieslabel = this.columnLabels[i];
+      const unit = serieslabel.match(/\((.*)\)$/);
+      // console.log(unit, serieslabel);
+
+      const axis = this.h.getDeep(this.dyGraphOptions, [
+        'series',
+        serieslabel,
+        'axis',
+      ]);
+      if (axis == 'y2') {
+        if (unit && units2.indexOf(unit[1]) == -1) {
+          units2.push(unit[1]);
+        }
+      } else {
+        if (unit && units.indexOf(unit[1]) == -1) {
+          units.push(unit[1]);
+        }
+      }
+      if (unit && this.filterUnits.indexOf(unit[1]) == -1) {
+        this.filterUnits.push(unit[1])
+      }
+    }
+    if (units.length) {
+      newYlabel += ' (' + units.join(', ') + ')';
+    }
+    if (units2.length) {
+      console.log('y2label units:', units2);
+      this.dyGraphOptions['y2label'] =
+        this.Y2Label + ' (' + units2.join(', ') + ')';
+    }
+    // newYlabel += ' (' + (units.length ? units.join(', ') : 'unitless') + ')';
+    this.dyGraphOptions['ylabel'] = newYlabel;
+    // }
+  }
+
   handleInitialData() {
     if (!this.data.length) {
       console.error('no data');
@@ -763,45 +805,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
     this.updateDateWindow();
 
-    console.log('startin auto unit label for', this.YLabel);
-    if (this.YLabel.search(/\(.*\)$/) == -1) {
-      let newYlabel = this.YLabel;
-      let units = [];
-      let units2 = [];
-      for (let i = 1; i < this.columnLabels.length; i++) {
-        const serieslabel = this.columnLabels[i];
-        const unit = serieslabel.match(/\((.*)\)$/);
-        // console.log(unit, serieslabel);
+    this.yAutoUnitLabel();
 
-        const axis = this.h.getDeep(this.extraDyGraphConfig, [
-          'series',
-          serieslabel,
-          'axis',
-        ]);
-        if (axis == 'y2') {
-          if (unit && units2.indexOf(unit[1]) == -1) {
-            units2.push(unit[1]);
-          }
-        } else {
-          if (unit && units.indexOf(unit[1]) == -1) {
-            units.push(unit[1]);
-          }
-        }
-        if (unit && this.filterUnits.indexOf(unit[1]) == -1) {
-          this.filterUnits.push(unit[1])
-        }
-      }
-      if (units.length) {
-        newYlabel += ' (' + units.join(', ') + ')';
-      }
-      if (units2.length) {
-        console.log('y2label units:', units2);
-        this.dyGraphOptions['y2label'] =
-          this.Y2Label + ' (' + units2.join(', ') + ')';
-      }
-      // newYlabel += ' (' + (units.length ? units.join(', ') : 'unitless') + ')';
-      this.dyGraphOptions['ylabel'] = newYlabel;
-    }
     if (this.filterUnits.length < 2) {
       this.filtersactive = false;
     }
@@ -1176,14 +1181,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       const textcolor = series.isVisible ? '' : ' style="color:gray" ';
       let axistext = ""
       if (optionsOpen) {
-        console.log('LegendF:', series, dyGOseries);
-        axistext = "<td " + genAxisSwitch(series.label) + ">&nbsp;"
+        axistext = "<td title='Toggle axis' class='axsw'" + genAxisSwitch(series.label) + "><div>&nbsp;axis:&nbsp;"
         if (dyGOseries.hasOwnProperty(series.label) && dyGOseries[series.label].hasOwnProperty("axis")) {
-          axistext += dyGOseries[series.label]["axis"] + "</td>"
+          axistext += dyGOseries[series.label]["axis"]
         } else {
-          axistext += "y1</td>"
+          axistext += "y1"
         }
-        console.log(axistext);
+        axistext += "&nbsp;</div></td>"
 
       } else {
         axistext = ""
@@ -1269,22 +1273,23 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     }
     if (this.dyGraphOptions["series"].hasOwnProperty(label)) {
       const item = this.dyGraphOptions["series"][label]
-      if (item.hasOwnProperty("axis")) {
-        if (item["axis"] == "y2") {
-          item["axis"] = "y1"
-        } else {
-          item["axis"] = "y2"
-        }
+      if (item.hasOwnProperty("axis") && item["axis"] == "y2") {
+        item["axis"] = "y1"
       } else {
         item["axis"] = "y2"
+        if (!this.Y2Label) {
+          this.Y2Label = this.YLabel
+        }
       }
     } else {
       this.dyGraphOptions["series"][label] = { "axis": "y2" }
     }
+    this.yAutoUnitLabel()
     this.Dygraph.updateOptions({
       series: this.dyGraphOptions["series"],
+      ylabel: this.dyGraphOptions['ylabel'],
+      y2label: this.dyGraphOptions['y2label']
     });
-    console.log(this.dyGraphOptions["series"]);
 
   }
   selectSeries(name: string) {

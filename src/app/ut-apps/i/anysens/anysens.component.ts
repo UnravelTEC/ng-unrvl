@@ -37,7 +37,7 @@ export class AnysensComponent implements OnInit {
       },
     },
   };
-  y2label = 'Atmospheric Pressure';
+  y2label = ''
   labelBlockList = ['mean_*']; // mean is when only 1 graph is returned
   public ls_taglist = {} // tagkey: true/false ; local copy of global taglist - so that even tags not present are remembered
   public taglist = {}; // only the tags the current dataset uses - so that displayed list is only as long as needed
@@ -178,6 +178,9 @@ export class AnysensComponent implements OnInit {
       appName: this.measurement + (this.sensor ? ' ' + this.sensor : ''),
     });
 
+    if (this.measurement.indexOf('pressure') > -1) {
+      this.y2label = 'Atmospheric Pressure';
+    }
     this.ylabel = this.measurement
       .replace('pressure', '')
       .replace(',,', ',')
