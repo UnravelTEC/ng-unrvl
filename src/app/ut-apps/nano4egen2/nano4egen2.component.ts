@@ -173,15 +173,15 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
   public pins = {
     'DIGITBOARD': { 'MICS_HEATER': 0b0001, '3V3_SUPPLY': 0b0010, '5V_SUPPLY': 0b0100, 'SCD30_SUPPLY': 0b1000, '5V_CLEAN_SUPPLY': 0b10000000 },
     // 'DIGITBOARD': { 'MICS_HEATER': 0b0001, '3V3_SUPPLY': 0b0010, '5V_SUPPLY': 0b0100, 'SCD30_SUPPLY': 0b1000, '7V_SUPPLY_NEN': 0b1000000, '5V_CLEAN_SUPPLY': 0b10000000 },
-    "AFEBOARD1": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED4": 0b1000000, "HEATER": 0b10000000 },
-    "AFEBOARD2": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED4": 0b1000000, "HEATER": 0b10000000 },
-    "AFEBOARD3": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED4": 0b1000000, "HEATER": 0b10000000 },
-    "AFEBOARD4": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED4": 0b1000000, "HEATER": 0b10000000 },
+    "AFEBOARD1": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED41": 0b1000000, "LED42": 0b10000000 },
+    "AFEBOARD2": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED41": 0b1000000, "LED42": 0b10000000 },
+    "AFEBOARD3": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED41": 0b1000000, "LED42": 0b10000000 },
+    "AFEBOARD4": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED41": 0b1000000, "LED42": 0b10000000 },
   };
 
   public Nano4EChipCfgTempl = {
     "name": "",
-    "leds": { "LED11": undefined, "LED12": undefined, "LED21": undefined, "LED22": undefined, "LED31": undefined, "LED32": undefined, "LED4": undefined },
+    "leds": { "LED11": undefined, "LED12": undefined, "LED21": undefined, "LED22": undefined, "LED31": undefined, "LED32": undefined, "LED41": undefined, "LED42": undefined },
     "surfaces": {
       "px1": { "name": "", "enabled": true },
       "px2": { "name": "", "enabled": true },

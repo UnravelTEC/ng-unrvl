@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "71077d0",
-  "SHA": "71077d0f5bb2a8df4a0fe9b372a5335e01373f1d",
+  "shortSHA": "24dc6f4",
+  "SHA": "24dc6f4b195ad89be648c9c8ccf884b4ab751e2d",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Fri Nov 21 11:06:11 2025 +0100",
-  "lastCommitMessage": "fix numbers & SGP4x link",
-  "lastCommitNumber": "1633"
+  "lastCommitTime": "Wed Dec 3 10:29:19 2025 +0100",
+  "lastCommitMessage": "allow switching axis of single series in cfg menu",
+  "lastCommitNumber": "1635"
 }
