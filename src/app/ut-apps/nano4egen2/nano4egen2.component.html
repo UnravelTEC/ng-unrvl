@@ -57,7 +57,7 @@
                   '1.0-2'}}&#8239;°C</span>
               </td>
               <td>
-                <input type="number" style="width: 5em;" step="0.0005" min="0" max="4.8"
+                <input type="number" style="width: 5em;" step="0.0005" min="0" max="4.8" lang="{{lang}}"
                   class="animateOnClick {{ (animateOnClickShow && DACnewValuesSent[board.key][DACname.key][channel.key] >= 0) ? 'animateOnClickShow' : '' }}"
                   [(ngModel)]="DACnewValues[board.key][DACname.key][channel.key]"
                   id="id{{board.key}}{{DACname.key}}{{channel.key}}"

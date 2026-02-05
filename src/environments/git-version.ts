@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "24dc6f4",
-  "SHA": "24dc6f4b195ad89be648c9c8ccf884b4ab751e2d",
+  "shortSHA": "4f47467",
+  "SHA": "4f4746749c42e82837ded4846ad2ec188f03b4c6",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Wed Dec 3 10:29:19 2025 +0100",
-  "lastCommitMessage": "allow switching axis of single series in cfg menu",
-  "lastCommitNumber": "1635"
+  "lastCommitTime": "Tue Dec 16 13:04:29 2025 +0100",
+  "lastCommitMessage": "nano4e afe board gen2",
+  "lastCommitNumber": "1636"
 }

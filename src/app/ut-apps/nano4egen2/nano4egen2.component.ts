@@ -264,9 +264,13 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
 
   }
 
+  public lang = "de-DE"
+
   ngOnInit() {
     let server = this.gss.server.serverName;
     console.log(server);
+    console.log("lang", navigator.language);
+    this.lang = navigator.language
 
     this.client = new Paho.Client(server, 1885, this.clientID);
     this.client.onConnectionLost = this.onConnectionLost;
