@@ -1194,7 +1194,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       }
 
 
-      const labeltext = series.labelHTML.replace(/\s?\((.*)\)$/, '');
+      let labeltext = series.labelHTML.replace(/\s?\((.*)\)$/, '');
+      const fieldname = labeltext.split(" ").pop() // &#8195;
+      labeltext = labeltext.replace(/ .*$/u,'') // &#8195;
       let valcells = '';
       let colon = '';
       if (data.x) {
@@ -1262,7 +1264,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       html +=
         `<tr style='color:${series.color};' ${cls} ${hoverCallback} ${title}>` +
         `<th${textcolor} class="h"><span class='dash'>${series.dashHTML}</span><span class='one' ${setSingleCallback} title='Display alone'>[1]</span></th>` +
-        `<th${textcolor} ${toggleCallback}>${labeltext}${colon}</th>` +
+        `<th${textcolor} ${toggleCallback}>${labeltext}</th><td class='fieldname'>${fieldname}${colon}&nbsp;</td></th>` +
         `${valcells}${axistext}</tr>`;
     }
     return html + '</table>';

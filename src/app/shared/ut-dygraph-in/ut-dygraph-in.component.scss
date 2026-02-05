@@ -494,6 +494,9 @@ $red2: #ff7f88;
         td.value {
           font-weight: bold;
         }
+        td.fieldname {
+          text-align: right;
+        }
         td.d {
           padding: 0 0 0 5px;
           font-style: italic;

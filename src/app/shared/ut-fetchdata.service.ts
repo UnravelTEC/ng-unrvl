@@ -389,7 +389,7 @@ export class UtFetchdataService {
           }
 
           const collabel = colname
-            ? serieslabel + ' ' + colname
+            ? serieslabel + ' ' + colname // &#8195;
             : serieslabel.replace(/,$/, '');
           labels.push(collabel.trim());
         } else {
