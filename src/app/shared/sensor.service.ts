@@ -441,28 +441,28 @@ export class SensorService {
       "px1_V": {
         round_digits: 7,
         getDeviation: function (value, raw_labels) {
-          if (value <= 0) return [NaN, NaN, NaN];
+          if (value <= -5) return [NaN, NaN, NaN];
           return [value, value, value];
         }
       },
       "px2_V": {
         round_digits: 7,
         getDeviation: function (value, raw_labels) {
-          if (value <= 0) return [NaN, NaN, NaN];
+          if (value <= -5) return [NaN, NaN, NaN];
           return [value, value, value];
         }
       },
       "px3_V": {
         round_digits: 7,
         getDeviation: function (value, raw_labels) {
-          if (value <= 0) return [NaN, NaN, NaN];
+          if (value <= -5) return [NaN, NaN, NaN];
           return [value, value, value];
         }
       },
       "px4_V": {
         round_digits: 7,
         getDeviation: function (value, raw_labels) {
-          if (value <= 0) return [NaN, NaN, NaN];
+          if (value <= -5) return [NaN, NaN, NaN];
           return [value, value, value];
         }
       },

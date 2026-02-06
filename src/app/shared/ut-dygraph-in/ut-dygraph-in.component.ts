@@ -1170,8 +1170,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         !series.hasOwnProperty('y') || isNaN(series.y)
           ? ''
           : parent.h
-            .roundAccurately(series.y, parent.roundDigits[i + 1]).toLocaleString()
-      // .toLocaleString(); // replaced . with , in german, but has a bug: cut of after 3 digits after comma
+            .roundAccurately(series.y, parent.roundDigits[i + 1]).toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] })
       const isHighlighted = series.isHighlighted;
       const cls = isHighlighted ? 'class="highlight"' : (!locked ? 'class="h"' : '');
       const title = !locked ? 'title="Toggle Display"' : '';
@@ -1196,7 +1195,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
 
       let labeltext = series.labelHTML.replace(/\s?\((.*)\)$/, '');
       const fieldname = labeltext.split(" ").pop() // &#8195;
-      labeltext = labeltext.replace(/ .*$/u,'') // &#8195;
+      labeltext = labeltext.replace(/ .*$/u, '') // &#8195;
       let valcells = '';
       let colon = '';
       if (data.x) {
@@ -1220,9 +1219,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
                   parent.roundDigits[i + 1]
                 );
                 if (dlower == dupper) {
-                  devtext = dlower ? '±' + dlower.toLocaleString() : ''; // if no dev defined
+                  devtext = dlower ? '±' + dlower.toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] }) : ''; // if no dev defined
                 } else {
-                  devtext = '-' + dlower.toLocaleString() + ' +' + dupper.toLocaleString();
+                  devtext = '-' + dlower.toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] }) + ' +' + dupper.toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] });
                 }
               }
             }
@@ -1252,7 +1251,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
                 compareText += '+';
               }
               compareText +=
-                parent.h.roundAccurately(diff, parent.roundDigits[i + 1]).toLocaleString()
+                parent.h.roundAccurately(diff, parent.roundDigits[i + 1]).toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] })
                 + '&thinsp;' +
                 unit;
             }
