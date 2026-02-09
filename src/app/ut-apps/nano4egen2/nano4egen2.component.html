@@ -64,7 +64,7 @@
                   name="name{{board.key}}{{DACname.key}}{{channel.key}}"
                   (ngModelChange)="calcUserUnit(board.key,DACname.key,channel.key)" />
               </td>
-              <td>V&nbsp;/&nbsp;{{ DACnewValuesUserUnit[board.key][DACname.key][channel.key] >= 0 ?
+              <td style="min-width: 11.5em;">V&nbsp;/&nbsp;{{ DACnewValuesUserUnit[board.key][DACname.key][channel.key] >= 0 ?
                 DACnewValuesUserUnit[board.key][DACname.key][channel.key] : '?' }}&#8239;{{ userUnits[DACname.key]
                 }}<span *ngIf="DACname.key == 'HEAT'">&nbsp;/&nbsp;{{ heatTempsUser[board.key][channel.key] | number :
                   '1.0-2'}}&#8239;°C</span>
