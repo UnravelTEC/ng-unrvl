@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "37007ae",
-  "SHA": "37007ae4b5f2816d82f169b21870d5663bdf720f",
+  "shortSHA": "eb3ef35",
+  "SHA": "eb3ef35062968c9a1ada17d090744920626b7866",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Thu Feb 5 15:13:06 2026 +0100",
-  "lastCommitMessage": "different separator for tags/fieldname in label for right align in legen",
-  "lastCommitNumber": "1638"
+  "lastCommitTime": "Mon Feb 9 15:31:07 2026 +0100",
+  "lastCommitMessage": "field minwidth so input field doesnt jump",
+  "lastCommitNumber": "1640"
 }

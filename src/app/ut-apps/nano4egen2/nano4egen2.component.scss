@@ -34,6 +34,14 @@ table {
   }
 }
 
+mat-radio-group {
+  display: block;
+  float: right;
+  text-align: left;
+  // border: 1px solid salmon;
+  margin-right: 8px;
+}
+
 h2,
 h3 {
   margin-left: 1rem;

@@ -40,7 +40,17 @@
 
     <table class="messages" *ngFor="let board of DACstatus | keyvalue" style="float: left;">
       <tr>
-        <th colspan="2">{{ board.key }}</th>
+        <th colspan="2">{{ board.key }}
+          <mat-radio-group
+            [(ngModel)]="boardTypes[board.key]"
+            id="boardTypes{{ board.key }}"
+            name="boardTypes_{{ board.key }}"
+          >
+            <mat-radio-button value="APPS">Apps</mat-radio-button><br />
+            <mat-radio-button value="Nano4E">Nano4E</mat-radio-button>
+
+          </mat-radio-group>
+        </th>
       </tr>
       <tr *ngFor="let DACname of board.value | keyvalue">
         <th>{{ DACname.key }}</th>
@@ -57,7 +67,7 @@
                   '1.0-2'}}&#8239;°C</span>
               </td>
               <td>
-                <input type="number" style="width: 5em;" step="0.0005" min="0" max="4.8" lang="{{lang}}"
+                <input type="number" style="width: 5em;" step="0.0005" min="0" max="4.8" lang="{{lang}}" (focus)="onFocus($event.target.id)"
                   class="animateOnClick {{ (animateOnClickShow && DACnewValuesSent[board.key][DACname.key][channel.key] >= 0) ? 'animateOnClickShow' : '' }}"
                   [(ngModel)]="DACnewValues[board.key][DACname.key][channel.key]"
                   id="id{{board.key}}{{DACname.key}}{{channel.key}}"

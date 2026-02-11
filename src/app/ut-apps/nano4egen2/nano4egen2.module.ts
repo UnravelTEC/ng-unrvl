@@ -6,11 +6,13 @@ import { Nano4EGen2Component } from './nano4egen2.component';
 import { UtDygraphInModule } from '../../shared/ut-dygraph-in/ut-dygraph-in.module';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { MatRadioModule } from '@angular/material/radio';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
+    MatRadioModule,
     MatIconModule,
     Nano4EGen2RoutingModule,
     UtDygraphInModule

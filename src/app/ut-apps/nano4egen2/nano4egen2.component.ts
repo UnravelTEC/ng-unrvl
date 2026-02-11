@@ -52,6 +52,8 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
   public maxlen = 3;
   public updateMessages = true;
 
+  public lastFocusID = "";
+
   public dygData = [
     [new Date(new Date().valueOf() - 1000), 1],
     [new Date(), 2]
@@ -117,45 +119,75 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
   }
 
 
-  public heatCurve = [
-    [0, 0],
-    [6, 10],
-    [7.5, 20],
-    [10, 30],
-    [11.5, 40],
-    [12.7, 50],
-    [13.6, 60],
-    [14.5, 70],
-    [15.3, 80],
-    [16, 90],
-    [16.7, 100],
-    [17.3, 110],
-    [17.7, 120],
-    [18.3, 130],
-    [18.7, 140],
-    [19.2, 150],
-    [19.5, 160],
-    [19.7, 170],
-    [20.1, 180],
-    [20.5, 190],
-    [20.7, 200],
-    [21.1, 210],
-    [21.3, 220],
-    [21.6, 230],
-    [21.8, 240],
-    [22.0, 250],
-    [22.25, 260],
-    [22.4, 270],
-    [22.7, 280],
-    [22.8, 290],
-    [23.0, 300],
-    [23.2, 310],
-    [23.5, 320],
-    [23.6, 330],
-    [23.7, 340],
-    [23.85, 350],
-  ]
-
+  public heatCurves = {
+    "APPS": [
+      [0, 0],
+      [7, 77],
+      [9.6, 113],
+      [11.5, 148],
+      [12.9, 182],
+      [14.2, 214],
+      [15.2, 245],
+      [16.2, 275],
+      [17, 303],
+      [17.7, 330],
+      [18.4, 356],
+      [19.1, 381],
+      [19.7, 404],
+      [20.3, 427],
+      [20.8, 448],
+      [21.4, 467],
+      [21.9, 486],
+      [22.4, 503],
+      [22.8, 519],
+      [23.3, 533],
+      [23.8, 547],
+    ],
+    "Nano4E": [
+      [0, 0],
+      [6, 10],
+      [7.5, 20],
+      [10, 30],
+      [11.5, 40],
+      [12.7, 50],
+      [13.6, 60],
+      [14.5, 70],
+      [15.3, 80],
+      [16, 90],
+      [16.7, 100],
+      [17.3, 110],
+      [17.7, 120],
+      [18.3, 130],
+      [18.7, 140],
+      [19.2, 150],
+      [19.5, 160],
+      [19.7, 170],
+      [20.1, 180],
+      [20.5, 190],
+      [20.7, 200],
+      [21.1, 210],
+      [21.3, 220],
+      [21.6, 230],
+      [21.8, 240],
+      [22.0, 250],
+      [22.25, 260],
+      [22.4, 270],
+      [22.7, 280],
+      [22.8, 290],
+      [23.0, 300],
+      [23.2, 310],
+      [23.5, 320],
+      [23.6, 330],
+      [23.7, 340],
+      [23.85, 350],
+    ]
+  }
+  public boardTypes = { // "APPS" or "Nano4E"
+    "AFEBOARD1": "APPS",
+    "AFEBOARD2": "APPS",
+    "AFEBOARD3": "APPS",
+    "AFEBOARD4": "APPS",
+  }
   // example_payload = {
   //   "config": {
   //     "tags": { "chipname": "allein" },
@@ -294,6 +326,11 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     this.stop();
   }
 
+  onFocus(id) {
+    console.log(id)
+    this.lastFocusID = id
+  }
+
   toggleDebug() {
     this.debugmqtt = !this.debugmqtt;
   }
@@ -393,6 +430,10 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
         this.animateOnClickShow = false;
       }, 500);
     }
+
+    console.log(document.getElementById(this.lastFocusID));
+    document.getElementById(this.lastFocusID).focus();
+
     this.client.publish(this.gss.server.hostname + "/actuators/HEATER/1/set",
       JSON.stringify({ "values": { "target_degC": this.temp_new }, "UTS": new Date().valueOf() / 1000 }),
       0,
@@ -476,7 +517,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
                   father.DACstatus[board][DAC][channel] = values[channel]
                   father.DACstatusUserUnit[board][DAC][channel] = Math.round(values[channel] * father.userUnitsConvFactor[arr[4]] * 1000) / 1000
                   if (DAC == 'HEAT') {
-                    father.heatTemps[board][channel] = father.calcHeatT(father.DACstatusUserUnit[board][DAC][channel]);
+                    father.heatTemps[board][channel] = father.calcHeatT(father.DACstatusUserUnit[board][DAC][channel], father.boardTypes[board]);
                   }
                 }
               });
@@ -560,13 +601,14 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
 
   private RT = 25;
 
-  calcHeatT(c_mA) {
-    for (let i = 0; i < (this.heatCurve.length - 1); i++) {
-      const element = this.heatCurve[i];
-      if (c_mA >= element[0] && c_mA < this.heatCurve[i + 1][0]) {
+  calcHeatT(c_mA, type) {
+    const heatCurve = this.heatCurves[type]
+    for (let i = 0; i < (heatCurve.length - 1); i++) {
+      const element = heatCurve[i];
+      if (c_mA >= element[0] && c_mA < heatCurve[i + 1][0]) {
         const delta_c = c_mA - element[0]
-        const step_c = this.heatCurve[i + 1][0] - element[0]
-        const step_K = this.heatCurve[i + 1][1] - element[1]
+        const step_c = heatCurve[i + 1][0] - element[0]
+        const step_K = heatCurve[i + 1][1] - element[1]
         return this.RT + element[1] + ((delta_c / step_c) * step_K)
       }
     }
@@ -577,7 +619,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     const c_mA = Math.round(this.DACnewValues[board][dac][channel] * this.userUnitsConvFactor[dac] * 1000) / 1000
     this.DACnewValuesUserUnit[board][dac][channel] = c_mA;
     if (dac == 'HEAT') {
-      this.heatTempsUser[board][channel] = this.calcHeatT(c_mA);
+      this.heatTempsUser[board][channel] = this.calcHeatT(c_mA, this.boardTypes[board]);
     }
     console.log(board, dac, channel, this.DACnewValuesUserUnit[board][dac][channel], this.DACnewValues[board][dac][channel], this.userUnitsConvFactor[dac]);
   }
