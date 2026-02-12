@@ -614,6 +614,20 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     }
     return -1;
   }
+  calcmAfromT(T, type) {
+    const t = T - this.RT
+    const heatCurve = this.heatCurves[type]
+    for (let i = 0; i < (heatCurve.length - 1); i++) {
+      const element = heatCurve[i];
+      if (t >= element[1] && t < heatCurve[i + 1][1]) {
+        const delta_t = t - element[1]
+        const step_c = heatCurve[i + 1][0] - element[0]
+        const step_K = heatCurve[i + 1][1] - element[1]
+        return element[0] + step_c * ((delta_t / step_K))
+      }
+    }
+    return -1;
+  }
 
   calcUserUnit(board, dac, channel) {
     const c_mA = Math.round(this.DACnewValues[board][dac][channel] * this.userUnitsConvFactor[dac] * 1000) / 1000
@@ -622,6 +636,15 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
       this.heatTempsUser[board][channel] = this.calcHeatT(c_mA, this.boardTypes[board]);
     }
     console.log(board, dac, channel, this.DACnewValuesUserUnit[board][dac][channel], this.DACnewValues[board][dac][channel], this.userUnitsConvFactor[dac]);
+  }
+  calcVfromUserUnit(board, dac, channel) {
+    if (dac == 'HEAT') {
+      const c_mA = this.calcmAfromT(this.heatTempsUser[board][channel], this.boardTypes[board])
+      this.DACnewValuesUserUnit[board][dac][channel] = Math.round(c_mA * 1000) / 1000;
+      this.DACnewValues[board][dac][channel] = c_mA / this.userUnitsConvFactor[dac]
+    } else {
+      this.DACnewValues[board][dac][channel] = this.DACnewValuesUserUnit[board][dac][channel] / this.userUnitsConvFactor[dac]
+    }
   }
 
   // copied & modified from services.component TODO split into ng service

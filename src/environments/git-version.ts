@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "eb3ef35",
-  "SHA": "eb3ef35062968c9a1ada17d090744920626b7866",
+  "shortSHA": "c104536",
+  "SHA": "c104536c01ad04af3f311dba811bca59af082c0c",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Mon Feb 9 15:31:07 2026 +0100",
-  "lastCommitMessage": "field minwidth so input field doesnt jump",
-  "lastCommitNumber": "1640"
+  "lastCommitTime": "Wed Feb 11 14:19:26 2026 +0100",
+  "lastCommitMessage": "choose between APPS and Nano4E chips",
+  "lastCommitNumber": "1641"
 }
