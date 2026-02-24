@@ -1102,6 +1102,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     const cDate = new Date(data.x)
     const datestr = parent && (parent.fromZoom.toLocaleDateString() == parent.toZoom.toLocaleDateString()) ? '' : cDate.toLocaleDateString() + ' '
     const timestr = datestr + cDate.toLocaleTimeString()
+    if (!parent) {
+      console.log('Legend: no parent yet');
+      return;
+    }
     let html =
       '<div class="header">Legend: ' +
       (data.xHTML ? ' values @ ' + timestr + durationStr : '') + '</div>' +
@@ -1130,6 +1134,9 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       return (htmlID) ? `onclick="document['Dygraphs']['${htmlID}'].switchAxis('${label}')"`
         : ''
     }
+
+    let sortBy = 'field' // $tag-key or "field" or "metric" FIXME currently hardcoded allow to be changeable
+    let seriesTRs = [] // [ { tr: '$line', tags: {}, fieldname: '$fn' } ]
 
     let currentUnit = '';
     let currentIndex = -1;
@@ -1260,12 +1267,30 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         }
         valcells += '</td>';
       }
-      html +=
+      const line =
         `<tr style='color:${series.color};' ${cls} ${hoverCallback} ${title}>` +
         `<th${textcolor} class="h"><span class='dash'>${series.dashHTML}</span><span class='one' ${setSingleCallback} title='Display alone'>[1]</span></th>` +
-        `<th${textcolor} ${toggleCallback}>${labeltext}</th><td class='fieldname'>${fieldname}${colon}&nbsp;</td></th>` +
+        `<th${textcolor} ${toggleCallback}>${labeltext}</th><td${textcolor} class='fieldname'>${fieldname}${colon}&nbsp;</td></th>` +
         `${valcells}${axistext}</tr>`;
+      seriesTRs.push({ 'tr': line, 'raw_labels': parent.rawLabels[i + 1] })
     }
+
+    function cmpFn(a, b) {
+      const aRL = a['raw_labels']
+      const bRL = b['raw_labels']
+      if (sortBy == 'field') {
+        return (aRL['field'].localeCompare(bRL['field']))
+      }
+      if (sortBy == 'metric') {
+        return (aRL['metric'].localeCompare(bRL['metric']))
+      }
+      return (aRL['tags'][sortBy].localeCompare(bRL['tags'][sortBy]))
+    }
+    seriesTRs.sort(cmpFn)
+    seriesTRs.forEach((line) => {
+      html += line['tr']
+    });
+
     return html + '</table>';
   }
   switchAxis(label) {
