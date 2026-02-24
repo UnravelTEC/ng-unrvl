@@ -38,12 +38,14 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     'nano4e-gen2/actuators/DAC/AFEBOARD4/MEAS/settings',
     'nano4e-gen2/actuators/DAC/AFEBOARD4/LED/settings',
     'nano4e-gen2/actuators/DAC/AFEBOARD4/HEAT/settings',
-    'nano4e-gen2/actuators/HEATER/1/settings',
-    'nano4e-gen2/actuators/MFC/settings',
-    'nano4e-gen2/actuators/MFC/airflow',
-    'nano4e-gen2/sensors/MCP9600/temperature',
-    'nano4e-gen2/sensors/FANSPEED/fanspeed',
   ]
+  // private ADCtopic = "/sensors/ADS1115/i2c-3_"
+  // private ADCmappings = {
+  //   "AFEBOARD1": "0x48",
+  //   "AFEBOARD2": "0x49",
+  //   "AFEBOARD3": "0x4a",
+  //   "AFEBOARD4": "0x4b",
+  // }
 
   public mqttMessages = [
     { date: new Date(), topic: 'sample topic', payload: 'sample payload' }
@@ -112,6 +114,12 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     "AFEBOARD4": { "ch1_V": undefined, "ch2_V": undefined, "ch3_V": undefined, "ch4_V": undefined }
   }
   public heatTempsUser = {
+    "AFEBOARD1": { "ch1_V": undefined, "ch2_V": undefined, "ch3_V": undefined, "ch4_V": undefined },
+    "AFEBOARD2": { "ch1_V": undefined, "ch2_V": undefined, "ch3_V": undefined, "ch4_V": undefined },
+    "AFEBOARD3": { "ch1_V": undefined, "ch2_V": undefined, "ch3_V": undefined, "ch4_V": undefined },
+    "AFEBOARD4": { "ch1_V": undefined, "ch2_V": undefined, "ch3_V": undefined, "ch4_V": undefined }
+  }
+  public measAutoChannel = { // _V name only for easier accessing in script
     "AFEBOARD1": { "ch1_V": undefined, "ch2_V": undefined, "ch3_V": undefined, "ch4_V": undefined },
     "AFEBOARD2": { "ch1_V": undefined, "ch2_V": undefined, "ch3_V": undefined, "ch4_V": undefined },
     "AFEBOARD3": { "ch1_V": undefined, "ch2_V": undefined, "ch3_V": undefined, "ch4_V": undefined },
@@ -394,21 +402,33 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
           if (Object.prototype.hasOwnProperty.call(AFEBOARD, DACid)) {
             const DAC = AFEBOARD[DACid];
             let values = {}
+            let tags = {}
             for (const channel in DAC) {
               if (Object.prototype.hasOwnProperty.call(DAC, channel)) {
                 const value = DAC[channel];
-                if (DACid == "HEAT" && value > 2.5) {
+                if (DACid == "HEAT" && value > 2.385) {
                   alert(String(value) + " too high for heater " + channel + " @ " + AFEBOARDid)
                   continue;
                 }
                 if (!isNaN(value) && value !== undefined && value !== null) {
                   values[channel] = value;
                   this.DACnewValuesUserUnit[AFEBOARDid][DACid][channel] = value * this.userUnitsConvFactor[DAC]
+                  if (DACid == "HEAT") {
+                    tags[channel.charAt(2)] = {
+                      "chip": this.boardTypes[AFEBOARDid]
+                    }
+                    if(this.heatTempsUser[AFEBOARDid][channel]) {
+                      tags[channel.charAt(2)]["heater_degC"] = this.heatTempsUser[AFEBOARDid][channel].toString()
+                    }
+                  }
                 }
               }
             }
             if (Object.keys(values).length > 0) {
-              const payload = { "values": values, "UTS": new Date().valueOf() / 1000 }
+              let payload = { "values": values, "UTS": new Date().valueOf() / 1000 } //  { "values": { "ch1_V": *, "ch2_V": * }, "UTS": * }
+              if (Object.keys(tags).length > 0) {
+                payload["tags"] = tags
+              }
               this.client.publish(this.gss.server.hostname + "/actuators/DAC/" + AFEBOARDid + "/" + DACid + "/set",
                 JSON.stringify(payload),
                 0,
@@ -433,11 +453,6 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
 
     console.log(document.getElementById(this.lastFocusID));
     document.getElementById(this.lastFocusID).focus();
-
-    this.client.publish(this.gss.server.hostname + "/actuators/HEATER/1/set",
-      JSON.stringify({ "values": { "target_degC": this.temp_new }, "UTS": new Date().valueOf() / 1000 }),
-      0,
-      true);
   }
   setChipCfg(chip = "") {
     console.log("setChipCfg", chip, this.Nano4EChipCfg);
@@ -514,10 +529,21 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
                 if (values.hasOwnProperty(channel)) {
                   const board = arr[3]
                   const DAC = arr[4];
-                  father.DACstatus[board][DAC][channel] = values[channel]
+                  father.DACstatus[board][DAC][channel] = Math.round(values[channel] * 100000) / 100000
                   father.DACstatusUserUnit[board][DAC][channel] = Math.round(values[channel] * father.userUnitsConvFactor[arr[4]] * 1000) / 1000
+                  father.DACnewValuesUserUnit[board][DAC][channel] = father.DACstatusUserUnit[board][DAC][channel]
                   if (DAC == 'HEAT') {
                     father.heatTemps[board][channel] = father.calcHeatT(father.DACstatusUserUnit[board][DAC][channel], father.boardTypes[board]);
+                  }
+                  else if (DAC == 'MEAS' && payload["tags"]) {
+                    const tagchX = channel.slice(0, 3)
+                    if (payload["tags"][tagchX].hasOwnProperty("amcurstep")) {
+                      father.measAutoChannel[board][channel] = payload["tags"][tagchX]["amcurstep"]
+                    }
+                    if (payload["tags"][tagchX].hasOwnProperty("meas_current_uA")) {
+                      father.DACstatusUserUnit[board][DAC][channel] = payload["tags"][tagchX]["meas_current_uA"]
+                      father.DACnewValuesUserUnit[board][DAC][channel] = father.DACstatusUserUnit[board][DAC][channel]
+                    }
                   }
                 }
               });
