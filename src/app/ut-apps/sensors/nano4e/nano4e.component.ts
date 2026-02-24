@@ -653,7 +653,7 @@ export class Nano4EComponent implements OnInit {
       return;
     }
     console.log('orig labels:', this.orig_labels);
-    console.log('raw labels:', this.raw_labels);
+    console.log('raw labels:', cloneDeep(this.raw_labels));
     console.log('common_label:', this.common_label);
     console.log('short_labels:', this.short_labels);
 
@@ -804,7 +804,7 @@ export class Nano4EComponent implements OnInit {
       const raw_labels = ret['raw_labels'];
 
       console.log('new orig labels before R:', ret['orig_labels']);
-      console.log('new raw labels before R:', ret['raw_labels']);
+      console.log('new raw labels before R:', cloneDeep(ret['raw_labels']));
       console.log('new common_label before R:', ret['common_label']);
       console.log('new short_labels before R:', ret['short_labels']);
 
@@ -815,7 +815,7 @@ export class Nano4EComponent implements OnInit {
         const meas_curr = parseFloat(rlabeltags["meas_current_uA"]) * 1e-6
         console.log(rlabel, rlabeltags["meas_current_uA"], meas_curr, 'A', short_labels[i - 1].replace('( V )', '( Ω )'));
 
-        raw_labels[i] = rlabel['field'].replace(/_V/, "_Ohm");
+        raw_labels[i]['field'] = rlabel['field'].replace(/_V/, "_Ohm");
         short_labels[i - 1] = short_labels[i - 1].replace('( V )', '( Ω )')
         for (let r = 0; r < idata.length; r++) {
           if (meas_curr == 0) {
