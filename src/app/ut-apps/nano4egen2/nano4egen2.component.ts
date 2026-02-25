@@ -412,14 +412,21 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
                 }
                 if (!isNaN(value) && value !== undefined && value !== null) {
                   values[channel] = value;
-                  this.DACnewValuesUserUnit[AFEBOARDid][DACid][channel] = value * this.userUnitsConvFactor[DAC]
+                  this.DACnewValuesUserUnit[AFEBOARDid][DACid][channel] = value * this.userUnitsConvFactor[DACid]
                   if (DACid == "HEAT") {
-                    tags[channel.charAt(2)] = {
+                    tags["ch" + channel.charAt(2)] = {
                       "chip": this.boardTypes[AFEBOARDid]
                     }
-                    if(this.heatTempsUser[AFEBOARDid][channel]) {
-                      tags[channel.charAt(2)]["heater_degC"] = this.heatTempsUser[AFEBOARDid][channel].toString()
+                    if (this.heatTempsUser[AFEBOARDid][channel]) {
+                      tags["ch" + channel.charAt(2)]["heater_degC"] = this.heatTempsUser[AFEBOARDid][channel].toString()
                     }
+                  }
+                  if (DACid == "MEAS") {
+                    tags["ch" + channel.charAt(2)] = {
+                      "meas_current_uA": this.DACnewValuesUserUnit[AFEBOARDid][DACid][channel],
+                      "mcurtl": "manual"
+                    }
+
                   }
                 }
               }
@@ -535,14 +542,16 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
                   if (DAC == 'HEAT') {
                     father.heatTemps[board][channel] = father.calcHeatT(father.DACstatusUserUnit[board][DAC][channel], father.boardTypes[board]);
                   }
-                  else if (DAC == 'MEAS' && payload["tags"]) {
+                  else if (DAC == 'MEAS' && payload.hasOwnProperty("tags")) {
                     const tagchX = channel.slice(0, 3)
-                    if (payload["tags"][tagchX].hasOwnProperty("amcurstep")) {
-                      father.measAutoChannel[board][channel] = payload["tags"][tagchX]["amcurstep"]
-                    }
-                    if (payload["tags"][tagchX].hasOwnProperty("meas_current_uA")) {
-                      father.DACstatusUserUnit[board][DAC][channel] = payload["tags"][tagchX]["meas_current_uA"]
-                      father.DACnewValuesUserUnit[board][DAC][channel] = father.DACstatusUserUnit[board][DAC][channel]
+                    if (payload["tags"].hasOwnProperty(tagchX)) {
+                      if (payload["tags"][tagchX].hasOwnProperty("amcurstep")) {
+                        father.measAutoChannel[board][channel] = payload["tags"][tagchX]["amcurstep"]
+                      }
+                      if (payload["tags"][tagchX].hasOwnProperty("meas_current_uA")) {
+                        father.DACstatusUserUnit[board][DAC][channel] = payload["tags"][tagchX]["meas_current_uA"]
+                        father.DACnewValuesUserUnit[board][DAC][channel] = father.DACstatusUserUnit[board][DAC][channel]
+                      }
                     }
                   }
                 }

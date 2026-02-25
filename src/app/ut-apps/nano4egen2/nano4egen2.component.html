@@ -41,34 +41,45 @@
     <table class="messages" *ngFor="let board of DACstatus | keyvalue" style="float: left;">
       <tr>
         <th colspan="2">{{ board.key }}
-          <mat-radio-group
-            [(ngModel)]="boardTypes[board.key]"
-            id="boardTypes{{ board.key }}"
-            name="boardTypes_{{ board.key }}"
-          >
+          <mat-radio-group [(ngModel)]="boardTypes[board.key]" id="boardTypes{{ board.key }}"
+            name="boardTypes_{{ board.key }}">
             <mat-radio-button value="APPS">Apps</mat-radio-button><br />
             <mat-radio-button value="Nano4E">Nano4E</mat-radio-button>
 
           </mat-radio-group>
         </th>
       </tr>
-      <tr *ngFor="let DACname of board.value | keyvalue">
+      <tr class="DAC">
+        <th>DAC</th>
+        <td>
+          <table class="header">
+            <tr>
+              <th style="width: 4em; text-align: left; border-right: 1px solid black;">Channel</th>
+              <th style="width: 9.5em; border-right: 1px solid black">Current</th>
+              <th style="width: 19.9em">New</th>
+            </tr>
+          </table>
+        </td>
+
+      </tr>
+      <tr *ngFor="let DACname of board.value | keyvalue" class="DAC">
         <th>{{ DACname.key }}</th>
         <td>
           <table>
             <tr *ngFor="let channel of DACname.value | keyvalue">
-              <td style="width: 100%;">
+              <td>
                 {{ channelNames[channel.key] }}
               </td>
               <td>{{ channel.value >= 0 ? channel.value : '?' }}&#8239;V</td>
-              <td>/&nbsp;{{ DACstatusUserUnit[board.key][DACname.key][channel.key] >= 0 ?
+              <td style="width: 5em">/&nbsp;{{ DACstatusUserUnit[board.key][DACname.key][channel.key] >= 0 ?
                 DACstatusUserUnit[board.key][DACname.key][channel.key] : '?' }}&#8239;{{ userUnits[DACname.key] }}<span
                   *ngIf="DACname.key == 'HEAT'">&nbsp;/&nbsp;{{ heatTemps[board.key][channel.key] | number :
                   '1.0-2'}}&#8239;°C
                 </span>
               </td>
               <td>
-                <input type="number" style="width: 5em;" step="0.0005" min="0" max="4.8" lang="{{lang}}" (focus)="onFocus($event.target.id)"
+                <input type="number" style="width: 5em;" step="0.0005" min="0" max="4.8" lang="{{lang}}"
+                  (focus)="onFocus($event.target.id)"
                   class="animateOnClick {{ (animateOnClickShow && DACnewValuesSent[board.key][DACname.key][channel.key] >= 0) ? 'animateOnClickShow' : '' }}"
                   [(ngModel)]="DACnewValues[board.key][DACname.key][channel.key]"
                   id="id{{board.key}}{{DACname.key}}{{channel.key}}"
@@ -77,11 +88,15 @@
 
 
               </td>
-              <td style="min-width: 8.5em;">V&nbsp;/&nbsp;{{ DACnewValuesUserUnit[board.key][DACname.key][channel.key] >= 0 ?
-                DACnewValuesUserUnit[board.key][DACname.key][channel.key] : '?' }}&#8239;{{ userUnits[DACname.key] }}
+              <td style="min-width: 8.5em;">V&nbsp;<span *ngIf="DACname.key == 'HEAT'">/&nbsp;{{
+                  DACnewValuesUserUnit[board.key][DACname.key][channel.key] >= 0 ?
+                  DACnewValuesUserUnit[board.key][DACname.key][channel.key] : '?' }}&#8239;{{ userUnits[DACname.key]
+                  }}</span>
                 <!-- <span *ngIf="DACname.key == 'HEAT'">&nbsp;/&nbsp;{{ heatTempsUser[board.key][channel.key] | number :
                   '1.0-2'}}&#8239;°C
                 </span> -->
+                <span *ngIf="DACname.key == 'MEAS' && measAutoChannel[board.key][channel.key] !== undefined"
+                  class="auto">&nbsp;autostep&nbsp;{{ measAutoChannel[board.key][channel.key] }}&nbsp;</span>
               </td>
               <td style="min-width: 6.1em;">
                 <div *ngIf="DACname.key == 'HEAT'">
@@ -89,22 +104,22 @@
                     [(ngModel)]="heatTempsUser[board.key][channel.key]"
                     id="id_heatT{{board.key}}{{DACname.key}}{{channel.key}}"
                     name="name_heatT{{board.key}}{{DACname.key}}{{channel.key}}"
-                    (ngModelChange)="calcVfromUserUnit(board.key,DACname.key,channel.key)"
-                    />&#8239;°C</div>
-                  <div *ngIf="DACname.key == 'LED'">
-                    <input type="number" style="width: 4em;" step="0.1" min="0" max="40" lang="{{lang}}"
+                    (ngModelChange)="calcVfromUserUnit(board.key,DACname.key,channel.key)" />&#8239;°C
+                </div>
+                <div *ngIf="DACname.key == 'LED'">
+                  <input type="number" style="width: 4em;" step="0.1" min="0" max="40" lang="{{lang}}"
                     [(ngModel)]="DACnewValuesUserUnit[board.key][DACname.key][channel.key]"
                     id="id_led{{board.key}}{{DACname.key}}{{channel.key}}"
                     name="name_led{{board.key}}{{DACname.key}}{{channel.key}}"
-                    (ngModelChange)="calcVfromUserUnit(board.key,DACname.key,channel.key)"
-                    />&#8239;mA</div>
-                  <div *ngIf="DACname.key == 'MEAS'">
-                    <input type="number" style="width: 4.6em;" step="0.005" min="0" max="40" lang="{{lang}}"
+                    (ngModelChange)="calcVfromUserUnit(board.key,DACname.key,channel.key)" />&#8239;mA
+                </div>
+                <div *ngIf="DACname.key == 'MEAS'">
+                  <input type="number" style="width: 4.6em;" step="0.005" min="0" max="40" lang="{{lang}}"
                     [(ngModel)]="DACnewValuesUserUnit[board.key][DACname.key][channel.key]"
                     id="id_meas{{board.key}}{{DACname.key}}{{channel.key}}"
                     name="name_meas{{board.key}}{{DACname.key}}{{channel.key}}"
-                    (ngModelChange)="calcVfromUserUnit(board.key,DACname.key,channel.key)"
-                    />&#8239;µA</div>
+                    (ngModelChange)="calcVfromUserUnit(board.key,DACname.key,channel.key)" />&#8239;µA
+                </div>
 
               </td>
               <!-- <td>
