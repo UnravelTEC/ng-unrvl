@@ -441,28 +441,44 @@ export class SensorService {
       "px1_V": {
         round_digits: 7,
         getDeviation: function (value, raw_labels) {
-          if (value <= -5) return [NaN, NaN, NaN];
+          if (value <= -5 || value > 6.2) return [NaN, NaN, NaN];
+          if (raw_labels.hasOwnProperty("tags") && raw_labels["tags"].hasOwnProperty("resolution_uV")) {
+            const dev = parseFloat(raw_labels["tags"]["resolution_uV"]) / 1000000
+            return [value - dev, value, value + dev];
+          }
           return [value, value, value];
         }
       },
       "px2_V": {
         round_digits: 7,
         getDeviation: function (value, raw_labels) {
-          if (value <= -5) return [NaN, NaN, NaN];
+          if (value <= -5 || value > 6.2) return [NaN, NaN, NaN];
+          if (raw_labels.hasOwnProperty("tags") && raw_labels["tags"].hasOwnProperty("resolution_uV")) {
+            const dev = parseFloat(raw_labels["tags"]["resolution_uV"]) / 1000000
+            return [value - dev, value, value + dev];
+          }
           return [value, value, value];
         }
       },
       "px3_V": {
         round_digits: 7,
         getDeviation: function (value, raw_labels) {
-          if (value <= -5) return [NaN, NaN, NaN];
+          if (value <= -5 || value > 6.2) return [NaN, NaN, NaN];
+          if (raw_labels.hasOwnProperty("tags") && raw_labels["tags"].hasOwnProperty("resolution_uV")) {
+            const dev = parseFloat(raw_labels["tags"]["resolution_uV"]) / 1000000
+            return [value - dev, value, value + dev];
+          }
           return [value, value, value];
         }
       },
       "px4_V": {
         round_digits: 7,
         getDeviation: function (value, raw_labels) {
-          if (value <= -5) return [NaN, NaN, NaN];
+          if (value <= -5 || value > 6.2) return [NaN, NaN, NaN];
+          if (raw_labels.hasOwnProperty("tags") && raw_labels["tags"].hasOwnProperty("resolution_uV")) {
+            const dev = parseFloat(raw_labels["tags"]["resolution_uV"]) / 1000000
+            return [value - dev, value, value + dev];
+          }
           return [value, value, value];
         }
       },
