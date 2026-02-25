@@ -1202,7 +1202,7 @@ export class HelperFunctionsService {
   /**
    * changes this.fromTime, from, toTime, to, currentRange, userMeanS, interval !!!
    */
-  updateFromToTimes(timearray, myself, interval = '') {
+  updateFromToTimes(timearray, myself, interval:any = undefined) {
     myself.fromTime = new Date(timearray[0]);
     myself.from = timearray[0];
     myself.toTime = new Date(timearray[1]);

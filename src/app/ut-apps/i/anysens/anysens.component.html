@@ -28,7 +28,7 @@
           [extraDyGraphConfig]="extraDyGraphConfig" [startTime]="dygStartTime" enableHighlightCallback="true"
           [colors]="colors" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
           [Y2Label]="y2label" (returnGraphWidthOnChange)="setGraphWidth($event)"
-          (returnClickedRow)="acceptClickedRow($event)" (returnCurrentZoom)="h.updateFromToTimes($event, this)"
+          (returnClickedRow)="acceptClickedRow($event)" (returnCurrentZoom)="h.updateFromToTimes($event, this, userMeanS)"
           (returnRunningAvg)="handleRunningAvg($event)" #R></app-ut-dygraph-in>
       </div>
     </div>
