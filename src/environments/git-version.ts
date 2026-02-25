@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "c104536",
-  "SHA": "c104536c01ad04af3f311dba811bca59af082c0c",
+  "shortSHA": "b139c32",
+  "SHA": "b139c3284b26586ed2c4ea9d8ac500fbdde40c1f",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Wed Feb 11 14:19:26 2026 +0100",
-  "lastCommitMessage": "choose between APPS and Nano4E chips",
-  "lastCommitNumber": "1641"
+  "lastCommitTime": "Wed Feb 25 11:42:45 2026 +0100",
+  "lastCommitMessage": "Nano4E sensor ADC deviation display",
+  "lastCommitNumber": "1647"
 }

@@ -1095,16 +1095,25 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       ? `onclick="document['Dygraphs']['${htmlID}'].legendHideInactiveF()"`
       : '';
     const inactiveChecked = hideInactive ? 'checked="checked"' : ''
-    const optionsOpen = parent ? parent['optionsOpen'] : false;
-    const dyGOseries = parent ? parent.dyGraphOptions.series : undefined;
-
-    const durationStr = (parent && data.x) ? ' | &Delta; ' + parent.h.createHRTimeString(Math.round((data.x - parent.fromZoom.valueOf()) / 1000)) : ''
-    const cDate = new Date(data.x)
-    const datestr = parent && (parent.fromZoom.toLocaleDateString() == parent.toZoom.toLocaleDateString()) ? '' : cDate.toLocaleDateString() + ' '
-    const timestr = datestr + cDate.toLocaleTimeString()
     if (!parent) {
       console.log('Legend: no parent yet');
       return;
+    }
+    const optionsOpen = parent['optionsOpen'];
+    const dyGOseries = parent.dyGraphOptions.series
+
+    let durationStr = (data.x) ? ' | &Delta; ' + parent.h.createHRTimeString(Math.round((data.x - parent.fromZoom.valueOf()) / 1000)) : ''
+    const cDate = new Date(data.x)
+    const datestr = (parent.fromZoom.toLocaleDateString() == parent.toZoom.toLocaleDateString()) ? '' : cDate.toLocaleDateString() + ' '
+    let timestr = datestr + cDate.toLocaleTimeString()
+
+    if (parent.rawLabels[1]["tags"] && parent.rawLabels[1]["tags"]["interval_s"] && parseFloat(parent.rawLabels[1]["tags"]["interval_s"]) < 1) {
+      timestr += "." + cDate.getMilliseconds()
+      if (data.x) {
+        const d = data.x - parent.fromZoom.valueOf()
+        if(d)
+          durationStr += " " + Math.round(d % 1000) + ' ms'
+      }
     }
     let html =
       '<div class="header">Legend: ' +
