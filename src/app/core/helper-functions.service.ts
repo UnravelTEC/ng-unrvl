@@ -1200,7 +1200,7 @@ export class HelperFunctionsService {
   }
 
   /**
-   * changes this.fromTime, from, toTime, to, currentRange, userMeanS, interval !!!
+   * changes this.fromTime, from, toTime, to, currentRange, means, interval !!!
    */
   updateFromToTimes(timearray, myself, interval:any = undefined) {
     myself.fromTime = new Date(timearray[0]);
@@ -1210,10 +1210,10 @@ export class HelperFunctionsService {
     const rangeSeconds = Math.floor((timearray[1] - timearray[0]) / 1000);
     myself.currentRange = this.createHRTimeString(rangeSeconds);
     if (!interval) {
-      myself.userMeanS = this.calcMean(rangeSeconds, myself.graphWidth);
-      myself.interval = String(myself.userMeanS);
+      myself.meanS = this.calcMean(rangeSeconds, myself.graphWidth);
+      myself.interval = String(myself.meanS);
     } else {
-      myself.userMeanS = Number(interval);
+      myself.meanS = Number(interval);
     }
   }
 

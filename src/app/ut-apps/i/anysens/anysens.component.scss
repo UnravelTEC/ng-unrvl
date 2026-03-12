@@ -60,6 +60,16 @@
         }
       }
     }
+    .automean-radio table {
+      width: 100%;
+      border-collapse: collapse;
+      td {
+        padding: 0;
+      }
+      td:first-child {
+        border-right: 1px solid gray;
+      }
+    }
   }
   #anyfooter {
     padding: 0.5em;

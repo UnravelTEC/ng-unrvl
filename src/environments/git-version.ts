@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "b139c32",
-  "SHA": "b139c3284b26586ed2c4ea9d8ac500fbdde40c1f",
+  "shortSHA": "cc4eece",
+  "SHA": "cc4eece7a257391a54d4c66d4feb0d3695ffa789",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Wed Feb 25 11:42:45 2026 +0100",
-  "lastCommitMessage": "Nano4E sensor ADC deviation display",
-  "lastCommitNumber": "1647"
+  "lastCommitTime": "Wed Feb 25 14:23:06 2026 +0100",
+  "lastCommitMessage": "dyg legend show ms too",
+  "lastCommitNumber": "1649"
 }

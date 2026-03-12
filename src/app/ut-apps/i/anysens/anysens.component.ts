@@ -55,10 +55,11 @@ export class AnysensComponent implements OnInit {
   public startTime = '6h';
   public dygStartTime: string; // used on autoUpdate
   public userStartTime = this.startTime;
-  public meanS = 30;
+  public meanS: number;
   public currentres = 0;
   public currentresText = '0s';
-  public userMeanS = this.meanS;
+  public userMeanS: number;
+  public automean = true;
   public fromTime: Date;
   public toTime: Date;
   public currentRange: string;
@@ -98,7 +99,7 @@ export class AnysensComponent implements OnInit {
   public query_age: number;
 
   public autoreload = false;
-  public auto_interval = 1; // gets set to userMeanS
+  public auto_interval: number;
   public reload_timer = Infinity;
   public last_reload: number;
 
@@ -129,17 +130,17 @@ export class AnysensComponent implements OnInit {
       'userStartTime',
       'tableShown',
       'sideBarShown',
+      'automean',
       'tagsShown',
       'allTagsShown',
       'show_deviation',
     ].forEach((element) => {
-      const thing = this.localStorage.get(this.appName + element);
-      if (thing !== null) {
-        this[element] = thing;
+      const value = this.localStorage.get(this.appName + element);
+      if (value !== null) {
+        this[element] = value;
       }
     });
     this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
-    this.auto_interval = this.userMeanS;
     this.reload_timer = this.auto_interval;
 
     this.ls_taglist = this.localStorage.get(this.appName + 'taglist');
@@ -177,6 +178,13 @@ export class AnysensComponent implements OnInit {
     this.gss.emitChange({
       appName: this.measurement + (this.sensor ? ' ' + this.sensor : ''),
     });
+    if (this.interval) { // only url param supplied
+      this.userMeanS = parseFloat(this.interval)
+      this.automean = false;
+    }
+
+    this.meanS = this.h.calcMean(this.h.parseToSeconds(this.userStartTime), this.graphWidth);
+    this.auto_interval = this.automean ? this.meanS : this.userMeanS;
 
     if (this.measurement.indexOf('pressure') > -1) {
       this.y2label = 'Atmospheric Pressure';
@@ -198,22 +206,23 @@ export class AnysensComponent implements OnInit {
     } else {
       this.reload();
     }
+    if (!this.interval) {
+      this.interval = String(this.automean ? this.meanS : this.userMeanS)
+    }
   }
 
   reload(fromTo = false) {
-    this.meanS = this.userMeanS;
-    this.currentres = this.meanS;
-    this.currentresText = this.h.createHRTimeString(this.meanS);
+    this.currentres = this.automean ? this.meanS : this.userMeanS;
+    this.currentresText = this.h.createHRTimeString(this.currentres);
     this.startTime = this.userStartTime;
     this.dygStartTime = fromTo ? undefined : this.startTime;
 
     const timerange = fromTo
       ? (this.toTime.valueOf() - this.fromTime.valueOf()) / 1000
       : this.h.parseToSeconds(this.startTime);
-    const nr_points = timerange / this.meanS;
+    const nr_points = timerange / (this.automean ? this.meanS : this.userMeanS);
     if (nr_points > 10000 && !this.h.bigQconfirm(nr_points)) {
-      if (!this.labels.length) {
-        // at start to show "no data" in Dyg Window
+      if (!this.labels.length) { // at start to show "no data" in Dyg Window
         this.labels = [''];
       }
       return;
@@ -261,7 +270,7 @@ export class AnysensComponent implements OnInit {
       this.measurement,
       timeQuery,
       params,
-      this.meanS,
+      this.automean ? this.meanS : this.userMeanS,
       this.value,
       groupby_list.join()
     );
@@ -533,9 +542,9 @@ export class AnysensComponent implements OnInit {
   changeMean(param) {
     const rangeSeconds = this.h.parseToSeconds(param);
 
-    this.userMeanS = this.h.calcMean(rangeSeconds, this.graphWidth);
-    this.interval = String(this.userMeanS);
-    this.auto_interval = this.userMeanS;
+    this.meanS = this.h.calcMean(rangeSeconds, this.graphWidth);
+    this.interval = String(this.automean ? this.meanS : this.userMeanS);
+    this.auto_interval = this.automean ? this.meanS : this.userMeanS;
     this.reload_timer = this.auto_interval;
 
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
@@ -627,6 +636,8 @@ export class AnysensComponent implements OnInit {
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
+    this.localStorage.set(this.appName + 'automean', this.automean);
+    this.interval = String(this.automean ? this.meanS : this.userMeanS)
   }
 
   handleData(data: Object) {
