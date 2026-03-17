@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "cc4eece",
-  "SHA": "cc4eece7a257391a54d4c66d4feb0d3695ffa789",
+  "shortSHA": "1948e37",
+  "SHA": "1948e3798bcbfdc4e4558cfc45d3f15c1150cebe",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Wed Feb 25 14:23:06 2026 +0100",
-  "lastCommitMessage": "dyg legend show ms too",
-  "lastCommitNumber": "1649"
+  "lastCommitTime": "Tue Mar 17 14:00:38 2026 +0100",
+  "lastCommitMessage": "more cfg topics to use retain better; resolution in Ohm",
+  "lastCommitNumber": "1651"
 }

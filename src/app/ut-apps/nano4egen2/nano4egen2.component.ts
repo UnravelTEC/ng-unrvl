@@ -324,7 +324,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     this.ls_api_pass = this.localStorage.get('api_pass');
 
     for (let i = 1; i <= 4; i++) {
-      this.ADCtopics["AFEBOARD" + i.toString()] = this.gss.server.hostname + '/sensors/ADS1115/i2c-3_0x' + (0x47 + i).toString(16) + '/config'
+      this.ADCtopics["AFEBOARD" + i.toString()] = this.gss.server.hostname + '/sensors/ADS1115/i2c-3_0x' + (0x47 + i).toString(16) + '/config/ngunrvl'
     }
     // this.getService();
 
