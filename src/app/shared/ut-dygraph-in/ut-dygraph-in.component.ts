@@ -1185,8 +1185,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       const displayedValue =
         !series.hasOwnProperty('y') || isNaN(series.y)
           ? ''
-          : parent.h
-            .roundAccurately(series.y, parent.roundDigits[i + 1]).toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] })
+          : parent.h.insertVisualSpace(parent.h.roundAccurately(
+            series.y, parent.roundDigits[i + 1]).toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] }))
       const posClass = series.y >= 0 ? " positive" : ""
 
       const isHighlighted = series.isHighlighted;
@@ -1237,9 +1237,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
                   parent.roundDigits[i + 1]
                 );
                 if (dlower == dupper) {
-                  devtext = dlower ? '±' + dlower.toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] }) : ''; // if no dev defined
+                  if (dlower != 0) { // if dev defined
+                    devtext = dlower.toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] })
+                    devtext = '±' + parent.h.insertVisualSpace(devtext)
+                  }
                 } else {
-                  devtext = '-' + dlower.toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] }) + ' +' + dupper.toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] });
+                  devtext = '-' + parent.h.insertVisualSpace(dlower.toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] }))
+                   + ' +' + parent.h.insertVisualSpace(dupper.toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] }));
                 }
               }
             }
@@ -1269,7 +1273,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
                 compareText += '+';
               }
               compareText +=
-                parent.h.roundAccurately(diff, parent.roundDigits[i + 1]).toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] })
+                parent.h.insertVisualSpace(parent.h.roundAccurately(diff, parent.roundDigits[i + 1]).toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] }))
                 + '&thinsp;' +
                 unit;
             }

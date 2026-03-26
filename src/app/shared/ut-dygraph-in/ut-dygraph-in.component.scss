@@ -474,6 +474,9 @@ $red2: #ff7f88;
       border: 1px solid black;
 
       tr {
+        span.csep {
+          margin-right: 0.15rem;
+        }
         td,
         th {
           border-bottom: 1px solid black;
@@ -499,12 +502,16 @@ $red2: #ff7f88;
         }
         td.value {
           font-weight: bold;
+          span.sep {
+            margin-right: 0.5rem;
+          }
         }
         td.positive {
           padding-left: 0.25rem;
         }
         td.fieldname {
           text-align: right;
+          padding-left: 0.5rem;
         }
         td.d {
           padding: 0 0 0 5px;

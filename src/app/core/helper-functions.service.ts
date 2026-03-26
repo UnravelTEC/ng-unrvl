@@ -1038,6 +1038,19 @@ export class HelperFunctionsService {
     );
   }
 
+  // @param valuetext String
+  // inserts a span with margin (no space because would be selectable) in part after comma
+  insertVisualSpace(valuetext) {
+    const commapos = valuetext.search(/,./)
+    if (commapos > 0) {
+      const firstpart = valuetext.substring(0, commapos + 1)
+      const secondpart = valuetext.substring(commapos + 1)
+      const secondarr = secondpart.split(/(...)/g).filter(s => s);
+      return firstpart + secondarr.join("<span class='csep'></span>")
+    }
+    return valuetext
+  }
+
   // from https://medium.com/@thunderroid/angular-short-number-suffix-pipe-1k-2m-3b-dded4af82fb4
   shortenNumber(nr: number, rounder = 10): string {
     if (isNaN(nr)) return 'NaN';
@@ -1202,7 +1215,7 @@ export class HelperFunctionsService {
   /**
    * changes this.fromTime, from, toTime, to, currentRange, means, interval !!!
    */
-  updateFromToTimes(timearray, myself, interval:any = undefined) {
+  updateFromToTimes(timearray, myself, interval: any = undefined) {
     myself.fromTime = new Date(timearray[0]);
     myself.from = timearray[0];
     myself.toTime = new Date(timearray[1]);
