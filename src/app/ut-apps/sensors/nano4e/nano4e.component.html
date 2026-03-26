@@ -11,7 +11,8 @@
     <div style="position: absolute; top: 0.8em; right: 10em; color: gray" *ngIf="queryRunning == true"
       title="Query Age">
       {{ query_age | number : '1.1-1' }} s
-      <button type="button" style="scale: 0.75" title="Cancel current query" (click)="queryRunning = false"><mat-icon>cancel</mat-icon></button>
+      <button type="button" *ngIf="query_age > 3" style="scale: 0.75" title="Cancel current query"
+        (click)="queryRunning = false"><mat-icon>cancel</mat-icon></button>
     </div>
 
     <a id="backicon" [routerLink]="'/Apps/' + referrer" routerLinkActive="active"
@@ -28,7 +29,8 @@
           [extraDyGraphConfig]="extraDyGraphConfig" [startTime]="dygStartTime" enableHighlightCallback="true"
           [colors]="colors" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
           [Y2Label]="y2label" (returnGraphWidthOnChange)="setGraphWidth($event)"
-          (returnClickedRow)="acceptClickedRow($event)" (returnCurrentZoom)="h.updateFromToTimes($event, this)"
+          (returnClickedRow)="acceptClickedRow($event)"
+          (returnCurrentZoom)="h.updateFromToTimes($event, this)"
           (returnRunningAvg)="handleRunningAvg($event)" #R></app-ut-dygraph-in>
       </div>
     </div>
@@ -61,17 +63,36 @@
           : 'Query current view:'
           }}
         </h3>
-        <label for="userMeanS">Resolution (s):</label>
+        <h5 style="margin: 0;">Resolution:</h5>
+        <mat-radio-group class="automean-radio" [(ngModel)]="automean" (ngModelChange)="saveMean($event)">
+          <table>
+            <tr>
+              <td>
+                <mat-radio-button class="automean-radio" [value]="true">Auto</mat-radio-button>
+              <td>
+                <mat-radio-button class="automean-radio" [value]="false">Custom</mat-radio-button>
+              </td>
+            </tr>
+            <tr>
+              <td style="text-align: center; font-size: 90%; color: gray;">
+                {{ meanS }}&thinsp;s
+              </td>
+              <td  style="text-align: center;">
         <input type="number" id="userMeanS" min="0" name="userMeanS" [(ngModel)]="userMeanS"
-          (ngModelChange)="saveMean($event)" style="width: 4em" />
+                  (ngModelChange)="saveMean($event)" style="width: 4em" />&thinsp;s
+              </td>
+            </tr>
+          </table>
+        </mat-radio-group>
 
-        <div style="width: 100%; text-align: right; margin-top: -1.8em">
-          <button type="submit">
+
+        <div style="width: 100%;">
+          <button type="submit" style="margin-top: 0.5rem; margin-left: -0.3rem;">
             <mat-icon>refresh</mat-icon>
-            Reload All
+            All
           </button>
-          <button (click)="reloadMissing()" style="margin-top: 0.5rem" type="button">
-            Load Missing in View
+          <button (click)="reloadMissing()" style="margin: 0.5rem -0.5rem 0 0.5rem ;" type="button">
+            <mat-icon>refresh</mat-icon> Missing in View
           </button>
         </div>
       </fieldset>
@@ -92,8 +113,8 @@
             [disabled]="queryRunning == true || autoreload">
             <mat-option value="5m">5 min.</mat-option>
             <mat-option value="15m">15 min.</mat-option>
-            <mat-option value="1h" selected="selected">1h</mat-option>
-            <mat-option value="2h">2h</mat-option>
+            <mat-option value="1h" selected="selected">1 h</mat-option>
+            <mat-option value="2h">2 h</mat-option>
             <mat-option value="6h">6 h</mat-option>
             <mat-option value="24h">24 h</mat-option>
             <mat-option value="7d">1 week</mat-option>
@@ -111,7 +132,7 @@
         </mat-checkbox>
         <div style="position: absolute; top: 1.25rem; right: 0.75rem">
           <label for="auto_s">every (s):</label>
-          <input type="number" min="0" id="auto_s" name="auto_s" [(ngModel)]="auto_interval"
+          <input type="number" min="0.1" id="auto_s" name="auto_s" [(ngModel)]="auto_interval"
             (ngModelChange)="changeAutoS($event)" style="width: 3em" />
         </div>
 
@@ -163,6 +184,7 @@
                 {{ l.key }}
               </mat-checkbox>
             </div>
+            <div>&nbsp;</div>
           </div>
         </div>
 

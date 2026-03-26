@@ -603,6 +603,7 @@ export class AnysensComponent implements OnInit {
   }
   clearTags() {
     this.localStorage.set(this.appName + 'taglist', {});
+    this.taglist = {}
   }
 
 
@@ -641,6 +642,7 @@ export class AnysensComponent implements OnInit {
   }
 
   handleData(data: Object) {
+    console.log('received', data, 'using labelBlocklist', this.labelBlockList);
     let ret = this.utHTTP.parseInfluxData(data, this.labelBlockList);
     console.log('parsed', ret);
     if (ret['error']) {
@@ -663,7 +665,7 @@ export class AnysensComponent implements OnInit {
       return;
     }
     console.log('orig labels:', this.orig_labels);
-    console.log('raw labels:', this.raw_labels);
+    console.log('raw labels:', cloneDeep(this.raw_labels));
     console.log('common_label:', this.common_label);
     console.log('short_labels:', this.short_labels);
 

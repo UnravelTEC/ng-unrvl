@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
 
 @NgModule({
   imports: [
@@ -18,6 +19,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatIconModule,
     FormsModule,
     MatCheckboxModule,
+    MatRadioModule
   ],
   declarations: [Nano4EComponent],
 })
