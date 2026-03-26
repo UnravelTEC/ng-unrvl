@@ -1187,6 +1187,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
           ? ''
           : parent.h
             .roundAccurately(series.y, parent.roundDigits[i + 1]).toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] })
+      const posClass = series.y >= 0 ? " positive" : ""
+
       const isHighlighted = series.isHighlighted;
       const cls = isHighlighted ? 'class="highlight"' : (!locked ? 'class="h"' : '');
       const title = !locked ? 'title="Toggle Display"' : '';
@@ -1215,7 +1217,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       let valcells = '';
       let colon = '';
       if (data.x) {
-        valcells = `<td ${toggleCallback} class='value'>${displayedValue}</td>`;
+        valcells = `<td ${toggleCallback} class='value${posClass}'>${displayedValue}</td>`;
 
         if (showDevs) {
           let devtext = '';

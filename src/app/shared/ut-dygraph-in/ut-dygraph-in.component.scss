@@ -459,6 +459,12 @@ $red2: #ff7f88;
       padding: 5px;
       z-index: 10;
       background-color: #5d5d5d; // picked from graph-background + legend-bg
+      .legendHideInactive {
+        display: none;
+      }
+    }
+    div.header:hover .legendHideInactive {
+      display: block;
     }
 
     table {
@@ -493,6 +499,9 @@ $red2: #ff7f88;
         }
         td.value {
           font-weight: bold;
+        }
+        td.positive {
+          padding-left: 0.25rem;
         }
         td.fieldname {
           text-align: right;
