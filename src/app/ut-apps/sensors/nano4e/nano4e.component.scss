@@ -7,6 +7,15 @@
   flex-direction: column;
   display: flex;
 
+table.graphs {
+  height: 100%;
+  width: 100%;
+  border-collapse: collapse;
+  padding: 0;
+  margin: 0;
+  table-layout: fixed;
+}
+
   #anyheader {
     width: 100%;
     text-align: left;

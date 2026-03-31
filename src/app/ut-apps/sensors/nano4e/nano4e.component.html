@@ -22,18 +22,40 @@
     </button>
   </div>
   <div id="anybody">
-    <div id="dygcontainerabs" [style.right]="currentSidebarWidth">
-      <div id="dygcontainerrel">
-        <app-ut-dygraph-in [data]="data" [columnLabels]="labels" [showDeviation]="show_deviation"
-          [rawLabels]="raw_labels" [annotations]="dygAnnotations" [style]="graphstyle" [changeTrigger]="changeTrigger"
-          [extraDyGraphConfig]="extraDyGraphConfig" [startTime]="dygStartTime" enableHighlightCallback="true"
-          [colors]="colors" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
-          [Y2Label]="y2label" (returnGraphWidthOnChange)="setGraphWidth($event)"
-          (returnClickedRow)="acceptClickedRow($event)"
-          (returnCurrentZoom)="h.updateFromToTimes($event, this)"
-          (returnRunningAvg)="handleRunningAvg($event)" #R></app-ut-dygraph-in>
-      </div>
-    </div>
+    <table class="graphs">
+      <colgroup>
+        <col />
+        <col />
+      </colgroup>
+      <tr>
+        <th>
+          <h3>AFEBOARD 1</h3>
+        </th>
+        <th>
+          <h3>AFEBOARD 2</h3>
+        </th>
+      </tr>
+      <tr>
+        <td>
+          <div id="dygcontainerabs" [style.right]="currentSidebarWidth">
+            <div id="dygcontainerrel">
+              <app-ut-dygraph-in [data]="data" [columnLabels]="labels" [showDeviation]="show_deviation"
+                [rawLabels]="raw_labels" [annotations]="dygAnnotations" [style]="graphstyle"
+                [changeTrigger]="changeTrigger" [extraDyGraphConfig]="extraDyGraphConfig" [startTime]="dygStartTime"
+                enableHighlightCallback="true" [colors]="colors"
+                [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel" [Y2Label]="y2label"
+                (returnGraphWidthOnChange)="setGraphWidth($event)" (returnClickedRow)="acceptClickedRow($event)"
+                (returnCurrentZoom)="h.updateFromToTimes($event, this)" (returnRunningAvg)="handleRunningAvg($event)"
+                #R></app-ut-dygraph-in>
+            </div>
+          </div>
+        </td>
+        <td>
+
+        </td>
+
+    </table>
+
 
     <form class="settings" (submit)="reload(true)" *ngIf="sideBarShown">
       <fieldset>
@@ -77,8 +99,8 @@
               <td style="text-align: center; font-size: 90%; color: gray;">
                 {{ meanS }}&thinsp;s
               </td>
-              <td  style="text-align: center;">
-        <input type="number" id="userMeanS" min="0" name="userMeanS" [(ngModel)]="userMeanS"
+              <td style="text-align: center;">
+                <input type="number" id="userMeanS" min="0" name="userMeanS" [(ngModel)]="userMeanS"
                   (ngModelChange)="saveMean($event)" style="width: 4em" />&thinsp;s
               </td>
             </tr>
@@ -148,7 +170,7 @@
         </div>
       </fieldset>
 
-      <fieldset id="tags">
+      <!-- <fieldset id="tags">
         <h3>Series Tags</h3>
         <button class="togglebtn" (click)="toggleTags()" type="button">
           {{ tagsShown ? '^' : 'v' }}
@@ -161,7 +183,6 @@
                 (ngModelChange)="changeTaglist($event)">
                 {{ l.key }}
               </mat-checkbox>
-              <!-- {{ l.key }} -->
             </div>
           </div>
           <br>
@@ -188,7 +209,7 @@
           </div>
         </div>
 
-      </fieldset>
+      </fieldset> -->
     </form>
   </div>
 

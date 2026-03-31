@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "1948e37",
-  "SHA": "1948e3798bcbfdc4e4558cfc45d3f15c1150cebe",
+  "shortSHA": "a19a031",
+  "SHA": "a19a031fb9f78ce0f7587a06a11cf95444dad913",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Tue Mar 17 14:00:38 2026 +0100",
-  "lastCommitMessage": "more cfg topics to use retain better; resolution in Ohm",
-  "lastCommitNumber": "1651"
+  "lastCommitTime": "Thu Mar 26 10:18:29 2026 +0100",
+  "lastCommitMessage": "selectable man/auto res; taglist fix",
+  "lastCommitNumber": "1654"
 }

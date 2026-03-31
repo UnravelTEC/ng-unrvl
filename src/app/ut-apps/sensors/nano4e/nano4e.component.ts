@@ -42,9 +42,40 @@ export class Nano4EComponent implements OnInit {
   };
   y2label = 'Atmospheric Pressure';
   labelBlockList = ['mean_*']; // mean is when only 1 graph is returned
-  public ls_taglist = {} // tagkey: true/false ; local copy of global taglist - so that even tags not present are remembered
-  public taglist = {}; // only the tags the current dataset uses - so that displayed list is only as long as needed
+  // public ls_taglist = {} // tagkey: true/false ; local copy of global taglist - so that even tags not present are remembered
 
+  // only the tags the current dataset uses - so that displayed list is only as long as needed
+  public taglist = {
+    "AFEBOARD": true,
+    "adc": false,
+    "autogain": false,
+    "averaged_count": true,
+    "chip": true,
+    "chipname": true,
+    "datarate_sps": false,
+    "gain": false,
+    "host": false,
+    "id": false,
+    "interval_s": true,
+    "material": true,
+    "maxrange_V": false,
+    "resolution_uV": false,
+    "sensor": true,
+    "LED21": true,
+    "LED22": true,
+    "LED_nm": true,
+    "amcurstep": false,
+    "heater_current_mA": false,
+    "heater_degC": true,
+    "led_current_mA": true,
+    "meas_current_uA": true,
+    "LED11": true,
+    "LED12": true,
+    "LED41": true,
+    "LED42": true,
+    "LED31": true,
+    "LED32": true
+  }
   private sidebarWidth = '15rem';
   public currentSidebarWidth = this.sidebarWidth;
   graphstyle = {
@@ -146,13 +177,13 @@ export class Nano4EComponent implements OnInit {
     this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
     this.reload_timer = this.auto_interval;
 
-    this.ls_taglist = this.localStorage.get(this.appName + 'taglist');
-    if (!this.ls_taglist) { // sometimes, ls returns "null" or so
-      this.ls_taglist = {}
-    }
+    // this.ls_taglist = this.localStorage.get(this.appName + 'taglist');
+    // if (!this.ls_taglist) { // sometimes, ls returns "null" or so
+    //   this.ls_taglist = {}
+    // }
 
-    for (const key in this.ls_taglist) {
-      if (this.ls_taglist[key] === false) {
+    for (const key in this.taglist) {
+      if (this.taglist[key] === false) {
         this.labelBlockList.push(key);
       }
     }
@@ -258,10 +289,10 @@ export class Nano4EComponent implements OnInit {
     }
 
     let groupby_list = []
-    if (this.ls_taglist) {
-      for (const key in this.ls_taglist) {
-        if (Object.prototype.hasOwnProperty.call(this.ls_taglist, key)) {
-          const value = this.ls_taglist[key];
+    if (this.taglist) {
+      for (const key in this.taglist) {
+        if (Object.prototype.hasOwnProperty.call(this.taglist, key)) {
+          const value = this.taglist[key];
           if (value) {
             groupby_list.push('"' + key + '"')
           }
@@ -554,22 +585,22 @@ export class Nano4EComponent implements OnInit {
     this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);
     this.reload();
   }
-  changeTaglist(param) {
-    console.log(this.taglist);
-    for (const key in this.taglist) {
-      this.ls_taglist[key] = this.taglist[key]; // cp local taglist to ls_taglist
-      if (this.taglist[key] === false) {
-        if (!this.labelBlockList.includes(key)) {
-          this.labelBlockList.push(key);
-        }
-      } else {
-        if (this.labelBlockList.includes(key)) {
-          this.labelBlockList.splice(this.labelBlockList.indexOf(key), 1);
-        }
-      }
-    }
-    this.localStorage.set(this.appName + 'taglist', this.ls_taglist);
-  }
+  // changeTaglist(param) {
+  //   console.log(this.taglist);
+  //   for (const key in this.taglist) {
+  //     this.ls_taglist[key] = this.taglist[key]; // cp local taglist to ls_taglist
+  //     if (this.taglist[key] === false) {
+  //       if (!this.labelBlockList.includes(key)) {
+  //         this.labelBlockList.push(key);
+  //       }
+  //     } else {
+  //       if (this.labelBlockList.includes(key)) {
+  //         this.labelBlockList.splice(this.labelBlockList.indexOf(key), 1);
+  //       }
+  //     }
+  //   }
+  //   this.localStorage.set(this.appName + 'taglist', this.ls_taglist);
+  // }
 
   toggleTableShown() {
     this.tableShown = !this.tableShown;
@@ -602,13 +633,13 @@ export class Nano4EComponent implements OnInit {
     this.allTagsShown = !this.allTagsShown;
     this.localStorage.set(this.appName + 'allTagsShown', this.allTagsShown);
   }
-  saveTags() {
-    this.localStorage.set(this.appName + 'taglist', this.ls_taglist);
-  }
-  clearTags() {
-    this.localStorage.set(this.appName + 'taglist', {});
-    this.taglist = {}
-  }
+  // saveTags() {
+  //   this.localStorage.set(this.appName + 'taglist', this.ls_taglist);
+  // }
+  // clearTags() {
+  //   this.localStorage.set(this.appName + 'taglist', {});
+  //   this.taglist = {}
+  // }
 
 
   launchQuery(clause: string) {
@@ -828,11 +859,24 @@ export class Nano4EComponent implements OnInit {
         const rlabeltags = rlabel.tags
         const meas_curr = parseFloat(rlabeltags["meas_current_uA"]) * 1e-6
         console.log(rlabel, rlabeltags["meas_current_uA"], meas_curr, 'A', short_labels[i - 1].replace('( V )', '( Ω )'));
-        const res_V = parseFloat(rlabeltags["resolution_uV"]) * 1e-6
-        const res_Ohm = res_V / meas_curr
-        rlabeltags["resolution_Ohm"] = res_Ohm
-        const digits = res_Ohm > 100 ? 0 : (res_Ohm > 10 ? 1 : 2)
-        short_labels[i - 1] = short_labels[i - 1].replace(/resolution_uV: [0-9.]*/, 'resolution_Ohm: ' + String(this.h.roundAccurately(res_Ohm, digits)) )
+        if (rlabeltags["resolution_uV"]) {
+          const res_V = parseFloat(rlabeltags["resolution_uV"]) * 1e-6
+          const res_Ohm = res_V / meas_curr
+          rlabeltags["resolution_Ohm"] = res_Ohm
+          const digits = res_Ohm > 100 ? 0 : (res_Ohm > 10 ? 1 : 2)
+          short_labels[i - 1] = short_labels[i - 1].replace(/resolution_uV: [0-9.]*/, 'resolution_Ohm: ' + String(this.h.roundAccurately(res_Ohm, digits)))
+        }
+        if (rlabeltags["chip"] == "APPS") {
+          delete rlabeltags["LED11"]
+          delete rlabeltags["LED12"]
+          delete rlabeltags["LED21"]
+          delete rlabeltags["LED22"]
+          delete rlabeltags["LED31"]
+          delete rlabeltags["LED32"]
+          delete rlabeltags["LED41"]
+          delete rlabeltags["LED42"]
+          short_labels[i - 1] = short_labels[i - 1].replace(/LED[1-4][12]: [01],/g, '')
+        }
 
         raw_labels[i]['field'] = rlabel['field'].replace(/_V/, "_Ohm");
         short_labels[i - 1] = short_labels[i - 1].replace('( V )', '( Ω )')
@@ -847,19 +891,19 @@ export class Nano4EComponent implements OnInit {
         }
       }
 
-      for (let rli = 1; rli < raw_labels.length; rli++) { // 1 because 0 is only Date column
-        const raw_tags = raw_labels[rli].tags;
-        for (const key in raw_tags) {
-          if (Object.prototype.hasOwnProperty.call(raw_tags, key)) {
-            if (!Object.prototype.hasOwnProperty.call(this.taglist, key)) {
-              this.taglist[key] = true;
-            }
-            if (!Object.prototype.hasOwnProperty.call(this.ls_taglist, key)) {
-              this.ls_taglist[key] = true;
-            }
-          }
-        }
-      }
+      // for (let rli = 1; rli < raw_labels.length; rli++) { // 1 because 0 is only Date column
+      //   const raw_tags = raw_labels[rli].tags;
+      //   for (const key in raw_tags) {
+      //     if (Object.prototype.hasOwnProperty.call(raw_tags, key)) {
+      //       if (!Object.prototype.hasOwnProperty.call(this.taglist, key)) {
+      //         this.taglist[key] = true;
+      //       }
+      //       if (!Object.prototype.hasOwnProperty.call(this.ls_taglist, key)) {
+      //         this.ls_taglist[key] = true;
+      //       }
+      //     }
+      //   }
+      // }
 
       this.short_labels = short_labels
       this.common_label = ret['common_label'];
