@@ -451,6 +451,7 @@ $red2: #ff7f88;
     overflow-x: visible;
     min-width: 20em; // width of time text (with seconds) on hovering
     max-height: 100%;
+    max-width: 95%;
     overflow-y: auto;
     pointer-events: auto;
     div.header {
@@ -499,6 +500,9 @@ $red2: #ff7f88;
           color: $editableFormsTextColor;
           border-left-width: 0;
           padding: 0.1em 0;
+        }
+        div.tags {
+          overflow: scroll;
         }
         td.value {
           font-weight: bold;

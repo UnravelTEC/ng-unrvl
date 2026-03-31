@@ -1285,7 +1285,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       const line =
         `<tr style='color:${series.color};' ${cls} ${hoverCallback} ${title}>` +
         `<th${textcolor} class="h"><span class='dash'>${series.dashHTML}</span><span class='one' ${setSingleCallback} title='Display alone'>[1]</span></th>` +
-        `<th${textcolor} ${toggleCallback}>${labeltext}</th><td${textcolor} class='fieldname'>${fieldname}${colon}&nbsp;</td></th>` +
+        `<th${textcolor} ${toggleCallback}><div class='tags' style="max-width:${parent.graphWidthPx * 0.65}px">${labeltext}</div></th><td${textcolor} class='fieldname'>${fieldname}${colon}&nbsp;</td></th>` +
         `${valcells}${axistext}</tr>`;
       seriesTRs.push({ 'tr': line, 'raw_labels': parent.rawLabels[i + 1] })
     }
