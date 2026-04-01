@@ -14,6 +14,7 @@ import { SensorService } from 'app/shared/sensor.service';
 })
 export class Nano4EComponent implements OnInit {
   colors = [];
+  colorsA = [];
   graphWidth = 1500;
   setGraphWidth(width) {
     this.graphWidth = width;
@@ -99,16 +100,23 @@ export class Nano4EComponent implements OnInit {
   public currentRange: string;
 
   labels = [];
+  labelsA = [[], [], [], []];
   data = [];
+  dataA = [[], [], [], []];
   orig_labels = [];
+  orig_labelsA = [[], [], [], []];
   common_label = '';
   short_labels: string[] = [];
+  short_labelsA: [string[], string[], string[], string[]] = [[], [], [], []];
   latest_dates = [];
   latest_values = [];
   raw_labels = [];
+  raw_labelsA = [[], [], [], []];
   round_digits = [0];
   show_deviation = true;
   dygAnnotations = [];
+
+  chipnames = ['', '', '', '']
 
   public allAverages = [];
   public visibleAverages = [];
@@ -258,11 +266,13 @@ export class Nano4EComponent implements OnInit {
     if (nr_points > 10000 && !this.h.bigQconfirm(nr_points)) {
       if (!this.labels.length) { // at start to show "no data" in Dyg Window
         this.labels = [''];
+        this.labelsA = [[''], [''], [''], ['']];
       }
       return;
     }
     if (!this.data) { // at start to show "loading... in Dyg Window"
       this.labels = [];
+      this.labelsA = [[], [], [], []];
     }
 
     if (fromTo) {
@@ -310,202 +320,202 @@ export class Nano4EComponent implements OnInit {
     );
   }
 
-  public newAnnoText = '';
+  // public newAnnoText = '';
   public inserting = false;
-  setAnnotation() {
-    const i = this.currentClickedLabelIndex;
-    const t = this.data[this.currentClickedRow][0].valueOf();
-    let tags = "";
-    for (let [key, value] of Object.entries(this.raw_labels[i]['tags'])) {
-      value = value['replace'](/([& ])/, "\\$1")
-      tags += `,${key}=${value}`
-    }
+  // setAnnotation() {
+  //   const i = this.currentClickedLabelIndex;
+  //   const t = this.data[this.currentClickedRow][0].valueOf();
+  //   let tags = "";
+  //   for (let [key, value] of Object.entries(this.raw_labels[i]['tags'])) {
+  //     value = value['replace'](/([& ])/, "\\$1")
+  //     tags += `,${key}=${value}`
+  //   }
 
-    let influxstring = `annotations,A_measurement=${this.raw_labels[i]["metric"]},A_field=${this.raw_labels[i]["field"]},A_operation=C${tags} A_time=${t},note="${this.newAnnoText}"`;
-    this.inserting = true
-    this.utHTTP
-      .postData(this.utHTTP.buildInfluxWriteUrl(), influxstring)
-      .subscribe(
-        (res: any) => { console.log(res); this.inserting = false; this.getAnnotations(this.fromTime, this.toTime) },
-        (error) => { this.gss.displayHTTPerror(error); this.inserting = false }
-      );
-  }
-  delAnnotation(measurement, field, dygColumnNr, time) {
-    let tags = "";
-    for (let [key, value] of Object.entries(this.raw_labels[dygColumnNr]['tags'])) {
-      value = value['replace'](/([& ])/, "\\$1")
-      tags += `,${key}=${value}`
-    }
-    let influxstring = `annotations,A_measurement=${measurement},A_field=${field},A_operation=D${tags} A_time=${time}`;
-    this.inserting = true
-    this.utHTTP
-      .postData(this.utHTTP.buildInfluxWriteUrl(), influxstring)
-      .subscribe(
-        (res: any) => { console.log(res); this.inserting = false; this.getAnnotations(this.fromTime, this.toTime) },
-        (error) => { this.gss.displayHTTPerror(error); this.inserting = false }
-      );
-  }
-  getAnnotations(fromTime: any, toTime: Date = undefined) {
+  //   let influxstring = `annotations,A_measurement=${this.raw_labels[i]["metric"]},A_field=${this.raw_labels[i]["field"]},A_operation=C${tags} A_time=${t},note="${this.newAnnoText}"`;
+  //   this.inserting = true
+  //   this.utHTTP
+  //     .postData(this.utHTTP.buildInfluxWriteUrl(), influxstring)
+  //     .subscribe(
+  //       (res: any) => { console.log(res); this.inserting = false; this.getAnnotations(this.fromTime, this.toTime) },
+  //       (error) => { this.gss.displayHTTPerror(error); this.inserting = false }
+  //     );
+  // }
+  // delAnnotation(measurement, field, dygColumnNr, time) {
+  //   let tags = "";
+  //   for (let [key, value] of Object.entries(this.raw_labels[dygColumnNr]['tags'])) {
+  //     value = value['replace'](/([& ])/, "\\$1")
+  //     tags += `,${key}=${value}`
+  //   }
+  //   let influxstring = `annotations,A_measurement=${measurement},A_field=${field},A_operation=D${tags} A_time=${time}`;
+  //   this.inserting = true
+  //   this.utHTTP
+  //     .postData(this.utHTTP.buildInfluxWriteUrl(), influxstring)
+  //     .subscribe(
+  //       (res: any) => { console.log(res); this.inserting = false; this.getAnnotations(this.fromTime, this.toTime) },
+  //       (error) => { this.gss.displayHTTPerror(error); this.inserting = false }
+  //     );
+  // }
+  // getAnnotations(fromTime: any, toTime: Date = undefined) {
 
-    let fromTS =
-      fromTime instanceof Date
-        ? fromTime.valueOf()
-        : Date.now() - this.h.parseToSeconds(fromTime) * 1000;
-    let toTS = toTime ? toTime.valueOf() : undefined;
+  //   let fromTS =
+  //     fromTime instanceof Date
+  //       ? fromTime.valueOf()
+  //       : Date.now() - this.h.parseToSeconds(fromTime) * 1000;
+  //   let toTS = toTime ? toTime.valueOf() : undefined;
 
-    const params = {};
-    if (this.sensor) {
-      params['sensor'] = Array.isArray(this.sensor)
-        ? this.sensor
-        : [this.sensor];
-    }
-    if (this.host) {
-      params['host'] = this.host;
-    }
-    if (this.id) {
-      params['id'] = this.id;
-    }
+  //   const params = {};
+  //   if (this.sensor) {
+  //     params['sensor'] = Array.isArray(this.sensor)
+  //       ? this.sensor
+  //       : [this.sensor];
+  //   }
+  //   if (this.host) {
+  //     params['host'] = this.host;
+  //   }
+  //   if (this.id) {
+  //     params['id'] = this.id;
+  //   }
 
-    const annoquery = this.utHTTP.annotationsQuery(
-      this.measurement,
-      fromTS,
-      toTS,
-      params,
-      this.value
-    );
-    console.log('annotationsQuery', annoquery);
+  //   const annoquery = this.utHTTP.annotationsQuery(
+  //     this.measurement,
+  //     fromTS,
+  //     toTS,
+  //     params,
+  //     this.value
+  //   );
+  //   console.log('annotationsQuery', annoquery);
 
-    this.utHTTP
-      .getHTTPData(
-        this.utHTTP.buildInfluxQuery(annoquery, undefined, undefined)
-      )
-      .subscribe(
-        (data: Object) => this.acceptAnnotations(data),
-        (error) => {
-          console.log('getAnnotations: Error following:');
-          this.gss.displayHTTPerror(error);
-        }
-      );
-  }
-  acceptAnnotations(data) {
-    console.log('acceptAnnotations', data);
-    const new_annotationTable = []
-    const new_dygAnnos = []
+  //   this.utHTTP
+  //     .getHTTPData(
+  //       this.utHTTP.buildInfluxQuery(annoquery, undefined, undefined)
+  //     )
+  //     .subscribe(
+  //       (data: Object) => this.acceptAnnotations(data),
+  //       (error) => {
+  //         console.log('getAnnotations: Error following:');
+  //         this.gss.displayHTTPerror(error);
+  //       }
+  //     );
+  // }
+  // acceptAnnotations(data) {
+  //   console.log('acceptAnnotations', data);
+  //   const new_annotationTable = []
+  //   const new_dygAnnos = []
 
-    const series = this.h.getDeep(data, ['results', 0, 'series'])
-    if (!series) {
-      this.annotationTable = [];
-      console.log('no annos');
-      this.changeTrigger = 3.14 // code to tell dygraph to resize
-      return
-    }
-    series.forEach(seri => {
-      const note_col = seri['columns'].indexOf('note')
-      const time_col = seri['columns'].indexOf('A_time')
-      const stags = seri['tags']
-      const commonAnno = { field: stags['A_field'], measurement: stags['A_measurement'], OP: stags['A_operation'] }
-      commonAnno['origtags'] = cloneDeep(stags)
+  //   const series = this.h.getDeep(data, ['results', 0, 'series'])
+  //   if (!series) {
+  //     this.annotationTable = [];
+  //     console.log('no annos');
+  //     this.changeTrigger = 3.14 // code to tell dygraph to resize
+  //     return
+  //   }
+  //   series.forEach(seri => {
+  //     const note_col = seri['columns'].indexOf('note')
+  //     const time_col = seri['columns'].indexOf('A_time')
+  //     const stags = seri['tags']
+  //     const commonAnno = { field: stags['A_field'], measurement: stags['A_measurement'], OP: stags['A_operation'] }
+  //     commonAnno['origtags'] = cloneDeep(stags)
 
-      const commonAnnoTagArr = []
-      for (const key in stags) {
-        if (key.startsWith("A_"))
-          continue
-        const value = stags[key];
-        if (value != "") {
-          commonAnnoTagArr.push(key + ": " + value)
-        }
-      }
-      commonAnno['tags'] = this.h.createSortedTagString(commonAnnoTagArr)
+  //     const commonAnnoTagArr = []
+  //     for (const key in stags) {
+  //       if (key.startsWith("A_"))
+  //         continue
+  //       const value = stags[key];
+  //       if (value != "") {
+  //         commonAnnoTagArr.push(key + ": " + value)
+  //       }
+  //     }
+  //     commonAnno['tags'] = this.h.createSortedTagString(commonAnnoTagArr)
 
-      seri['values'].forEach(row => {
-        const annoObj = cloneDeep(commonAnno)
-        annoObj['time'] = row[time_col]
-        annoObj['note'] = row[note_col]
-        if (annoObj['OP'] == "D") {
-          for (let i = 0; i < new_annotationTable.length; i++) {
-            const row = new_annotationTable[i];
-            if (annoObj['time'] == row['time']
-              && annoObj['tags'] == row['tags']
-              && annoObj['field'] == row['field']
-              && annoObj['measurement'] == row['measurement']) {
-              new_annotationTable.splice(i, 1)
-              break
-            }
-          }
-        } else
-          new_annotationTable.push(annoObj)
-        // console.log(annoObj);
-      });
-    });
-    // search for col nr, to use short_label index
-    for (let i = 0; i < new_annotationTable.length; i++) {
-      const annoObj = new_annotationTable[i];
-      const tmpOrigLabel4Cmp = annoObj['measurement'] + ' ' + annoObj['tags'] + ' ' + annoObj['field']
-      let dygLabel = ""
-      for (let o = 0; o < this.orig_labels.length; o++) {
-        if (tmpOrigLabel4Cmp == this.orig_labels[o]) {
-          dygLabel = this.short_labels[o]
-          annoObj['dygColumnNr'] = o + 1 // to compensate for no Date column in short- and orig_labels
-          break
-        }
-      }
-      if (!dygLabel) {
-        console.log("!dygLabel", tmpOrigLabel4Cmp, 'in', this.orig_labels);
-      }
-      // time has to be matched to nearest data point for Dyg to attach it
-      const origAnnoTsMS = annoObj['time']
-      const newAnnoTsMS = this.h.findNearestDataTS(this.data, origAnnoTsMS)
-      let shortext = '×'
-      if (origAnnoTsMS < newAnnoTsMS) {
-        shortext = '<'
-      }
-      if (origAnnoTsMS > newAnnoTsMS) {
-        shortext = '>'
-      }
+  //     seri['values'].forEach(row => {
+  //       const annoObj = cloneDeep(commonAnno)
+  //       annoObj['time'] = row[time_col]
+  //       annoObj['note'] = row[note_col]
+  //       if (annoObj['OP'] == "D") {
+  //         for (let i = 0; i < new_annotationTable.length; i++) {
+  //           const row = new_annotationTable[i];
+  //           if (annoObj['time'] == row['time']
+  //             && annoObj['tags'] == row['tags']
+  //             && annoObj['field'] == row['field']
+  //             && annoObj['measurement'] == row['measurement']) {
+  //             new_annotationTable.splice(i, 1)
+  //             break
+  //           }
+  //         }
+  //       } else
+  //         new_annotationTable.push(annoObj)
+  //       // console.log(annoObj);
+  //     });
+  //   });
+  //   // search for col nr, to use short_label index
+  //   for (let i = 0; i < new_annotationTable.length; i++) {
+  //     const annoObj = new_annotationTable[i];
+  //     const tmpOrigLabel4Cmp = annoObj['measurement'] + ' ' + annoObj['tags'] + ' ' + annoObj['field']
+  //     let dygLabel = ""
+  //     for (let o = 0; o < this.orig_labels.length; o++) {
+  //       if (tmpOrigLabel4Cmp == this.orig_labels[o]) {
+  //         dygLabel = this.short_labels[o]
+  //         annoObj['dygColumnNr'] = o + 1 // to compensate for no Date column in short- and orig_labels
+  //         break
+  //       }
+  //     }
+  //     if (!dygLabel) {
+  //       console.log("!dygLabel", tmpOrigLabel4Cmp, 'in', this.orig_labels);
+  //     }
+  //     // time has to be matched to nearest data point for Dyg to attach it
+  //     const origAnnoTsMS = annoObj['time']
+  //     const newAnnoTsMS = this.h.findNearestDataTS(this.data, origAnnoTsMS)
+  //     let shortext = '×'
+  //     if (origAnnoTsMS < newAnnoTsMS) {
+  //       shortext = '<'
+  //     }
+  //     if (origAnnoTsMS > newAnnoTsMS) {
+  //       shortext = '>'
+  //     }
 
-      const dygAnno = { series: dygLabel, text: annoObj["note"], shortText: shortext, xval: newAnnoTsMS }
-      new_dygAnnos.push(dygAnno)
-      annoObj['dygAnnoNr'] = i; // to allow accessing dygAnno if annotationTable gets sorted later
-    }
-    this.annotationTable = new_annotationTable;
-    this.dygAnnotations = new_dygAnnos;
-    console.log("annotationTable", cloneDeep(this.annotationTable));
-    console.log("dygAnnotations", cloneDeep(this.dygAnnotations));
+  //     const dygAnno = { series: dygLabel, text: annoObj["note"], shortText: shortext, xval: newAnnoTsMS }
+  //     new_dygAnnos.push(dygAnno)
+  //     annoObj['dygAnnoNr'] = i; // to allow accessing dygAnno if annotationTable gets sorted later
+  //   }
+  //   this.annotationTable = new_annotationTable;
+  //   this.dygAnnotations = new_dygAnnos;
+  //   console.log("annotationTable", cloneDeep(this.annotationTable));
+  //   console.log("dygAnnotations", cloneDeep(this.dygAnnotations));
 
-    this.changeTrigger = 3.14 // code to tell dygraph to resize
+  //   this.changeTrigger = 3.14 // code to tell dygraph to resize
 
-    this.sortAnno("time")
-  }
+  //   this.sortAnno("time")
+  // }
 
-  public currentClickedRow = -1;
-  public currentClickedLabelIndex: number;
-  public currentClickedTags = '';
-  acceptClickedRow($event) {
-    console.log('acceptClickedRow', $event);
-    this.currentClickedRow = $event['r'];
-    this.currentClickedLabelIndex = this.short_labels.indexOf($event['s']) + 1;
+  // public currentClickedRow = -1;
+  // public currentClickedLabelIndex: number;
+  // public currentClickedTags = '';
+  // acceptClickedRow($event) {
+  //   console.log('acceptClickedRow', $event);
+  //   this.currentClickedRow = $event['r'];
+  //   this.currentClickedLabelIndex = this.short_labels.indexOf($event['s']) + 1;
 
-    const tagArr = []
-    for (const K in this.raw_labels[this.currentClickedLabelIndex]['tags']) {
-      tagArr.push(K + ': ' + this.raw_labels[this.currentClickedLabelIndex]['tags'][K])
-    }
-    this.currentClickedTags = this.h.createSortedTagString(tagArr)
-  }
-  public currentlyHighlightedAnno = -1;
-  highlightDygAnno(nr) {
+  //   const tagArr = []
+  //   for (const K in this.raw_labels[this.currentClickedLabelIndex]['tags']) {
+  //     tagArr.push(K + ': ' + this.raw_labels[this.currentClickedLabelIndex]['tags'][K])
+  //   }
+  //   this.currentClickedTags = this.h.createSortedTagString(tagArr)
+  // }
+  // public currentlyHighlightedAnno = -1;
+  // highlightDygAnno(nr) {
 
-    if (this.dygAnnotations[this.currentlyHighlightedAnno]) {
-      this.dygAnnotations[this.currentlyHighlightedAnno]["cssClass"] = ""
-    }
+  //   if (this.dygAnnotations[this.currentlyHighlightedAnno]) {
+  //     this.dygAnnotations[this.currentlyHighlightedAnno]["cssClass"] = ""
+  //   }
 
-    if (this.currentlyHighlightedAnno == nr) {
-      this.currentlyHighlightedAnno = -1;
-    } else {
-      this.currentlyHighlightedAnno = nr;
-      this.dygAnnotations[nr]["cssClass"] = "highlighted"
-    }
-    this.changeTrigger += 1
-  }
+  //   if (this.currentlyHighlightedAnno == nr) {
+  //     this.currentlyHighlightedAnno = -1;
+  //   } else {
+  //     this.currentlyHighlightedAnno = nr;
+  //     this.dygAnnotations[nr]["cssClass"] = "highlighted"
+  //   }
+  //   this.changeTrigger += 1
+  // }
 
   reloadMissing() {
     // this.fromTime
@@ -613,10 +623,10 @@ export class Nano4EComponent implements OnInit {
       this.localStorage.get(this.appName + 'tableShown')
     );
   }
-  toggleAnnotationsShown() {
-    this.annotationsShown = !this.annotationsShown;
-    this.changeTrigger += 1;
-  }
+  // toggleAnnotationsShown() {
+  //   this.annotationsShown = !this.annotationsShown;
+  //   this.changeTrigger += 1;
+  // }
   toggleSidebar() {
     this.sideBarShown = !this.sideBarShown;
     this.currentSidebarWidth = this.sideBarShown ? this.sidebarWidth : '0rem';
@@ -695,7 +705,8 @@ export class Nano4EComponent implements OnInit {
     if (!idata || !idata.length) {
       this.queryRunning = false;
       console.log('handleData: no data');
-      this.labels = [''];
+      this.labels = [];
+      this.labelsA = [[], [], [], []];
       this.repeatAutoReloadIfEnabled();
       return;
     }
@@ -930,9 +941,9 @@ export class Nano4EComponent implements OnInit {
     }
 
     this.startTime = this.userStartTime;
-    this.currentClickedRow = -1;
-    this.currentClickedLabelIndex = undefined;
-    this.currentClickedTags = '';
+    // this.currentClickedRow = -1;
+    // this.currentClickedLabelIndex = undefined;
+    // this.currentClickedTags = '';
 
     this.queryRunning = false;
 
@@ -940,6 +951,48 @@ export class Nano4EComponent implements OnInit {
       console.warn("handleData: no data");
       return;
     }
+
+    for (let i = 0; i < 4; i++) {
+      const AFENRstr = String(i + 1)
+      const AFEBOARD = "AFEBOARD" + AFENRstr
+
+      const i_short_labels = []
+      const i_raw_labels = [{ metric: "Date", tags: {}, field: "" }]
+      const i_data = []
+      for (let r = 0; r < idata.length; r++) {
+        i_data.push([idata[r][0]]) // time
+      }
+      for (let rli = 1; rli < this.raw_labels.length; rli++) {
+        const rlabel = this.raw_labels[rli];
+        if (rlabel["tags"]["AFEBOARD"] == AFENRstr) {
+          this.chipnames[i] = rlabel["tags"]["chipname"]
+
+          i_raw_labels.push(rlabel)
+          i_short_labels.push(this.short_labels[rli - 1].replace("AFEBOARD: " + AFENRstr, "").replace(/^,[\s]*/, '').replace("chipname: " + this.chipnames[i] + ", ", ""))
+          for (let r = 0; r < idata.length; r++) {
+            i_data[r].push(idata[r][rli])
+          }
+
+        }
+      }
+      if (i_short_labels.length > 0) {
+        this.raw_labelsA[i] = i_raw_labels
+        this.short_labelsA[i] = i_short_labels
+        this.labelsA[i] = ['Date'].concat(i_short_labels)
+        this.dataA[i] = i_data
+      } else {
+        this.raw_labelsA[i] = []
+        this.short_labelsA[i] = []
+        this.labelsA[i] = ['Date']
+        this.dataA[i] = []
+      }
+
+      // colorsA?
+    }
+    console.log("RL", this.raw_labelsA)
+    console.log("L", cloneDeep(this.labelsA))
+    console.log("D", cloneDeep(this.dataA))
+
 
     this.changeTrigger += 1;
 
@@ -964,7 +1017,7 @@ export class Nano4EComponent implements OnInit {
     this.toTime = this.data[this.data.length - 1][0]
 
     this.repeatAutoReloadIfEnabled();
-    this.getAnnotations(this.fromTime, this.toTime);
+    // this.getAnnotations(this.fromTime, this.toTime);
   }
   repeatAutoReloadIfEnabled() {
     if (this.autoreload) {
@@ -976,7 +1029,7 @@ export class Nano4EComponent implements OnInit {
       }, this.auto_interval * 1000);
     }
   }
-  handleRunningAvg(dataObj: Object) {
+  handleRunningAvg(dataObj: Object) { // FIXME for multiple
     this.allAverages = dataObj['all'];
     this.visibleAverages = dataObj['visible'];
   }
