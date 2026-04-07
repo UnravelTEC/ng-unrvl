@@ -1074,4 +1074,7 @@ export class Nano4EComponent implements OnInit {
     }
     this.sortOrder[key] = !this.sortOrder[key]
   }
+  exportCSV() {
+    this.h.exportCSV(this.data, this.labels)
+  }
 }
