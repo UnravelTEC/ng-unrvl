@@ -225,13 +225,17 @@ style.padding-bottom="20vh"-->
   <div *ngIf="options == true && optionsOpen == true" class="optionsarea">
     <div class="options">
       <form class="subbox">
-        <h5>#Data Points</h5>
-        <small style="float: left; margin-top: 0.5em">
+        <h5>Data Count: <span style="font-weight: normal;">{{ datacount }}</span></h5>
+        <small style="float: left; font-size: 0.7em;">
           {{
             !displayedData.length
               ? 0
-              : displayedData.length * (displayedData[0].length - 1)
-          }}<br />
+              : displayedData.length
+          }} rows<br />
+          {{ !displayedData.length
+              ? 0
+              : displayedData[0].length
+          }} cols
         </small>
         <button (click)="resetData()">
           <mat-icon>delete_forever</mat-icon>

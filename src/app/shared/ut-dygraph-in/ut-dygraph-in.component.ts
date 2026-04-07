@@ -225,6 +225,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   public dataReset = false;
   public lastValue = undefined;
   public lastValues = [];
+  public datacount = 0;
 
   @Input()
   public annotations = [];
@@ -375,6 +376,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       this.dataReset = true;
       this.displayedData = [];
       this.dataWithDev = [];
+      this.datacount = 0;
       this.last_nr_series = 0;
       this.Dygraph.updateOptions({
         file: [],
@@ -1618,6 +1620,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
     let visibleStdDevSum = 0;
     let allValueCount = 0;
     let allVisibleValueCount = 0;
+    this.datacount = 0;
     for (let series_i = 1; series_i <= nr_series - 1; series_i++) {
       sum = 0;
       let visibleSum = 0;
@@ -1632,6 +1635,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
         }
         sum += value;
         series_count += 1;
+        this.datacount += 1;
         let timestamp = data[time_i][0];
         if (timestamp >= visibleFrom && timestamp <= visibleTo) {
           visibleSum += value;
