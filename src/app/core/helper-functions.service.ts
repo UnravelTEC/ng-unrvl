@@ -105,8 +105,12 @@ export class HelperFunctionsService {
       'dew point': 'blue',
       '°C': 'red',
       temperature: 'red',
+      heater: 'red',
+      current: 'blue',
       humidity: 'blue',
       pressure: 'green',
+      'Ω': 'green',
+      'λ': 'violet',
       particulate_matter: 'brown',
       OX: 'blue',
       NO2: 'brown',
@@ -128,17 +132,21 @@ export class HelperFunctionsService {
   ): Array<string> {
     const newColors = [];
     const colorCounters = {};
-    for (let c = 1; c < labels.length; c++) {
+    for (let c = 0; c < labels.length; c++) {
       const currentLabel = labels[c];
+      if (currentLabel == "Date") {
+        continue;
+      }
+      let found = false;
       for (const searchstring in searchToColor) {
         if (searchToColor.hasOwnProperty(searchstring)) {
           if (currentLabel.match(searchstring)) {
-            // console.log(
-            //   'getColorsforLabels:',
-            //   currentLabel,
-            //   'matched',
-            //   searchstring
-            // );
+            console.log(
+              'getColorsforLabels:',
+              currentLabel,
+              'matched',
+              searchstring
+            );
             const colorset = searchToColor[searchstring];
             const rightColorArray = this.colors[colorset];
             if (!colorCounters.hasOwnProperty(colorset)) {
@@ -148,9 +156,13 @@ export class HelperFunctionsService {
               const i = (colorCounters[colorset] += 1);
               newColors.push(rightColorArray[i % rightColorArray.length]);
             }
+            found = true;
             break;
           }
         }
+      }
+      if (!found) {
+        newColors.push('black');
       }
     }
     console.log('getColorsforLabels from:', labels, 'to', newColors);
