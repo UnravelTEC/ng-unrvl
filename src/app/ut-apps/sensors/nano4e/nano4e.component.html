@@ -24,7 +24,7 @@
   <div id="anybody">
     <div id="dygcontainerabs" [style.right]="currentSidebarWidth">
 
-<!-- <app-ut-dygraph-in [data]="data" [columnLabels]="labels" [showDeviation]="show_deviation"
+      <!-- <app-ut-dygraph-in [data]="data" [columnLabels]="labels" [showDeviation]="show_deviation"
               [rawLabels]="raw_labels" [style]="graphstyle" [changeTrigger]="changeTrigger"
               [extraDyGraphConfig]="extraDyGraphConfig" [startTime]="dygStartTime" enableHighlightCallback="true"
               [colors]="colors" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
@@ -48,8 +48,8 @@
           <td class="dygcontainerrel">
             <app-ut-dygraph-in [data]="dataA[0]" [columnLabels]="labelsA[0]" [showDeviation]="show_deviation"
               [rawLabels]="raw_labelsA[0]" [style]="graphstyle" [changeTrigger]="changeTrigger"
-              [extraDyGraphConfig]="extraDyGraphConfig" [startTime]="dygStartTime" enableHighlightCallback="true"
-              [colors]="colors" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
+              [extraDyGraphConfig]="extraDyGraphConfigA[0]" [startTime]="dygStartTime" enableHighlightCallback="true"
+              [colors]="colorsA[0]" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
               [Y2Label]="y2label" (returnGraphWidthOnChange)="setGraphWidth($event)"
               (returnCurrentZoom)="h.updateFromToTimes($event, this)" (returnRunningAvg)="handleRunningAvg($event)"
               #R></app-ut-dygraph-in>
@@ -57,34 +57,34 @@
           <td class="dygcontainerrel">
             <app-ut-dygraph-in [data]="dataA[1]" [columnLabels]="labelsA[1]" [showDeviation]="show_deviation"
               [rawLabels]="raw_labelsA[1]" [style]="graphstyle" [changeTrigger]="changeTrigger"
-              [extraDyGraphConfig]="extraDyGraphConfig" [startTime]="dygStartTime" enableHighlightCallback="true"
-              [colors]="colors" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
+              [extraDyGraphConfig]="extraDyGraphConfigA[1]" [startTime]="dygStartTime" enableHighlightCallback="true"
+              [colors]="colorsA[1]" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
               [Y2Label]="y2label" (returnCurrentZoom)="h.updateFromToTimes($event, this)"
               (returnRunningAvg)="handleRunningAvg($event)" #R></app-ut-dygraph-in>
           </td>
         </tr>
         <tr>
           <th>
-            <h3>AFEBOARD 3{{ chipnames[2]  ? ': "' + chipnames[2] + '"' : '' }}</h3>
+            <h3>AFEBOARD 3{{ chipnames[2] ? ': "' + chipnames[2] + '"' : '' }}</h3>
           </th>
           <th>
-            <h3>AFEBOARD 4{{ chipnames[3]  ? ': "' + chipnames[3] + '"' : '' }}</h3>
+            <h3>AFEBOARD 4{{ chipnames[3] ? ': "' + chipnames[3] + '"' : '' }}</h3>
           </th>
         </tr>
         <tr>
           <td class="dygcontainerrel">
             s <app-ut-dygraph-in [data]="dataA[2]" [columnLabels]="labelsA[2]" [showDeviation]="show_deviation"
               [rawLabels]="raw_labelsA[2]" [style]="graphstyle" [changeTrigger]="changeTrigger"
-              [extraDyGraphConfig]="extraDyGraphConfig" [startTime]="dygStartTime" enableHighlightCallback="true"
-              [colors]="colors" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
+              [extraDyGraphConfig]="extraDyGraphConfigA[2]" [startTime]="dygStartTime" enableHighlightCallback="true"
+              [colors]="colorsA[2]" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
               [Y2Label]="y2label" (returnCurrentZoom)="h.updateFromToTimes($event, this)"
               (returnRunningAvg)="handleRunningAvg($event)" #R></app-ut-dygraph-in>
           </td>
           <td class="dygcontainerrel">
             <app-ut-dygraph-in [data]="dataA[3]" [columnLabels]="labelsA[3]" [showDeviation]="show_deviation"
               [rawLabels]="raw_labelsA[3]" [style]="graphstyle" [changeTrigger]="changeTrigger"
-              [extraDyGraphConfig]="extraDyGraphConfig" [startTime]="dygStartTime" enableHighlightCallback="true"
-              [colors]="colors" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
+              [extraDyGraphConfig]="extraDyGraphConfigA[3]" [startTime]="dygStartTime" enableHighlightCallback="true"
+              [colors]="colorsA[3]" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
               [Y2Label]="y2label" (returnCurrentZoom)="h.updateFromToTimes($event, this)"
               (returnRunningAvg)="handleRunningAvg($event)" #R></app-ut-dygraph-in>
           </td>
@@ -203,6 +203,12 @@
             Load Missing to Now
           </button>
         </div>
+      </fieldset>
+
+      <fieldset>
+        <mat-checkbox [(ngModel)]="unify_columns" name="unify_columns" labelPosition="after">
+          Unify Columns
+        </mat-checkbox>
       </fieldset>
 
       <fieldset>

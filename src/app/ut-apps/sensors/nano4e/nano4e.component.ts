@@ -26,9 +26,18 @@ export class Nano4EComponent implements OnInit {
     pointSize: 3,
     logscale: true,
     series: {
-      'pressure sensor: BME280, pressure (hPa)': {
-        axis: 'y2',
-      },
+      'px: 1 heater ( °C )': { axis: 'y2' },
+      'px: 2 heater ( °C )': { axis: 'y2' },
+      'px: 3 heater ( °C )': { axis: 'y2' },
+      'px: 4 heater ( °C )': { axis: 'y2' },
+      'px: 1 LED current ( mA )': { axis: 'y2' },
+      'px: 2 LED current ( mA )': { axis: 'y2' },
+      'px: 3 LED current ( mA )': { axis: 'y2' },
+      'px: 4 LED current ( mA )': { axis: 'y2' },
+      'px: 1 LED λ ( nm )': { axis: 'y2' },
+      'px: 2 LED λ ( nm )': { axis: 'y2' },
+      'px: 3 LED λ ( nm )': { axis: 'y2' },
+      'px: 4 LED λ ( nm )': { axis: 'y2' },
     },
 
     axes: {
@@ -36,12 +45,13 @@ export class Nano4EComponent implements OnInit {
         logscale: true,
       },
       y2: {
-        independentTicks: true, // default opt here to have a filled object to access later
-        // axisLabelWidth: 60, // set on demand
+        independentTicks: true,
+        logscale: false,
       },
     },
   };
-  y2label = 'Atmospheric Pressure';
+  extraDyGraphConfigA = []
+  y2label = 'Mode';
   labelBlockList = ['mean_*']; // mean is when only 1 graph is returned
   // public ls_taglist = {} // tagkey: true/false ; local copy of global taglist - so that even tags not present are remembered
 
@@ -62,20 +72,20 @@ export class Nano4EComponent implements OnInit {
     "maxrange_V": false,
     "resolution_uV": false,
     "sensor": true,
+    "LED_nm": true,
     "LED21": true,
     "LED22": true,
-    "LED_nm": true,
-    "amcurstep": false,
-    "heater_current_mA": false,
-    "heater_degC": true,
-    "led_current_mA": true,
-    "meas_current_uA": true,
     "LED11": true,
     "LED12": true,
+    "LED31": true,
+    "LED32": true,
     "LED41": true,
     "LED42": true,
-    "LED31": true,
-    "LED32": true
+    "led_current_mA": true,
+    "heater_current_mA": false,
+    "heater_degC": true,
+    "meas_current_uA": true,
+    "amcurstep": false,
   }
   private sidebarWidth = '15rem';
   public currentSidebarWidth = this.sidebarWidth;
@@ -98,6 +108,9 @@ export class Nano4EComponent implements OnInit {
   public fromTime: Date;
   public toTime: Date;
   public currentRange: string;
+
+  public unify_columns = true;
+  public common_tags = [] // [AFE]["short_label"]
 
   labels = [];
   labelsA = [[], [], [], []];
@@ -250,6 +263,9 @@ export class Nano4EComponent implements OnInit {
     }
     if (!this.interval) {
       this.interval = String(this.automean ? this.meanS : this.userMeanS)
+    }
+    for (let afe = 0; afe < 4; afe++) {
+      this.extraDyGraphConfigA[afe] = cloneDeep(this.extraDyGraphConfig)
     }
   }
 
@@ -921,8 +937,6 @@ export class Nano4EComponent implements OnInit {
       this.raw_labels = raw_labels;
       this.labels = ['Date'].concat(this.short_labels);
 
-      this.colors = this.h.getColorsforLabels(new_labels);
-
       for (let c = 1; c < numColumns; c++) {
         const c_label = new_labels[c];
         this.round_digits.push(
@@ -952,8 +966,8 @@ export class Nano4EComponent implements OnInit {
       return;
     }
 
-    for (let i = 0; i < 4; i++) {
-      const AFENRstr = String(i + 1)
+    for (let afe = 0; afe < 4; afe++) {
+      const AFENRstr = String(afe + 1)
       const AFEBOARD = "AFEBOARD" + AFENRstr
 
       const i_short_labels = []
@@ -965,10 +979,10 @@ export class Nano4EComponent implements OnInit {
       for (let rli = 1; rli < this.raw_labels.length; rli++) {
         const rlabel = this.raw_labels[rli];
         if (rlabel["tags"]["AFEBOARD"] == AFENRstr) {
-          this.chipnames[i] = rlabel["tags"]["chipname"]
+          this.chipnames[afe] = rlabel["tags"]["chipname"]
 
           i_raw_labels.push(rlabel)
-          i_short_labels.push(this.short_labels[rli - 1].replace("AFEBOARD: " + AFENRstr, "").replace(/^,[\s]*/, '').replace("chipname: " + this.chipnames[i] + ", ", ""))
+          i_short_labels.push(this.short_labels[rli - 1].replace("AFEBOARD: " + AFENRstr, "").replace(/^,[\s]*/, '').replace("chipname: " + this.chipnames[afe] + ", ", ""))
           for (let r = 0; r < idata.length; r++) {
             i_data[r].push(idata[r][rli])
           }
@@ -976,15 +990,15 @@ export class Nano4EComponent implements OnInit {
         }
       }
       if (i_short_labels.length > 0) {
-        this.raw_labelsA[i] = i_raw_labels
-        this.short_labelsA[i] = i_short_labels
-        this.labelsA[i] = ['Date'].concat(i_short_labels)
-        this.dataA[i] = i_data
+        this.raw_labelsA[afe] = i_raw_labels
+        this.short_labelsA[afe] = i_short_labels
+        this.labelsA[afe] = ['Date'].concat(i_short_labels)
+        this.dataA[afe] = i_data
       } else {
-        this.raw_labelsA[i] = []
-        this.short_labelsA[i] = []
-        this.labelsA[i] = ['Date']
-        this.dataA[i] = []
+        this.raw_labelsA[afe] = []
+        this.short_labelsA[afe] = []
+        this.labelsA[afe] = ['Date']
+        this.dataA[afe] = []
       }
 
       // colorsA?
@@ -992,6 +1006,126 @@ export class Nano4EComponent implements OnInit {
     console.log("RL", this.raw_labelsA)
     console.log("L", cloneDeep(this.labelsA))
     console.log("D", cloneDeep(this.dataA))
+
+    if (this.unify_columns) {
+      const extra_elements = ["heater_degC", "LED_nm", "led_current_mA"];
+      for (let afe = 0; afe < 4; afe++) {
+        if (this.short_labelsA[afe] && this.short_labelsA[afe].length == 0) {
+          continue
+        }
+
+        const cur_data = this.dataA[afe]
+        const cur_raw_labels = this.raw_labelsA[afe]
+        let new_short_labels = ["px1 ( Ω )", "px2 ( Ω )", "px3 ( Ω )", "px4 ( Ω )"]
+        const new_raw_label = [{ metric: "Date", tags: {}, field: "" },
+        { metric: "gas", tags: {}, field: "px1_Ohm" },
+        { metric: "gas", tags: {}, field: "px2_Ohm" },
+        { metric: "gas", tags: {}, field: "px3_Ohm" },
+        { metric: "gas", tags: {}, field: "px4_Ohm" }
+        ]
+        const new_common_tags = "";
+        const new_data = []
+        for (let r = 0; r < cur_data.length; r++) {
+          new_data.push([cur_data[r][0]]) // time
+        }
+        // different op modes: heater_degC, LED_nm, led_current_mA, LEDn1/n2 (Nano4E), meas_current_uA
+        // find out for which an extra curve is needed - for which pixel!
+        // do all, compare & kick out later!
+        // let extra_curves = ["Date", ["px[1234]+_heater_degC"], [], [], []]; // Date; px1, px2, px3, px4
+        let extra_data = { "Date": ["empty"], 1: {}, 2: {}, 3: {}, 4: {} };
+        for (let px = 1; px <= 4; px++) {
+          extra_elements.forEach(key => { extra_data[px][key] = [] })
+        }
+
+        // extra_elements.forEach(key => {
+        //   let different_values = []
+        //   for (let col_i = 1; col_i < cur_raw_labels.length; col_i++) {
+        //     const rlabeltags = cur_raw_labels[col_i].tags;
+        //     if (rlabeltags.hasOwnProperty(key) && !different_values.includes(rlabeltags[key])) {
+        //       different_values.push(rlabeltags[key])
+        //     }
+        //   }
+        // });
+        for (let col_i = 1; col_i < cur_raw_labels.length; col_i++) {
+          const rlabel = cur_raw_labels[col_i];
+          for (let px = 1; px <= 4; px++) {
+            if (rlabel.field == new_raw_label[px].field) {
+              if (rlabel.tags.hasOwnProperty("material")) {
+                new_raw_label[px].tags["material"] = rlabel.tags["material"]
+                if (new_short_labels[px - 1].length < 10) {
+                  new_short_labels[px - 1] = "material: " + rlabel.tags["material"] + " " + new_short_labels[px - 1]
+                }
+              }
+              for (let r = 0; r < cur_data.length; r++) {
+                const value = cur_data[r][col_i]
+                if (!isNaN(value) && value !== null && value >= 0) {
+                  new_data[r][px] = value;
+                  extra_elements.forEach(key => {
+                    if (rlabel.tags.hasOwnProperty(key)) {
+                      extra_data[px][key][r] = parseFloat(rlabel.tags[key])
+                    } else {
+                      extra_data[px][key][r] = NaN
+                    }
+                  });
+                }
+              }
+              break
+            }
+          }
+        }
+        for (let r = 0; r < new_data.length; r++) {
+          for (let px = 1; px <= 4; px++) {
+            if (new_data[r][px] === undefined) {
+              new_data[r][px] = NaN;
+            }
+          }
+        }
+        // compare
+        const pairs = [[1, 2], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]]
+        const to_merge = []
+
+        pairs.forEach(pair => {
+          extra_elements.forEach(element => {
+            let is_same = true
+            for (let r = 0; r < extra_data[pair[0]][element].length; r++) {
+              if (extra_data[pair[0]][element] != extra_data[pair[1]][element]) {
+                is_same = false
+                break
+              }
+            }
+            if (is_same) {
+              to_merge.push({ "key": element, "columns": pair })
+            }
+          });
+        });
+
+        console.log("merge afe:", afe, to_merge);
+
+
+        for (let px = 1; px <= 4; px++) {
+          extra_elements.forEach(element => {
+            new_raw_label.push({ metric: "meta", tags: { "generated": "yes", "px": px }, field: element })
+            new_short_labels.push("px: " + px + " " + element.replace(/_degC/, ' ( °C )').replace(/led_current_mA/, 'LED current ( mA )').replace(/_nm/, ' λ ( nm )'))
+            for (let r = 0; r < extra_data[px][element].length; r++) {
+              new_data[r].push(extra_data[px][element][r])
+            }
+          })
+        }
+
+
+        console.log("AFE", afe, cloneDeep(extra_data));
+        console.log("AFE", afe, new_data);
+        this.dataA[afe] = new_data
+        this.raw_labelsA[afe] = new_raw_label
+        this.short_labelsA[afe] = new_short_labels
+        this.labelsA[afe] = ['Date'].concat(new_short_labels)
+      }
+    }
+    for (let afe = 0; afe < 4; afe++) {
+      this.colorsA[afe] = this.h.getColorsforLabels(this.short_labelsA[afe]);
+    }
+
+
 
 
     this.changeTrigger += 1;
@@ -1040,40 +1174,40 @@ export class Nano4EComponent implements OnInit {
     field: true,
     note: true
   }
-  sortAnno(key: string) {
-    if (key == "time") {
-      if (this.sortTimeOrderAsc) {
-        this.annotationTable.sort((a, b) => a.time - b.time)
-      } else {
-        this.annotationTable.sort((a, b) => b.time - a.time)
-      }
-      this.sortTimeOrderAsc = !this.sortTimeOrderAsc;
-      return
-    }
+  // sortAnno(key: string) {
+  //   if (key == "time") {
+  //     if (this.sortTimeOrderAsc) {
+  //       this.annotationTable.sort((a, b) => a.time - b.time)
+  //     } else {
+  //       this.annotationTable.sort((a, b) => b.time - a.time)
+  //     }
+  //     this.sortTimeOrderAsc = !this.sortTimeOrderAsc;
+  //     return
+  //   }
 
-    if (this.sortOrder[key]) {
-      this.annotationTable.sort((a, b) => {
-        if (a[key] > b[key]) {
-          return 1
-        }
-        if (a[key] < b[key]) {
-          return -1
-        }
-        return 0
-      })
-    } else {
-      this.annotationTable.sort((a, b) => {
-        if (a[key] > b[key]) {
-          return -1
-        }
-        if (a[key] < b[key]) {
-          return 1
-        }
-        return 0
-      })
-    }
-    this.sortOrder[key] = !this.sortOrder[key]
-  }
+  //   if (this.sortOrder[key]) {
+  //     this.annotationTable.sort((a, b) => {
+  //       if (a[key] > b[key]) {
+  //         return 1
+  //       }
+  //       if (a[key] < b[key]) {
+  //         return -1
+  //       }
+  //       return 0
+  //     })
+  //   } else {
+  //     this.annotationTable.sort((a, b) => {
+  //       if (a[key] > b[key]) {
+  //         return -1
+  //       }
+  //       if (a[key] < b[key]) {
+  //         return 1
+  //       }
+  //       return 0
+  //     })
+  //   }
+  //   this.sortOrder[key] = !this.sortOrder[key]
+  // }
   exportCSV() {
     this.h.exportCSV(this.data, this.labels)
   }
