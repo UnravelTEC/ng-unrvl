@@ -24,7 +24,7 @@ export class HelperFunctionsService {
   colorOrder = ['green', 'blue', 'red', 'brown', 'olive', 'navy', 'violet'];
   colorArray = [];
 
-  defaultColorMappings = {};
+  defaultColorMappings = [];
 
   avgPresets = [
     { '1m': 60 },
@@ -100,25 +100,34 @@ export class HelperFunctionsService {
         this.colorArray.push(this.colors[colorstr][cWeightI]);
       }
     }
-    this.defaultColorMappings = {
+    this.defaultColorMappings = [
+      // in order to make priorities possible
       // define here to calm down TS
-      'dew point': 'blue',
-      '°C': 'red',
-      temperature: 'red',
-      heater: 'red',
-      current: 'blue',
-      humidity: 'blue',
-      pressure: 'green',
-      'Ω': 'green',
-      'λ': 'violet',
-      particulate_matter: 'brown',
-      OX: 'blue',
-      NO2: 'brown',
-      "CO-": 'navy',
-      "SCD30 CO": 'violet',
-      "NO-": 'olive',
-      gas: 'violet',
-    };
+      { searchstr: 'dew point', colorset: 'blue' },
+      { searchstr: 'temperature', colorset: 'red' },
+      { searchstr: 'Ω', colorset: 'green' },
+      { searchstr: 'λ', colorset: 'navy' },
+      { searchstr: '°C', colorset: 'red' },
+      { searchstr: 'heater', colorset: 'red' },
+      { searchstr: "LED current", colorset: 'violet' },
+      // searchstr: 'current', colorset: 'red'} ,
+      { searchstr: "( A )", colorset: 'red' },
+      { searchstr: 'voltage', colorset: 'blue' },
+      { searchstr: 'humidity', colorset: 'blue' },
+      { searchstr: "( V )", colorset: 'blue' },
+      { searchstr: "( W )", colorset: 'brown' },
+      { searchstr: 'direction', colorset: 'olive' },
+      { searchstr: 'wind', colorset: 'blue' },
+      { searchstr: 'pressure', colorset: 'green' },
+      { searchstr: 'particulate_matter', colorset: 'brown' },
+      { searchstr: 'OX', colorset: 'blue' },
+      { searchstr: 'NO2', colorset: 'brown' },
+      { searchstr: "CO-", colorset: 'navy' },
+      { searchstr: 'orientation', colorset: 'navy' },
+      { searchstr: "SCD30 CO", colorset: 'violet' },
+      { searchstr: "NO-", colorset: 'olive' },
+      { searchstr: 'gas', colorset: 'violet' },
+    ];
     // console.log('new Colors:', this.colorArray);
   }
   /**
@@ -138,29 +147,29 @@ export class HelperFunctionsService {
         continue;
       }
       let found = false;
-      for (const searchstring in searchToColor) {
-        if (searchToColor.hasOwnProperty(searchstring)) {
-          if (currentLabel.match(searchstring)) {
-            console.log(
-              'getColorsforLabels:',
-              currentLabel,
-              'matched',
-              searchstring
-            );
-            const colorset = searchToColor[searchstring];
-            const rightColorArray = this.colors[colorset];
-            if (!colorCounters.hasOwnProperty(colorset)) {
-              colorCounters[colorset] = 0;
-              newColors.push(rightColorArray[0]);
-            } else {
-              const i = (colorCounters[colorset] += 1);
-              newColors.push(rightColorArray[i % rightColorArray.length]);
-            }
-            found = true;
-            break;
+      for (let c_i = 0; c_i < searchToColor.length; c_i++) {
+        const searchstring = searchToColor[c_i]["searchstr"]
+        if (currentLabel.match(searchstring)) {
+          console.log(
+            'getColorsforLabels:',
+            currentLabel,
+            'matched',
+            searchstring
+          );
+          const colorset = searchToColor[c_i]["colorset"];
+          const rightColorArray = this.colors[colorset];
+          if (!colorCounters.hasOwnProperty(colorset)) {
+            colorCounters[colorset] = 0;
+            newColors.push(rightColorArray[0]);
+          } else {
+            const i = (colorCounters[colorset] += 1);
+            newColors.push(rightColorArray[i % rightColorArray.length]);
           }
+          found = true;
+          break;
         }
       }
+
       if (!found) {
         newColors.push('black');
       }

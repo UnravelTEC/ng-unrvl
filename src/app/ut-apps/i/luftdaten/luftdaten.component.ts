@@ -11,12 +11,12 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./luftdaten.component.scss']
 })
 export class LuftdatenComponent implements OnInit {
-  colorMappings = {
-    temperature: 'red',
-    humidity: 'blue',
-    pressure: 'green',
-    SDS011: 'brown'
-  };
+  colorMappings = [
+    { searchstr: 'temperature', colorset: 'red' },
+    { searchstr: "humidity", colorset: 'blue' },
+    { searchstr: "pressure", colorset: 'green' },
+    { searchstr: "SDS011", colorset: 'brown' }
+  ];
 
   colors = [];
   graphWidth = 1500;
@@ -130,7 +130,7 @@ export class LuftdatenComponent implements OnInit {
       // .getHTTPData(q)
       .getHTTPData(q, 'luftweb', 'YQ9xYNKWk4Pqkmr0')
       .subscribe((data: Object) => this.handleData(data),
-      (error) => this.globalSettings.displayHTTPerror(error));
+        (error) => this.globalSettings.displayHTTPerror(error));
   }
   saveMean(param) {
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
