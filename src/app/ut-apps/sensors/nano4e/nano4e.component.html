@@ -15,33 +15,59 @@
         (click)="queryRunning = false"><mat-icon>cancel</mat-icon></button>
     </div>
 
-    <a id="backicon" [routerLink]="'/Apps/' + referrer" routerLinkActive="active"
+    <a id="backicon" routerLink="/Apps/Sensors/Nano4E" routerLinkActive="active"  *ngIf="layoutsingle"
+    [queryParams]="{from: from,
+            to: to,
+            layoutsingle: false,
+            unify_columns: unify_columns,
+            interval: interval
+          }"
       title="Return to overview"><mat-icon>fullscreen_exit</mat-icon></a>
-    <button id="toggleSidebar" (click)="toggleSidebar(); R.resize()" title="Toggle sidebar">
+    <button id="toggleSidebar" (click)="toggleSidebar(); R1.resize(); R2.resize(); R3.resize(); R4.resize()"
+      title="Toggle sidebar">
       {{ sideBarShown ? '»' : '«' }}
     </button>
   </div>
   <div id="anybody">
     <div id="dygcontainerabs" [style.right]="currentSidebarWidth">
 
-      <!-- <app-ut-dygraph-in [data]="data" [columnLabels]="labels" [showDeviation]="show_deviation"
-              [rawLabels]="raw_labels" [style]="graphstyle" [changeTrigger]="changeTrigger"
-              [extraDyGraphConfig]="extraDyGraphConfig" [startTime]="dygStartTime" enableHighlightCallback="true"
-              [colors]="colors" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
-              [Y2Label]="y2label" (returnCurrentZoom)="h.updateFromToTimes($event, this)"
-              (returnRunningAvg)="handleRunningAvg($event)" #R></app-ut-dygraph-in> -->
+      <div *ngIf="layoutsingle">
+        <app-ut-dygraph-in [data]="data" [columnLabels]="labels" [showDeviation]="show_deviation"
+          [rawLabels]="raw_labels" [style]="graphstyle" [changeTrigger]="changeTrigger"
+          [extraDyGraphConfig]="extraDyGraphConfig" [startTime]="dygStartTime" enableHighlightCallback="true"
+          [colors]="colors" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
+          [Y2Label]="y2label" (returnCurrentZoom)="h.updateFromToTimes($event, this)"
+          (returnRunningAvg)="handleRunningAvg($event)" #R1></app-ut-dygraph-in>
+      </div>
 
-      <table class="graphs">
+
+      <table class="graphs" *ngIf="!layoutsingle">
         <colgroup>
           <col />
           <col />
         </colgroup>
         <tr>
           <th>
-            <h3>AFEBOARD 1{{ chipnames[0] ? ': "' + chipnames[0] + '"' : '' }}</h3>
+            <h3>AFEBOARD 1{{ chipnames[0] ? ': "' + chipnames[0] + '"' : '' }}
+              <a routerLink="/Apps/Sensors/Nano4E" [queryParams]="{from: from,
+            to: to,
+            layoutsingle: true,
+            AFEBOARD: 1,
+            unify_columns: unify_columns,
+            interval: interval
+          }" routerLinkActive="active" title="Show AFEBOARD 1 Fullscreen"><mat-icon>settings_overscan</mat-icon></a>
+            </h3>
           </th>
           <th>
-            <h3>AFEBOARD 2{{ chipnames[1] ? ': "' + chipnames[1] + '"' : '' }}</h3>
+            <h3>AFEBOARD 2{{ chipnames[1] ? ': "' + chipnames[1] + '"' : '' }}
+              <a routerLink="/Apps/Sensors/Nano4E" [queryParams]="{from: from,
+            to: to,
+            layoutsingle: true,
+            AFEBOARD: 2,
+            unify_columns: unify_columns,
+            interval: interval
+          }" routerLinkActive="active" title="Show AFEBOARD 2 Fullscreen"><mat-icon>settings_overscan</mat-icon></a>
+            </h3>
           </th>
         </tr>
         <tr>
@@ -52,7 +78,7 @@
               [colors]="colorsA[0]" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
               [Y2Label]="y2label" (returnGraphWidthOnChange)="setGraphWidth($event)"
               (returnCurrentZoom)="h.updateFromToTimes($event, this)" (returnRunningAvg)="handleRunningAvg($event)"
-              #R></app-ut-dygraph-in>
+              #R1></app-ut-dygraph-in>
           </td>
           <td class="dygcontainerrel">
             <app-ut-dygraph-in [data]="dataA[1]" [columnLabels]="labelsA[1]" [showDeviation]="show_deviation"
@@ -60,15 +86,31 @@
               [extraDyGraphConfig]="extraDyGraphConfigA[1]" [startTime]="dygStartTime" enableHighlightCallback="true"
               [colors]="colorsA[1]" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
               [Y2Label]="y2label" (returnCurrentZoom)="h.updateFromToTimes($event, this)"
-              (returnRunningAvg)="handleRunningAvg($event)" #R></app-ut-dygraph-in>
+              (returnRunningAvg)="handleRunningAvg($event)" #R2></app-ut-dygraph-in>
           </td>
         </tr>
         <tr>
           <th>
-            <h3>AFEBOARD 3{{ chipnames[2] ? ': "' + chipnames[2] + '"' : '' }}</h3>
+            <h3>AFEBOARD 3{{ chipnames[2] ? ': "' + chipnames[2] + '"' : '' }}
+              <a routerLink="/Apps/Sensors/Nano4E" [queryParams]="{from: from,
+            to: to,
+            layoutsingle: true,
+            AFEBOARD: 3,
+            unify_columns: unify_columns,
+            interval: interval
+          }" routerLinkActive="active" title="Show AFEBOARD 3 Fullscreen"><mat-icon>settings_overscan</mat-icon></a>
+            </h3>
           </th>
           <th>
-            <h3>AFEBOARD 4{{ chipnames[3] ? ': "' + chipnames[3] + '"' : '' }}</h3>
+            <h3>AFEBOARD 4{{ chipnames[3] ? ': "' + chipnames[3] + '"' : '' }}
+              <a routerLink="/Apps/Sensors/Nano4E" [queryParams]="{from: from,
+            to: to,
+            layoutsingle: true,
+            AFEBOARD: 4,
+            unify_columns: unify_columns,
+            interval: interval
+          }" routerLinkActive="active" title="Show AFEBOARD 4 Fullscreen"><mat-icon>settings_overscan</mat-icon></a>
+            </h3>
           </th>
         </tr>
         <tr>
@@ -78,7 +120,7 @@
               [extraDyGraphConfig]="extraDyGraphConfigA[2]" [startTime]="dygStartTime" enableHighlightCallback="true"
               [colors]="colorsA[2]" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
               [Y2Label]="y2label" (returnCurrentZoom)="h.updateFromToTimes($event, this)"
-              (returnRunningAvg)="handleRunningAvg($event)" #R></app-ut-dygraph-in>
+              (returnRunningAvg)="handleRunningAvg($event)" #R3></app-ut-dygraph-in>
           </td>
           <td class="dygcontainerrel">
             <app-ut-dygraph-in [data]="dataA[3]" [columnLabels]="labelsA[3]" [showDeviation]="show_deviation"
@@ -86,7 +128,7 @@
               [extraDyGraphConfig]="extraDyGraphConfigA[3]" [startTime]="dygStartTime" enableHighlightCallback="true"
               [colors]="colorsA[3]" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"
               [Y2Label]="y2label" (returnCurrentZoom)="h.updateFromToTimes($event, this)"
-              (returnRunningAvg)="handleRunningAvg($event)" #R></app-ut-dygraph-in>
+              (returnRunningAvg)="handleRunningAvg($event)" #R4></app-ut-dygraph-in>
           </td>
         </tr>
       </table>
@@ -103,11 +145,11 @@
         <!-- <label style="display: inline-block">Range:</label> -->
         <!-- <span class="cRange">{{ currentRange }}</span> -->
 
-        <a routerLink="/Apps/I/Anysens" [queryParams]="{
-            measurement: measurement,
-            sensor: sensor,
+        <a routerLink="/Apps/Sensors/Nano4E" [queryParams]="{
             from: from,
             to: to,
+            layoutsingle: layoutsingle,
+            unify_columns: unify_columns,
             interval: interval
           }" routerLinkActive="active" style="position: absolute; top: 0.75rem; right: 0.75rem">Permalink</a>
       </fieldset>
@@ -209,6 +251,18 @@
         <mat-checkbox [(ngModel)]="unify_columns" name="unify_columns" labelPosition="after">
           Unify Columns
         </mat-checkbox>
+        <h5 style="margin: 0;">Graph Layout:</h5>
+        <mat-radio-group class="automean-radio" [(ngModel)]="layoutsingle" (ngModelChange)="saveMean($event)">
+          <table>
+            <tr>
+              <td>
+                <mat-radio-button class="automean-radio" [value]="true">Single</mat-radio-button>
+              <td>
+                <mat-radio-button class="automean-radio" [value]="false">Multi</mat-radio-button>
+              </td>
+            </tr>
+          </table>
+        </mat-radio-group>
       </fieldset>
 
       <fieldset>
@@ -264,7 +318,8 @@
       <!-- <button (click)="toggleAnnotationsShown(); R.resize()">
         {{ annotationsShown ? "Hide" : "Show" }} Annotations
       </button> -->
-      <button (click)="toggleTableShown(); R.resize()">{{ tableShown ? "Hide" : "Show" }} Data Stats</button>
+      <button (click)="toggleTableShown(); R1.resize(); R2.resize(); R3.resize(); R4.resize()">{{ tableShown ? "Hide" :
+        "Show" }} Data Stats</button>
     </div>
 
     <!-- <table *ngIf="annotationsShown" class="annos">

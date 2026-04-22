@@ -105,9 +105,16 @@ export class Nano4EComponent implements OnInit {
   public currentresText = '0s';
   public userMeanS: number;
   public automean = true;
+  public layoutsingle = false;
+  public AFEBOARD: number = undefined;
   public fromTime: Date;
   public toTime: Date;
   public currentRange: string;
+
+  public R1;
+  public R2;
+  public R3;
+  public R4;
 
   public unify_columns = true;
   public common_tags = [] // [AFE]["short_label"]
@@ -186,6 +193,8 @@ export class Nano4EComponent implements OnInit {
       'tableShown',
       'sideBarShown',
       'automean',
+      'layoutsingle',
+      'unify_columns',
       'tagsShown',
       'allTagsShown',
       'show_deviation',
@@ -211,15 +220,12 @@ export class Nano4EComponent implements OnInit {
     console.log('labelBlockList', this.labelBlockList);
 
     [
-      'host',
-      'measurement',
-      'sensor',
-      'background',
       'referrer',
+      'layoutsingle',
+      'unify_columns',
+      'AFEBOARD',
       'from',
       'to',
-      'id',
-      'value',
       'interval',
     ].forEach((element) => {
       const thing = this.router.snapshot.queryParamMap.get(element);
@@ -228,10 +234,16 @@ export class Nano4EComponent implements OnInit {
         //     this[element] = thing.split(',');
         //   }
         this[element] = thing;
+        if (typeof (thing) == "string" && thing == "true") {
+          this[element] = true
+        }
+        if (typeof (thing) == "string" && thing == "false") {
+          this[element] = false
+        }
       }
     });
     this.gss.emitChange({
-      appName: "Nano4E"
+      appName: "Nano4E" + (this.AFEBOARD ? (" AFE" + this.AFEBOARD) : "")
     });
     if (this.interval) { // only url param supplied
       this.userMeanS = parseFloat(this.interval)
@@ -301,17 +313,9 @@ export class Nano4EComponent implements OnInit {
   createQuery(fromTime: any, toTime: Date = undefined) {
     const timeQuery = this.utHTTP.influxTimeString(fromTime, toTime);
 
-    let params = { sensor: [] };
-    if (this.sensor) {
-      params['sensor'] = Array.isArray(this.sensor)
-        ? this.sensor
-        : [this.sensor];
-    }
-    if (this.host) {
-      params['host'] = this.host;
-    }
-    if (this.id) {
-      params['id'] = this.id;
+    let params = {};
+    if (this.AFEBOARD) {
+      params['AFEBOARD'] = this.AFEBOARD;
     }
 
     let groupby_list = []
@@ -1007,6 +1011,8 @@ export class Nano4EComponent implements OnInit {
     console.log("L", cloneDeep(this.labelsA))
     console.log("D", cloneDeep(this.dataA))
 
+    console.log("unify_columns", this.unify_columns, typeof (this.unify_columns));
+
     if (this.unify_columns) {
       const extra_elements = ["heater_degC", "LED_nm", "led_current_mA"];
       for (let afe = 0; afe < 4; afe++) {
@@ -1034,7 +1040,9 @@ export class Nano4EComponent implements OnInit {
         // let extra_curves = ["Date", ["px[1234]+_heater_degC"], [], [], []]; // Date; px1, px2, px3, px4
         let extra_data = { "Date": ["empty"], 1: {}, 2: {}, 3: {}, 4: {} };
         for (let px = 1; px <= 4; px++) {
-          extra_elements.forEach(key => { extra_data[px][key] = [] })
+          extra_elements.forEach(key => {
+            extra_data[px][key] = []
+           })
         }
 
         // extra_elements.forEach(key => {
@@ -1125,7 +1133,14 @@ export class Nano4EComponent implements OnInit {
       this.colorsA[afe] = this.h.getColorsforLabels(this.short_labelsA[afe]);
     }
 
-
+    if (this.layoutsingle === true && this.AFEBOARD && this.AFEBOARD > 0) {
+      this.data = this.dataA[this.AFEBOARD - 1]
+      this.raw_labels = this.raw_labelsA[this.AFEBOARD - 1]
+      this.short_labels = this.short_labelsA[this.AFEBOARD - 1]
+      this.labels = this.labelsA[this.AFEBOARD - 1]
+      this.colors = this.h.getColorsforLabels(this.short_labels)
+    }
+    console.log("layoutsingle", this.layoutsingle);
 
 
     this.changeTrigger += 1;
