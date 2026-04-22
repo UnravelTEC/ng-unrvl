@@ -1118,11 +1118,10 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
     let html =
-      '<div class="header">Legend: ' +
+      `<div class="header"><span class="legendToggle" ${toggleScript} title="click to toggle legend">&nbsp;Legend: </span>` +
       (data.xHTML ? ' values @ ' + timestr + durationStr : '') + '</div>' +
       (nrSeries > 1 ? `<div class="legendHideInactive"><input type="checkbox" id="legendHideInactive" ${inactiveChecked} ${HideInactiveScript}>
-      <label for="legendHideInactive">Hide inactive</label></div>` : '')
-      + `<div class="legendToggle" ${toggleScript} title="click to toggle legend">&nbsp;</div>`;
+      <label for="legendHideInactive">Hide inactive</label></div>` : '');
     html += '<table>';
 
     // console.log(htmlID);

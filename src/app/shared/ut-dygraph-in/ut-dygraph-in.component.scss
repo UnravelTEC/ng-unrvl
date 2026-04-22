@@ -415,7 +415,7 @@ $red2: #ff7f88;
       .legendHideInactive {
         position: absolute;
         top: 0.35em;
-        right: 3em;
+        right: 1em;
         * {
           cursor: pointer;
         }
@@ -424,19 +424,12 @@ $red2: #ff7f88;
         color: white;
       }
       .legendToggle {
-        position: absolute;
-        font-size: 1.2em;
-        min-width: 3em;
-        text-align: right;
-        top: 0;
-        right: 5px;
         cursor: pointer;
       }
-      .legendToggle::after {
+      .legendToggle::before {
         content: "▲";
       }
       .legendToggle:hover {
-        font-weight: bold;
         color: white;
       }
     }
@@ -591,7 +584,7 @@ $red2: #ff7f88;
         }
       }
     }
-    .legendToggle::after {
+    .legendToggle::before {
       content: "▼";
     }
     .legendHideInactive {
