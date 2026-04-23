@@ -918,6 +918,8 @@ export class Nano4EComponent implements OnInit {
           }
           if (idata[r][i] > 0) {
             idata[r][i] = idata[r][i] / meas_curr;
+          } else {
+            idata[r][i] = 0.0000000001
           }
         }
       }
