@@ -1235,20 +1235,28 @@ export class HelperFunctionsService {
 
   /**
    * changes this.fromTime, from, toTime, to, currentRange, means, interval !!!
+   * also modifies current URL params
    */
   updateFromToTimes(timearray, myself, interval: any = undefined) {
+    const searchParams = new URLSearchParams(location.search);
+
     myself.fromTime = new Date(timearray[0]);
     myself.from = timearray[0];
+    searchParams.set('from', myself.from)
     myself.toTime = new Date(timearray[1]);
     myself.to = timearray[1];
+    searchParams.set('to', myself.to)
     const rangeSeconds = Math.floor((timearray[1] - timearray[0]) / 1000);
     myself.currentRange = this.createHRTimeString(rangeSeconds);
     if (!interval) {
       myself.meanS = this.calcMean(rangeSeconds, myself.graphWidth);
       myself.interval = String(myself.meanS);
+      searchParams.set('interval', myself.interval)
     } else {
       myself.meanS = Number(interval);
     }
+    // console.log(searchParams, location.pathname + '?' + searchParams.toString());
+    window.history.replaceState(null, document.title, location.pathname + '?' + searchParams.toString())
   }
 
   /**
