@@ -855,7 +855,7 @@ export class AnysensComponent implements OnInit {
       for (let c = 1; c < numColumns; c++) {
         const c_label = new_labels[c];
 
-        if (c_label.match(/hPa/)) {
+        if (c_label.match(/hPa|( ° )/)) {
           this.extraDyGraphConfig.axes.y2['axisLabelWidth'] = 60;
           this.extraDyGraphConfig.series[this.short_labels[c - 1]] = {
             axis: 'y2',
