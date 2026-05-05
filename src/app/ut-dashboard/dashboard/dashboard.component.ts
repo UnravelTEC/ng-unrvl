@@ -35,7 +35,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     ADS1115: {
       description: 'Voltages',
       icon: 'manufacturers/TI_copyrighted.svg',
-      queryParams: { measurement: 'voltage', value: '/^ch/' },
+      queryParams: { measurement: 'voltage' },
+    },
+    INA219: {
+      description: 'Power',
+      icon: 'manufacturers/TI_copyrighted.svg',
+      queryParams: { measurement: 'power' },
     },
     BME280: {
       description: 'Environmental',
@@ -65,6 +70,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       icon: 'manufacturers/invensense.png',
       queryParams: { measurement: 'acceleration,magnetic_field,rotation' },
     },
+    "ATMOS22": {
+      description: 'Wind',
+      icon: 'manufacturers/meter.png',
+      queryParams: { measurement: 'wind' },
+    },
     "NO2-B43F": {
       description: 'NO₂ Gas',
       icon: 'manufacturers/alphasense.png',
@@ -80,6 +90,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       icon: 'manufacturers/sensirion.png',
     },
     SHTC3: {
+      description: 'Humidity Sensor',
+      icon: 'manufacturers/sensirion.png',
+      queryParams: { measurement: 'humidity' },
+    },
+    SHT85: {
       description: 'Humidity Sensor',
       icon: 'manufacturers/sensirion.png',
       queryParams: { measurement: 'humidity' },
