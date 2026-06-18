@@ -94,13 +94,23 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       icon: 'manufacturers/sensirion.png',
       queryParams: { measurement: 'humidity' },
     },
+    SFA30: {
+      description: 'HCHO',
+      icon: 'manufacturers/sensirion.png',
+      queryParams: { measurement: 'gas' },
+    },
+    ENS160: {
+      description: 'MOx Gas',
+      icon: 'manufacturers/sciosense.png',
+      queryParams: { measurement: 'gas' },
+    },
     SHT85: {
       description: 'Humidity Sensor',
       icon: 'manufacturers/sensirion.png',
       queryParams: { measurement: 'humidity' },
     },
     SGP4x: {
-      description: 'MOx Dev Sensor',
+      description: 'MOx Dev Gas Sensor',
       icon: 'manufacturers/sensirion.png',
       queryParams: { measurement: 'gas' },
     },

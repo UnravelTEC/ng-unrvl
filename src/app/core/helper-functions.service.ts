@@ -1123,6 +1123,7 @@ export class HelperFunctionsService {
     fieldname = fieldname.replace(/_degps$/, ' ( ° / s )');
     fieldname = fieldname.replace(/_mps2$/, ' ( m / s² )');
     fieldname = fieldname.replace(/_mps$/, ' ( m / s )');
+    fieldname = fieldname.replace(/_Ohm$/, ' ( Ω )');
     fieldname = fieldname.replace(/uT$/, 'µT');
     fieldname = fieldname.replace(/dewPoint/, 'dew point');
     fieldname = fieldname.replace(/gps_view/, '#');

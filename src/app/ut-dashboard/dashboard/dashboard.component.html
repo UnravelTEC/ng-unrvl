@@ -6,8 +6,8 @@
     *ngIf="gss.server.measurements.includes('gas')"
     path="/Apps/I/IndoorClimate"></app-ut-dashboard-tile>
 
-    <app-ut-dashboard-tile title="Nano4E Testbench"
-    *ngIf="gss.server['hostname'] == 'nano4e-gen2' || (gss.server['influxdb'] && gss.server['influxdb'] == 'nano4e-gen2')"
+    <app-ut-dashboard-tile title="Nano4E Control"
+    *ngIf="gss.server['hostname'] == 'nano4e-gen2' || (gss.server['influxdb'] && gss.server['influxdb'] == 'nano4e-gen2') || (gss.server.sensors && gss.server.sensors['Nano4E'])"
     icon="nano4e_logo.png"
     bg="#FFF"
     path="/Apps/Nano4E-Gen2"></app-ut-dashboard-tile>
