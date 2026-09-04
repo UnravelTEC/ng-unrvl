@@ -1113,13 +1113,13 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       timestr += "." + cDate.getMilliseconds()
       if (data.x) {
         const d = data.x - parent.fromZoom.valueOf()
-        if(d)
+        if (d)
           durationStr += " " + Math.round(d % 1000) + ' ms'
       }
     }
     let html =
       `<div class="header"><span class="legendToggle" ${toggleScript} title="click to toggle legend">&nbsp;Legend: </span>` +
-      (data.xHTML ? ' values @ ' + timestr + durationStr : '') + '</div>' +
+      (data.xHTML ? ' ' + timestr + durationStr : '') + '</div>' +
       (nrSeries > 1 ? `<div class="legendHideInactive"><input type="checkbox" id="legendHideInactive" ${inactiveChecked} ${HideInactiveScript}>
       <label for="legendHideInactive">Hide inactive</label></div>` : '');
     html += '<table>';
@@ -1244,7 +1244,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
                   }
                 } else {
                   devtext = '-' + parent.h.insertVisualSpace(dlower.toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] }))
-                   + ' +' + parent.h.insertVisualSpace(dupper.toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] }));
+                    + ' +' + parent.h.insertVisualSpace(dupper.toLocaleString(undefined, { maximumFractionDigits: parent.roundDigits[i + 1] }));
                 }
               }
             }
@@ -1256,7 +1256,12 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       }
 
       const unit = units[i];
-      const unittext = data.x || !unit ? unit : '(' + unit + ')';
+      let unittext;
+      if (labeltext == "uptime" && data.x) {
+        unittext = "{" + parent.h.createHRTimeString(data.x) + "}";
+      } else {
+         unittext = data.x || !unit ? unit : '(' + unit + ')';
+      }
       valcells += `<td class='u'${textcolor} ${toggleCallback}>${unittext}</td>`;
       if (data.x && seriesWithSameUnit > 0) {
         valcells += `<td class='c' ${toggleCallback}>`;

@@ -225,6 +225,7 @@ export class Nano4EComponent implements OnInit {
       'unify_columns',
       'AFEBOARD',
       'from',
+      'value',
       'to',
       'interval',
     ].forEach((element) => {
@@ -735,12 +736,16 @@ export class Nano4EComponent implements OnInit {
     console.log('common_label:', this.common_label);
     console.log('short_labels:', this.short_labels);
 
+    let nr_points = 0;
     let newDataLogscale = true;
     for (let c = 1; c < numColumns; c++) {
       const c_label = new_labels[c];
       for (let r = 0; r < idata.length; r++) {
         const point = idata[r][c];
-        if (point <= 0 && !Number.isNaN(point) && point !== null) {
+        if (point !== null && !Number.isNaN(point)) {
+          nr_points++
+        }
+        if (newDataLogscale && point <= 0 && !Number.isNaN(point) && point !== null) {
           newDataLogscale = false;
           console.log(
             'found non log-scale data:',
@@ -752,7 +757,6 @@ export class Nano4EComponent implements OnInit {
             'of',
             c_label
           );
-          break;
         }
       }
     }
@@ -916,10 +920,13 @@ export class Nano4EComponent implements OnInit {
             idata[r][i] = NaN;
             continue;
           }
+          if (isNaN(idata[r][i]) || idata[r][i] === null) {
+            continue;
+          }
           if (idata[r][i] > 0) {
             idata[r][i] = idata[r][i] / meas_curr;
           } else {
-            idata[r][i] = 0.0000000001
+            idata[r][i] = undefined // 0.001 // to be able to use logscale and indicate a Value below measurement range
           }
         }
       }
@@ -937,6 +944,8 @@ export class Nano4EComponent implements OnInit {
       //     }
       //   }
       // }
+
+
 
       this.short_labels = short_labels
       this.common_label = ret['common_label'];
@@ -1044,7 +1053,7 @@ export class Nano4EComponent implements OnInit {
         for (let px = 1; px <= 4; px++) {
           extra_elements.forEach(key => {
             extra_data[px][key] = []
-           })
+          })
         }
 
         // extra_elements.forEach(key => {
@@ -1133,6 +1142,17 @@ export class Nano4EComponent implements OnInit {
     }
     for (let afe = 0; afe < 4; afe++) {
       this.colorsA[afe] = this.h.getColorsforLabels(this.short_labelsA[afe]);
+    }
+
+    if (nr_points > 100000 && !window.confirm(
+      'Show ' + Math.ceil(nr_points).toLocaleString() +
+      ' points of data, are you sure?'
+    )) {
+      if (!this.labels.length) { // at start to show "no data" in Dyg Window
+        this.labels = [''];
+        this.labelsA = [[''], [''], [''], ['']];
+      }
+      // return;
     }
 
     if (this.layoutsingle === true && this.AFEBOARD && this.AFEBOARD > 0) {

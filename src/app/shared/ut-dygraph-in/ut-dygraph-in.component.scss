@@ -442,7 +442,7 @@ $red2: #ff7f88;
     text-align: left;
     position: absolute !important;
     overflow-x: visible;
-    min-width: 20em; // width of time text (with seconds) on hovering
+    min-width: 400px; // width of time text (with ms) on hovering
     max-height: 100%;
     max-width: 95%;
     overflow-y: auto;
@@ -453,6 +453,7 @@ $red2: #ff7f88;
       padding: 5px;
       z-index: 10;
       background-color: #5d5d5d; // picked from graph-background + legend-bg
+      white-space: nowrap;
       .legendHideInactive {
         display: none;
       }

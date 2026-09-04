@@ -97,7 +97,7 @@ export class HumidityComponent implements OnInit {
   background: string;
   host = '';
   value = '*';
-  referrer = 'Allsens';
+  referrer = 'Dashboard';
   public from: number; // unix time from urlparam
   public to: number; // unix time from urlparam
 
@@ -508,7 +508,7 @@ export class HumidityComponent implements OnInit {
     }
 
     // let logscale = true;
-    const newColors = this.h.getColorsforLabels([undefined].concat(this.short_labels));
+    const newColors = this.h.getColorsforLabels(this.short_labels);
     const numColumns = this.raw_labels.length;
     for (let c = 1; c < numColumns; c++) {
       const item = labels[c];
