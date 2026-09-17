@@ -88,6 +88,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     SCD30: {
       description: 'NDIR CO₂',
       icon: 'manufacturers/sensirion.png',
+      queryParams: { measurement: 'gas', value: '/CO2/', background: 'CO2_ppm', sensor: 'SCD30', ylabel: 'CO₂', referrer: 'Dashboard' }
     },
     SHTC3: {
       description: 'Humidity Sensor',
@@ -103,6 +104,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       description: 'MOx Gas',
       icon: 'manufacturers/sciosense.png',
       queryParams: { measurement: 'gas' },
+    },
+    Nano4E: {
+      description: 'MOx Gas',
+      icon: 'nano4e_logo.png',
+       path: '/Apps/Sensors/Nano4E'
     },
     SHT85: {
       description: 'Humidity Sensor',
@@ -122,7 +128,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       description: 'Thermocouple',
       icon: 'noun_Temperature.png',
       queryParams: { measurement: 'temperature' },
-    }
+    },
+    MICS6814: {
+      description: 'MOx Gas Sensor',
+      icon: 'manufacturers/SGX.jpg',
+      path: '/Apps/I/MICS6814'
+    },
   };
   SAR = this.sensorAppRegistry;
   // EXSENSOR = {

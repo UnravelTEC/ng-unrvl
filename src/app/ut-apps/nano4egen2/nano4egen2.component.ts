@@ -20,25 +20,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
   // public topic = '+/sensors/SPS30/particulate_matter_typpartsize_um';
 
   public topic = '#';
-  public topics = [
-    'nano4e-gen2/actuators/GPIOEXP/DIGITBOARD/settings',
-    'nano4e-gen2/actuators/GPIOEXP/AFEBOARD1/settings',
-    'nano4e-gen2/actuators/GPIOEXP/AFEBOARD2/settings',
-    'nano4e-gen2/actuators/GPIOEXP/AFEBOARD3/settings',
-    'nano4e-gen2/actuators/GPIOEXP/AFEBOARD4/settings',
-    'nano4e-gen2/actuators/DAC/AFEBOARD1/MEAS/settings',
-    'nano4e-gen2/actuators/DAC/AFEBOARD1/LED/settings',
-    'nano4e-gen2/actuators/DAC/AFEBOARD1/HEAT/settings',
-    'nano4e-gen2/actuators/DAC/AFEBOARD2/MEAS/settings',
-    'nano4e-gen2/actuators/DAC/AFEBOARD2/LED/settings',
-    'nano4e-gen2/actuators/DAC/AFEBOARD2/HEAT/settings',
-    'nano4e-gen2/actuators/DAC/AFEBOARD3/MEAS/settings',
-    'nano4e-gen2/actuators/DAC/AFEBOARD3/LED/settings',
-    'nano4e-gen2/actuators/DAC/AFEBOARD3/HEAT/settings',
-    'nano4e-gen2/actuators/DAC/AFEBOARD4/MEAS/settings',
-    'nano4e-gen2/actuators/DAC/AFEBOARD4/LED/settings',
-    'nano4e-gen2/actuators/DAC/AFEBOARD4/HEAT/settings',
-  ]
+  public topics: string[] = []
   // private ADCtopic = "/sensors/ADS1115/i2c-3_"
   // private ADCmappings = {
   //   "AFEBOARD1": "0x48",
@@ -311,6 +293,31 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     console.log(server);
     console.log("lang", navigator.language);
     this.lang = navigator.language
+
+    let hostname = this.gss.server.hostname;
+    let settingtopics = [
+      'GPIOEXP/DIGITBOARD',
+      'GPIOEXP/AFEBOARD1',
+      'GPIOEXP/AFEBOARD2',
+      'GPIOEXP/AFEBOARD3',
+      'GPIOEXP/AFEBOARD4',
+      'DAC/AFEBOARD1/MEAS',
+      'DAC/AFEBOARD1/LED',
+      'DAC/AFEBOARD1/HEAT',
+      'DAC/AFEBOARD2/MEAS',
+      'DAC/AFEBOARD2/LED',
+      'DAC/AFEBOARD2/HEAT',
+      'DAC/AFEBOARD3/MEAS',
+      'DAC/AFEBOARD3/LED',
+      'DAC/AFEBOARD3/HEAT',
+      'DAC/AFEBOARD4/MEAS',
+      'DAC/AFEBOARD4/LED',
+      'DAC/AFEBOARD4/HEAT',
+    ]
+    for (let i = 0; i < settingtopics.length; i++) {
+      const element = settingtopics[i];
+      this.topics.push(hostname + '/actuators/' + element + '/settings');
+    }
 
     this.client = new Paho.Client(server, 1885, this.clientID);
     this.client.onConnectionLost = this.onConnectionLost;
