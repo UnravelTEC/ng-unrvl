@@ -46,6 +46,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       description: 'Environmental',
       icon: 'manufacturers/Bosch.svg',
     },
+    BME688: {
+      description: 'MOx Gas',
+      icon: 'manufacturers/Bosch.svg',
+      queryParams: { measurement: 'gas' },
+    },
     BMP280: {
       description: 'Pressure',
       icon: 'manufacturers/Bosch.svg',

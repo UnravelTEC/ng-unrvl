@@ -85,6 +85,9 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
   public roundDigits: Array<number> = [null];
 
   @Input()
+  common_label = '';
+
+  @Input()
   calibrate = true;
 
   @Input()
@@ -1362,7 +1365,7 @@ export class UtDygraphScatterComponent implements OnInit, OnDestroy, OnChanges {
       }
       visibleData.push(newRow);
     }
-    this.h.exportCSV(visibleData, visibleLabels, this.exportUTC);
+    this.h.exportCSV(visibleData, visibleLabels, this.common_label, this.exportUTC);
   }
 
 

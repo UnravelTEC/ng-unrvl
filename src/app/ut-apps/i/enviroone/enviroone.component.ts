@@ -86,6 +86,7 @@ export class EnvirooneComponent implements OnInit {
   server = 'https://newton.unraveltec.com';
 
   labels = [];
+  common_label = '';
   data = [];
 
   appName = 'Enviro Graph';
@@ -314,6 +315,7 @@ export class EnvirooneComponent implements OnInit {
     }
     this.startTime = this.userStartTime;
     this.labels = labels;
+    this.common_label = ret['common_label'];
     this.data = idata;
     this.colors = newColors;
     console.log(labels);

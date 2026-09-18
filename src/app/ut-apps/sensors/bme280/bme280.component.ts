@@ -55,6 +55,7 @@ export class Bme280Component implements OnInit {
 
   labels = [];
   raw_labels = [];
+  common_label = '';
   data = [];
 
   appName = 'BME280';
@@ -246,6 +247,7 @@ export class Bme280Component implements OnInit {
     this.labels = labels;
     this.data = idata;
     this.colors = newColors;
+    this.common_label = ret['common_label'];
     console.log(labels);
     console.log(idata);
     this.changeTrigger += 1;

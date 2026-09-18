@@ -65,6 +65,8 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
   labelBlackList: string[];
   @Input()
+  commonLabel: string = "";
+  @Input()
   showDate = true;
   @Input()
   showLogscaleSwitcher = true;
@@ -2030,7 +2032,7 @@ export class UtDygraphInComponent implements OnInit, OnDestroy, OnChanges {
       }
       visibleData.push(newRow);
     }
-    this.h.exportCSV(visibleData, visibleLabels, this.exportUTC);
+    this.h.exportCSV(visibleData, visibleLabels, this.commonLabel, this.exportUTC);
   }
   getAverage(time = '1m', index = 1) {
     let time_s = this.h.parseToSeconds(time);

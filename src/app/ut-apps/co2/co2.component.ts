@@ -45,6 +45,7 @@ export class Co2Component implements OnInit {
   labels = [];
   raw_labels = [];
   data = [];
+  common_label = '';
 
   appName = 'CO2-Graph';
 
@@ -178,6 +179,7 @@ export class Co2Component implements OnInit {
       return;
     }
     const labels = ret['labels'];
+    this.common_label = ret['common_label'];
     const idata = ret['data'];
 
     let logscale = true;

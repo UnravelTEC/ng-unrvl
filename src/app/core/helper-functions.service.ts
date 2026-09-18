@@ -571,13 +571,13 @@ export class HelperFunctionsService {
     return labelString;
   }
 
-  exportCSV(data, labels, utc = true, missing = true) {
+  exportCSV(data, labels, common_label = "", utc = true, missing = true) {
     // header
     const separator = '\t';
     const linebreak = '\n';
     console.log('utc:', utc);
 
-    let header = '';
+    let header = common_label ? common_label + linebreak : '';
     if (labels.length === 0 || data.length === 0) {
       alert('no data to export');
       return;
@@ -616,7 +616,7 @@ export class HelperFunctionsService {
           element.replace(/,/g, ';') + ' (lower error range)' + separator;
       }
       if (i === 0) {
-        header = "Unix Timestamp (s)"
+        header += "Unix Timestamp (s)"
       } else {
         header += element.replace(/,/g, ';'); // data label
       }

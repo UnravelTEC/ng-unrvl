@@ -82,6 +82,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
   server = 'https://newton.unraveltec.com';
 
   labels = [];
+  common_label = '';
   raw_graphlabels = [];
   round_graphdigits = [0];
   unit = '?';
@@ -473,6 +474,7 @@ export class EnviromapComponent implements OnInit, OnDestroy {
     this.data = graphdata;
     this.gpsdata = idata;
     this.gpslabels = labels;
+    this.common_label = ret['common_label'];
     this.raw_graphlabels = raw_graphlabels;
     this.round_graphdigits = round_graphdigits;
     this.colors = newColors;

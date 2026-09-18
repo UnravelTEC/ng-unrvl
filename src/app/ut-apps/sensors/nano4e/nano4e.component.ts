@@ -16,7 +16,7 @@ export class Nano4EComponent implements OnInit {
   colors = [];
   colorsA = [];
   graphWidth = 1500;
-  setGraphWidth(width) {
+  setGraphWidth(width: number) {
     this.graphWidth = width;
     console.log('new w', width);
   }
@@ -98,7 +98,7 @@ export class Nano4EComponent implements OnInit {
   };
 
   public startTime = '1h';
-  public dygStartTime: string; // used on autoUpdate
+  public dygStartTime: string = undefined; // used on autoUpdate
   public userStartTime = this.startTime;
   public meanS: number;
   public currentres = 0;
@@ -1246,6 +1246,6 @@ export class Nano4EComponent implements OnInit {
   //   this.sortOrder[key] = !this.sortOrder[key]
   // }
   exportCSV() {
-    this.h.exportCSV(this.data, this.labels)
+    this.h.exportCSV(this.data, this.labels, this.common_label)
   }
 }

@@ -193,8 +193,8 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
   public temp_new = 0;
 
   public pins = {
-    'DIGITBOARD': { 'MICS_HEATER': 0b0001, '3V3_SUPPLY': 0b0010, '5V_SUPPLY': 0b0100, 'SCD30_SUPPLY': 0b1000, '5V_CLEAN_SUPPLY': 0b10000000 },
-    // 'DIGITBOARD': { 'MICS_HEATER': 0b0001, '3V3_SUPPLY': 0b0010, '5V_SUPPLY': 0b0100, 'SCD30_SUPPLY': 0b1000, '7V_SUPPLY_NEN': 0b1000000, '5V_CLEAN_SUPPLY': 0b10000000 },
+    // 'DIGITBOARD': { 'MICS_HEATER': 0b0001, '3V3_SUPPLY': 0b0010, '5V_SUPPLY': 0b0100, 'SCD30_SUPPLY': 0b1000, '5V_CLEAN_SUPPLY': 0b10000000 },
+       'DIGITBOARD': { 'MICS_HEATER': 0b0001, '3V3_SUPPLY': 0b0010, '5V_SUPPLY': 0b0100, 'SCD30_SUPPLY': 0b1000, '7V_SUPPLY_EN': 0b1000000, '5V_CLEAN_SUPPLY': 0b10000000 },
     "AFEBOARD1": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED41": 0b1000000, "LED42": 0b10000000 },
     "AFEBOARD2": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED41": 0b1000000, "LED42": 0b10000000 },
     "AFEBOARD3": { "LED11": 0b1, "LED12": 0b10, "LED21": 0b100, "LED22": 0b1000, "LED31": 0b10000, "LED32": 0b100000, "LED41": 0b1000000, "LED42": 0b10000000 },
@@ -225,7 +225,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
       '3V3_SUPPLY': undefined,
       '5V_SUPPLY': undefined,
       'SCD30_SUPPLY': undefined,
-      // '7V_SUPPLY_NEN': undefined,
+      '7V_SUPPLY_EN': undefined,
       '5V_CLEAN_SUPPLY': undefined
     }
   };
@@ -234,7 +234,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     '3V3_SUPPLY': '3V3 switched power supply',
     '5V_SUPPLY': '5V switched power supply',
     'SCD30_SUPPLY': 'SCD30 CO2 sensor switched power supply',
-    // '7V_SUPPLY_NEN': '7V switched power supply ¬en',
+    '7V_SUPPLY_EN': '7V switched power supply',
     '5V_CLEAN_SUPPLY': '5V_clean switched power supply'
   }
   public valve_reason = "";
@@ -373,7 +373,7 @@ export class Nano4EGen2Component implements OnInit, OnDestroy {
     father.status = 'connected';
   }
 
-  setGPIO(expander, pin: string, newstatus) {
+  setGPIO(expander: string, pin: string, newstatus) {
     const values = {}
     values[pin] = newstatus
     this.client.publish(this.gss.server.hostname + "/actuators/GPIOEXP/" + expander + "/set",

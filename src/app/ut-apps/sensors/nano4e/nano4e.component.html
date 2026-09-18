@@ -32,7 +32,7 @@
     <div id="dygcontainerabs" [style.right]="currentSidebarWidth">
 
       <div *ngIf="layoutsingle">
-        <app-ut-dygraph-in [data]="data" [columnLabels]="labels" [showDeviation]="show_deviation"
+        <app-ut-dygraph-in [data]="data" [columnLabels]="labels" [commonLabel]="common_label" [showDeviation]="show_deviation"
           [rawLabels]="raw_labels" [style]="graphstyle" [changeTrigger]="changeTrigger"
           [extraDyGraphConfig]="extraDyGraphConfig" [startTime]="dygStartTime" enableHighlightCallback="true"
           [colors]="colors" [backGroundLevels]="gss['graphBackgrounds'][background]" [YLabel]="ylabel"

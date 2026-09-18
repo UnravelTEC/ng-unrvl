@@ -571,6 +571,7 @@ export class UtFetchdataService {
         }
       }
     }
+    retval['common_label'] = retval['common_label'].replace(/^, /,'');
 
     return retval;
   }
