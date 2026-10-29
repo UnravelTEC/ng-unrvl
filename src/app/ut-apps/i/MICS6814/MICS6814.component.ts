@@ -55,7 +55,7 @@ export class MICS6814Component implements OnInit {
     right: '0.5rem',
   };
 
-  public startTime = '6h';
+  public startTime = '1h';
   public dygStartTime: string; // used on autoUpdate
   public userStartTime = this.startTime;
   public meanS = 30;
