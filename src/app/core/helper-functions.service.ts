@@ -577,7 +577,7 @@ export class HelperFunctionsService {
     const linebreak = '\n';
     console.log('utc:', utc);
 
-    let header = common_label ? common_label + linebreak : '';
+    let header = ''
     if (labels.length === 0 || data.length === 0) {
       alert('no data to export');
       return;
@@ -705,7 +705,10 @@ export class HelperFunctionsService {
       }
     }
 
-    const csv = header + csvbody;
+    let csv = header + csvbody
+    if (common_label) {
+      csv += common_label + linebreak
+    }
     console.log(csv);
 
     const blob = new Blob([csv], { type: 'text/csv' });
