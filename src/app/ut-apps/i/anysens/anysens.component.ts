@@ -78,6 +78,7 @@ export class AnysensComponent implements OnInit {
 
   public allAverages = [];
   public visibleAverages = [];
+  public logVisibleAverages: number[] = [];
 
   appName = 'Any Sens';
 
@@ -937,6 +938,13 @@ export class AnysensComponent implements OnInit {
   handleRunningAvg(dataObj: Object) {
     this.allAverages = dataObj['all'];
     this.visibleAverages = dataObj['visible'];
+    if (this.extraDyGraphConfig.logscale) {
+      this.logVisibleAverages = []
+      this.visibleAverages.forEach(avg => {
+        this.logVisibleAverages.push(Math.log2(avg))
+      });
+
+    }
   }
   private sortTimeOrderAsc = false;
   private sortOrder = {

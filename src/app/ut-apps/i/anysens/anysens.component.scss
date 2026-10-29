@@ -122,8 +122,7 @@
       background-color: #3f3f3f;
       cursor: pointer;
     }
-
-    table + table {
+    table.stats {
       td + td {
         text-align: right;
       }

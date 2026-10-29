@@ -242,15 +242,17 @@
         </tr>
       </tbody>
     </table>
-    <table *ngIf="tableShown">
+    <table *ngIf="tableShown" class="stats">
       <thead>
         <tr>
           <th>Series</th>
           <th>latest value</th>
           <th>latest data</th>
           <th>average (all)</th>
-          <th style="position: relative; padding-right: 2.2em">
+          <th >
             average (visible)
+          </th>
+          <th style="position: relative; padding-right: 2.2em"><span *ngIf="extraDyGraphConfig.logscale">log (vis. avg)</span>
             <button (click)="toggleTableShown(); R.resize()" title="Hide Data Table">
               <mat-icon>cancel</mat-icon>
             </button>
@@ -291,6 +293,16 @@
             (round_digits[i + 1] + 1) +
             '-' +
             (round_digits[i + 1] + 1)
+            }}
+          </td>
+          <td *ngIf="extraDyGraphConfig.logscale">
+            {{
+            logVisibleAverages[i]
+            | number
+            : '1.' +
+            (round_digits[i + 1] +2) +
+            '-' +
+            (round_digits[i + 1] +2)
             }}
           </td>
         </tr>
