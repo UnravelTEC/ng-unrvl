@@ -92,6 +92,10 @@ export class AnysensComponent implements OnInit {
   host = '';
   value = '*';
   referrer = 'I/Allsens';
+
+  public tagfilterkey = ''
+  public tagfiltervalue = ''
+
   public from: number; // unix time from urlparam
   public to: number; // unix time from urlparam
 
@@ -131,6 +135,8 @@ export class AnysensComponent implements OnInit {
       'tableShown',
       'sideBarShown',
       'automean',
+      'tagfilterkey',
+      'tagfiltervalue',
       'tagsShown',
       'allTagsShown',
       'show_deviation',
@@ -159,6 +165,8 @@ export class AnysensComponent implements OnInit {
       'host',
       'measurement',
       'sensor',
+      'tagfilterkey',
+      'tagfiltervalue',
       'background',
       'referrer',
       'from',
@@ -252,6 +260,9 @@ export class AnysensComponent implements OnInit {
     }
     if (this.id) {
       params['id'] = this.id;
+    }
+    if (this.tagfilterkey && this.tagfiltervalue) {
+      params[this.tagfilterkey] = this.tagfiltervalue;
     }
 
     let groupby_list = []
