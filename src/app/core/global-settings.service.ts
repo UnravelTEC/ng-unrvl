@@ -303,6 +303,12 @@ export class GlobalSettingsService implements OnInit {
     // console.log('received', data);
     const series = this.h.getDeep(data, ['results', 0, 'series', 0, 'values']);
     console.log('series', series);
+    if (!series) {
+      this.emitChange({ status: 'Influx: DB ' + this.server.influxdb + ' empty' });
+      this.server.sensors = undefined; // checking for undef in html is easier than for {}
+      this.server.calibrations = false; // no sensors, no calibrations (e.g. only telegraf metrics DB)
+      return
+    }
     this.server.measurements = [];
     this.server.sensors = {};
     let sensorhere = false;
