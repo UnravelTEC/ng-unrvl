@@ -127,7 +127,7 @@ export class AnysensComponent implements OnInit {
   ngOnInit() {
     [
       'userMeanS',
-      'userStartTime',
+      // 'userStartTime',
       'tableShown',
       'sideBarShown',
       'automean',
@@ -548,7 +548,7 @@ export class AnysensComponent implements OnInit {
     this.reload_timer = this.auto_interval;
 
     this.localStorage.set(this.appName + 'userMeanS', this.userMeanS);
-    this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);
+    // this.localStorage.set(this.appName + 'userStartTime', this.userStartTime);
     this.reload();
   }
   changeTaglist(param) {

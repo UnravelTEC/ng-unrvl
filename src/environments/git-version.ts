@@ -1,9 +1,9 @@
 export const gitVersion = {
-  "shortSHA": "0347674",
-  "SHA": "03476742a1a4243feba3e0bc4b0979c0c180b213",
+  "shortSHA": "012c08a",
+  "SHA": "012c08ad774cafec6daa5bac327234c2075f992c",
   "branch": "develop",
   "lastCommitAuthor": "Michael Donnelly",
-  "lastCommitTime": "Thu Sep 17 14:30:47 2026 +0200",
-  "lastCommitMessage": "reordered apps on dashboard; fixed mqtt subscribe for nano4e ctrl",
-  "lastCommitNumber": "1676"
+  "lastCommitTime": "Fri Sep 18 13:24:29 2026 +0200",
+  "lastCommitMessage": "7V supply enable, csv export w 2nd header",
+  "lastCommitNumber": "1677"
 }
