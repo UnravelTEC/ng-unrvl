@@ -308,6 +308,11 @@ export class SensorService {
         }
       }
     },
+    SFC6000: {
+      error_slm: { round_digits: 7, },
+      flow_slm: { round_digits: 7, },
+      setpoint_slm: { round_digits: 7, },
+    },
     MCP9600: {
       probe_degC: {
         round_digits: 2,

@@ -617,6 +617,11 @@ export class AnysensComponent implements OnInit {
     this.localStorage.set(this.appName + 'taglist', {});
     this.taglist = {}
   }
+  clearLSTags() {
+    this.localStorage.set(this.appName + 'taglist', {});
+    this.ls_taglist = {}
+    this.labelBlockList =  ['mean_*'];
+  }
 
 
   launchQuery(clause: string) {
@@ -941,7 +946,7 @@ export class AnysensComponent implements OnInit {
     if (this.extraDyGraphConfig.logscale) {
       this.logVisibleAverages = []
       this.visibleAverages.forEach(avg => {
-        this.logVisibleAverages.push(Math.log2(avg))
+        this.logVisibleAverages.push(Math.log(avg))
       });
 
     }
